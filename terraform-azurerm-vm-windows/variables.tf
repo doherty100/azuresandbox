@@ -12,17 +12,12 @@ variable "location" {
 
 # Keyvault variables
 
-variable "vault_uri" {
+variable "key_vault_id" {
   type        = "string"
   description = "The existing key vault where secrets are stored"
 }
 
 # Network variables
-variable "vnet_name" {
-  type        = "string"
-  description = "The existing virtual network which will be used by the VM"
-}
-
 variable "subnet_id" {
   type        = "string"
   description = "The existing subnet which will be used by the VM"
