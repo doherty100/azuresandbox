@@ -3,6 +3,11 @@ variable "aad_tenant_id" {
   description = "The Azure Active Directory tenant id to be associated with the new key vault."
 }
 
+variable "key_vault_admin_object_id" {
+  type = "string"
+  description = "The object id of the security principle (user or group) with administrative rights for the new key vault."
+}
+
 variable "key_vault_name" {
   type = "string"
   description = "The name of the new key vault to provision."

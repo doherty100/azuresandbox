@@ -12,6 +12,22 @@ resource "azurerm_key_vault" "key_vault_01" {
   tags = "${var.tags}"
 }
 
+resource "azurerm_key_vault_access_policy" "key_vault_01_access_policy_secrets_admin" {
+  key_vault_id = "${azurerm_key_vault.key_vault_01.id}"
+  tenant_id = "${var.aad_tenant_id}"
+  object_id = "${var.key_vault_admin_object_id}"
+
+  secret_permissions = [
+    "backup",
+    "delete",
+    "get",
+    "list",
+    "purge",
+    "recover",
+    "restore",
+    "set"
+  ]
+}
 output "key_vault_01_id" {
   value = "${azurerm_key_vault.key_vault_01.id}"
 }
