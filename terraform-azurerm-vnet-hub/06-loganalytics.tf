@@ -10,3 +10,11 @@ resource "azurerm_log_analytics_workspace" "log_analytics_workspace_01" {
 output "log_analytics_workspace_01_id" {
   value = "${azurerm_log_analytics_workspace.log_analytics_workspace_01.id}"
 }
+
+output "log_analytics_workspace_01_workspace_id" {
+  value = "${azurerm_log_analytics_workspace.log_analytics_workspace_01.workspace_id}"
+}
+
+output "log_analytics_workspace_01_primary_shared_key" {
+  value = "${azurerm_log_analytics_workspace.log_analytics_workspace_01.primary_shared_key}"
+}
