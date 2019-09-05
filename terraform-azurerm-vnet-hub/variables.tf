@@ -24,6 +24,17 @@ variable "location" {
   description = "The name of the Azure Region where resources will be provisioned."
 }
 
+variable "log_analytics_workspace_name" {
+  type = "string"
+  description = "The name of the new log analytics workspace."
+}
+
+variable "log_analytics_workspace_retention_days" {
+  type = "string"
+  description = "The retention period for the new log analytics workspace."
+  default = "30"
+}
+
 variable "resource_group_name" {
   type        = "string"
   description = "The name of the new resource group to be provisioned."

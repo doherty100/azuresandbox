@@ -6,6 +6,7 @@ AAD_TENANT_ID=""
 KEY_VAULT_ADMIN_OBJECT_ID=""
 KEY_VAULT_NAME=""
 LOCATION=""
+LOG_ANALYTICS_WORKSPACE_NAME=""
 RESOURCE_GROUP_NAME=""
 SHARED_IMAGE_GALLERY_NAME=""
 STORAGE_ACCOUNT_TIER=""
@@ -16,7 +17,7 @@ VNET_ADDRESS_SPACE=""
 VNET_NAME=""
 
 usage() {
-    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -i STORAGE_ACCOUNT_TIER\n  -r STORAGE_REPLICATION_TYPE\n  -k KEY_VAULT_NAME\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n -d AAD_TENANT_ID\n  -h SHARED_IMAGE_GALLERY_NAME\n" 1>&2
+    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -i STORAGE_ACCOUNT_TIER\n  -r STORAGE_REPLICATION_TYPE\n  -k KEY_VAULT_NAME\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n -d AAD_TENANT_ID\n -h SHARED_IMAGE_GALLERY_NAME\n -w LOG_ANALYTICS_WORKSPACE_NAME\n" 1>&2
     exit 1
 }
 
@@ -24,7 +25,7 @@ if [[ $# -eq 0  ]]; then
     usage
 fi  
 
-while getopts ":a:d:g:h:i:k:l:o:r:s:t:v:" option; do
+while getopts ":a:d:g:h:i:k:l:o:r:s:t:v:w:" option; do
     case "${option}" in
         a )
             VNET_ADDRESS_SPACE=${OPTARG}
@@ -61,6 +62,9 @@ while getopts ":a:d:g:h:i:k:l:o:r:s:t:v:" option; do
             ;;
         v )
             VNET_NAME=${OPTARG}
+            ;;
+        w )
+            LOG_ANALYTICS_WORKSPACE_NAME=${OPTARG}
             ;;
         \? )
             usage
@@ -152,12 +156,20 @@ if [ -z $SHARED_IMAGE_GALLERY_NAME ]; then
     usage
 fi
 
+printf "Validating LOG_ANALYTICS_WORKSPACE_NAME '${LOG_ANALYTICS_WORKSPACE_NAME}'\n"
+if [ -z $LOG_ANALYTICS_WORKSPACE_NAME ]; then
+    echo "Error: Invalid LOG_ANALYTICS_WORKSPACE_NAME."
+    usage
+fi
+
+
 printf "\nGenerating terraform.tfvars file...\n\n"
 
 printf "aad_tenant_id = \"$AAD_TENANT_ID\"\n" > ./terraform.tfvars
 printf "key_vault_admin_object_id = \"$KEY_VAULT_ADMIN_OBJECT_ID\"\n" >> ./terraform.tfvars
 printf "key_vault_name = \"$KEY_VAULT_NAME\"\n" >> ./terraform.tfvars
 printf "location = \"$LOCATION\"\n" >> ./terraform.tfvars
+printf "log_analytics_workspace_name = \"$LOG_ANALYTICS_WORKSPACE_NAME\"\n" >> ./terraform.tfvars
 printf "resource_group_name = \"$RESOURCE_GROUP_NAME\"\n" >> ./terraform.tfvars
 printf "shared_image_gallery_name = \"$SHARED_IMAGE_GALLERY_NAME\"\n" >> ./terraform.tfvars
 printf "storage_account_tier = \"$STORAGE_ACCOUNT_TIER\"\n" >> ./terraform.tfvars

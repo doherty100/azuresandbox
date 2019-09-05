@@ -14,4 +14,5 @@
   -k "rd-vdc-eastus2-dev-kv" \
   -o "4e04cdb4-0f6f-45b5-b115-90b742b19f12" \
   -d "72f988bf-86f1-41af-91ab-2d7cd011db47" \
-  -h "rdvdceastus2devsig"
+  -h "rdvdceastus2devsig" \
+  -w "rd-vdc-eastus2-dev-law"
