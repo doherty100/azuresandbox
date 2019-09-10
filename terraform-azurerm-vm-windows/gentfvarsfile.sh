@@ -27,6 +27,7 @@ VM_STORAGE_REPLICATION_TYPE="Standard_LRS"
 
 # Set these environment variables by passing parameters to this script 
 LOCATION=""
+LOG_ANALYTICS_WORKSPACE_ID=""
 RESOURCE_GROUP_NAME=""
 SUBNET_ID=""
 VM_IMAGE_SKU=""
@@ -40,7 +41,7 @@ VM_IMAGE_ID=""
 VM_SIZE_PROPERTIES=""
 
 usage() {
-    echo "Usage: $0 -n VM_NAME -s VM_IMAGE_SKU -t VM_SIZE -g RESOURCE_GROUP_NAME -l LOCATION -i SUBNET_ID" 1>&2
+    printf "Usage: $0 -n VM_NAME\n -s VM_IMAGE_SKU\n -t VM_SIZE\n -g RESOURCE_GROUP_NAME\n -l LOCATION\n -i SUBNET_ID\n -w LOG_ANALYTICS_WORKSPACE_ID" 1>&2
     exit 1
 }
 
@@ -48,7 +49,7 @@ if [[ $# -eq 0 ]]; then
     usage
 fi  
 
-while getopts ":g:i:l:n:s:t:" option; do
+while getopts ":g:i:l:n:s:t:w:" option; do
     case "${option}" in
         g ) 
             RESOURCE_GROUP_NAME=${OPTARG}
@@ -68,11 +69,14 @@ while getopts ":g:i:l:n:s:t:" option; do
         t )
             VM_SIZE=${OPTARG}
             ;;
+        w )
+            LOG_ANALYTICS_WORKSPACE_ID=${OPTARG}
+            ;;
         \? )
             usage
             ;;
         : ) 
-            echo "Error: -${OPTARG} requires an argument."
+            printf "Error: -${OPTARG} requires an argument.\n"
             usage
             ;;
     esac
@@ -131,6 +135,13 @@ if [ -z $LOCATION_ID ]; then
     usage
 fi
 
+printf "Validating LOG_ANALYTICS_WORKSPACE_ID '$LOG_ANALYTICS_WORKSPACE_ID'...\n"
+
+if [ -z $LOG_ANALYTICS_WORKSPACE_ID ]; then
+    printf "Error: Invalid LOG_ANALYTICS_WORKSPACE_ID"
+    usage
+fi
+
 # Get the key_vault_id for the first key vault in the resource group
 printf "Getting key vault...\n"
 KEY_VAULT_ID=$(az keyvault list -g $RESOURCE_GROUP_NAME --query "[0].id" | tr -d '"')
@@ -162,12 +173,22 @@ if [ $? != 0 ]; then
     usage
 fi
 
+# Validate log analytics workspaceKey secret
+printf "Checking log analytics workspaceKey secret...\n"
+az keyvault secret show -n $LOG_ANALYTICS_WORKSPACE_ID --vault-name $VAULT_NAME
+
+if [ $? != 0 ]; then
+    printf "Error: No secret named $LOG_ANALYTICS_WORKSPACE_ID exists in $VAULT_NAME.\n"
+    usage
+fi
+
 # Write values out to terraform.tfvars file
 
 printf "\Generating terraform.tfvars file...\n\n"
 
 printf "key_vault_id = \"$KEY_VAULT_ID\"\n" > ./terraform.tfvars
 printf "location = \"$LOCATION\"\n" >> ./terraform.tfvars
+printf "log_analytics_workspace_id = \"$LOG_ANALYTICS_WORKSPACE_ID\"\n" >> ./terraform.tfvars
 printf "resource_group_name = \"$RESOURCE_GROUP_NAME\"\n" >> ./terraform.tfvars
 printf "subnet_id = \"$SUBNET_ID\"\n" >> ./terraform.tfvars
 printf "vm_admin_password_secret = \"$VM_ADMIN_PASSWORD_SECRET\"\n" >> ./terraform.tfvars

@@ -1,8 +1,6 @@
-# General variables
-
-variable "resource_group_name" {
+variable "key_vault_id" {
   type        = "string"
-  description = "The existing resource group where the VM will be provisioned"
+  description = "The existing key vault where secrets are stored"
 }
 
 variable "location" {
@@ -10,20 +8,21 @@ variable "location" {
   description = "The Azure region where the VM will be provisioned"
 }
 
-# Keyvault variables
-
-variable "key_vault_id" {
-  type        = "string"
-  description = "The existing key vault where secrets are stored"
+variable "log_analytics_workspace_id" {
+  type = "string"
+  description = "The workspaceId of the log analytics workspace used to monitor the VM"
 }
 
-# Network variables
+variable "resource_group_name" {
+  type        = "string"
+  description = "The existing resource group where the VM will be provisioned"
+}
+
 variable "subnet_id" {
   type        = "string"
   description = "The existing subnet which will be used by the VM"
 }
 
-# Virtual machine variables
 variable "vm_admin_password_secret" {
   type        = "string"
   description = "The name of the key vault secret containing the admin password"
