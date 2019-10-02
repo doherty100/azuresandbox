@@ -78,8 +78,8 @@ done
 
 printf "Validating RESOURCE_GROUP_NAME '${RESOURCE_GROUP_NAME}'...\n"
 
-if [ -z $RESOURCE_GROUP_NAME ]; then
-    echo "Error: Invalid RESOURCE_GROUP_NAME."
+if [[ -z {$RESOURCE_GROUP_NAME} ]]; then
+    printf "Error: Invalid RESOURCE_GROUP_NAME.\n"
     usage
 fi
 
@@ -88,22 +88,36 @@ printf "Validating LOCATION '${LOCATION}'...\n"
 LOCATION_ID=""
 LOCATION_ID=$(az account list-locations --query "[?name=='${LOCATION}'].id" | tr -d '[]" \n')
 
-if [ -z $LOCATION_ID ]; then
-    echo "Error: Invalid LOCATION."
+if [[ -z ${LOCATION_ID} ]]; then
+    printf "Error: Invalid LOCATION.\n"
+    usage
+fi
+
+printf "Validating TAGS '${TAGS}'...\n"
+
+if [[ -z ${TAGS} ]]; then
+    printf "Error: Invalid TAGS.\n"
     usage
 fi
 
 printf "Validating VNET_NAME '${VNET_NAME}'...\n"
 
-if [ -z $VNET_NAME ]; then
-    echo "Error: Invalid VNET_NAME."
+if [[ -z ${VNET_NAME} ]]; then
+    printf "Error: Invalid VNET_NAME.\n"
     usage
 fi
 
 printf "Validating VNET_ADDRESS_SPACE '${VNET_ADDRESS_SPACE}'...\n"
 
-if [ -z $VNET_ADDRESS_SPACE ]; then
-    echo "Error: Invalid VNET_ADDRESS_SPACE."
+if [[ -z ${VNET_ADDRESS_SPACE} ]]; then
+    printf "Error: Invalid VNET_ADDRESS_SPACE.\n"
+    usage
+fi
+
+printf "Validating SUBNETS '${SUBNETS}'...\n"
+
+if [[ -z ${SUBNETS} ]]; then
+    printf "Error: Invalid SUBNETS.\n"
     usage
 fi
 
@@ -113,7 +127,7 @@ case $STORAGE_ACCOUNT_TIER in
     Standard | Premium )
         ;;
     * )
-        echo "Error: Invalid STORAGE_ACCOUNT_TIER."
+        printf "Error: Invalid STORAGE_ACCOUNT_TIER.\n"
         usage
         ;;
 esac
@@ -124,41 +138,43 @@ case $STORAGE_REPLICATION_TYPE in
     LRS | GRS | RAGRS | ZRS )
         ;;
     * )
-        echo "Error: Invalid STORAGE_REPLICATION_TYPE."
+        printf "Error: Invalid STORAGE_REPLICATION_TYPE.\n"
         usage
         ;;
 esac
 
 printf "Validating KEY_VAULT_ADMIN_OBJECT_ID '${KEY_VAULT_ADMIN_OBJECT_ID}'\n"
 
-if [ -z $KEY_VAULT_ADMIN_OBJECT_ID ]; then
-    echo "Error: Invalid KEY_VAULT_ADMIN_OBJECT_ID."
+if [[ -z ${KEY_VAULT_ADMIN_OBJECT_ID} ]]; then
+    printf "Error: Invalid KEY_VAULT_ADMIN_OBJECT_ID.\n"
     usage
 fi
 
 printf "Validating KEY_VAULT_NAME '${KEY_VAULT_NAME}'\n"
 
-if [ -z $KEY_VAULT_NAME ]; then
-    echo "Error: Invalid KEY_VAULT_NAME."
+if [[ -z {$KEY_VAULT_NAME} ]]; then
+    printf "Error: Invalid KEY_VAULT_NAME.\n"
     usage
 fi
 
 printf "Validating AAD_TENANT_ID '${AAD_TENANT_ID}'\n"
 
-if [ -z $AAD_TENANT_ID ]; then
-    echo "Error: Invalid AAD_TENANT_ID."
+if [[ -z {$AAD_TENANT_ID} ]]; then
+    printf "Error: Invalid AAD_TENANT_ID.\n"
     usage
 fi
 
 printf "Validating SHARED_IMAGE_GALLERY_NAME '${SHARED_IMAGE_GALLERY_NAME}'\n"
-if [ -z $SHARED_IMAGE_GALLERY_NAME ]; then
-    echo "Error: Invalid SHARED_IMAGE_GALLERY_NAME."
+
+if [[ -z ${SHARED_IMAGE_GALLERY_NAME} ]]; then
+    printf "Error: Invalid SHARED_IMAGE_GALLERY_NAME.\n"
     usage
 fi
 
 printf "Validating LOG_ANALYTICS_WORKSPACE_NAME '${LOG_ANALYTICS_WORKSPACE_NAME}'\n"
-if [ -z $LOG_ANALYTICS_WORKSPACE_NAME ]; then
-    echo "Error: Invalid LOG_ANALYTICS_WORKSPACE_NAME."
+
+if [[ -z ${LOG_ANALYTICS_WORKSPACE_NAME} ]]; then
+    printf "Error: Invalid LOG_ANALYTICS_WORKSPACE_NAME.\n"
     usage
 fi
 
