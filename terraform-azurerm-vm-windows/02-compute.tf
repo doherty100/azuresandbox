@@ -9,6 +9,7 @@ resource "azurerm_virtual_machine" "vm1" {
   network_interface_ids         = ["${azurerm_network_interface.nic1.id}"]
   vm_size                       = "${var.vm_size}"
   delete_os_disk_on_termination = true
+  tags                          = "${var.tags}"
 
   storage_image_reference {
     publisher = "${var.vm_image_publisher}"
@@ -43,6 +44,7 @@ resource "azurerm_managed_disk" "datadisk" {
   storage_account_type = "${var.vm_storage_replication_type}"
   create_option        = "Empty"
   disk_size_gb         = "${var.vm_data_disk_size_gb}"
+  tags                 = "${var.tags}"
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "external" {
@@ -62,6 +64,7 @@ resource "azurerm_virtual_machine_extension" "vm1_extension_monitoring" {
   type                       = "MicrosoftMonitoringAgent"
   type_handler_version       = "1.0"
   auto_upgrade_minor_version = true
+  tags                       = "${var.tags}"
 
   settings           = <<SETTINGS
     {

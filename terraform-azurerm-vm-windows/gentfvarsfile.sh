@@ -30,6 +30,7 @@ LOCATION=""
 LOG_ANALYTICS_WORKSPACE_ID=""
 RESOURCE_GROUP_NAME=""
 SUBNET_ID=""
+TAGS=""
 VM_IMAGE_SKU=""
 VM_NAME=""
 VM_SIZE=""
@@ -41,7 +42,7 @@ VM_IMAGE_ID=""
 VM_SIZE_PROPERTIES=""
 
 usage() {
-    printf "Usage: $0 -n VM_NAME\n -s VM_IMAGE_SKU\n -t VM_SIZE\n -g RESOURCE_GROUP_NAME\n -l LOCATION\n -i SUBNET_ID\n -w LOG_ANALYTICS_WORKSPACE_ID" 1>&2
+    printf "Usage: $0 -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -n VM_NAME\n  -s VM_IMAGE_SKU\n  -z VM_SIZE\n  -i SUBNET_ID\n  -w LOG_ANALYTICS_WORKSPACE_ID" 1>&2
     exit 1
 }
 
@@ -49,7 +50,7 @@ if [[ $# -eq 0 ]]; then
     usage
 fi  
 
-while getopts ":g:i:l:n:s:t:w:" option; do
+while getopts ":g:i:l:n:s:t:w:z:" option; do
     case "${option}" in
         g ) 
             RESOURCE_GROUP_NAME=${OPTARG}
@@ -67,10 +68,13 @@ while getopts ":g:i:l:n:s:t:w:" option; do
             VM_IMAGE_SKU=${OPTARG}
             ;;
         t )
-            VM_SIZE=${OPTARG}
+            TAGS=${OPTARG}
             ;;
         w )
             LOG_ANALYTICS_WORKSPACE_ID=${OPTARG}
+            ;;
+        z )
+            VM_SIZE=${OPTARG}
             ;;
         \? )
             usage
@@ -142,6 +146,13 @@ if [ -z $LOG_ANALYTICS_WORKSPACE_ID ]; then
     usage
 fi
 
+printf "Validating TAGS '${TAGS}'...\n"
+
+if [[ -z ${TAGS} ]]; then
+    printf "Error: Invalid TAGS.\n"
+    usage
+fi
+
 # Get the key_vault_id for the first key vault in the resource group
 printf "Getting key vault...\n"
 KEY_VAULT_ID=$(az keyvault list -g $RESOURCE_GROUP_NAME --query "[0].id" | tr -d '"')
@@ -191,6 +202,7 @@ printf "location = \"$LOCATION\"\n" >> ./terraform.tfvars
 printf "log_analytics_workspace_id = \"$LOG_ANALYTICS_WORKSPACE_ID\"\n" >> ./terraform.tfvars
 printf "resource_group_name = \"$RESOURCE_GROUP_NAME\"\n" >> ./terraform.tfvars
 printf "subnet_id = \"$SUBNET_ID\"\n" >> ./terraform.tfvars
+printf "tags = $TAGS\n" >> ./terraform.tfvars
 printf "vm_admin_password_secret = \"$VM_ADMIN_PASSWORD_SECRET\"\n" >> ./terraform.tfvars
 printf "vm_admin_username_secret = \"$VM_ADMIN_USERNAME_SECRET\"\n" >> ./terraform.tfvars
 printf "vm_data_disk_count = \"$VM_DATA_DISK_COUNT\"\n" >> ./terraform.tfvars

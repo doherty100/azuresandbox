@@ -23,6 +23,11 @@ variable "subnet_id" {
   description = "The existing subnet which will be used by the VM"
 }
 
+variable "tags" {
+  type = "map"
+  description = "The ARM tags to be applied to all new resources created."
+}
+
 variable "vm_admin_password_secret" {
   type        = "string"
   description = "The name of the key vault secret containing the admin password"
