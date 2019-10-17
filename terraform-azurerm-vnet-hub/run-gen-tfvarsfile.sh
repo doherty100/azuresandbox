@@ -3,16 +3,14 @@
 # Helper script for gen-tfvarsfile.sh
 
 ./gen-tfvarsfile.sh \
-  -g "rd-vdc-eastus2-dev-rg" \
-  -l "eastus2" \
+  -g "rd-vdc-eastus-dev-rg" \
+  -l "eastus" \
   -t "{ costcenter = \"10177772\", division = \"US-CS-Heathcare-COGS\", group = \"SOUTHEAST\" }" \
-  -v "rd-vdc-eastus2-dev-hub-vnet" \
+  -v "rd-vdc-eastus-dev-hub-vnet" \
   -a "10.0.0.0/16" \
-  -s "[ { name = \"default\", address_prefix = \"10.0.0.0/24\" }, { name = \"GatewaySubnet\", address_prefix = \"10.0.255.0/27\" } ]" \
+  -s "[ { name = \"default\", address_prefix = \"10.0.0.0/24\" }, { name = \"AzureBastionSubnet\", address_prefix = \"10.0.1.0/27\" }, { name = \"GatewaySubnet\", address_prefix = \"10.0.255.0/27\" } ]" \
   -i "Standard" \
   -r "LRS" \
-  -k "rd-vdc-eastus2-dev-kv" \
   -o "4e04cdb4-0f6f-45b5-b115-90b742b19f12" \
   -d "72f988bf-86f1-41af-91ab-2d7cd011db47" \
-  -h "rdvdceastus2devsig" \
-  -w "rd-vdc-eastus2-dev-law"
+  -h "rdvdceastusdevsig"

@@ -1,9 +1,9 @@
-resource "random_id" "random_id_01" {
+resource "random_id" "random_id_storage_account_01_name" {
   byte_length = 8
 }
 
 resource "azurerm_storage_account" "storage_account_01" {
-  name                     = "${random_id.random_id_01.hex}"
+  name                     = "${random_id.random_id_storage_account_01_name.hex}"
   resource_group_name      = "${azurerm_resource_group.resource_group_01.name}"
   location                 = "${azurerm_resource_group.resource_group_01.location}"
   account_tier             = "${var.storage_account_tier}"
@@ -15,4 +15,8 @@ resource "azurerm_storage_account" "storage_account_01" {
 
 output "storage_account_01_id" {
   value = "${azurerm_storage_account.storage_account_01.id}"
+}
+
+output "storage_account_01_name" {
+  value = "${azurerm_storage_account.storage_account_01.name}"
 }

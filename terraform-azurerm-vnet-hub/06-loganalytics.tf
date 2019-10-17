@@ -1,5 +1,9 @@
+resource "random_id" "random_id_log_analytics_workspace_01_name" {
+  byte_length = 8
+}
+
 resource "azurerm_log_analytics_workspace" "log_analytics_workspace_01" {
-  name                = "${var.log_analytics_workspace_name}"
+  name                = "${random_id.random_id_log_analytics_workspace_01_name.hex}"
   location            = "${azurerm_resource_group.resource_group_01.location}"
   resource_group_name = "${azurerm_resource_group.resource_group_01.name}"
   sku                 = "PerGB2018"
@@ -10,6 +14,11 @@ resource "azurerm_log_analytics_workspace" "log_analytics_workspace_01" {
 output "log_analytics_workspace_01_id" {
   value = "${azurerm_log_analytics_workspace.log_analytics_workspace_01.id}"
 }
+
+output "log_analytics_workspace_01_name" {
+  value = "${azurerm_log_analytics_workspace.log_analytics_workspace_01.name}"
+}
+
 
 output "log_analytics_workspace_01_workspace_id" {
   value = "${azurerm_log_analytics_workspace.log_analytics_workspace_01.workspace_id}"

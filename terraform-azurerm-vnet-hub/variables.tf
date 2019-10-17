@@ -8,11 +8,6 @@ variable "key_vault_admin_object_id" {
   description = "The object id of the security principle (user or group) with administrative rights for the new key vault."
 }
 
-variable "key_vault_name" {
-  type = "string"
-  description = "The name of the new key vault to provision."
-}
-
 variable "key_vault_sku_name" {
   type = "string"
   description = "The name of the SKU to be used for the new key vault."
@@ -22,11 +17,6 @@ variable "key_vault_sku_name" {
 variable "location" {
   type        = "string"
   description = "The name of the Azure Region where resources will be provisioned."
-}
-
-variable "log_analytics_workspace_name" {
-  type = "string"
-  description = "The name of the new log analytics workspace."
 }
 
 variable "log_analytics_workspace_retention_days" {
@@ -76,7 +66,6 @@ variable "tags" {
 
   # default = { costcenter = "MyCostCenter", division = "MyDivision", group = "MyGroup" }
 }
-
 
 variable "vnet_address_space" {
   type        = "string"
