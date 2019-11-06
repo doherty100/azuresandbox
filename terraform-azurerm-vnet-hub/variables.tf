@@ -3,6 +3,11 @@ variable "aad_tenant_id" {
   description = "The Azure Active Directory tenant id to be associated with the new key vault."
 }
 
+variable "bastion_host_name" {
+  type = "string"
+  description = "The name of the new bastion host."
+}
+
 variable "key_vault_admin_object_id" {
   type = "string"
   description = "The object id of the security principle (user or group) with administrative rights for the new key vault."
@@ -54,17 +59,17 @@ variable "storage_replication_type" {
 }
 
 variable "subnets" {
-  type        = "list"
-  description = "The list of subnets to be created in the new virtual network."
+  type        = "map"
+  description = "The subnets to be created in the new virtual network."
 
-  # default = [ { name = "default", address_prefix = "10.0.0.0/24" }, { name = "GatewaySubnet", address_prefix = "10.0.255.0/27" } ]
+  # default = { DefaultSubnet = "10.0.0.0/24", AzureBastionSubnet = "10.0.1.0/27" , GatewaySubnet = "10.0.255.0/27" } 
 }
 
 variable "tags" {
   type        = "map"
   description = "The tags in map format to be used when creating new resources."
 
-  # default = { costcenter = "MyCostCenter", division = "MyDivision", group = "MyGroup" }
+  default = { costcenter = "MyCostCenter", division = "MyDivision", group = "MyGroup" }
 }
 
 variable "vnet_address_space" {

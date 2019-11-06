@@ -5,6 +5,7 @@
 #   - Key Vault
 #   - Shared Image Gallery
 #   - Log Analytics Workspace
+#   - Bastion host
 
 # Providers used in this configuration
 
