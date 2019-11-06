@@ -1,10 +1,10 @@
-# Provision a new Windows Server VM in Azure using an existing resource group, key vault, virtual network and subnet
+# Provision a new Windows Server VM in Azure using an existing resource group, key vault, subnet and log analytics workspace
 
 # Note: Key vault secrets must be added prior to applying this configuration, see docs below.
 # Providers used in this configuration
 
 provider "azurerm" {
-  version = "~> 1.33.0"
+  version = "~> 1.33"
   # subscription_id = "REPLACE-WITH-YOUR-SUBSCRIPTION-ID"
   # client_id       = "REPLACE-WITH-YOUR-CLIENT-ID"
   # client_secret   = "REPLACE-WITH-YOUR-CLIENT-SECRET"    

@@ -13,3 +13,15 @@ resource "azurerm_network_interface" "nic1" {
     private_ip_address_allocation = "Dynamic"
   }
 }
+
+output "nic1_id" {
+  value = "${azurerm_network_interface.nic1.id}"
+}
+
+output "nic1_mac_address" {
+  value = "${azurerm_network_interface.nic1.mac_address}"
+}
+
+output "nic1_private_ip_addresses" {
+  value = "${azurerm_network_interface.nic1.private_ip_addresses}"
+}
