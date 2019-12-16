@@ -10,4 +10,4 @@
   -s "2019-Datacenter-smalldisk" \
   -z "Standard_B2ms" \
   -i "/subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rd-vdc-eastus-dev-rg/providers/Microsoft.Network/virtualNetworks/rd-vdc-eastus-dev-vnet-spoke-winvm/subnets/DefaultSubnet" \
-  -w "b27fefaa-bcca-4f9d-9c59-b546299b9403"
+  -w "f4030c5f-7bdb-4469-bbac-bbfa3249c689"
