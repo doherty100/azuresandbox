@@ -1,3 +1,14 @@
+variable "bastion_host_ip_name" {
+  type        = string
+  description = "The name of the new public ip used by the bastion host."
+  default     = "public_ip_azure_bastion_02"
+}
+
+variable "bastion_host_name" {
+  type        = string
+  description = "The name of the new bastion host."
+}
+
 variable "location" {
   type        = string
   description = "The name of the Azure Region where resources will be provisioned."
@@ -22,7 +33,7 @@ variable "subnets" {
   type        = map
   description = "The list of subnets to be created in the new spoke virtual network."
 
-  # default = { DefaultSubnet = "10.1.0.0/24" }
+  # default = { DefaultSubnet = "10.1.0.0/24" , AzureBastionSubnet = "10.1.1.0/27"}
 }
 
 variable "tags" {

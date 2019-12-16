@@ -15,6 +15,28 @@ resource "azurerm_subnet" "vnet_spoke_subnets" {
   address_prefix       = each.value
 }
 
+resource "azurerm_public_ip" "public_ip_azure_bastion_02" {
+  name                = "public_ip_azure_bastion_02"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  tags                = var.tags
+}
+
+resource "azurerm_bastion_host" "bastion_host_02" {
+  name                = var.bastion_host_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  tags = var.tags
+
+  ip_configuration {
+    name                 = "${var.bastion_host_name}ipconfig01"
+    subnet_id            = azurerm_subnet.vnet_spoke_subnets["AzureBastionSubnet"].id
+    public_ip_address_id = azurerm_public_ip.public_ip_azure_bastion_02.id
+  }
+}
+
 resource "azurerm_virtual_network_peering" "spoke_to_hub_peering" {
   name                         = "spoke_to_hub_peering"
   resource_group_name          = azurerm_virtual_network.vnet_spoke.resource_group_name
@@ -40,6 +62,18 @@ output "vnet_spoke_id" {
 
 output "vnet_spoke_subnets" {
   value = azurerm_subnet.vnet_spoke_subnets
+}
+
+output "public_ip_azure_bastion_02_id" {
+  value = azurerm_public_ip.public_ip_azure_bastion_02.id
+}
+
+output "bastion_host_02_id" {
+  value = azurerm_bastion_host.bastion_host_02.id
+}
+
+output "bastion_host_02_dns_name" {
+  value = azurerm_bastion_host.bastion_host_02.dns_name
 }
 
 output "spoke_to_hub_peering_id" {
