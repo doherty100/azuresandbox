@@ -57,9 +57,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "external" {
 
 resource "azurerm_virtual_machine_extension" "vm1_extension_monitoring" {
   name                       = "${azurerm_virtual_machine.vm1.name}-monitoring"
-  location                   = azurerm_virtual_machine.vm1.location
-  resource_group_name        = azurerm_virtual_machine.vm1.resource_group_name
-  virtual_machine_name       = azurerm_virtual_machine.vm1.name
+  virtual_machine_id         = azurerm_virtual_machine.vm1.id
   publisher                  = "Microsoft.EnterpriseCloud.Monitoring"
   type                       = "MicrosoftMonitoringAgent"
   type_handler_version       = "1.0"
@@ -76,4 +74,29 @@ resource "azurerm_virtual_machine_extension" "vm1_extension_monitoring" {
       "workspaceKey" : "${data.azurerm_key_vault_secret.log_analytics_workspace_key.value}"
     }
     PROTECTED_SETTINGS
+}
+
+resource "azurerm_virtual_machine_extension" "vm1_extension_dependency" {
+  name                       = "${azurerm_virtual_machine.vm1.name}-dependency"
+  virtual_machine_id         = azurerm_virtual_machine.vm1.id
+  publisher                  = "Microsoft.Azure.Monitoring.DependencyAgent"
+  type                       = "DependencyAgentWindows"
+  type_handler_version       = "9.0"
+  auto_upgrade_minor_version = true
+  tags                       = var.tags
+
+  settings           = <<SETTINGS
+    {
+      "workspaceId": "${var.log_analytics_workspace_id}"
+    }
+    SETTINGS
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+      "workspaceKey" : "${data.azurerm_key_vault_secret.log_analytics_workspace_key.value}"
+    }
+    PROTECTED_SETTINGS
+}
+
+output vm1_id {
+  value = azurerm_virtual_machine.vm1.id
 }
