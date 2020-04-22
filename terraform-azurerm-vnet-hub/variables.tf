@@ -41,6 +41,12 @@ variable "resource_group_name" {
   description = "The name of the new resource group to be provisioned."
 }
 
+variable "security_center_scope" {
+  type = string
+  description = "The subscription scope for security center monitoring"
+  # default = "/subscriptions/00000000-0000-0000-0000-000000000000
+}
+
 variable "shared_image_gallery_name" {
   type        = string
   description = "The name of the new shared image gallery to provision."

@@ -6,6 +6,7 @@
 #   - Shared Image Gallery
 #   - Log Analytics Workspace
 #   - Bastion host
+#   - Security Center Standard
 
 # Providers used in this configuration
 
