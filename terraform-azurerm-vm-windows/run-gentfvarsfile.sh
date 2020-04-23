@@ -1,13 +1,21 @@
 #!/bin/bash
 
 # Helper script for gentfvarsfile.sh
+# -g RESOURCE_GROUP_NAME
+# -l LOCATION
+# -t TAGS
+# -n VM_NAME
+# -s VM_IMAGE_SKU
+# -z VM_SIZE
+# -i SUBNET_ID
+# -w LOG_ANALYTICS_WORKSPACE_ID
 
 ./gentfvarsfile.sh \
-  -g "rd-vdc-eastus-dev-rg" \
-  -l "eastus" \
-  -t "{ costcenter = \"10177772\", division = \"US-CS-Heathcare-COGS\", group = \"SOUTHEAST\" }" \
-  -n "winmontest01" \
+  -g "MyResourceGroupName" \
+  -l "MyAzureRegion" \
+  -t "{ costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }" \
+  -n "MyVmName" \
   -s "2019-Datacenter-smalldisk" \
   -z "Standard_B2ms" \
-  -i "/subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rd-vdc-eastus-dev-rg/providers/Microsoft.Network/virtualNetworks/rd-vdc-eastus-dev-vnet-spoke-winvm/subnets/DefaultSubnet" \
-  -w "f544dc9c-e021-47d2-a972-83bed7d648ed"
+  -i "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MyResourceGroupName/providers/Microsoft.Network/virtualNetworks/MySpokeVnetName/subnets/DefaultSubnet" \
+  -w "00000000-0000-0000-0000-000000000000"

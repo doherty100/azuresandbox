@@ -12,13 +12,14 @@
 # Helper script for gen-tfvarsfile.sh
 
 ./gen-tfvarsfile.sh \
-  -g "rd-vdc-eastus-dev-rg"\
-  -l "eastus"\
-  -t "{ costcenter = \"10177772\", division = \"US-CS-Heathcare-COGS\", group = \"NORTHEAST\" }"\
-  -v "rd-vdc-eastus-dev-vnet-spoke-winvm"\
+  -g "MyResourceGroupName"\
+  -l "MyAzureRegion"\
+  -t "{ costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }" \
+  -v "MySpokeVnetName"\
   -a "10.1.0.0/16"\
   -s "{ DefaultSubnet = \"10.1.0.0/24\", AzureBastionSubnet = \"10.1.1.0/27\" }"\
-  -i "/subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rd-vdc-eastus-dev-rg/providers/Microsoft.Network/virtualNetworks/rd-vdc-eastus-dev-hub-vnet"\
-  -n "rd-vdc-eastus-dev-hub-vnet"\
-  -b "rdvdceastusdevbh02"
+  -i "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MyResourceGroupName/providers/Microsoft.Network/virtualNetworks/MyHubVnetName"\
+  -n "MyHubVnetName"\
+  -b "MySpokeVnetBastionHostName"
+
 
