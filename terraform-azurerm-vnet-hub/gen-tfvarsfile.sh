@@ -16,7 +16,7 @@ VNET_ADDRESS_SPACE=""
 VNET_NAME=""
 
 usage() {
-    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -i STORAGE_ACCOUNT_TIER\n  -r STORAGE_REPLICATION_TYPE\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n  -d AAD_TENANT_ID\n  -h SHARED_IMAGE_GALLERY_NAME\n  -b BASTION_HOST_NAME\n  -w SECURITY_CENTER_SCOPE\n" 1>&2
+    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -i STORAGE_ACCOUNT_TIER\n  -r STORAGE_REPLICATION_TYPE\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n  -d AAD_TENANT_ID\n  -h SHARED_IMAGE_GALLERY_NAME\n  -b BASTION_HOST_NAME\n" 1>&2
     exit 1
 }
 
@@ -24,7 +24,7 @@ if [[ $# -eq 0  ]]; then
     usage
 fi  
 
-while getopts ":a:b:d:g:h:i:l:o:r:s:t:v:w:" option; do
+while getopts ":a:b:d:g:h:i:l:o:r:s:t:v:" option; do
     case "${option}" in
         a )
             VNET_ADDRESS_SPACE=${OPTARG}
@@ -61,9 +61,6 @@ while getopts ":a:b:d:g:h:i:l:o:r:s:t:v:w:" option; do
             ;;
         v )
             VNET_NAME=${OPTARG}
-            ;;
-        w )
-            SECURITY_CENTER_SCOPE=${OPTARG}
             ;;
         \? )
             usage
@@ -170,13 +167,6 @@ if [[ -z ${BASTION_HOST_NAME} ]]; then
     usage
 fi
 
-printf "Validating SECURITY_CENTER_SCOPE '${SECURITY_CENTER_SCOPE}'\n"
-
-if [[ -z ${SECURITY_CENTER_SCOPE} ]]; then
-    printf "Error: Invalid SECURITY_CENTER_SCOPE.\n"
-    usage
-fi
-
 printf "\nGenerating terraform.tfvars file...\n\n"
 
 printf "aad_tenant_id = \"$AAD_TENANT_ID\"\n" > ./terraform.tfvars
@@ -184,7 +174,6 @@ printf "bastion_host_name = \"$BASTION_HOST_NAME\"\n" >> ./terraform.tfvars
 printf "key_vault_admin_object_id = \"$KEY_VAULT_ADMIN_OBJECT_ID\"\n" >> ./terraform.tfvars
 printf "location = \"$LOCATION\"\n" >> ./terraform.tfvars
 printf "resource_group_name = \"$RESOURCE_GROUP_NAME\"\n" >> ./terraform.tfvars
-printf "security_center_scope = \"$SECURITY_CENTER_SCOPE\"\n" >> ./terraform.tfvars
 printf "shared_image_gallery_name = \"$SHARED_IMAGE_GALLERY_NAME\"\n" >> ./terraform.tfvars
 printf "storage_account_tier = \"$STORAGE_ACCOUNT_TIER\"\n" >> ./terraform.tfvars
 printf "storage_replication_type = \"$STORAGE_REPLICATION_TYPE\"\n" >> ./terraform.tfvars

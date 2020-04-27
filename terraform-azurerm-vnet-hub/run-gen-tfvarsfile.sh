@@ -13,7 +13,6 @@
 # -d AAD_TENANT_ID
 # -h SHARED_IMAGE_GALLERY_NAME
 # -b BASTION_HOST_NAME
-# -2 SECURITY_CENTER_SCOPE
 
 ./gen-tfvarsfile.sh \
   -g "MyResourceGroupName" \
@@ -27,5 +26,4 @@
   -o "00000000-0000-0000-0000-000000000000" \
   -d "00000000-0000-0000-0000-000000000000" \
   -h "MySharedImageGalleryName" \
-  -b "MyHubVnetBastionHostName" \
-  -w "/subscriptions/00000000-0000-0000-0000-000000000000"
+  -b "MyHubVnetBastionHostName"

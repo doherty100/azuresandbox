@@ -11,7 +11,8 @@
 # Providers used in this configuration
 
 provider "azurerm" {
-  version = "~> 1.36"
+  version = "~> 2.7"
+  features {}
   # subscription_id = "REPLACE-WITH-YOUR-SUBSCRIPTION-ID"
   # client_id       = "REPLACE-WITH-YOUR-CLIENT-ID"
   # client_secret   = "REPLACE-WITH-YOUR-CLIENT-SECRET"    
@@ -20,4 +21,4 @@ provider "azurerm" {
 
 provider "random" {
   version = "~> 2.2"
-}
+ }
