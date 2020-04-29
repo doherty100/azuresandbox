@@ -42,6 +42,6 @@ output "vwanhub1_id" {
   value = azurerm_virtual_hub.vwanhub1.id
 }
 
-output "virtual_hub_connection_ids" {
-  value = azurerm_virtual_hub_connection.virtual_hub_connections
-}
+# output "virtual_hub_connection_ids" {
+#   value = azurerm_virtual_hub_connection.virtual_hub_connections
+# }
