@@ -3,7 +3,7 @@
 # Dependencies: Azure CLI
 
 LOCATION="" 
-REMOTE_VIRTUAL_NETWORK_ID=""
+REMOTE_VIRTUAL_NETWORK_IDS=""
 RESOURCE_GROUP_NAME=""
 TAGS=""
 VWAN_HUB_ADDRESS_PREFIX=""
@@ -12,7 +12,7 @@ VWAN_HUB_NAME=""
 VWAN_NAME=""
 
 usage() {
-    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VWAN_NAME\n  -h VWAN_HUB_NAME\n  -a VWAN_HUB_ADDRESS_PREFIX\n  -c VWAN_HUB_CONNECTION_NAME_1\n  -r REMOTE_VIRTUAL_NETWORK_ID\n" 1>&2
+    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VWAN_NAME\n  -h VWAN_HUB_NAME\n  -a VWAN_HUB_ADDRESS_PREFIX\n  -c VWAN_HUB_CONNECTION_NAME_1\n  -r REMOTE_VIRTUAL_NETWORK_IDS\n" 1>&2
     exit 1
 }
 
@@ -38,7 +38,7 @@ while getopts ":a:c:g:h:l:r:t:v:" option; do
             LOCATION=${OPTARG}
             ;;
         r )
-            REMOTE_VIRTUAL_NETWORK_ID=${OPTARG}
+            REMOTE_VIRTUAL_NETWORK_IDS=${OPTARG}
             ;;
         t )
             TAGS=${OPTARG}
@@ -108,17 +108,17 @@ if [[ -z ${VWAN_HUB_CONNECTION_NAME_1} ]]; then
     usage
 fi
 
-printf "Validating REMOTE_VIRTUAL_NETWORK_ID '${REMOTE_VIRTUAL_NETWORK_ID}'...\n"
+printf "Validating REMOTE_VIRTUAL_NETWORK_IDS '${REMOTE_VIRTUAL_NETWORK_IDS}'...\n"
 
-if [[ -z ${REMOTE_VIRTUAL_NETWORK_ID} ]]; then
-    printf "Error: Invalid REMOTE_VIRTUAL_NETWORK_ID.\n"
+if [[ -z ${REMOTE_VIRTUAL_NETWORK_IDS} ]]; then
+    printf "Error: Invalid REMOTE_VIRTUAL_NETWORK_IDS.\n"
     usage
 fi
 
 printf "\nGenerating terraform.tfvars file...\n\n"
 
 printf "location = \"$LOCATION\"\n" > ./terraform.tfvars
-printf "remote_virtual_network_id = \"$REMOTE_VIRTUAL_NETWORK_ID\"\n" >> ./terraform.tfvars
+printf "remote_virtual_network_ids = $REMOTE_VIRTUAL_NETWORK_IDS\n" >> ./terraform.tfvars
 printf "resource_group_name = \"$RESOURCE_GROUP_NAME\"\n" >> ./terraform.tfvars
 printf "tags = $TAGS\n" >> ./terraform.tfvars
 printf "vwan_hub_address_prefix = \"$VWAN_HUB_ADDRESS_PREFIX\"\n" >> ./terraform.tfvars

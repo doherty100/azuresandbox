@@ -8,7 +8,7 @@
 # -h VWAN_HUB_NAME
 # -a VWAN_HUB_ADDRESS_PREFIX
 # -c VWAN_HUB_CONNECTION_NAME_1
-# -r REMOTE_VIRTUAL_NETWORK_ID
+# -r REMOTE_VIRTUAL_NETWORK_IDS
 
 ./gen-tfvarsfile.sh \
   -g "MyResourceGroupName" \
@@ -18,5 +18,4 @@
   -h "MyVwanHubName" \
   -a "10.2.0.0/16" \
   -c "MyVwanHubConnectionName" \
-  -r "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MyResourceGroupName/providers/Microsoft.Network/virtualNetworks/MyHubVNetName"
-
+  -r "{ MyHubVNetId = \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MyResourceGroupName/providers/Microsoft.Network/virtualNetworks/MyHubVNetName\", MySpokeVnetId = \"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MyResourceGroupName/providers/Microsoft.Network/virtualNetworks/MySpokeVNetName\" }"
