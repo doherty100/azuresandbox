@@ -68,7 +68,7 @@ variable "subnets" {
   type        = map
   description = "The subnets to be created in the new virtual network. AzureBastionSubnet is required."
 
-  # default = { DefaultSubnet = "10.0.0.0/24", AzureBastionSubnet = "10.0.1.0/27" , GatewaySubnet = "10.0.255.0/27" } 
+  # default = { DefaultSubnet = \"10.0.0.0/24\", AzureBastionSubnet = \"10.0.1.0/27\" } 
 }
 
 variable "tags" {

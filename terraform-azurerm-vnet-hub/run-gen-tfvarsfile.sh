@@ -20,7 +20,7 @@
   -t "{ costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }" \
   -v "MyHubVnetName" \
   -a "10.0.0.0/16" \
-  -s "{ DefaultSubnet = \"10.0.0.0/24\", AzureBastionSubnet = \"10.0.1.0/27\" , GatewaySubnet = \"10.0.255.0/27\" }" \
+  -s "{ DefaultSubnet = \"10.0.0.0/24\", AzureBastionSubnet = \"10.0.1.0/27\" }" \
   -i "Standard" \
   -r "LRS" \
   -o "00000000-0000-0000-0000-000000000000" \
