@@ -17,12 +17,12 @@ resource "azurerm_virtual_hub" "vwanhub1" {
   tags                = var.tags
 }
 
- resource "azurerm_virtual_hub_connection" "virtual_hub_connections" {
+resource "azurerm_virtual_hub_connection" "virtual_hub_connections" {
   for_each = var.remote_virtual_network_ids
 
-  name                                           = each.key
-  virtual_hub_id                                 = azurerm_virtual_hub.vwanhub1.id
-  remote_virtual_network_id                      = each.value
+  name                      = each.key
+  virtual_hub_id            = azurerm_virtual_hub.vwanhub1.id
+  remote_virtual_network_id = each.value
 }
 
 output "vwan1_id" {
