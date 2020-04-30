@@ -7,12 +7,11 @@ REMOTE_VIRTUAL_NETWORK_IDS=""
 RESOURCE_GROUP_NAME=""
 TAGS=""
 VWAN_HUB_ADDRESS_PREFIX=""
-VWAN_HUB_CONNECTION_NAME_1="" 
 VWAN_HUB_NAME=""
 VWAN_NAME=""
 
 usage() {
-    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VWAN_NAME\n  -h VWAN_HUB_NAME\n  -a VWAN_HUB_ADDRESS_PREFIX\n  -c VWAN_HUB_CONNECTION_NAME_1\n  -r REMOTE_VIRTUAL_NETWORK_IDS\n" 1>&2
+    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VWAN_NAME\n  -h VWAN_HUB_NAME\n  -a VWAN_HUB_ADDRESS_PREFIX\n  -r REMOTE_VIRTUAL_NETWORK_IDS\n" 1>&2
     exit 1
 }
 
@@ -20,13 +19,10 @@ if [[ $# -eq 0  ]]; then
     usage
 fi  
 
-while getopts ":a:c:g:h:l:r:t:v:" option; do
+while getopts ":a:g:h:l:r:t:v:" option; do
     case "${option}" in
         a ) 
             VWAN_HUB_ADDRESS_PREFIX=${OPTARG}
-            ;;
-        c )
-            VWAN_HUB_CONNECTION_NAME_1=${OPTARG}
             ;;
         g ) 
             RESOURCE_GROUP_NAME=${OPTARG}
@@ -101,13 +97,6 @@ if [[ -z ${VWAN_HUB_ADDRESS_PREFIX} ]]; then
     usage
 fi
 
-printf "Validating VWAN_HUB_CONNECTION_NAME_1 '${VWAN_HUB_CONNECTION_NAME_1}'...\n"
-
-if [[ -z ${VWAN_HUB_CONNECTION_NAME_1} ]]; then
-    printf "Error: Invalid VWAN_HUB_CONNECTION_NAME_1.\n"
-    usage
-fi
-
 printf "Validating REMOTE_VIRTUAL_NETWORK_IDS '${REMOTE_VIRTUAL_NETWORK_IDS}'...\n"
 
 if [[ -z ${REMOTE_VIRTUAL_NETWORK_IDS} ]]; then
@@ -122,7 +111,6 @@ printf "remote_virtual_network_ids = $REMOTE_VIRTUAL_NETWORK_IDS\n" >> ./terrafo
 printf "resource_group_name = \"$RESOURCE_GROUP_NAME\"\n" >> ./terraform.tfvars
 printf "tags = $TAGS\n" >> ./terraform.tfvars
 printf "vwan_hub_address_prefix = \"$VWAN_HUB_ADDRESS_PREFIX\"\n" >> ./terraform.tfvars
-printf "vwan_hub_connection_name_1 = \"$VWAN_HUB_CONNECTION_NAME_1\"\n" >> ./terraform.tfvars
 printf "vwan_hub_name = \"$VWAN_HUB_NAME\"\n" >> ./terraform.tfvars
 printf "vwan_name = \"$VWAN_NAME\"\n" >> ./terraform.tfvars
 
