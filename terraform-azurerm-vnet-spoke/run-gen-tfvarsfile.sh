@@ -16,8 +16,8 @@
   -l "MyAzureRegion"\
   -t "{ costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }" \
   -v "MySpokeVnetName"\
-  -a "10.1.0.0/16"\
-  -s "{ DefaultSubnet = \"10.1.0.0/24\", AzureBastionSubnet = \"10.1.1.0/27\" }"\
+  -a "10.2.0.0/16"\
+  -s "{ DefaultSubnet = \"10.2.0.0/24\", AzureBastionSubnet = \"10.2.1.0/27\" }"\
   -i "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MyResourceGroupName/providers/Microsoft.Network/virtualNetworks/MyHubVnetName"\
   -n "MyHubVnetName"\
   -b "MySpokeVnetBastionHostName"
