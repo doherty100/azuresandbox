@@ -12,7 +12,7 @@ resource "azurerm_subnet" "vnet_hub_subnets" {
   name                 = each.key
   resource_group_name  = azurerm_resource_group.resource_group_01.name
   virtual_network_name = azurerm_virtual_network.vnet_hub.name
-  address_prefix       = each.value
+  address_prefixes     = [each.value]
 }
 
 resource "azurerm_public_ip" "public_ip_azure_bastion" {

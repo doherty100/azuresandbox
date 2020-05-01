@@ -12,7 +12,7 @@ resource "azurerm_subnet" "vnet_spoke_subnets" {
   name                 = each.key
   resource_group_name  = azurerm_virtual_network.vnet_spoke.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet_spoke.name
-  address_prefix       = each.value
+  address_prefixes     = [each.value]
 }
 
 resource "azurerm_public_ip" "public_ip_azure_bastion_02" {
@@ -28,7 +28,7 @@ resource "azurerm_bastion_host" "bastion_host_02" {
   name                = var.bastion_host_name
   location            = var.location
   resource_group_name = var.resource_group_name
-  tags = var.tags
+  tags                = var.tags
 
   ip_configuration {
     name                 = "${var.bastion_host_name}ipconfig01"
