@@ -1,0 +1,58 @@
+// List storage accounts
+// Author: rdoherty@microsoft.com
+// Updated: 6-April-2020 
+resources
+| where type == "microsoft.storage/storageaccounts"
+| where properties.provisioningState == "Succeeded"
+| project
+    resourceGroup = tostring(resourceGroup),
+    location = tostring(location),
+    saName = tostring(name),
+    saSkuName = tostring(sku.name),
+    saSkuTier = tostring(sku.tier),
+    saAccessTier = iif(isempty(tostring(properties.accessTier)), "N/A", tostring(properties.accessTier)),
+    saKind = tostring(kind),
+    saBlobEncryptionEnabled = tobool(properties.encryption.services.blob.enabled),
+    saFileEncryptionEnabled = tobool(properties.encryption.services.file.enabled),
+    saHttpsOnly = tobool(properties.supportsHttpsTrafficOnly),
+    saBlobEndpoint = tostring(properties.primaryEndpoints.blob),
+    saFileEndpoint = iif(isempty(tostring(properties.primaryEndpoints.file)),"N/A", tostring(properties.primaryEndpoints.file)),
+    saTableEndpoint = iif(isempty(tostring(properties.primaryEndpoints.table)),"N/A", tostring(properties.primaryEndpoints.table)),
+    saQueueEndpoint = iif(isempty(tostring(properties.primaryEndpoints.queue)),"N/A", tostring(properties.primaryEndpoints.queue)),
+    saDfsEndpoint = iif(isempty(tostring(properties.primaryEndpoints.dfs)), "N/A", tostring(properties.primaryEndpoints.dfs)),
+    saWebEndpoint = iif(isempty(tostring(properties.primaryEndpoints.web)), "N/A", tostring(properties.primaryEndpoints.web)),
+    subId = tostring(subscriptionId),
+    saId = tostring(id)
+| join kind=leftouter
+    (
+        resourcecontainers
+        | where type == "microsoft.resources/subscriptions"
+        | project
+            subId = tostring(subscriptionId),
+            subName = tostring(name)
+    ) on subId
+| project-away subId, subId1
+| project
+    sa000_subName = subName,
+    sa010_resourceGroup = resourceGroup,
+    sa020_location = location,
+    sa030_saName = saName,
+    sa040_saSkuName = saSkuName,
+    sa050_saSkuTier = saSkuTier,
+    sa060_saAccessTier = saAccessTier,
+    sa070_saKind = saKind,
+    sa080_saBlobEncryptionEnabled = saBlobEncryptionEnabled,
+    sa090_saFileEncryptionEnabled = saFileEncryptionEnabled,
+    sa100_saHttpsOnly = saHttpsOnly,
+    sa110_saBlobEndpoint = saBlobEndpoint,
+    sa120_saFileEndpoint = saFileEndpoint,
+    sa130_saTableEndpoint = saTableEndpoint,
+    sa140_saQueueEndpoint = saQueueEndpoint,
+    sa150_saDfsEndpoint = saDfsEndpoint,
+    sa160_saWebEndpoint = saWebEndpoint,
+    sa999_saId = saId
+| order by 
+    sa000_subName,
+    sa010_resourceGroup,
+    sa020_location,
+    sa030_saName

@@ -1,0 +1,38 @@
+// List virtual networks 
+// rdoherty@microsoft.com
+// Updated: 2020-02-24
+resources
+| where type == "microsoft.network/virtualnetworks"
+| where properties.provisioningState == "Succeeded"
+| project
+    vnetId = tostring(id),
+    vnetName = tostring(name),
+    location = tostring(location),
+    resourceGroup = tostring(resourceGroup),
+    vnetAddressPrefix0 = tostring(properties.addressSpace.addressPrefixes[0]),
+    vnetDdosProtectionEnabled = tobool(properties.enableDdosProtection),
+    vnetPeeringEnabled = iif(array_length(properties.virtualNetworkPeerings) > 0,true,false),
+    subId = tostring(subscriptionId)
+| join kind=leftouter
+    (
+        resourcecontainers
+        | where type == "microsoft.resources/subscriptions"
+        | project
+            subId = tostring(subscriptionId),
+            subName = tostring(name)
+    ) on subId
+| project-away subId, subId1
+| project
+    vnet000_subName = subName,
+    vnet010_resourceGroup = resourceGroup,
+    vnet020_location = location,
+    vnet030_vnetName = vnetName,
+    vnet040_vnetAddressPrefix0 = vnetAddressPrefix0,
+    vnet050_vnetDdosProtectionEnabled = vnetDdosProtectionEnabled,
+    vnet060_vnetPeeringEnabled = vnetPeeringEnabled,
+    vnet999_vnetId = vnetId
+| order by 
+    vnet000_subName asc, 
+    vnet010_resourceGroup asc, 
+    vnet020_location asc, 
+    vnet030_vnetName asc 

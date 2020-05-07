@@ -1,0 +1,10 @@
+// storage account count
+// author: rdoherty@microsoft.com
+// Updated: 6-April-2020
+resources
+| where type == "microsoft.storage/storageaccounts" 
+| project
+    id,
+    saSkuName = tostring(sku.name)
+| summarize saCount=count() by saSkuName
+| order by saCount desc

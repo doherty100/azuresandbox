@@ -1,0 +1,10 @@
+// virtual machine count
+// author: rdoherty@microsoft.com
+// Updated: 3-April-2020
+resources
+| where type == "microsoft.compute/virtualmachines" 
+| project
+    id,
+    vmSize = tostring(properties.hardwareProfile.vmSize)
+| summarize vmCount=count() by vmSize
+| order by vmSize asc

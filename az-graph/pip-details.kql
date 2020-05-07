@@ -1,0 +1,71 @@
+// List public ips
+// rdoherty@microsoft.com
+// Updated: 2020-04-16
+resources
+| where type == "microsoft.network/publicipaddresses"
+| where properties.provisioningState == "Succeeded"
+| project
+	pipId = trim(" ",tolower(tostring(id))),
+	resourceGroup = tostring(resourceGroup),
+	location = tostring(location),
+	pipName = tostring(name),
+	pipSkuName = tostring(sku.name),
+	pipAllocationMethod = tostring(properties.publicIPAllocationMethod),
+	pipAddressVersion = tostring(properties.publicIPAddressVersion),
+	pipFqdn = iif(isempty(properties.dnsSettings.fqdn), "N/A", tostring(properties.dnsSettings.fqdn)),
+	pipIpAddress = iif(isempty(properties.ipAddress), "N/A", tostring(properties.ipAddress)),
+	zone = iif(isempty(zones[0]), "N/A", tostring(zones[0])),
+	ipConfigId = iif(isempty(properties.ipConfiguration.id), "N/A", trim(" ",tolower(tostring(properties.ipConfiguration.id)))),
+	subId = tostring(subscriptionId)
+| join kind=leftouter
+	(
+		resourcecontainers
+		| where type == "microsoft.resources/subscriptions"
+		| project
+			subId = tostring(subscriptionId),
+			subName = tostring(name)
+	) on subId
+| project-away subId, subId1
+| join kind=leftouter
+	(
+		resources
+		| where type in ("microsoft.network/networkinterfaces", "microsoft.network/virtualnetworkgateways", "microsoft.network/bastionhosts", "microsoft.network/azurefirewalls")
+		| where properties.provisioningState == "Succeeded"
+		| mv-expand ipConfiguration = properties.ipConfigurations
+		| project
+			ipConfigId = trim(" ",tolower(tostring(ipConfiguration.id))),
+			resourceType = tostring(type),
+			resourceId = trim(" ",tolower(tostring(id)))
+		| union
+			(
+				resources
+				| where type in ("microsoft.network/applicationgateways", "microsoft.network/loadbalancers")
+				| where properties.provisioningState == "Succeeded"
+				| mv-expand frontendIPConfiguration = properties.frontendIPConfigurations
+				| project
+					ipConfigId = trim(" ",tolower(tostring(frontendIPConfiguration.id))),
+					resourceType = tostring(type),
+					resourceId = trim(" ",tolower(tostring(id)))
+			)
+	) on ipConfigId
+| project-away ipConfigId1
+| project
+	pip000_subName = subName,
+	pip010_resourceGroup = resourceGroup,
+	pip020_location = location,
+	pip030_pipName = pipName,
+	pip040_pipSkuName = pipSkuName,
+	pip050_pipAllocationMethod = pipAllocationMethod,
+	pip060_pipAddressVersion = pipAddressVersion,
+	pip070_pipFqdn = pipFqdn,
+	pip080_pipIpAddress = pipIpAddress,
+	pip090_zone = zone,
+	pip100_resourceType = iif(isempty(resourceType), "N/A", resourceType),
+	pip900_ipConfigId = ipConfigId,
+	pip910_resourceId = iif(isempty(resourceId), "N/A", resourceId),
+	pip999_pipId = pipId
+| order by
+	pip000_subName asc,
+	pip010_resourceGroup asc,
+	pip020_location asc,
+	pip030_pipName asc

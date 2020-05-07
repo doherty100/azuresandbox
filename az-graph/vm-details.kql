@@ -1,0 +1,66 @@
+// List virtual machines 
+// Author: rdoherty@microsoft.com
+// Updated: 2020-02-24
+resources
+| where type == "microsoft.compute/virtualmachines"
+| where properties.provisioningState == "Succeeded"
+| project 
+    resourceGroup = tostring(resourceGroup), 
+    location = tostring(location),
+    vmName = tostring(name), 
+    vmSize = tostring(properties.hardwareProfile.vmSize), 
+    vmOs = tostring(properties.storageProfile.osDisk.osType), 
+    vmOsPublisher = iif(isempty(tostring(properties.storageProfile.imageReference.publisher)), "N/A", tostring(properties.storageProfile.imageReference.publisher)),
+    vmOsSku = iif(isempty(tostring(properties.storageProfile.imageReference.sku)), "N/A", tostring(properties.storageProfile.imageReference.sku)),
+    vmZone = iif(isempty(tostring(zones[0])), "N/A", tostring(zones[0])),
+    vmUltraSSDEnabled = iif(isnull(properties.additionalCapabilities.ultraSSDEnabled), false, properties.additionalCapabilities.ultraSSDEnabled),
+    vmId = tostring(id),
+    subId = tostring(subscriptionId),
+    avsId = trim(" ",tolower(tostring(properties.availabilitySet.id))),
+    ppgId = trim(" ",tolower(tostring(properties.proximityPlacementGroup.id)))
+| join kind=leftouter
+    (
+        resourcecontainers
+        | where type == "microsoft.resources/subscriptions"
+        | project
+            subId = tostring(subscriptionId),
+            subName = tostring(name)
+    ) on subId
+| project-away subId, subId1
+| join kind=leftouter
+    (
+        resources
+        | where type == "microsoft.compute/proximityplacementgroups"
+        | project 
+            ppgId = trim(" ",tolower(tostring(id))), 
+            ppgName = tostring(name)    
+    ) on ppgId
+| project-away ppgId, ppgId1
+| join kind=leftouter
+    (
+        resources
+        | where type == "microsoft.compute/availabilitysets"
+        | project
+            avsId = trim(" ",tolower(tostring(id))),
+            avsName = tostring(name)
+    ) on avsId
+| project-away avsId, avsId1
+| project
+    vm000_subName = subName,
+    vm010_resourceGroup = resourceGroup,
+    vm020_location = location,
+    vm030_vmName = vmName, 
+    vm040_vmSize = vmSize,
+    vm050_vmOs = vmOs,
+    vm060_vmOsPublisher = vmOsPublisher,
+    vm070_vmOsSku = vmOsSku,
+    vm080_vmZone = vmZone,
+    vm090_vmPpgName = iif(isempty(tostring(ppgName)),"N/A",tostring(ppgName)),
+    vm100_vmAvsAName = iif(isempty(tostring(avsName)), "N/A", tostring(avsName)),
+    vm110_vmUltraSSDEnabled = vmUltraSSDEnabled,
+    vm999_vmId = vmId
+| order by 
+    vm000_subName asc, 
+    vm010_resourceGroup asc, 
+    vm020_location asc, 
+    vm030_vmName asc

@@ -1,0 +1,66 @@
+// List nics
+// rdoherty@microsoft.com
+// Updated: 2020-02-24
+resources
+| where type == "microsoft.network/networkinterfaces"
+| where properties.provisioningState == "Succeeded"
+| project
+    resourceGroup = tostring(resourceGroup), 
+    location = tostring(location),
+    nicName = tostring(name),
+    nicPrimary = tobool(iif(isnull(properties.primary), false, properties.primary)), 
+    nicAcceleratedNetworkingEnabled = tobool(properties.enableAcceleratedNetworking), 
+    nicMacAddress=iif(isempty(tostring(properties.macAddress)),"N/A", tostring(properties.macAddress)),
+    nicPrivateIpAddress0 = tostring(properties.ipConfigurations[0].properties.privateIPAddress),
+    nicPrivateIPAllocationMethod0 = tostring(properties.ipConfigurations[0].properties.privateIPAllocationMethod),
+    nicId = tostring(id),
+    vmId = iif(isempty(tostring(properties.virtualMachine.id)), "N/A", tostring(properties.virtualMachine.id)),
+    subId = tostring(subscriptionId),
+    snetId = tostring(properties.ipConfigurations[0].properties.subnet.id),
+    pipId = tostring(properties.ipConfigurations[0].properties.publicIPAddress.id)
+| join kind=leftouter
+    (
+        resourcecontainers
+        | where type == "microsoft.resources/subscriptions"
+        | project
+            subId = tostring(subscriptionId),
+            subName = tostring(name)
+    ) on subId
+| project-away subId, subId1
+| join kind=leftouter
+    (
+        resources
+        | where type == "microsoft.network/publicipaddresses"
+        | where properties.provisioningState == "Succeeded"
+        | project
+            pipId = tostring(id),
+            pipSku = tostring(sku.name),
+            pipName = tostring(name),
+            pipAllocationMethod0 = tostring(properties.publicIPAllocationMethod),
+            pipFqdn0 = iif(isempty(tostring(properties.dnsSettings.fqdn)),"N/A",tostring(properties.dnsSettings.fqdn)),
+            pipIPAddress0 = iif(isempty(tostring(properties.ipAddress)), "N/A",tostring(properties.ipAddress))      
+    ) on pipId
+| project-away pipId, pipId1
+| project
+    nic000_nicSubName = subName,
+    nic010_nicResourceGroup = resourceGroup,
+    nic020_nicLocation = location,
+    nic030_nicName = nicName,
+    nic040_nicPrimary = nicPrimary,
+    nic050_nicAcceleratedNetworkingEnabled = nicAcceleratedNetworkingEnabled,
+    nic060_nicMacAddress = nicMacAddress,
+    nic070_nicPrivateIpAddress0 = nicPrivateIpAddress0,
+    nic080_nicPrivateIPAllocationMethod0 = nicPrivateIPAllocationMethod0,
+    nic090_nicPublicIPSku = iif(isempty(pipSku),"N/A", pipSku),
+    nic100_nicPublicIPName = iif(isempty(pipName), "N/A", pipName),
+    nic110_nicPublicIPAllocationMethod0 = iif(isempty(pipAllocationMethod0), "N/A", pipAllocationMethod0),
+    nic120_nicPublicIPFqdn0 = iif(isempty(pipFqdn0), "N/A", pipFqdn0),
+    nic130_nicPublicIpAddress0 = iif(isempty(pipIPAddress0), "N/A", pipIPAddress0),
+    nic900_vmId = vmId,
+    nic910_snetId = snetId,
+    nic999_nicId = nicId
+| order by 
+    nic000_nicSubName asc, 
+    nic010_nicResourceGroup asc, 
+    nic020_nicLocation asc, 
+    nic030_nicName asc

@@ -1,0 +1,48 @@
+// List subnets 
+// rdoherty@microsoft.com
+// Updated: 2020-02-24
+resources
+| where type == "microsoft.network/virtualnetworks"
+| where properties.provisioningState == "Succeeded"
+| mv-expand subnet=properties.subnets
+| project
+    snetId = tostring(subnet.id),
+    snetName = tostring(subnet.name),
+    snetAddressPrefix = tostring(subnet.properties.addressPrefix),
+    snetPrivateLinkServiceNetworkPoliciesEnabled = iif(subnet.properties.privateLinkServiceNetworkPolicies == "Enabled", true, false),
+    snetPrivateEndpointNetworkPoliciesEnabled = iif(subnet.properties.privateEndpointNetworkPolicies == "Enabled", true, false),
+    snetDelegationsEnabled = iif(array_length(subnet.properties.delegations) > 0, true,false),
+    resourceGroup = tostring(resourceGroup),
+    location = tostring(location),
+    vnetId = tostring(id),
+    vnetName = tostring(name),
+    vnetAddressPrefix0 = tostring(properties.addressSpace.addressPrefixes[0]),
+    subId = tostring(subscriptionId)
+| join kind=leftouter
+    (
+        resourcecontainers
+        | where type == "microsoft.resources/subscriptions"
+        | project
+            subId = tostring(subscriptionId),
+            subName = tostring(name)
+    ) on subId
+| project-away subId, subId1
+| project
+    snet000_subName = subName,
+    snet010_resourceGroup = resourceGroup,
+    snet020_location = location,
+    snet030_vnetName = vnetName,
+    snet040_snetName = snetName,
+    snet050_vnetAddressPrefix0 = vnetAddressPrefix0,
+    snet060_snetAddressPrefix = snetAddressPrefix,
+    snet070_snetPrivateLinkServiceNetworkPoliciesEnabled = snetPrivateLinkServiceNetworkPoliciesEnabled,
+    snet080_snetPrivateEndpointNetworkPoliciesEnabled = snetPrivateEndpointNetworkPoliciesEnabled,
+    snet090_snetDelegationsEnabled = snetDelegationsEnabled,
+    snet900_vnetId = vnetId,
+    snet999_snetId = snetId
+| order by
+    snet000_subName asc,
+    snet010_resourceGroup asc,
+    snet020_location asc,
+    snet030_vnetName asc,
+    snet040_snetName asc
