@@ -9,6 +9,7 @@
 # -s SUBNETS
 # -i STORAGE_ACCOUNT_TIER
 # -r STORAGE_REPLICATION_TYPE
+# -q STORAGE_SHARE_QUOTA
 # -o KEY_VAULT_ADMIN_OBJECT_ID
 # -d AAD_TENANT_ID
 # -h SHARED_IMAGE_GALLERY_NAME
@@ -23,6 +24,7 @@
   -s "{ DefaultSubnet = \"10.1.0.0/24\", AzureBastionSubnet = \"10.1.1.0/27\" }" \
   -i "Standard" \
   -r "LRS" \
+  -q "50" \
   -o "00000000-0000-0000-0000-000000000000" \
   -d "00000000-0000-0000-0000-000000000000" \
   -h "MySharedImageGalleryName" \

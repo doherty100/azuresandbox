@@ -13,10 +13,24 @@ resource "azurerm_storage_account" "storage_account_01" {
   tags                     = var.tags
 }
 
+resource "azurerm_storage_share" "storage_share_01" {
+  name                 = "share-${random_id.random_id_storage_account_01_name.hex}-01"
+  storage_account_name = azurerm_storage_account.storage_account_01.name
+  quota                = var.storage_share_quota
+}
+
 output "storage_account_01_id" {
   value = azurerm_storage_account.storage_account_01.id
 }
 
 output "storage_account_01_name" {
   value = azurerm_storage_account.storage_account_01.name
+}
+
+output "storage_share_01_id" {
+  value = azurerm_storage_share.storage_share_01.id
+}
+
+output "storage_share_01_name" {
+  value = azurerm_storage_share.storage_share_01.name
 }

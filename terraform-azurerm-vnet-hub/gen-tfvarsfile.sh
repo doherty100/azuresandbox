@@ -10,13 +10,14 @@ RESOURCE_GROUP_NAME=""
 SHARED_IMAGE_GALLERY_NAME=""
 STORAGE_ACCOUNT_TIER=""
 STORAGE_REPLICATION_TYPE=""
+STORAGE_SHARE_QUOTA=""
 SUBNETS=""
 TAGS=""
 VNET_ADDRESS_SPACE=""
 VNET_NAME=""
 
 usage() {
-    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -i STORAGE_ACCOUNT_TIER\n  -r STORAGE_REPLICATION_TYPE\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n  -d AAD_TENANT_ID\n  -h SHARED_IMAGE_GALLERY_NAME\n  -b BASTION_HOST_NAME\n" 1>&2
+    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -i STORAGE_ACCOUNT_TIER\n  -r STORAGE_REPLICATION_TYPE\n  -q STORAGE_SHARE_QUOTA\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n  -d AAD_TENANT_ID\n  -h SHARED_IMAGE_GALLERY_NAME\n  -b BASTION_HOST_NAME\n" 1>&2
     exit 1
 }
 
@@ -24,7 +25,7 @@ if [[ $# -eq 0  ]]; then
     usage
 fi  
 
-while getopts ":a:b:d:g:h:i:l:o:r:s:t:v:" option; do
+while getopts ":a:b:d:g:h:i:l:o:q:r:s:t:v:" option; do
     case "${option}" in
         a )
             VNET_ADDRESS_SPACE=${OPTARG}
@@ -49,6 +50,9 @@ while getopts ":a:b:d:g:h:i:l:o:r:s:t:v:" option; do
             ;;
         o )
             KEY_VAULT_ADMIN_OBJECT_ID=${OPTARG}
+            ;;
+        q )
+            STORAGE_SHARE_QUOTA=${OPTARG}
             ;;
         r )
             STORAGE_REPLICATION_TYPE=${OPTARG}
@@ -139,6 +143,13 @@ case $STORAGE_REPLICATION_TYPE in
         ;;
 esac
 
+printf "Validating STORAGE_SHARE_QUOTA '${STORAGE_SHARE_QUOTA}'\n"
+
+if [[ -z ${STORAGE_SHARE_QUOTA} ]]; then
+    printf "Error: Invalid STORAGE_SHARE_QUOTA.\n"
+    usage
+fi
+
 printf "Validating KEY_VAULT_ADMIN_OBJECT_ID '${KEY_VAULT_ADMIN_OBJECT_ID}'\n"
 
 if [[ -z ${KEY_VAULT_ADMIN_OBJECT_ID} ]]; then
@@ -177,6 +188,7 @@ printf "resource_group_name = \"$RESOURCE_GROUP_NAME\"\n" >> ./terraform.tfvars
 printf "shared_image_gallery_name = \"$SHARED_IMAGE_GALLERY_NAME\"\n" >> ./terraform.tfvars
 printf "storage_account_tier = \"$STORAGE_ACCOUNT_TIER\"\n" >> ./terraform.tfvars
 printf "storage_replication_type = \"$STORAGE_REPLICATION_TYPE\"\n" >> ./terraform.tfvars
+printf "storage_share_quota = \"$STORAGE_SHARE_QUOTA\"\n" >> ./terraform.tfvars
 printf "subnets = $SUBNETS\n" >> ./terraform.tfvars
 printf "tags = $TAGS\n" >> ./terraform.tfvars
 printf "vnet_address_space = \"$VNET_ADDRESS_SPACE\"\n" >> ./terraform.tfvars

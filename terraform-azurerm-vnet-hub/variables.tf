@@ -64,6 +64,12 @@ variable "storage_replication_type" {
   # default = "LRS"
 }
 
+variable "storage_share_quota" {
+  type = string
+  description = "The storage quota for the Azure Files share to be provisioned in GB."
+  # default = "50"
+}
+
 variable "subnets" {
   type        = map
   description = "The subnets to be created in the new virtual network. AzureBastionSubnet is required."
