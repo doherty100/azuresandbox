@@ -17,10 +17,10 @@
 ./gen-tfvarsfile.sh \
   -g "MyResourceGroupName" \
   -l "MyAzureRegion" \
-  -t "{ DefaultSubnet = \"10.1.0.0/24\", AzureBastionSubnet = \"10.1.1.0/27\", PrivateLinkStorage = \"10.1.2.0/24\" }" \
+  -t "{ costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }" \
   -v "MyHubVnetName" \
   -a "10.1.0.0/16" \
-  -s "{ DefaultSubnet = \"10.1.0.0/24\", AzureBastionSubnet = \"10.1.1.0/27\" }" \
+  -s "{ DefaultSubnet = \"10.1.0.0/24\", AzureBastionSubnet = \"10.1.1.0/27\", PrivateLinkStorage = \"10.1.2.0/24\" }" \
   -r "LRS" \
   -q "50" \
   -o "00000000-0000-0000-0000-000000000000" \
