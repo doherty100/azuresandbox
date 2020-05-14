@@ -8,7 +8,6 @@ KEY_VAULT_ADMIN_OBJECT_ID=""
 LOCATION="" 
 RESOURCE_GROUP_NAME=""
 SHARED_IMAGE_GALLERY_NAME=""
-STORAGE_ACCOUNT_TIER=""
 STORAGE_REPLICATION_TYPE=""
 STORAGE_SHARE_QUOTA=""
 SUBNETS=""
@@ -17,7 +16,7 @@ VNET_ADDRESS_SPACE=""
 VNET_NAME=""
 
 usage() {
-    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -i STORAGE_ACCOUNT_TIER\n  -r STORAGE_REPLICATION_TYPE\n  -q STORAGE_SHARE_QUOTA\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n  -d AAD_TENANT_ID\n  -h SHARED_IMAGE_GALLERY_NAME\n  -b BASTION_HOST_NAME\n" 1>&2
+    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -r STORAGE_REPLICATION_TYPE\n  -q STORAGE_SHARE_QUOTA\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n  -d AAD_TENANT_ID\n  -h SHARED_IMAGE_GALLERY_NAME\n  -b BASTION_HOST_NAME\n" 1>&2
     exit 1
 }
 
@@ -25,7 +24,7 @@ if [[ $# -eq 0  ]]; then
     usage
 fi  
 
-while getopts ":a:b:d:g:h:i:l:o:q:r:s:t:v:" option; do
+while getopts ":a:b:d:g:h:l:o:q:r:s:t:v:" option; do
     case "${option}" in
         a )
             VNET_ADDRESS_SPACE=${OPTARG}
@@ -41,9 +40,6 @@ while getopts ":a:b:d:g:h:i:l:o:q:r:s:t:v:" option; do
             ;;
         h )
             SHARED_IMAGE_GALLERY_NAME=${OPTARG}
-            ;;
-        i )
-            STORAGE_ACCOUNT_TIER=${OPTARG}
             ;;
         l ) 
             LOCATION=${OPTARG}
@@ -121,17 +117,6 @@ if [[ -z ${SUBNETS} ]]; then
     usage
 fi
 
-printf "Validating STORAGE_ACCOUNT_TIER '${STORAGE_ACCOUNT_TIER}'\n"
-
-case $STORAGE_ACCOUNT_TIER in
-    Standard | Premium )
-        ;;
-    * )
-        printf "Error: Invalid STORAGE_ACCOUNT_TIER.\n"
-        usage
-        ;;
-esac
-
 printf "Validating STORAGE_REPLICATION_TYPE '${STORAGE_REPLICATION_TYPE}'\n"
 
 case $STORAGE_REPLICATION_TYPE in
@@ -186,7 +171,6 @@ printf "key_vault_admin_object_id = \"$KEY_VAULT_ADMIN_OBJECT_ID\"\n" >> ./terra
 printf "location = \"$LOCATION\"\n" >> ./terraform.tfvars
 printf "resource_group_name = \"$RESOURCE_GROUP_NAME\"\n" >> ./terraform.tfvars
 printf "shared_image_gallery_name = \"$SHARED_IMAGE_GALLERY_NAME\"\n" >> ./terraform.tfvars
-printf "storage_account_tier = \"$STORAGE_ACCOUNT_TIER\"\n" >> ./terraform.tfvars
 printf "storage_replication_type = \"$STORAGE_REPLICATION_TYPE\"\n" >> ./terraform.tfvars
 printf "storage_share_quota = \"$STORAGE_SHARE_QUOTA\"\n" >> ./terraform.tfvars
 printf "subnets = $SUBNETS\n" >> ./terraform.tfvars

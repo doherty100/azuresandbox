@@ -52,12 +52,6 @@ variable "storage_access_tier" {
   default     = "Hot"
 }
 
-variable "storage_account_tier" {
-  type        = string
-  description = "The account tier for the new storage account."
-  # default = "Standard"
-}
-
 variable "storage_replication_type" {
   type        = string
   description = "The type of replication for the new storage account."
@@ -74,7 +68,8 @@ variable "subnets" {
   type        = map
   description = "The subnets to be created in the new virtual network. AzureBastionSubnet is required."
 
-  # default = { DefaultSubnet = \"10.0.0.0/24\", AzureBastionSubnet = \"10.0.1.0/27\" } 
+  # default = { DefaultSubnet = "10.1.0.0/24", AzureBastionSubnet = "10.1.1.0/27", PrivateLinkStorage = "10.1.2.0/24" } 
+  # Note: All subnets starting with "PrivateLink" will have enforce_private_link_endpoint_network_policies set to true
 }
 
 variable "tags" {

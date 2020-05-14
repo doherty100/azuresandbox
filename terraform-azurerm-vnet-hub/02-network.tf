@@ -9,10 +9,11 @@ resource "azurerm_virtual_network" "vnet_hub" {
 resource "azurerm_subnet" "vnet_hub_subnets" {
   for_each = var.subnets
 
-  name                 = each.key
-  resource_group_name  = azurerm_resource_group.resource_group_01.name
-  virtual_network_name = azurerm_virtual_network.vnet_hub.name
-  address_prefixes     = [each.value]
+  name                                           = each.key
+  resource_group_name                            = azurerm_resource_group.resource_group_01.name
+  virtual_network_name                           = azurerm_virtual_network.vnet_hub.name
+  address_prefixes                               = [each.value]
+  enforce_private_link_endpoint_network_policies = length(regexall("PrivateLink+",each.key)) > 0 ? true : false
 }
 
 resource "azurerm_public_ip" "public_ip_azure_bastion" {
