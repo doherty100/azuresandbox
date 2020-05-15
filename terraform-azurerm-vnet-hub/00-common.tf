@@ -10,7 +10,7 @@
 # Providers used in this configuration
 
 provider "azurerm" {
-  version = "~> 2.9"
+  version = "~> 2.10"
   features {}
   # subscription_id = "REPLACE-WITH-YOUR-SUBSCRIPTION-ID"
   # client_id       = "REPLACE-WITH-YOUR-CLIENT-ID"
