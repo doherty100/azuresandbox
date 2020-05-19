@@ -4,6 +4,7 @@
 # -g RESOURCE_GROUP_NAME
 # -l LOCATION
 # -t TAGS
+# -z PRIVATE_DNS_ZONE_NAME
 # -v VNET_NAME
 # -a VNET_ADDRESS_SPACE
 # -s SUBNETS
@@ -18,6 +19,7 @@
   -g "MyResourceGroupName" \
   -l "MyAzureRegion" \
   -t "{ costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }" \
+  -z "mydomain.private.com" \
   -v "MyHubVnetName" \
   -a "10.1.0.0/16" \
   -s "{ DefaultSubnet = \"10.1.0.0/24\", AzureBastionSubnet = \"10.1.1.0/27\", PrivateLinkStorage = \"10.1.2.0/24\" }" \

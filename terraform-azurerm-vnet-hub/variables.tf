@@ -36,6 +36,12 @@ variable "log_analytics_workspace_retention_days" {
   default     = "30"
 }
 
+variable "private_dns_zone_name" {
+  type = string
+  description = "The name of the new private dns zone to be provisioned."
+  # default = "mydomain.private.com"
+}
+
 variable "resource_group_name" {
   type        = string
   description = "The name of the new resource group to be provisioned."

@@ -56,16 +56,13 @@ resource "azurerm_virtual_network_peering" "hub_to_spoke_peering" {
   allow_gateway_transit        = true
 }
 
-output "vnet_spoke_id" {
-  value = azurerm_virtual_network.vnet_spoke.id
-}
-
-output "vnet_spoke_subnets" {
-  value = azurerm_subnet.vnet_spoke_subnets
-}
-
-output "public_ip_azure_bastion_02_id" {
-  value = azurerm_public_ip.public_ip_azure_bastion_02.id
+resource "azurerm_private_dns_zone_virtual_network_link" "virtual_network_link_spoke" {
+  name                  = "${azurerm_virtual_network.vnet_spoke.name}-link"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = var.private_dns_zone_name
+  virtual_network_id    = azurerm_virtual_network.vnet_spoke.id
+  registration_enabled  = true
+  tags                  = var.tags
 }
 
 output "bastion_host_02_id" {
@@ -76,10 +73,26 @@ output "bastion_host_02_dns_name" {
   value = azurerm_bastion_host.bastion_host_02.dns_name
 }
 
+output "hub_to_spoke_peering_id" {
+  value = azurerm_virtual_network_peering.hub_to_spoke_peering.id
+}
+
+output "public_ip_azure_bastion_02_id" {
+  value = azurerm_public_ip.public_ip_azure_bastion_02.id
+}
+
 output "spoke_to_hub_peering_id" {
   value = azurerm_virtual_network_peering.spoke_to_hub_peering.id
 }
 
-output "hub_to_spoke_peering_id" {
-  value = azurerm_virtual_network_peering.hub_to_spoke_peering.id
+output "virtual_network_link_spoke_id" {
+  value = azurerm_private_dns_zone_virtual_network_link.virtual_network_link_spoke.id
 }
+output "vnet_spoke_id" {
+  value = azurerm_virtual_network.vnet_spoke.id
+}
+
+output "vnet_spoke_subnets" {
+  value = azurerm_subnet.vnet_spoke_subnets
+}
+

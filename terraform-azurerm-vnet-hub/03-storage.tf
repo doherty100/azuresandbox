@@ -41,18 +41,18 @@ output "storage_account_01_name" {
   value = azurerm_storage_account.storage_account_01.name
 }
 
+output "storage_account_01_private_endpoint_file_id" {
+  value = azurerm_private_endpoint.storage_account_01_private_endpoint_file.id
+}
+
+output "storage_account_01_private_endpoint_file_privateip" {
+  value = azurerm_private_endpoint.storage_account_01_private_endpoint_file.private_service_connection[0].private_ip_address
+}
+
 output "storage_share_01_id" {
   value = azurerm_storage_share.storage_share_01.id
 }
 
 output "storage_share_01_name" {
   value = azurerm_storage_share.storage_share_01.name
-}
-
-output "storage_account_01_private_endpoint_file_id" {
-  value = azurerm_private_endpoint.storage_account_01_private_endpoint_file.id
-}
-
-output "storage_account_01_private_endpoint__file_privateip" {
-  value = azurerm_private_endpoint.storage_account_01_private_endpoint_file.private_service_connection[0].private_ip_address
 }

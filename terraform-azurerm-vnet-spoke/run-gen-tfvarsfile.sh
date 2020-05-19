@@ -8,6 +8,7 @@
 # -i REMOTE_VIRTUAL_NETWORK_ID
 # -n REMOTE_VIRTUAL_NETWORK_NAME
 # -b BASTION_HOST_NAME
+# -z PRIVATE_DNS_ZONE_NAME
 
 # Helper script for gen-tfvarsfile.sh
 
@@ -20,6 +21,7 @@
   -s "{ DefaultSubnet = \"10.2.0.0/24\", AzureBastionSubnet = \"10.2.1.0/27\" }"\
   -i "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MyResourceGroupName/providers/Microsoft.Network/virtualNetworks/MyHubVnetName"\
   -n "MyHubVnetName"\
-  -b "MySpokeVnetBastionHostName"
+  -b "MySpokeVnetBastionHostName"\
+  -z "mydomain.private.com"
 
 
