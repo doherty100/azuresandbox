@@ -59,9 +59,9 @@ resource "azurerm_virtual_network_peering" "hub_to_spoke_peering" {
 resource "azurerm_private_dns_zone_virtual_network_link" "virtual_network_link_spoke" {
   name                  = "${azurerm_virtual_network.vnet_spoke.name}-link"
   resource_group_name   = var.resource_group_name
-  private_dns_zone_name = var.private_dns_zone_name
+  private_dns_zone_name = "privatelink.file.core.windows.net"
   virtual_network_id    = azurerm_virtual_network.vnet_spoke.id
-  registration_enabled  = true
+  registration_enabled  = false
   tags                  = var.tags
 }
 

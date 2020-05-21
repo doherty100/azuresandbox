@@ -14,12 +14,6 @@ variable "location" {
   description = "The name of the Azure Region where resources will be provisioned."
 }
 
-variable "private_dns_zone_name" {
-  type = string
-  description = "The name of the new private dns zone to be linked to the new spoke vnet."
-  # default = "mydomain.private.com"
-}
-
 variable "remote_virtual_network_id" {
   type        = string
   description = "The id of the existing hub virtual network that the new spoke virtual network will be peered with."

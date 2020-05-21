@@ -6,7 +6,6 @@ AAD_TENANT_ID=""
 BASTION_HOST_NAME=""
 KEY_VAULT_ADMIN_OBJECT_ID=""
 LOCATION="" 
-PRIVATE_DNS_ZONE_NAME=""
 RESOURCE_GROUP_NAME=""
 SHARED_IMAGE_GALLERY_NAME=""
 STORAGE_REPLICATION_TYPE=""
@@ -17,7 +16,7 @@ VNET_ADDRESS_SPACE=""
 VNET_NAME=""
 
 usage() {
-    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -z PRIVATE_DNS_ZONE_NAME\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -r STORAGE_REPLICATION_TYPE\n  -q STORAGE_SHARE_QUOTA\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n  -d AAD_TENANT_ID\n  -h SHARED_IMAGE_GALLERY_NAME\n  -b BASTION_HOST_NAME\n" 1>&2
+    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -r STORAGE_REPLICATION_TYPE\n  -q STORAGE_SHARE_QUOTA\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n  -d AAD_TENANT_ID\n  -h SHARED_IMAGE_GALLERY_NAME\n  -b BASTION_HOST_NAME\n" 1>&2
     exit 1
 }
 
@@ -25,7 +24,7 @@ if [[ $# -eq 0  ]]; then
     usage
 fi  
 
-while getopts ":a:b:d:g:h:l:o:q:r:s:t:v:z:" option; do
+while getopts ":a:b:d:g:h:l:o:q:r:s:t:v:" option; do
     case "${option}" in
         a )
             VNET_ADDRESS_SPACE=${OPTARG}
@@ -63,9 +62,6 @@ while getopts ":a:b:d:g:h:l:o:q:r:s:t:v:z:" option; do
         v )
             VNET_NAME=${OPTARG}
             ;;
-        z )
-            PRIVATE_DNS_ZONE_NAME=${OPTARG}
-            ;;
         \? )
             usage
             ;;
@@ -97,13 +93,6 @@ printf "Validating TAGS '${TAGS}'...\n"
 
 if [[ -z ${TAGS} ]]; then
     printf "Error: Invalid TAGS.\n"
-    usage
-fi
-
-printf "Validating PRIVATE_DNS_ZONE_NAME '${PRIVATE_DNS_ZONE_NAME}'...\n"
-
-if [[ -z ${PRIVATE_DNS_ZONE_NAME} ]]; then
-    printf "Error: Invalid PRIVATE_DNS_ZONE_NAME.\n"
     usage
 fi
 
@@ -180,7 +169,6 @@ printf "aad_tenant_id = \"$AAD_TENANT_ID\"\n" > ./terraform.tfvars
 printf "bastion_host_name = \"$BASTION_HOST_NAME\"\n" >> ./terraform.tfvars
 printf "key_vault_admin_object_id = \"$KEY_VAULT_ADMIN_OBJECT_ID\"\n" >> ./terraform.tfvars
 printf "location = \"$LOCATION\"\n" >> ./terraform.tfvars
-printf "private_dns_zone_name = \"$PRIVATE_DNS_ZONE_NAME\"\n" >> ./terraform.tfvars
 printf "resource_group_name = \"$RESOURCE_GROUP_NAME\"\n" >> ./terraform.tfvars
 printf "shared_image_gallery_name = \"$SHARED_IMAGE_GALLERY_NAME\"\n" >> ./terraform.tfvars
 printf "storage_replication_type = \"$STORAGE_REPLICATION_TYPE\"\n" >> ./terraform.tfvars

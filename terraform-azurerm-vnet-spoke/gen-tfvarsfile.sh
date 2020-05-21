@@ -4,7 +4,6 @@
 
 BASTION_HOST_NAME=""
 LOCATION=""
-PRIVATE_DNS_ZONE_NAME=""
 REMOTE_VIRTUAL_NETWORK_ID=""
 REMOTE_VIRTUAL_NETWORK_NAME=""
 RESOURCE_GROUP_NAME=""
@@ -14,7 +13,7 @@ VNET_ADDRESS_SPACE=""
 VNET_NAME=""
 
 usage() {
-    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -i REMOTE_VIRTUAL_NETWORK_ID\n  -n REMOTE_VIRTUAL_NETWORK_NAME\n  -b BASTION_HOST_NAME\n  -z PRIVATE_DNS_ZONE_NAME\n" 1>&2
+    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -i REMOTE_VIRTUAL_NETWORK_ID\n  -n REMOTE_VIRTUAL_NETWORK_NAME\n  -b BASTION_HOST_NAME\n" 1>&2
     exit 1
 }
 
@@ -22,7 +21,7 @@ if [[ $# -eq 0 ]]; then
     usage
 fi  
 
-while getopts ":a:b:g:i:l:n:s:t:v:z:" option; do
+while getopts ":a:b:g:i:l:n:s:t:v:" option; do
     case "${option}" in
         a )
             VNET_ADDRESS_SPACE=${OPTARG}
@@ -50,9 +49,6 @@ while getopts ":a:b:g:i:l:n:s:t:v:z:" option; do
             ;;        
         v )
             VNET_NAME=${OPTARG}
-            ;;
-        z )
-            PRIVATE_DNS_ZONE_NAME=${OPTARG}
             ;;
         \? )
             usage
@@ -129,18 +125,10 @@ if [[ -z ${BASTION_HOST_NAME} ]]; then
     usage
 fi
 
-printf "Validating PRIVATE_DNS_ZONE_NAME '${PRIVATE_DNS_ZONE_NAME}'...\n"
-
-if [[ -z ${PRIVATE_DNS_ZONE_NAME} ]]; then
-    printf "Error: Invalid PRIVATE_DNS_ZONE_NAME.\n"
-    usage
-fi
-
 printf "\nGenerating terraform.tfvars file...\n\n"
 
 printf "bastion_host_name = \"$BASTION_HOST_NAME\"\n" > ./terraform.tfvars
 printf "location = \"$LOCATION\"\n" >> ./terraform.tfvars
-printf "private_dns_zone_name = \"$PRIVATE_DNS_ZONE_NAME\"\n" >> ./terraform.tfvars
 printf "remote_virtual_network_id = \"$REMOTE_VIRTUAL_NETWORK_ID\"\n" >> ./terraform.tfvars
 printf "remote_virtual_network_name = \"$REMOTE_VIRTUAL_NETWORK_NAME\"\n" >> ./terraform.tfvars
 printf "resource_group_name = \"$RESOURCE_GROUP_NAME\"\n" >> ./terraform.tfvars
