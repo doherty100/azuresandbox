@@ -16,18 +16,22 @@ De-provisioning (average) | 17 minutes
 
 ## Getting started using default settings
 
-* Make your own copy of *run-gen-tfvarsfile.sh* to ensure custom settings don't get clobbered in the future, for example `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private2.sh`.  
+* Make your own copy of *run-gen-tfvarsfile.sh* to ensure custom settings don't get clobbered in the future, for example:
+ `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private2.sh`
 * Edit your copy of *run-gen-tfvarsfile.sh* and update the following parameters:  
-  * -o: Change this to the object id of your user account in AAD which can be determined by running `az ad user show --upn-or-object-id myuser@consoso.com | jq -r .objectId`.  
-  * -d: Change this to the AAD tenant id associated with your subscription which can be determined by running `az account show -s 00000000-0000-0000-0000-000000000000` where "-s" is your subscription id which you can determine by runnning `az account show -o table`.  
+  * -o: Change this to the objectId of your user account in AAD. This can \be determined by running:
+  `az ad user show --id myuser@consoso.com | jq -r .objectId`  
+  * -d: Change this to the AAD tenantId associated with your subscription which can be determined by running:
+   `az account show | jq -r .tenantId`
 * Save your changes.
-* Execute your copy of *run-gen-tfvarsfile.sh*, for example `./run-gen-tfvarsfile-private.sh`. This will generate a new *terraform.tfvars* file.  
+* Generate a new *terraform.tfvars* file by running your copy of *run-gen-tfvarsfile.sh*, for example:
+`./run-gen-tfvarsfile-private.sh`  
 * Run `terraform init` and note the version of the azurerm provider installed.
 * Run `terraform validate` to check the syntax of the configuration.
-* Run `terraform apply` to apply the configuration and wait for it to complete.
+* Run `terraform apply` to apply the configuration.
 * Run `terraform output` to view the output variables form the *terraform.tfstate* file.
 * Explore your newly previsioned resources in the Azure portal.
-* Run `terraform destroy` to destroy the configuration and wait for it to complete. Verify the resources are no longer provisioned in the Azure portal.
+* Run `terraform destroy` to destroy the configuration.
 * Re-apply the configuration and move on to [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke/README.md).
 
 ## Getting started using custom settings
