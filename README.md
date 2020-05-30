@@ -50,5 +50,5 @@ The following prerequisites are required in order to get started.
 * Deploy the quick starts in the following order:
   * Start by deploying the [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/README.md) quick start which establishes a shared hub virtual network and shared services.
   * Next, deploy the [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-hub/README.md) quick start which establishes a dedicated spoke virtual network.
-  * Proceed by deploying the [terraform-azurerm-vm-windows](./terraform-azurerm-vnet-hub/README.md) quick start which implements a dedicated Windows Server virtual machine in the dedicated spoke virtual network.
+  * Proceed by deploying the [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/README.md) quick start which implements a dedicated Windows Server virtual machine in the dedicated spoke virtual network.
   * Finish by deploying the [terraform-azurerm-vwan](./terraform-azurerm-vnet-hub/README.md) quick start which connects the shared hub virtual network and the dedicated spoke virtual network to remote users or a private network.
