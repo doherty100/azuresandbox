@@ -97,7 +97,7 @@ log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-00
     * Verify the the *IP4Address* returned is consistent with the address prefix used for the *snet-storage-private-endpoints-001* subnet in the shared hub virtual network. This name resolution is accomplished using the shared private DNS zone.
     * Execute the PowerShell script copied from the Azure Portal to establish a drive mapping to the shared file share using the private endpoint.
     * Create some directories and sample files on the drive mapped to the shared file share to test functionality.
-* Partition and format the data disks attached to the virtual machine.
+  * Partition and format the data disks attached to the virtual machine.
 
 ## Next steps
 
