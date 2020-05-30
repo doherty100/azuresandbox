@@ -42,6 +42,30 @@ while getopts ":p:u:" option; do
     esac
 done
 
+printf "Getting VAULT_NAME...\n"
+VAULT_NAME=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" key_vault_01_name)
+
+if [ $? != 0 ]; then
+    echo "Error: Terraform output variable log_analytics_workspace_01_primary_shared_key not found."
+    usage
+fi
+
+printf "Getting LOG_ANALYTICS_WORKSPACE_ID...\n"
+LOG_ANALYTICS_WORKSPACE_ID=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" log_analytics_workspace_01_workspace_id)
+
+if [ $? != 0 ]; then
+    echo "Error: Terraform output variable log_analytics_workspace_01_workspace_id not found."
+    usage
+fi
+
+printf "Getting LOG_ANALYTICS_WORKSPACE_KEY...\n"
+LOG_ANALYTICS_WORKSPACE_KEY=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" log_analytics_workspace_01_primary_shared_key)
+
+if [ $? != 0 ]; then
+    echo "Error: Terraform output variable log_analytics_workspace_01_primary_shared_key not found."
+    usage
+fi
+
 printf "Validating VM_ADMIN_USERNAME '${VM_ADMIN_USERNAME}'...\n"
 
 if [[ -z {$VM_ADMIN_USERNAME} ]]; then
@@ -49,40 +73,10 @@ if [[ -z {$VM_ADMIN_USERNAME} ]]; then
     usage
 fi
 
-printf "Validating VM_ADMIN_PASSWORD '${VM_ADMIN_PASSWORD}'...\n"
+printf "Validating VM_ADMIN_PASSWORD...\n"
 
 if [[ -z {$VM_ADMIN_PASSWORD} ]]; then
     printf "Error: Invalid VM_ADMIN_PASSWORD.\n"
-    usage
-fi
-
-printf "Getting LOG_ANALYTICS_WORKSPACE_ID...\n"
-LOG_ANALYTICS_WORKSPACE_ID=$(terraform output log_analytics_workspace_01_workspace_id)
-
-printf "Validating LOG_ANALYTICS_WORKSPACE_ID '${LOG_ANALYTICS_WORKSPACE_ID}'...\n"
-
-if [[ -z {$LOG_ANALYTICS_WORKSPACE_ID} ]]; then
-    printf "Error: Invalid LOG_ANALYTICS_WORKSPACE_ID, check Terraform output variable log_analytics_workspace_01_workspace_id.\n"
-    usage
-fi
-
-printf "Getting LOG_ANALYTICS_WORKSPACE_KEY...\n"
-LOG_ANALYTICS_WORKSPACE_KEY=$(terraform output log_analytics_workspace_01_primary_shared_key)
-
-printf "Validating LOG_ANALYTICS_WORKSPACE_KEY '${LOG_ANALYTICS_WORKSPACE_KEY}'...\n"
-
-if [[ -z {$LOG_ANALYTICS_WORKSPACE_KEY} ]]; then
-    printf "Error: Invalid LOG_ANALYTICS_WORKSPACE_KEY, check Terraform output variable log_analytics_workspace_01_primary_shared_key.\n"
-    usage
-fi
-
-printf "Getting key vault name...\n"
-VAULT_NAME=$(terraform output key_vault_01_name)
-
-printf "Validating VAULT_NAME '${VAULT_NAME}'...\n"
-
-if [[ -z {$VAULT_NAME} ]]; then
-    printf "Error: Invalid VAULT_NAME, check Terraform output variable key_vault_01_name.\n"
     usage
 fi
 

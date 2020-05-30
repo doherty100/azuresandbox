@@ -26,13 +26,3 @@ variable "vwan_hub_address_prefix" {
   type        = string
   description = "The address prefix in CIDR notation for the new spoke virtual wan hub."
 }
-
-variable "vwan_hub_name" {
-  type = string
-  description = "the name of the new virtual wan hub to be provisioned."
-}
-
-variable "vwan_name" {
-  type = string
-  description = "The name of the new virtual wan to be provisioned."
-}

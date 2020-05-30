@@ -7,3 +7,11 @@ resource "azurerm_resource_group" "resource_group_01" {
 output "resource_group_01_id" {
   value = azurerm_resource_group.resource_group_01.id
 }
+
+output "resource_group_01_location" {
+  value = azurerm_resource_group.resource_group_01.location
+}
+
+output "resource_group_01_name" {
+  value = azurerm_resource_group.resource_group_01.name
+}

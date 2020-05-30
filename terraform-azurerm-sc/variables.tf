@@ -3,6 +3,17 @@ variable "aad_tenant_id" {
   description = "The Azure Active Directory tenant id to be associated with the new key vault."
 }
 
+variable "bastion_host_ip_name" {
+  type        = string
+  description = "The name of the new public ip used by the bastion host."
+  default     = "public_ip_azure_bastion"
+}
+
+variable "bastion_host_name" {
+  type        = string
+  description = "The name of the new bastion host."
+}
+
 variable "key_vault_admin_object_id" {
   type        = string
   description = "The object id of the security principle (user or group) with administrative rights for the new key vault."
@@ -30,10 +41,27 @@ variable "resource_group_name" {
   description = "The name of the new resource group to be provisioned."
 }
 
+variable "security_center_scope" {
+  type = string
+  description = "The subscription scope for security center monitoring"
+  # default = "/subscriptions/00000000-0000-0000-0000-000000000000
+}
+
+variable "shared_image_gallery_name" {
+  type        = string
+  description = "The name of the new shared image gallery to provision."
+}
+
 variable "storage_access_tier" {
   type        = string
   description = "The acccess tier for the new storage account."
   default     = "Hot"
+}
+
+variable "storage_account_tier" {
+  type        = string
+  description = "The account tier for the new storage account."
+  # default = "Standard"
 }
 
 variable "storage_replication_type" {
@@ -42,18 +70,11 @@ variable "storage_replication_type" {
   # default = "LRS"
 }
 
-variable "storage_share_quota_gb" {
-  type = string
-  description = "The storage quota for the Azure Files share to be provisioned in GB."
-  # default = "1024"
-}
-
 variable "subnets" {
   type        = map
   description = "The subnets to be created in the new virtual network. AzureBastionSubnet is required."
 
-  # default = { DefaultSubnet = "10.1.0.0/24", AzureBastionSubnet = "10.1.1.0/27", PrivateLinkStorage = "10.1.2.0/24" } 
-  # Note: All subnets starting with "PrivateLink" will have enforce_private_link_endpoint_network_policies set to true
+  # default = { DefaultSubnet = "10.0.0.0/24", AzureBastionSubnet = "10.0.1.0/27" , GatewaySubnet = "10.0.255.0/27" } 
 }
 
 variable "tags" {

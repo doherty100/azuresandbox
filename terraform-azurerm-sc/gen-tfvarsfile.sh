@@ -3,18 +3,20 @@
 # Dependencies: Azure CLI
 
 AAD_TENANT_ID=""
+BASTION_HOST_NAME=""
 KEY_VAULT_ADMIN_OBJECT_ID=""
 LOCATION="" 
 RESOURCE_GROUP_NAME=""
+SHARED_IMAGE_GALLERY_NAME=""
+STORAGE_ACCOUNT_TIER=""
 STORAGE_REPLICATION_TYPE=""
-STORAGE_SHARE_QUOTA_GB=""
 SUBNETS=""
 TAGS=""
 VNET_ADDRESS_SPACE=""
 VNET_NAME=""
 
 usage() {
-    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -r STORAGE_REPLICATION_TYPE\n  -q STORAGE_SHARE_QUOTA_GB\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n  -d AAD_TENANT_ID\n  -t TAGS\n" 1>&2
+    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -i STORAGE_ACCOUNT_TIER\n  -r STORAGE_REPLICATION_TYPE\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n  -d AAD_TENANT_ID\n  -h SHARED_IMAGE_GALLERY_NAME\n  -b BASTION_HOST_NAME\n  -w SECURITY_CENTER_SCOPE\n" 1>&2
     exit 1
 }
 
@@ -22,10 +24,13 @@ if [[ $# -eq 0  ]]; then
     usage
 fi  
 
-while getopts ":a:d:g:l:o:q:r:s:t:v:" option; do
+while getopts ":a:b:d:g:h:i:l:o:r:s:t:v:w:" option; do
     case "${option}" in
         a )
             VNET_ADDRESS_SPACE=${OPTARG}
+            ;;
+        b )
+            BASTION_HOST_NAME=${OPTARG}
             ;;
         d )
             AAD_TENANT_ID=${OPTARG}
@@ -33,14 +38,17 @@ while getopts ":a:d:g:l:o:q:r:s:t:v:" option; do
         g ) 
             RESOURCE_GROUP_NAME=${OPTARG}
             ;;
+        h )
+            SHARED_IMAGE_GALLERY_NAME=${OPTARG}
+            ;;
+        i )
+            STORAGE_ACCOUNT_TIER=${OPTARG}
+            ;;
         l ) 
             LOCATION=${OPTARG}
             ;;
         o )
             KEY_VAULT_ADMIN_OBJECT_ID=${OPTARG}
-            ;;
-        q )
-            STORAGE_SHARE_QUOTA_GB=${OPTARG}
             ;;
         r )
             STORAGE_REPLICATION_TYPE=${OPTARG}
@@ -53,6 +61,9 @@ while getopts ":a:d:g:l:o:q:r:s:t:v:" option; do
             ;;
         v )
             VNET_NAME=${OPTARG}
+            ;;
+        w )
+            SECURITY_CENTER_SCOPE=${OPTARG}
             ;;
         \? )
             usage
@@ -81,6 +92,13 @@ if [[ -z ${LOCATION_ID} ]]; then
     usage
 fi
 
+printf "Validating TAGS '${TAGS}'...\n"
+
+if [[ -z ${TAGS} ]]; then
+    printf "Error: Invalid TAGS.\n"
+    usage
+fi
+
 printf "Validating VNET_NAME '${VNET_NAME}'...\n"
 
 if [[ -z ${VNET_NAME} ]]; then
@@ -102,6 +120,17 @@ if [[ -z ${SUBNETS} ]]; then
     usage
 fi
 
+printf "Validating STORAGE_ACCOUNT_TIER '${STORAGE_ACCOUNT_TIER}'\n"
+
+case $STORAGE_ACCOUNT_TIER in
+    Standard | Premium )
+        ;;
+    * )
+        printf "Error: Invalid STORAGE_ACCOUNT_TIER.\n"
+        usage
+        ;;
+esac
+
 printf "Validating STORAGE_REPLICATION_TYPE '${STORAGE_REPLICATION_TYPE}'\n"
 
 case $STORAGE_REPLICATION_TYPE in
@@ -112,13 +141,6 @@ case $STORAGE_REPLICATION_TYPE in
         usage
         ;;
 esac
-
-printf "Validating STORAGE_SHARE_QUOTA_GB '${STORAGE_SHARE_QUOTA_GB}'\n"
-
-if [[ -z ${STORAGE_SHARE_QUOTA_GB} ]]; then
-    printf "Error: Invalid STORAGE_SHARE_QUOTA_GB.\n"
-    usage
-fi
 
 printf "Validating KEY_VAULT_ADMIN_OBJECT_ID '${KEY_VAULT_ADMIN_OBJECT_ID}'\n"
 
@@ -134,21 +156,38 @@ if [[ -z {$AAD_TENANT_ID} ]]; then
     usage
 fi
 
-printf "Validating TAGS '${TAGS}'...\n"
+printf "Validating SHARED_IMAGE_GALLERY_NAME '${SHARED_IMAGE_GALLERY_NAME}'\n"
 
-if [[ -z ${TAGS} ]]; then
-    printf "Error: Invalid TAGS.\n"
+if [[ -z ${SHARED_IMAGE_GALLERY_NAME} ]]; then
+    printf "Error: Invalid SHARED_IMAGE_GALLERY_NAME.\n"
+    usage
+fi
+
+printf "Validating BASTION_HOST_NAME '${BASTION_HOST_NAME}'\n"
+
+if [[ -z ${BASTION_HOST_NAME} ]]; then
+    printf "Error: Invalid BASTION_HOST_NAME.\n"
+    usage
+fi
+
+printf "Validating SECURITY_CENTER_SCOPE '${SECURITY_CENTER_SCOPE}'\n"
+
+if [[ -z ${SECURITY_CENTER_SCOPE} ]]; then
+    printf "Error: Invalid SECURITY_CENTER_SCOPE.\n"
     usage
 fi
 
 printf "\nGenerating terraform.tfvars file...\n\n"
 
 printf "aad_tenant_id = \"$AAD_TENANT_ID\"\n" > ./terraform.tfvars
+printf "bastion_host_name = \"$BASTION_HOST_NAME\"\n" >> ./terraform.tfvars
 printf "key_vault_admin_object_id = \"$KEY_VAULT_ADMIN_OBJECT_ID\"\n" >> ./terraform.tfvars
 printf "location = \"$LOCATION\"\n" >> ./terraform.tfvars
 printf "resource_group_name = \"$RESOURCE_GROUP_NAME\"\n" >> ./terraform.tfvars
+printf "security_center_scope = \"$SECURITY_CENTER_SCOPE\"\n" >> ./terraform.tfvars
+printf "shared_image_gallery_name = \"$SHARED_IMAGE_GALLERY_NAME\"\n" >> ./terraform.tfvars
+printf "storage_account_tier = \"$STORAGE_ACCOUNT_TIER\"\n" >> ./terraform.tfvars
 printf "storage_replication_type = \"$STORAGE_REPLICATION_TYPE\"\n" >> ./terraform.tfvars
-printf "storage_share_quota_gb = \"$STORAGE_SHARE_QUOTA_GB\"\n" >> ./terraform.tfvars
 printf "subnets = $SUBNETS\n" >> ./terraform.tfvars
 printf "tags = $TAGS\n" >> ./terraform.tfvars
 printf "vnet_address_space = \"$VNET_ADDRESS_SPACE\"\n" >> ./terraform.tfvars

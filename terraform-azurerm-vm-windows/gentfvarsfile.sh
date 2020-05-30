@@ -1,48 +1,32 @@
 #!/bin/bash
 
-# This script generates a terraform.tfvars file for the terraform-azurerm-vm-windows quickstart
-
-# Prerequisites before running this script: 
-# - Install latest version of Azure CLI
-# - Change the variables on lines 13-19 if necessary prior to running the script
-# - Identify the resource group where you want to deploy the VM and pass it to the script using the -g parameter
-#     Make sure the resource group has at least one virtual network with at least one subnet
-#     Make sure the resource group has at least one key vault
-#     Make sure the key vault has a secret used to identify the name of the administrator user account
-#     Make sure the key vault has a secret used to identify the password for the administrator user account
-# - Identify the virtual machine image sku to be used to create the VM and pass it to the script using the -s parameter
-#     See 'az vm image list-skus' for a list of available skus.
-# - Identify the virtual machine size to be used to create the VM and pass it to the script using the -t parameter
-#     See 'az vm list-sizes' for a list of available sizes.
-# - Choose a virtual machine name and pass it to the script using the -n parameter
-
 # Set these environment variables before running script
 VM_ADMIN_PASSWORD_SECRET="adminpassword"
 VM_ADMIN_USERNAME_SECRET="adminuser"
-VM_DATA_DISK_COUNT="0"
-VM_DATA_DISK_SIZE_GB="0"
 VM_IMAGE_PUBLISHER="MicrosoftWindowsServer"
 VM_IMAGE_OFFER="WindowsServer"
 VM_STORAGE_REPLICATION_TYPE="Standard_LRS"
 
 # Set these environment variables by passing parameters to this script 
+KEY_VAULT_ID=""
+KEY_VAULT_NAME=""
 LOCATION=""
 LOG_ANALYTICS_WORKSPACE_ID=""
 RESOURCE_GROUP_NAME=""
 SUBNET_ID=""
 TAGS=""
+VM_DATA_DISK_COUNT=""
+VM_DATA_DISK_SIZE_GB=""
 VM_IMAGE_SKU=""
 VM_NAME=""
 VM_SIZE=""
 
 # These are temporary variables
-VAULT_NAME=""
-KEY_VAULT_ID=""
 VM_IMAGE_ID=""
 VM_SIZE_PROPERTIES=""
 
 usage() {
-    printf "Usage: $0 -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -t TAGS\n  -n VM_NAME\n  -s VM_IMAGE_SKU\n  -z VM_SIZE\n  -i SUBNET_ID\n  -w LOG_ANALYTICS_WORKSPACE_ID" 1>&2
+    printf "Usage: $0\n  -n VM_NAME\n  -s VM_IMAGE_SKU\n  -z VM_SIZE\n  -c VM_DATA_DISK_COUNT\n  -d VM_DATA_DISK_SIZE_GB\n  -t TAGS\n" 1>&2
     exit 1
 }
 
@@ -50,16 +34,13 @@ if [[ $# -eq 0 ]]; then
     usage
 fi  
 
-while getopts ":g:i:l:n:s:t:w:z:" option; do
+while getopts ":c:d:n:s:t:z:" option; do
     case "${option}" in
-        g ) 
-            RESOURCE_GROUP_NAME=${OPTARG}
+        c )
+            VM_DATA_DISK_COUNT=${OPTARG}
             ;;
-        i )
-            SUBNET_ID=${OPTARG}
-            ;;
-        l )
-            LOCATION=${OPTARG}
+        d )
+            VM_DATA_DISK_SIZE_GB=${OPTARG}
             ;;
         n ) 
             VM_NAME=${OPTARG}
@@ -69,9 +50,6 @@ while getopts ":g:i:l:n:s:t:w:z:" option; do
             ;;
         t )
             TAGS=${OPTARG}
-            ;;
-        w )
-            LOG_ANALYTICS_WORKSPACE_ID=${OPTARG}
             ;;
         z )
             VM_SIZE=${OPTARG}
@@ -85,6 +63,79 @@ while getopts ":g:i:l:n:s:t:w:z:" option; do
             ;;
     esac
 done
+
+printf "Getting RESOURCE_GROUP_NAME...\n"
+RESOURCE_GROUP_NAME=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" resource_group_01_name)
+
+if [ $? != 0 ]; then
+    echo "Error: Terraform output variable resource_group_01_name not found."
+    usage
+fi
+
+printf "Getting LOCATION...\n"
+LOCATION=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" resource_group_01_location)
+
+if [ $? != 0 ]; then
+    echo "Error: Terraform output variable resource_group_01_location not found."
+    usage
+fi
+
+printf "Getting KEY_VAULT_ID...\n"
+KEY_VAULT_ID=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" key_vault_01_id)
+
+if [ $? != 0 ]; then
+    echo "Error: Terraform output variable key_vault_01_id not found."
+    usage
+fi
+
+printf "Getting KEY_VAULT_NAME...\n"
+KEY_VAULT_NAME=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" key_vault_01_name)
+
+if [ $? != 0 ]; then
+    echo "Error: Terraform output variable key_vault_01_name not found."
+    usage
+fi
+
+printf "Getting LOG_ANALYTICS_WORKSPACE_ID...\n"
+
+LOG_ANALYTICS_WORKSPACE_ID=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" log_analytics_workspace_01_workspace_id)
+
+if [ $? != 0 ]; then
+    echo "Error: Terraform output variable log_analytics_workspace_01_workspace_id not found."
+    usage
+fi
+
+printf "Getting SUBNET_ID...\n"
+SUBNET_ID=$(terraform output -state="../terraform-azurerm-vnet-spoke/terraform.tfstate" vnet_spoke_01_default_subnet_id)
+
+if [ $? != 0 ]; then
+    echo "Error: Terraform output variable vnet_spoke_01_default_subnet_id not found."
+    usage
+fi
+
+printf "Checking admin username secret...\n"
+az keyvault secret show -n $VM_ADMIN_USERNAME_SECRET --vault-name $KEY_VAULT_NAME
+
+if [ $? != 0 ]; then
+    echo "Error: No secret named $VM_ADMIN_USERNAME_SECRET exists in $KEY_VAULT_NAME."
+    usage
+fi
+
+printf "Checking admin password secret...\n"
+az keyvault secret show -n $VM_ADMIN_PASSWORD_SECRET --vault-name $KEY_VAULT_NAME
+
+if [ $? != 0 ]; then
+    echo "Error: No secret named $VM_ADMIN_PASSWORD_SECRET exists in $KEY_VAULT_NAME."
+    usage
+fi
+
+printf "Checking log analytics workspaceKey secret...\n"
+az keyvault secret show -n $LOG_ANALYTICS_WORKSPACE_ID --vault-name $KEY_VAULT_NAME
+
+if [ $? != 0 ]; then
+    printf "Error: No secret named $LOG_ANALYTICS_WORKSPACE_ID exists in $KEY_VAULT_NAME.\n"
+    usage
+fi
 
 printf "Validating VM_NAME '${VM_NAME}'...\n"
 if [ -z $VM_NAME ]; then
@@ -101,41 +152,12 @@ if [ -z $VM_IMAGE_ID ]; then
     usage
 fi
 
-echo $VM_IMAGE_ID
-
 printf "Validating VM_SIZE '${VM_SIZE}'...\n"
 
 VM_SIZE_PROPERTIES=$(az vm list-sizes -l $LOCATION --query "[?name=='${VM_SIZE}']")
 
 if [ "$VM_SIZE_PROPERTIES" = "[]" ]; then
-    echo "Error: Virtual machine size $VM_SIZE is not valid."
-    usage
-fi
-
-echo $VM_SIZE_PROPERTIES
-
-printf "Validating RESOURCE_GROUP_NAME '${RESOURCE_GROUP_NAME}'...\n"
-az group show -n $RESOURCE_GROUP_NAME
-
-if [ $? != 0 ]; then
-    echo "Error: Resource group $RESOURCE_GROUP not found."
-    usage
-fi
-
-printf "Validating SUBNET_ID '${SUBNET_ID}'...\n"
-
-if [ -z $SUBNET_ID ]; then
-    echo "Error: Invalid SUBNET_ID."
-    usage
-fi
-
-printf "Validating LOCATION '${LOCATION}'...\n"
-
-LOCATION_ID=""
-LOCATION_ID=$(az account list-locations --query "[?name=='${LOCATION}'].id" | tr -d '[]" \n')
-
-if [ -z $LOCATION_ID ]; then
-    echo "Error: Invalid LOCATION."
+    echo "Error: Virtual machine size '${VM_SIZE}' is not valid."
     usage
 fi
 
@@ -153,43 +175,17 @@ if [[ -z ${TAGS} ]]; then
     usage
 fi
 
-# Get the key_vault_id for the first key vault in the resource group
-printf "Getting key vault...\n"
-KEY_VAULT_ID=$(az keyvault list -g $RESOURCE_GROUP_NAME --query "[0].id" | tr -d '"')
+printf "Validating VM_DATA_DISK_COUNT '${VM_DATA_DISK_COUNT}'...\n"
 
-if [ -z $KEY_VAULT_ID ]; then
-    echo "Error: No key vault exists in $RESOURCE_GROUP_NAME."
+if [[ -z ${TAGS} ]]; then
+    printf "Error: Invalid VM_DATA_DISK_COUNT.\n"
     usage
 fi
 
-echo $KEY_VAULT_ID
+printf "Validating VM_DATA_DISK_SIZE_GB '${VM_DATA_DISK_SIZE_GB}'...\n"
 
-VAULT_NAME=$(az keyvault list -g $RESOURCE_GROUP_NAME --query "[0].name" | tr -d '"')
-
-# Validate admin username secret
-printf "Checking admin username secret...\n"
-az keyvault secret show -n $VM_ADMIN_USERNAME_SECRET --vault-name $VAULT_NAME
-
-if [ $? != 0 ]; then
-    echo "Error: No secret named $VM_ADMIN_USERNAME_SECRET exists in $VAULT_NAME."
-    usage
-fi
-
-# Validate admin password secret
-printf "Checking admin password secret...\n"
-az keyvault secret show -n $VM_ADMIN_PASSWORD_SECRET --vault-name $VAULT_NAME
-
-if [ $? != 0 ]; then
-    echo "Error: No secret named $VM_ADMIN_PASSWORD_SECRET exists in $VAULT_NAME."
-    usage
-fi
-
-# Validate log analytics workspaceKey secret
-printf "Checking log analytics workspaceKey secret...\n"
-az keyvault secret show -n $LOG_ANALYTICS_WORKSPACE_ID --vault-name $VAULT_NAME
-
-if [ $? != 0 ]; then
-    printf "Error: No secret named $LOG_ANALYTICS_WORKSPACE_ID exists in $VAULT_NAME.\n"
+if [[ -z ${TAGS} ]]; then
+    printf "Error: Invalid VM_DATA_DISK_SIZE_GB.\n"
     usage
 fi
 

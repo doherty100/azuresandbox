@@ -6,11 +6,12 @@
 #   - Shared Image Gallery
 #   - Log Analytics Workspace
 #   - Bastion host
+#   - Security Center Standard
 
 # Providers used in this configuration
 
 provider "azurerm" {
-  version = "~> 2.10"
+  version = "~> 2.7"
   features {}
   # subscription_id = "REPLACE-WITH-YOUR-SUBSCRIPTION-ID"
   # client_id       = "REPLACE-WITH-YOUR-CLIENT-ID"
