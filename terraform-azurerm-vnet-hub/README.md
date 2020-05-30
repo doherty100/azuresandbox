@@ -24,8 +24,8 @@ De-provisioning | ~15 minutes
     * Some organizations restrict the ability to enumerate AAD security principals. In this case you should contact your identity administrator to determine the *objectId*.
 * Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
 * Edit `run-gen-tfvarsfile-private.sh` and update the following parameters:  
-  * -o: Change this to the *objectId* determined previously.  
   * -d: Change this to the *tenantId* determined previously.
+  * -o: Change this to the *objectId* determined previously.  
   * Customize other parameter values as needed.
   * Save your changes.
 * Run `./run-gen-tfvarsfile-private.sh` to generate *terraform.tfvars*.  
