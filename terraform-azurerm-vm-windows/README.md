@@ -87,7 +87,7 @@ log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-00
   * Review the 3 secrets that were created in the shared key vault.
   * Generate a script for mapping drives to the shared file share.
     * Mapping a drive to an Azure Files file share requires automation due to the use of a complex shared key to authenticate.
-    * In the Azure Portal navigate to *storage accounts* > *stxxxxxxxxxxxxxxxx001* > *file service* > *file shares* > fs-xxxxxxxxxxxxxxxx-001 > Connect > Windows
+    * In the Azure Portal navigate to *storage accounts* > *stxxxxxxxxxxxxxxxx001* > *file service* > *file shares* > *fs-xxxxxxxxxxxxxxxx-001* > *Connect* > *Windows*
     * Copy the PowerShell script in the right-hand pane for use in the next smoke testing exercise.
 * Connect to the dedicated virtual machine in the Azure portal using bastion and log in with the *adminuser* and *adminpassword* defined previously.
   * Confirm access to shared file share private endpoint.
