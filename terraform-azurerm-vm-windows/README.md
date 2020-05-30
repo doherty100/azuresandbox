@@ -1,13 +1,11 @@
 # Azure quick start configuration: terraform-azurerm-vm-windows  
 
-\[ [azurequickstarts](../README.md) \] > \[ [terraform-azurerm-vm-windows](./README.md) \]
-
 ## Overview
 
 This quick start implements a dedicated Windows Server virtual machine which can be used as a jump box, admin workstation, web server, application server or database server. The following quick starts must be deployed first before starting:
 
-* [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub/README.md)
-* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke/README.md)
+* [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub)
+* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
 
 Activity | Estimated time required
 --- | ---
@@ -105,4 +103,4 @@ log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-00
 
 ## Next steps
 
-Move on to the next quick start [terraform-azurerm-vwan](../terraform-azurerm-vwan/README.md).
+Move on to the next quick start [terraform-azurerm-vwan](../terraform-azurerm-vwan).

@@ -1,6 +1,6 @@
 # Azure quick starts by [Roger Doherty](https://www.linkedin.com/in/roger-doherty-805635b/)
 
-\[ [azurequickstarts](./) \]
+\[ azurequickstarts \]
 
 ## Overview
 

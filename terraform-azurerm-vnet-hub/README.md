@@ -1,7 +1,5 @@
 # Azure quick starts configuration: terraform-azurerm-vnet-hub  
 
-\[ [azurequickstarts](../README.md) \] > \[ [terraform-azurerm-vnet-hub](./README.md) \]
-
 ## Overview
 
 This quick start implements the hub portion of a basic hub-spoke networking topology with shared services. It is the primary building block upon which all the other quick starts are built.
@@ -46,9 +44,9 @@ This section provides an index of the 23 resources included in this quick start.
 
 Shared [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group) used by all quick start configurations. Note there are dependencies on this resource in the following quick starts:  
 
-* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke/README.md)
-* [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows/README.md)
-* [terraform-azurerm-vwan](../terraform-azurerm-vwan/README.md)
+* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
+* [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows)
+* [terraform-azurerm-vwan](../terraform-azurerm-vwan)
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -113,10 +111,10 @@ public_ip_bastion_host_01_name | Output | string | Local | pip-a787e872af5552b8-
 
 ---
 
-Shared general-purpose v2 standard [storage account](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#storage-account) with an automatically generated random name following the grep format "st\[a-z0-9\]\{16\}001". Note there are dependencies on this resource in the following quickstarts:  
+Shared general-purpose v2 standard [storage account](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#storage-account) with an automatically generated random name following the grep format "st\[a-z0-9\]\{16\}001". Note there are dependencies on this resource in the following quick starts:  
 
-* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke/README.md)
-* [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows/README.md)
+* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
+* [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows)
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -147,7 +145,7 @@ storage_share_01_name | Output | string | Local | fs-60fb9730bfbe8ba9-001
 
 #### Private DNS zone
 
-Shared [private DNS zone](https://docs.microsoft.com/en-us/azure/dns/private-dns-privatednszone) *privatelink.file.core.windows.net* for use with the file share private endpoint described previously. Note there is a dependency on this resource in [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke/README.md).
+Shared [private DNS zone](https://docs.microsoft.com/en-us/azure/dns/private-dns-privatednszone) *privatelink.file.core.windows.net* for use with the file share private endpoint described previously. Note there is a dependency on this resource in [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke).
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -186,9 +184,7 @@ Shared [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/over
 * [enabled_for_disk_encryption](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_disk_encryption)  
 * [enabled_for_template_deployment](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_template_deployment)  
 
-Note there are dependencies on this resource in the following quickstarts:  
-
-* [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows/README.md)
+Note there are dependencies on this resource in the the [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows) quick start.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -222,9 +218,7 @@ key_vault_01_access_policy_secrets_admin_id | Output | string | Local | /subscri
 
 ---
 
-Shared [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment) with an automatically generated random name following the grep format "log-\[a-z0-9\]\{16\}-001". The [sku](https://www.terraform.io/docs/providers/azurerm/r/log_analytics_workspace.html#sku) is set to *PerGB2018* by default. The *log_analytics_workspace_01_workspace_id* and *log_analytics_workspace_01_primary_shared_key* output variables are used to connect to this log analytics workspace from other configurations. Note there are dependencies on this resource in the following quickstarts:  
-
-* [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows/README.md)
+Shared [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment) with an automatically generated random name following the grep format "log-\[a-z0-9\]\{16\}-001". The [sku](https://www.terraform.io/docs/providers/azurerm/r/log_analytics_workspace.html#sku) is set to *PerGB2018* by default. The *log_analytics_workspace_01_workspace_id* and *log_analytics_workspace_01_primary_shared_key* output variables are used to connect to this log analytics workspace from other configurations. Note there is a dependency on this resource in the [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows) quick start.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -254,4 +248,4 @@ shared_image_gallery_01_unique_name | Output | string | Local | 00000000-0000-00
 
 ## Next steps
 
-* Move on to the next quickstart [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke/README.md).
+* Move on to the next quick start [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke).

@@ -1,12 +1,10 @@
 # Azure quick start configuration: terraform-azurerm-vnet-spoke  
 
-\[ [azurequickstarts](../README.md) \] > \[ [terraform-azurerm-vnet-spoke](./README.md) \]
-
 ## Overview
 
 This quick start implements the spoke portion of a basic hub-spoke networking topology and establishes bi-directional virtual network peering with the shared hub virtual network. The following quick starts must be deployed first before starting:
 
-* [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub/README.md)
+* [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub)
 
 Activity | Estimated time required
 --- | ---
@@ -35,8 +33,8 @@ This section provides an index of the 10 resources included in this quick start.
 
 Dedicated spoke [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet). Note there are dependencies on this resource in the following quick starts:  
 
-* [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows/README.md)
-* [terraform-azurerm-vwan](../terraform-azurerm-vwan/README.md)
+* [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows)
+* [terraform-azurerm-vwan](../terraform-azurerm-vwan)
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -81,7 +79,7 @@ public_ip_bastion_host_02_name | Output | string | Local | pip-619c4233fe9c0bc0-
 
 #### Private DNS zone virtual network link
 
-A link to the dedicated spoke virtual network is established with the shared private DNS zone *privatelink.file.core.windows.net* for use with the shared private endpoint resource in [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub/README.md).
+A link to the dedicated spoke virtual network is established with the shared private DNS zone *privatelink.file.core.windows.net* for use with the shared private endpoint resource in [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub).
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -123,4 +121,4 @@ Explore newly provisioned resources in the Azure portal.
 
 ## Next steps
 
-Move on to the next quick start [terraform-azurerm-vm-windows](../terraform-azurerm-vnet-spoke/README.md).
+Move on to the next quick start [terraform-azurerm-vm-windows](../terraform-azurerm-vnet-spoke).
