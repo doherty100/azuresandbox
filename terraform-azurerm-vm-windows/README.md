@@ -91,7 +91,7 @@ log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-00
     * Copy the PowerShell script in the right-hand pane for use in the next smoke testing exercise.
 * Connect to the dedicated virtual machine in the Azure portal using bastion and log in with the *adminuser* and *adminpassword* defined previously.
   * Confirm access to shared file share private endpoint.
-    * Run PowerShell ISE, create a new script, and paste in the PowerShell script generated previously.
+    * Run Windows PowerShell ISE, create a new script, and paste in the script generated previously.
     * Copy the fqdn for the file endpoint from line 4, for example *stxxxxxxxxxxxxxxxx001.file.core.windows.net*
     * Run `Resolve-DnsName stxxxxxxxxxxxxxxxx001.file.core.windows.net` from the Windows PowerShell ISE console.  
     * Verify the the *IP4Address* returned is consistent with the address prefix used for the *snet-storage-private-endpoints-001* subnet in the shared hub virtual network. This name resolution is accomplished using the shared private DNS zone.
