@@ -85,17 +85,17 @@ log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-00
 
 * Examine shared secrets.
   * Use the Azure portal to review the 3 secrets that were created in the shared key vault.
-* Create a script for mapping drives to the shared file share.
+* Generate a script for mapping drives to the shared file share.
   * Mapping a drive to an Azure Files file share requires automation due to the use of a complex shared key to authenticate.
   * In the Azure Portal navigate to *storage accounts* > *stxxxxxxxxxxxxxxxx001* > *file service* > *file shares* > fs-xxxxxxxxxxxxxxxx-001 > Connect > Windows
   * Copy the PowerShell script in the right-hand pane for use in the next smoke testing exercise.
 * Connect to the dedicated virtual machine in the Azure portal using bastion and log in with the *adminuser* and *adminpassword* defined previously.
   * Partition and format the data disks attached to the virtual machine.
   * Confirm access to shared file share private endpoint.
-    * Run PowerShell ISE and paste in the PowerShell script generated in the previous smoke testing exercise.
+    * Run PowerShell ISE, create a new script, and paste in the PowerShell script generated previously.
     * Copy the fqdn for the file endpoint from line 4, for example *stxxxxxxxxxxxxxxxx001.file.core.windows.net*
-    * Run `Resolve-DnsName stxxxxxxxxxxxxxxxx001.file.core.windows.net` from the PowerShell ISE console.  
-      * Note the *IP4Address* returned is consistent with the address prefix used for the *snet-storage-private-endpoints-001* subnet in the shared hub virtual network. This name resolution is accomplished via the shared private DNS zone.
+    * Run `Resolve-DnsName stxxxxxxxxxxxxxxxx001.file.core.windows.net` from the Windows PowerShell ISE console.  
+    * Verify the the *IP4Address* returned is consistent with the address prefix used for the *snet-storage-private-endpoints-001* subnet in the shared hub virtual network. This name resolution is accomplished using the shared private DNS zone.
     * Execute the PowerShell script copied from the Azure Portal to establish a drive mapping to the shared file share using the private endpoint.
   * Create some directories and sample files on the drive mapped to the shared file share to test functionality.
 
