@@ -33,6 +33,8 @@ De-provisioning | ~15 minutes
 * Run `terraform validate` to check the syntax of the configuration.
 * Run `terraform apply` to apply the configuration.
 * Run `terraform output` to view the output variables from the *terraform.tfstate* file.
+* Run `terraform destroy` to test de-provisioning.
+* Run `terraform apply` again to apply the configuration.
 
 ## Resource index
 
@@ -63,9 +65,9 @@ resource_group_01_name | Output | string | Global | rg-vdc-nonprod-001
 
 Shared hub [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet). Note there are dependencies on this resource in the following quick starts:  
 
-* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke/README.md)
-* [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows/README.md)
-* [terraform-azurerm-vwan](../terraform-azurerm-vwan/README.md)
+* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
+* [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows)
+* [terraform-azurerm-vwan](../terraform-azurerm-vwan)
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -118,7 +120,7 @@ Shared general-purpose v2 standard [storage account](https://docs.microsoft.com/
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-storage_access_tier | Input | string | Local | Hot
+storage_access_tier | Input | string | Local | Hot (default)
 account_replication_type | Input | string | Local | LRS (default)
 storage_account_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Storage/storageAccounts/st60fb9730bfbe8ba9001
 storage_account_01_name | Output | string | Local | st60fb9730bfbe8ba9001

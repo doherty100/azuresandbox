@@ -39,11 +39,11 @@ variable "storage_access_tier" {
 variable "storage_replication_type" {
   type        = string
   description = "The type of replication for the new storage account."
-  # default = "LRS"
+  default     = "LRS"
 }
 
 variable "storage_share_quota_gb" {
-  type = string
+  type        = string
   description = "The storage quota for the Azure Files share to be provisioned in GB."
   # default = "1024"
 }

@@ -6,7 +6,6 @@ AAD_TENANT_ID=""
 KEY_VAULT_ADMIN_OBJECT_ID=""
 LOCATION="" 
 RESOURCE_GROUP_NAME=""
-STORAGE_REPLICATION_TYPE=""
 STORAGE_SHARE_QUOTA_GB=""
 SUBNETS=""
 TAGS=""
@@ -14,7 +13,7 @@ VNET_ADDRESS_SPACE=""
 VNET_NAME=""
 
 usage() {
-    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -r STORAGE_REPLICATION_TYPE\n  -q STORAGE_SHARE_QUOTA_GB\n  -d AAD_TENANT_ID\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n  -t TAGS\n" 1>&2
+    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -q STORAGE_SHARE_QUOTA_GB\n  -d AAD_TENANT_ID\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n  -t TAGS\n" 1>&2
     exit 1
 }
 
@@ -22,7 +21,7 @@ if [[ $# -eq 0  ]]; then
     usage
 fi  
 
-while getopts ":a:d:g:l:o:q:r:s:t:v:" option; do
+while getopts ":a:d:g:l:o:q:s:t:v:" option; do
     case "${option}" in
         a )
             VNET_ADDRESS_SPACE=${OPTARG}
@@ -41,9 +40,6 @@ while getopts ":a:d:g:l:o:q:r:s:t:v:" option; do
             ;;
         q )
             STORAGE_SHARE_QUOTA_GB=${OPTARG}
-            ;;
-        r )
-            STORAGE_REPLICATION_TYPE=${OPTARG}
             ;;
         s )
             SUBNETS=${OPTARG}
@@ -102,17 +98,6 @@ if [[ -z ${SUBNETS} ]]; then
     usage
 fi
 
-printf "Validating STORAGE_REPLICATION_TYPE '${STORAGE_REPLICATION_TYPE}'\n"
-
-case $STORAGE_REPLICATION_TYPE in
-    LRS | GRS | RAGRS | ZRS )
-        ;;
-    * )
-        printf "Error: Invalid STORAGE_REPLICATION_TYPE.\n"
-        usage
-        ;;
-esac
-
 printf "Validating STORAGE_SHARE_QUOTA_GB '${STORAGE_SHARE_QUOTA_GB}'\n"
 
 if [[ -z ${STORAGE_SHARE_QUOTA_GB} ]]; then
@@ -147,7 +132,6 @@ printf "aad_tenant_id = \"$AAD_TENANT_ID\"\n" > ./terraform.tfvars
 printf "key_vault_admin_object_id = \"$KEY_VAULT_ADMIN_OBJECT_ID\"\n" >> ./terraform.tfvars
 printf "location = \"$LOCATION\"\n" >> ./terraform.tfvars
 printf "resource_group_name = \"$RESOURCE_GROUP_NAME\"\n" >> ./terraform.tfvars
-printf "storage_replication_type = \"$STORAGE_REPLICATION_TYPE\"\n" >> ./terraform.tfvars
 printf "storage_share_quota_gb = \"$STORAGE_SHARE_QUOTA_GB\"\n" >> ./terraform.tfvars
 printf "subnets = $SUBNETS\n" >> ./terraform.tfvars
 printf "tags = $TAGS\n" >> ./terraform.tfvars
