@@ -21,7 +21,7 @@ De-provisioning | ~15 minutes
 * Run `az ad user show --id myusername@mydomain.com | jq -r .objectId` to determine *objectId* of the security principal used to administer secrets in the shared key vault. The *objectId* returned is a guid in the format *00000000-0000-0000-0000-000000000000*.
   * Troubleshooting
     * Make sure the *--id* parameter is a valid object ID or principal name.
-    * Some organizations restrict the ability to enumerate AAD security principals. In this case you should contact your identity administrator to determine the *objectId*.
+    * Some organizations restrict the ability to enumerate AAD security principals. In this case contact an identity administrator for assistance.
 * Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
 * Edit `run-gen-tfvarsfile-private.sh` and update the following parameters:  
   * -d: Change this to the *tenantId* determined previously.
