@@ -189,7 +189,6 @@ Variable | In/Out | Type | Scope | Sample
 aad_tenant_id | Input | string | Local |00000000-0000-0000-0000-000000000000
 key_vault_sku_name | Input | string | Local | standard (default)
 key_vault_01_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.KeyVault/vaults/kv-e054bd29698d4fc7-001
-key_vault_01_name = kv-e054bd29698d4fc7-001
 key_vault_01_name | Output | string | Global | kv-e054bd29698d4fc7-001
 key_vault_01_uri | Output | string | Local | Obfuscated for security
 
