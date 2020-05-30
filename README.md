@@ -1,7 +1,5 @@
 # Azure quick starts by [Roger Doherty](https://www.linkedin.com/in/roger-doherty-805635b/)
 
-\[ azurequickstarts \]
-
 ## Overview
 
 This repository contains a collection of inter-dependent [cloud computing](https://azure.microsoft.com/en-us/overview/what-is-cloud-computing) quick starts for implementing common [Microsoft Azure](https://azure.microsoft.com/en-us/overview/what-is-azure/) services on a single [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription). Collectively these quick starts implement a basic [hub-spoke networking topology](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke) using automation implemented using popular Linux open source tools that are supported on Windows and macOS including:
