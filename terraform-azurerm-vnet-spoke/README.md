@@ -16,7 +16,7 @@ De-provisioning | ~10 minutes
 ## Getting started
 
 * Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
-* Edit `run-gen-tfvarsfile-private.sh` and update the following parameters:  
+* Edit `run-gen-tfvarsfile-private.sh`.  
   * Customize parameter values as needed.
   * Save your changes.
 * Run `./run-gen-tfvarsfile-private.sh` to generate *terraform.tfvars*.  
@@ -59,17 +59,17 @@ vnet_spoke_01_subnets | Output | string (json) | Local | { "AzureBastionSubnet" 
 
 #### Bastion
 
-Dedicated [bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview) with an automatically generated random name following the grep format "bst-\[a-z0-9\]\{16\}-001" that is associated with the subnet *AzureBastionSubnet* as described previously.
+Dedicated [bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview) with an automatically generated random name following the grep format "bst-\[a-z0-9\]\{16\}-002" that is associated with the subnet *AzureBastionSubnet* as described previously.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 bastion_host_02_dns_name | Output | string | Local | Obfuscated for security
 bastion_host_02_id  | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/bastionHosts/bst-54ae94029797fd14-002
-bastion_host_01_name | Output | string | Local | bst-54ae94029797fd14-002
+bastion_host_02_name | Output | string | Local | bst-54ae94029797fd14-002
 
 ##### Public ip
 
-Dedicated standard static [public ip](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-ip-addresses-overview-arm#public-ip-addresses) for use with bastion with an automatically generated name following the grep format "pip-\[a-z0-9\]\{16\}-001".  
+Dedicated standard static [public ip](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-ip-addresses-overview-arm#public-ip-addresses) for use with bastion with an automatically generated name following the grep format "pip-\[a-z0-9\]\{16\}-002".  
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -121,4 +121,4 @@ Explore newly provisioned resources in the Azure portal.
 
 ## Next steps
 
-Move on to the next quick start [terraform-azurerm-vm-windows](../terraform-azurerm-vnet-spoke).
+Move on to the next quick start [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows).
