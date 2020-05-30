@@ -35,7 +35,7 @@ This section provides an index of the ~6 resources included in this quick start.
 
 ---
 
-Dedicated Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions.
+Dedicated Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) connected to the dedicated spoke virtual network with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
