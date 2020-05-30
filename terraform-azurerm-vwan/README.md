@@ -18,9 +18,7 @@ De-provisioning | ~5 minutes
 ## Getting started
 
 * Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
-* Edit `run-gen-tfvarsfile-private.sh` and update the following parameters:  
-  * Customize parameter values as needed.
-  * Save your changes.
+* Edit `run-gen-tfvarsfile-private.sh` to customize parameter values as needed and save changes.  
 * Run `./run-gen-tfvarsfile-private.sh` to generate *terraform.tfvars*.  
 * Run `terraform init`
 * Run `terraform apply`

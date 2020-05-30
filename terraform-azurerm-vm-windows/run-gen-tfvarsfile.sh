@@ -8,7 +8,7 @@
 # -d VM_DATA_DISK_SIZE_GB\
 # -t TAGS
 
-./gentfvarsfile.sh \
+./gen-tfvarsfile.sh \
   -n "jumpbox01" \
   -s "2019-Datacenter-smalldisk" \
   -z "Standard_B2ms" \

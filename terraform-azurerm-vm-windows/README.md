@@ -2,7 +2,7 @@
 
 ## Overview
 
-This quick start implements a dedicated Windows Server virtual machine which can be used as a jump box, admin workstation, web server, application server or database server. The following quick starts must be deployed first before starting:
+This quick start implements a dedicated Windows Server virtual machine connected to the dedicated spoke virtual network which can be used as a jump box, admin workstation, web server, application server or database server. The following quick starts must be deployed first before starting:
 
 * [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub)
 * [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
@@ -22,9 +22,7 @@ De-provisioning | ~ 5 minutes
     * *adminpassword*: the admin password to use when provisioning new virtual machines. Note that the password must be at least 12 characters long and meet [defined complexity requirements](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm). Be sure to use the escape character "\\" before any [metacharacters](https://www.gnu.org/software/bash/manual/bash.html#Definitions) in your password.
   * Run `./setkeyvaultsecrets.sh -u "MyAdminUserName" -p "MyStrongAdminPassword"` using the values defined previously.
 * Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
-* Edit `run-gen-tfvarsfile-private.sh` and update the following parameters:  
-  * Customize parameter values as needed.
-  * Save your changes.
+* Edit `run-gen-tfvarsfile-private.sh` to customize parameter values as needed and save changes.  
 * Run `./run-gen-tfvarsfile-private.sh` to generate *terraform.tfvars*.  
 * Run `terraform init`.
 * Run `terraform apply`.
@@ -37,7 +35,7 @@ This section provides an index of the ~6 resources included in this quick start.
 
 ---
 
-Dedicated Windows Server virtual machine with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions.
+Dedicated Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
