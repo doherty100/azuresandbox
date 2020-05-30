@@ -207,9 +207,9 @@ Shared key vault [access policy](https://docs.microsoft.com/en-us/azure/key-vaul
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-aad_tenant_id | Input | string | Local |00000000-0000-0000-0000-000000000000
-key_vault_admin_object_id | Input | string | Local |00000000-0000-0000-0000-000000000000
-key_vault_01_access_policy_secrets_admin_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.KeyVault/vaults/kv-e054bd29698d4fc7-001/objectId/4e04cdb4-0f6f-45b5-b115-90b742b19f12
+aad_tenant_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
+key_vault_admin_object_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
+key_vault_01_access_policy_secrets_admin_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.KeyVault/vaults/kv-e054bd29698d4fc7-001/objectId/00000000-0000-0000-0000-000000000000
 
 ### Log analytics workspace
 
