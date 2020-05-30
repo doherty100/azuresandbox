@@ -19,11 +19,11 @@ De-provisioning | ~15 minutes
 * Run `az login` and sign in using the credentials associated with the subscription you intend to use for the quick starts.
 * Run `az account list -o table` and copy the *Subscription Id* to be used for the quick starts.
 * Run `az account set -s 00000000-0000-0000-0000-000000000000` using the *Subscription Id* from the previous step to set the default subscription.
+* Run `az account show | jq -r .tenantId` to determine the *tenantId* of the AAD tenant associated with the subscription. The *tenantId* returned is a guid in the format *00000000-0000-0000-0000-000000000000*.
 * Run `az ad user show --id myusername@mydomain.com | jq -r .objectId` to determine *objectId* of your user account. This will be used to grant access to the shared key vault access policy used for shared key vault secret administration. The *objectId* returned is a guid in the format *00000000-0000-0000-0000-000000000000*.
   * Troubleshooting
     * Make sure the *--id* parameter is a valid object ID or principal name.
     * Some organizations restrict the ability to enumerate AAD security principals. In this case you should contact your identity administrator to determine the *objectId*.
-* Run `az account show | jq -r .tenantId` to determine the *tenantId* of the AAD tenant associated with the subscription being used for the quick starts. The *tenantId* returned is a guid in the format *00000000-0000-0000-0000-000000000000*.
 * Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
 * Edit `run-gen-tfvarsfile-private.sh` and update the following parameters:  
   * -o: Change this to the *objectId* determined previously.  
@@ -180,7 +180,7 @@ virtual_network_link_vnet_hub_01_name | Output | string | Local | pdnslnk-vnet-h
 
 ---
 
-Shared [key vault](https://docs.microsoft.com/en-us/azure/key-vault/) with an automatically generated random name following the grep format "kv-\[a-z0-9\]\{16\}-001". The output variables *key_vault_01_name* and *key_vault_01_id* are used by other configurations to set and retrieve secrets, and the following options are set to *true*:  
+Shared [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview) with an automatically generated random name following the grep format "kv-\[a-z0-9\]\{16\}-001". The output variables *key_vault_01_name* and *key_vault_01_id* are used by other configurations to set and retrieve secrets, and the following options are set to *true*:  
 
 * [enabled_for_deployment](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_deployment)  
 * [enabled_for_disk_encryption](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_disk_encryption)  

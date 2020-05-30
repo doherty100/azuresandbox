@@ -14,7 +14,7 @@ VNET_ADDRESS_SPACE=""
 VNET_NAME=""
 
 usage() {
-    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -r STORAGE_REPLICATION_TYPE\n  -q STORAGE_SHARE_QUOTA_GB\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n  -d AAD_TENANT_ID\n  -t TAGS\n" 1>&2
+    printf "Usage: $0 \n  -g RESOURCE_GROUP_NAME\n  -l LOCATION\n  -v VNET_NAME\n  -a VNET_ADDRESS_SPACE\n  -s SUBNETS\n  -r STORAGE_REPLICATION_TYPE\n  -q STORAGE_SHARE_QUOTA_GB\n  -d AAD_TENANT_ID\n  -o KEY_VAULT_ADMIN_OBJECT_ID\n  -t TAGS\n" 1>&2
     exit 1
 }
 
@@ -120,17 +120,17 @@ if [[ -z ${STORAGE_SHARE_QUOTA_GB} ]]; then
     usage
 fi
 
-printf "Validating KEY_VAULT_ADMIN_OBJECT_ID '${KEY_VAULT_ADMIN_OBJECT_ID}'\n"
-
-if [[ -z ${KEY_VAULT_ADMIN_OBJECT_ID} ]]; then
-    printf "Error: Invalid KEY_VAULT_ADMIN_OBJECT_ID.\n"
-    usage
-fi
-
 printf "Validating AAD_TENANT_ID '${AAD_TENANT_ID}'\n"
 
 if [[ -z {$AAD_TENANT_ID} ]]; then
     printf "Error: Invalid AAD_TENANT_ID.\n"
+    usage
+fi
+
+printf "Validating KEY_VAULT_ADMIN_OBJECT_ID '${KEY_VAULT_ADMIN_OBJECT_ID}'\n"
+
+if [[ -z ${KEY_VAULT_ADMIN_OBJECT_ID} ]]; then
+    printf "Error: Invalid KEY_VAULT_ADMIN_OBJECT_ID.\n"
     usage
 fi
 
