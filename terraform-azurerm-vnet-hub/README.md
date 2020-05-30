@@ -32,9 +32,6 @@ De-provisioning | ~15 minutes
 * Run `terraform init` and note the version of the azurerm provider installed.
 * Run `terraform validate` to check the syntax of the configuration.
 * Run `terraform apply` to apply the configuration.
-* Run `terraform output` to view the output variables from the *terraform.tfstate* file.
-* Run `terraform destroy` to test de-provisioning.
-* Run `terraform apply` again to apply the configuration.
 
 ## Resource index
 
@@ -242,6 +239,7 @@ shared_image_gallery_01_unique_name | Output | string | Local | 00000000-0000-00
 * Explore your newly provisioned resources in the Azure portal.
 * Run `terraform destroy` to understand how de-provisioning works.
 * Run `terraform apply` to re-apply the configuration.
+* Run `terraform output` to view the output variables from the *terraform.tfstate* file.
 
 ## Next steps
 
