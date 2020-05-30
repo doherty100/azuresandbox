@@ -31,7 +31,7 @@ This section provides an index of the 6 resources included in this quick start.
 
 ---
 
-Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) to connect the shared hub and dedicated spoke virtual networks to remote users via [point-to-site VPN](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) (P2S), or to a private network using [site-to-site VPN](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-site-to-site-portal) (S2S) or [ExpressRoute](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-expressroute-portal) with an automatically generated name following the grep format "vwan-\[a-z0-9\]\{16\}-001". The following arguments are configured by default:
+Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) to connect the shared hub and dedicated spoke virtual networks to remote users via [point-to-site VPN](https://docs.microsoft.com/en-us/azure/vpn-gateway/point-to-site-about) (P2S), or to a private network using [site-to-site VPN](https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-vpn-devices) (S2S) or [ExpressRoute](https://docs.microsoft.com/en-us/azure/expressroute/expressroute-introduction) with an automatically generated name following the grep format "vwan-\[a-z0-9\]\{16\}-001". The following arguments are configured by default:
 
 * [disable_vpn_encryption](https://www.terraform.io/docs/providers/azurerm/r/virtual_wan.html#disable_vpn_encryption) = false
 * [allow_branch_to_branch_traffic](https://www.terraform.io/docs/providers/azurerm/r/virtual_wan.html#allow_branch_to_branch_traffic) = true
