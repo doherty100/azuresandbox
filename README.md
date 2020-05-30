@@ -1,6 +1,6 @@
 # Azure quick starts by [Roger Doherty](https://www.linkedin.com/in/roger-doherty-805635b/)
 
-\[ [azurequickstarts](.) \]
+\[ [azurequickstarts](./) \]
 
 ## Overview
 
@@ -15,7 +15,7 @@ This repository contains a collection of inter-dependent [cloud computing](https
 
 The quick starts feature a modular design and can be deployed as a whole or incrementally depending upon requirements. Each is listed here in suggested order of deployment.
 
-* [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub)
+* [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/)
   * Shared [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group)  
   * Shared hub [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet)  
   * Dedicated [bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview)  
@@ -23,13 +23,13 @@ The quick starts feature a modular design and can be deployed as a whole or incr
   * Shared [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview)  
   * Shared [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment)  
   * Shared [image gallery](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/shared-image-galleries)
-* [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke)
+* [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
   * Dedicated spoke virtual network  
   * Dedicated bastion  
   * Pre-configured bidirectional [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/README.md)  
-* [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows)
+* [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
   * Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm)
-* [terraform-azurerm-vwan](./terraform-azurerm-vwan)
+* [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
   * Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources)
   * Shared [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/README.md) and [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/README.md)  
 
@@ -48,7 +48,7 @@ The following prerequisites are required in order to get started.
 * Familiarize yourself with Terraform [Output Values](https://www.terraform.io/docs/configuration/outputs.html) also referred to as *Output Variables*
 * Familiarize yourself with [Recommended naming and tagging conventions](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging) and [Naming rules and restrictions for Azure resources](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules)
 * Deploy the quick starts in the following order:
-  * Start by deploying the [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub) quick start which establishes a shared hub virtual network and shared services.
-  * Next, deploy the [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-hub) quick start which establishes a dedicated spoke virtual network.
-  * Proceed by deploying the [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows) quick start which implements a dedicated Windows Server virtual machine in the dedicated spoke virtual network.
-  * Finish by deploying the [terraform-azurerm-vwan](./terraform-azurerm-vwan) quick start which connects the shared hub virtual network and the dedicated spoke virtual network to remote users or a private network.
+  * Start by deploying the [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/) quick start which establishes a shared hub virtual network and shared services.
+  * Next, deploy the [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-hub/) quick start which establishes a dedicated spoke virtual network.
+  * Proceed by deploying the [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) quick start which implements a dedicated Windows Server virtual machine in the dedicated spoke virtual network.
+  * Finish by deploying the [terraform-azurerm-vwan](./terraform-azurerm-vwan/) quick start which connects the shared hub virtual network and the dedicated spoke virtual network to remote users or a private network.
