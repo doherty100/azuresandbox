@@ -18,7 +18,7 @@ De-provisioning | ~15 minutes
 * Run `az account list -o table` and copy the *Subscription Id* to be used for the quick starts.
 * Run `az account set -s 00000000-0000-0000-0000-000000000000` using the *Subscription Id* from the previous step to set the default subscription.
 * Run `az account show | jq -r .tenantId` to determine the *tenantId* of the AAD tenant associated with the subscription. The *tenantId* returned is a guid in the format *00000000-0000-0000-0000-000000000000*.
-* Run `az ad user show --id myusername@mydomain.com | jq -r .objectId` to determine *objectId* of your user account. This will be used to grant access to the shared key vault access policy used for shared key vault secret administration. The *objectId* returned is a guid in the format *00000000-0000-0000-0000-000000000000*.
+* Run `az ad user show --id myusername@mydomain.com | jq -r .objectId` to determine *objectId* of the security principal used to administer secrets in the shared key vault. The *objectId* returned is a guid in the format *00000000-0000-0000-0000-000000000000*.
   * Troubleshooting
     * Make sure the *--id* parameter is a valid object ID or principal name.
     * Some organizations restrict the ability to enumerate AAD security principals. In this case you should contact your identity administrator to determine the *objectId*.
