@@ -142,7 +142,7 @@ Shared [file share](https://docs.microsoft.com/en-us/azure/storage/files/storage
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 storage_share_quota | Input | string | Local | 1024 (Gb)
-storage_share_01_id | Output | string | Local | <https://st60fb9730bfbe8ba9001.file.core.windows.net/fs-60fb9730bfbe8ba9-001>
+storage_share_01_id | Output | string | Local | Obfuscated for security
 storage_share_01_name | Output | string | Local | fs-60fb9730bfbe8ba9-001
 
 #### Private DNS zone
@@ -152,9 +152,7 @@ Shared [private DNS zone](https://docs.microsoft.com/en-us/azure/dns/private-dns
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 private_dns_zone_1_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/privateDnsZones/privatelink.file.core.windows.net
-private_dns_zone_1_name | Output | string | Local | privatelink.file.core.windows.net
-private_dns_a_record_1_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/privateDnsZones/privatelink.file.core.windows.net/A/st60fb9730bfbe8ba9001
-private_dns_a_record_1_name | Output | string | Local | st60fb9730bfbe8ba9001
+private_dns_zone_1_name | Output | string | Global | privatelink.file.core.windows.net
 
 ##### Private DNS zone A record
 
@@ -162,8 +160,6 @@ A DNS A record is created in the private DNS zone with a default ttl of 300. The
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-private_dns_zone_1_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/privateDnsZones/privatelink.file.core.windows.net
-private_dns_zone_1_name | Output | string | Local | privatelink.file.core.windows.net
 private_dns_a_record_1_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/privateDnsZones/privatelink.file.core.windows.net/A/st60fb9730bfbe8ba9001
 private_dns_a_record_1_name | Output | string | Local | st60fb9730bfbe8ba9001
 
