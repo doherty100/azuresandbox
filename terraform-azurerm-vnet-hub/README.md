@@ -40,7 +40,7 @@ This section describes how to provision this quick start using default settings.
 
 ### Getting started with custom settings
 
-This section describes how to provision this quick start using custom settings. Refer to the section "Perform custom quick start deployment" in [azurequickstarts](..\.) for more details.
+This section describes how to provision this quick start using custom settings. Refer to [Perform custom quick start deployment](https://github.com/doherty100/azurequickstarts#perform-custom-quick-start-deployment) for more details.
 
 * Run `az logout` and `az account clear` to reset the subscription credentials used by Azure CLI.
 * Run `az login` and sign in using the credentials associated with the subscription you intend to use for the quick starts.
