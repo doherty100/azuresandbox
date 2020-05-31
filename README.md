@@ -51,6 +51,8 @@ Familiarity with the following topics will be helpful when working with the quic
 
 ### Configure client environment
 
+--- 
+
 This section describes the various client environments that can be used to interactively deploy the quick starts.
 
 #### Cloud shell
@@ -91,14 +93,67 @@ Linux and macOS users can deploy the quick starts natively by installing the fol
 
 Note the Bash scripts used in the quick starts were developed and tested using `GNU bash, version 4.4.20(1)-release (x86_64-pc-linux-gnu)` and have not been tested on other popular shells like [zsh](https://www.zsh.org/).
 
-### Next steps
+## Next steps
 
 Now that the client environment has been configured, here's how to start working with the quick starts.
 
 * Open a new command shell in the client environment.
 * Run `git clone https://github.com/doherty100/azurequickstarts` to clone this repository into a new directory in the client environment. Ensure that the directory you are using is not ephemeral.
 
-#### Default deployment
+### Perform default quick start deployment
+
+---
+
+For the first deployment, the author recommends using defaults, which is ideal for speed, learning and testing. IP address ranges are expressed using [CIDR notation](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#CIDR_notation).
+
+#### Default IP address ranges
+
+The quick starts use default IP address ranges for networking components, specifically virtual networks and [point-to-site VPN](https://docs.microsoft.com/en-us/azure/vpn-gateway/point-to-site-about) client VPN connections. These ranges are artificially large and contiguous for simplicity, and customized IP address ranges can be much smaller. A suggested minimum is provided to assist in making the conversion. It's a good idea to start small. Additional IP address ranges can be added to the networking configuration in the future if you need them, but you can't modify an existing IP address range to make it smaller.
+
+Address range | CIDR | First | Last | IP address count | Suggested minimum range
+--- |--- | --- | --- | --: | ---
+Reserved for private network | 10.0.0.0/16 | 10.0.0.0 | 10.0.255.255 | 65,536 | N/A
+Default quick start aggregate | 10.1.0.0/13 | 10.1.0.0 | 10.7.255.255 | 524,288 | /22 (1024 IP addresses)
+Shared hub virtual network | 10.1.0.0/16 | 10.1.0.0 | 10.1.255.255 | 65,536 | /24 (256 IP addresses)
+Dedicated spoke Virtual Network | 10.2.0.0/16 | 10.2.0.0 | 10.2.255.255 | 65,536 | /24 (256 IP addresses)
+Shared virtual wan hub | 10.3.0.0/16 | 10.3.0.0 | 10.3.255.255 | 65,536 | /24 (256 IP addresses)
+P2S client VPN connections | 10.4.0.0/16 | 10.4.0.0 | 10.4.255.255 | 65,536 | /24 (256 IP addresses)
+Reserved for future use | 10.5.0.0/16 | 10.5.0.0 | 10.5.255.255 | 65,536 | N/A
+Reserved for future use | 10.6.0.0/15 | 10.6.0.0 | 10.7.255.255 | 131,072 | N/A
+
+##### Default subnet IP address prefixes
+
+This section documents the default subnet IP address prefixes used in the quick starts. Subnets enable you to segment the virtual network into one or more sub-networks and allocate a portion of the virtual network's address space to each subnet. You can then connect network resources to a specific subnet, and secure them using [network security qroups](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
+
+Virtual network | Subnet | IP address prefix | First | Last | IP address count
+--- | --- | --- | --- | --- | --:
+Shared hub | snet-default-001 | 10.1.0.0/24 | 10.1.0.0 | 10.1.0.255 | 256
+Shared hub | AzureBastionSubnet | 10.1.1.0/27 | 10.1.1.0 | 10.1.1.31 | 32
+Shared hub | Reserved for future use | 10.1.1.32/27 | 10.1.1.32 | 10.1.1.63 | 32
+Shared hub | Reserved for future use | 10.1.1.64/26 | 10.1.1.64 | 10.1.1.127 | 64
+Shared hub | Reserved for future use | 10.1.1.128/25 | 10.1.1.128 | 10.1.1.255 | 128
+Shared hub | snet-storage-private-endpoints-001 | 10.1.2.0/24 | 10.1.2.0 | 10.1.2.255 | 256
+Shared hub | Reserved for future use | 10.1.3.0/24 | 10.1.3.0 | 10.1.3.255 | 256
+Shared hub | Reserved for future use | 10.1.4.0/22 | 10.1.4.0 | 10.1.7.255 | 1,024
+Shared hub | Reserved for future use | 10.1.8.0/21 | 10.1.8.0 | 10.1.15.255 | 2,048
+Shared hub | Reserved for future use | 10.1.16.0/20 | 10.1.16.0 | 10.1.31.255 | 4,096
+Shared hub | Reserved for future use | 10.1.32.0/19 | 10.1.32.0 | 10.1.63.255 | 8,192
+Shared hub | Reserved for future use | 10.1.64.0/18 | 10.1.64.0 | 10.1.127.255 | 16,384
+Shared hub | Reserved for future use | 10.1.128.0/17 | 10.1.128.0 | 10.1.255.255 | 32,768
+Dedicated spoke | snet-default-002 | 10.2.0.0/24 | 10.2.0.0 | 10.2.0.255 | 256
+Dedicated spoke | AzureBastionSubnet | 10.2.1.0/27 | 10.2.1.0 | 10.2.1.31 | 32
+Dedicated spoke | Reserved for future use | 10.2.1.32/27 | 10.2.1.32 | 10.2.1.63 | 32
+Dedicated spoke | Reserved for future use | 10.2.1.64/25 | 10.2.1.64 | 10.2.1.127 | 64
+Dedicated spoke | Reserved for future use | 10.2.1.128/25 | 10.2.1.128 | 10.2.1.255 | 128
+Dedicated spoke | Reserved for future use | 10.2.2.0/23 | 10.2.2.0 | 10.2.3.255 | 512
+Dedicated spoke | Reserved for future use | 10.2.4.0/22 | 10.2.4.0 | 10.2.7.255 | 1,024
+Dedicated spoke | Reserved for future use | 10.2.8.0/21 | 10.2.8.0 | 10.2.15.255 | 2,048
+Dedicated spoke | Reserved for future use | 10.2.16.0/20 | 10.2.16.0 | 10.2.31.255 | 4,096
+Dedicated spoke | Reserved for future use | 10.2.32.0/19 | 10.2.32.0 | 10.2.63.255 | 8,192
+Dedicated spoke | Reserved for future use | 10.2.64.0/18 | 10.2.64.0 | 10.2.127.255 | 16,384
+Dedicated spoke | Reserved for future use | 10.2.128.0/17 | 10.2.128.0 | 10.2.255.255 | 32,768
+
+#### Deploy quick starts using defaults
 
 Deploy the quick starts the first time using defaults in the following order:
 
@@ -107,16 +162,56 @@ Deploy the quick starts the first time using defaults in the following order:
 1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) implements a dedicated Windows Server virtual machine connected to the dedicated spoke virtual network.
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared hub virtual network and the dedicated spoke virtual network to remote users or a private network.
 
-#### De-provision default deployment
+### De-provision default quick start deployment
 
-While a default quick start deployment is fine for testing, it will likely not work with your organization's private network. You must de-provision the default deployment first before doing a custom deployment. You do this by running `terraform destroy` on each quick start in the reverse order in which it was deployed:
+---
+
+While a default quick start deployment is fine for testing, it may not work with an organization's private network. The default deployment should be de-provisioned first before doing a custom deployment. This is accomplished by running `terraform destroy` on each quick start in the reverse order in which it was deployed:
 
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
 1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
 1. [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/)
 
-#### Custom deployment
+Alternatively, for speed, simply run `az group delete -g rg-vdc-nonprod-001`. After doing this, it is recommended that you remove temporary files from each quick start directory by running `rm -r .terraform/` and `rm terraform.*`.
 
-A custom deployment will likely be required to connect the quick starts to an organization's private network. This section provides guidance on how to customize each of the quick starts.
+### Perform custom quick start deployment
 
+A custom deployment will likely be required to connect the quick starts to an organization's private network. This section provides guidance on how to customize each of the quick starts. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section.
+
+---
+
+#### Private network IP address ranges (sample)
+
+Use this section to document an organization's private network IP address ranges by consulting a network professional. This is required if you want to establish a [hybrid connection](https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/hybrid-connectivity) between an organization's private network and the quick starts. Make your own copy of this table and change these sample values to your custom values.  
+
+IP address range | CIDR | First | Last | IP address count
+--- | --- | --- | --- | --:
+Primary range | 10.0.0.0/8 | 10.0.0.0 | 10.255.255.255 | 16,777,216
+Secondary range | 162.44.0.0/16 | 162.44.0.0 | 162.44.255.255 | 65,536
+
+#### Custom IP address ranges (sample)
+
+Use this section to customize the default IP address ranges used by the quick starts to support routing on an organization's private network. The aggregate range would should be determined by consulting a network professional, and will likely be allocated using an aggregate range that falls within the private network ip address ranges discussed previously. Make your own copy of this table and change these sample values to your custom values. Note this sample uses the suggested minimum address ranges from the default IP address ranges described previously.
+
+IP address range | CIDR | First | Last | IP address count
+--- | --- | --- | --- | --:
+Aggregate range | 10.73.8.0/22 | 10.73.8.0 | 10.73.11.255 | 1,024
+Shared hub virtual network | 10.73.8.0/24  | 10.73.8.0 | 10.73.8.255 | 256
+Dedicated spoke virtual network | 10.73.9.0/24 | 10.73.9.0 | 10.73.9.255 | 256
+Shared virtual wan hub | 10.73.10.0/24 | 10.73.10.0 | 10.73.10.255 | 256
+P2S client VPN connections | 10.73.11.0/24 | 10.73.11.0 | 10.73.11.255 | 256
+
+##### Custom subnet IP address prefixes (sample)
+
+Use this section to customize the default subnet IP address prefixes used by the quick starts to support routing on an organization's private network. Make your own copy of this table and change these sample values to your custom values. Note this sample uses the suggested minimum address ranges described previously.
+
+Virtual network | Subnet | IP address prefix | First | Last | IP address count
+Shared hub | snet-default-001 | 10.73.8.0/25 | 10.73.8.0 | 10.73.8.127 | 128
+Shared hub | AzureBastionSubnet | 10.73.8.128/27 | 10.73.8.128 | 10.73.8.159 | 32
+Shared hub | snet-storage-private-endpoints-001 | 10.73.8.160/27 | 10.73.8.160 | 10.73.8.191 | 32
+Shared hub | Reserved for future use | 10.73.8.192/26 | 10.73.8.192 | 10.73.8.255 | 64
+Dedicated spoke | snet-default-002 | 10.73.9.0/25 | 10.73.9.0 | 10.73.9.127 | 128
+Dedicated spoke | AzureBastionSubnet | 10.73.9.128/27 | 10.73.9.128 | 10.73.9.159 | 32
+Dedicated spoke | Reserved for future use | 10.73.9.160/27 | 10.73.9.160 | 10.73.9.191 | 32
+Dedicated spoke | Reserved for future use | 10.73.9.192/26 | 10.73.9.192 | 10.73.9.255 | 64
