@@ -108,7 +108,7 @@ For the first deployment, the author recommends using defaults, which is ideal f
 
 #### Default IP address ranges
 
-The quick starts use default IP address ranges for networking components, specifically virtual networks and [point-to-site VPN](https://docs.microsoft.com/en-us/azure/vpn-gateway/point-to-site-about) client VPN connections. These ranges are artificially large and contiguous for simplicity, and customized IP address ranges can be much smaller. A suggested minimum is provided to assist in making the conversion. It's a good idea to start small. Additional IP address ranges can be added to the networking configuration in the future if you need them, but you can't modify an existing IP address range to make it smaller.
+The quick starts use default IP address ranges for networking components, specifically virtual networks and [point-to-site VPN](https://docs.microsoft.com/en-us/azure/vpn-gateway/point-to-site-about) client connections. These ranges are artificially large and contiguous for simplicity, and customized IP address ranges can be much smaller. A suggested minimum is provided to assist in making the conversion. It's a good idea to start small. Additional IP address ranges can be added to the networking configuration in the future if you need them, but you can't modify an existing IP address range to make it smaller.
 
 Address range | CIDR | First | Last | IP address count | Suggested minimum range
 --- |--- | --- | --- | --: | ---
@@ -162,9 +162,7 @@ Deploy the quick starts the first time using defaults in the following order:
 1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) implements a dedicated Windows Server virtual machine connected to the dedicated spoke virtual network.
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared hub virtual network and the dedicated spoke virtual network to remote users or a private network.
 
-### De-provision default quick start deployment
-
----
+#### De-provision default quick start deployment
 
 While a default quick start deployment is fine for testing, it may not work with an organization's private network. The default deployment should be de-provisioned first before doing a custom deployment. This is accomplished by running `terraform destroy` on each quick start in the reverse order in which it was deployed:
 
@@ -177,22 +175,22 @@ Alternatively, for speed, simply run `az group delete -g rg-vdc-nonprod-001`. Af
 
 ### Perform custom quick start deployment
 
-A custom deployment will likely be required to connect the quick starts to an organization's private network. This section provides guidance on how to customize each of the quick starts. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section.
-
 ---
 
-#### Private network IP address ranges (sample)
+A custom deployment will likely be required to connect the quick starts to an organization's private network. This section provides guidance on how to customize each of the quick starts. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section.
 
-Use this section to document an organization's private network IP address ranges by consulting a network professional. This is required if you want to establish a [hybrid connection](https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/hybrid-connectivity) between an organization's private network and the quick starts. Make your own copy of this table and change these sample values to your custom values.  
+#### Determine private network IP address ranges (sample)
+
+Use this section to document one or more private network IP address ranges by consulting a network professional. This is required if you want to establish a [hybrid connection](https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/hybrid-connectivity) between an organization's private network and the quick starts. The sample includes two IP address ranges encompassed by a private network. Make a copy of this table and change the sample values to custom values.  
 
 IP address range | CIDR | First | Last | IP address count
 --- | --- | --- | --- | --:
 Primary range | 10.0.0.0/8 | 10.0.0.0 | 10.255.255.255 | 16,777,216
 Secondary range | 162.44.0.0/16 | 162.44.0.0 | 162.44.255.255 | 65,536
 
-#### Custom IP address ranges (sample)
+#### Determine custom IP address ranges (sample)
 
-Use this section to customize the default IP address ranges used by the quick starts to support routing on an organization's private network. The aggregate range would should be determined by consulting a network professional, and will likely be allocated using an aggregate range that falls within the private network ip address ranges discussed previously. Make your own copy of this table and change these sample values to your custom values. Note this sample uses the suggested minimum address ranges from the default IP address ranges described previously.
+Use this section to customize the default IP address ranges used by the quick starts to support routing on an organization's private network. The aggregate range should be determined by consulting a network professional, and will likely be allocated using a range that falls within the private network ip address ranges discussed previously, and the rest of the ip address ranges must be contained within it. Make a copy of this table and change the sample values to custom values. Note this sample uses the suggested minimum address ranges from the default IP address ranges described previously.
 
 IP address range | CIDR | First | Last | IP address count
 --- | --- | --- | --- | --:
@@ -202,9 +200,9 @@ Dedicated spoke virtual network | 10.73.9.0/24 | 10.73.9.0 | 10.73.9.255 | 256
 Shared virtual wan hub | 10.73.10.0/24 | 10.73.10.0 | 10.73.10.255 | 256
 P2S client VPN connections | 10.73.11.0/24 | 10.73.11.0 | 10.73.11.255 | 256
 
-##### Custom subnet IP address prefixes (sample)
+##### Determine custom subnet IP address prefixes (sample)
 
-Use this section to customize the default subnet IP address prefixes used by the quick starts to support routing on an organization's private network. Make your own copy of this table and change these sample values to your custom values. Note this sample uses the suggested minimum address ranges described previously.
+Use this section to customize the default subnet IP address prefixes used by the quick starts to support routing on an organization's private network. Make a copy of this table and change these sample values to custom values. Each address prefix must fall within the virtual network IP address ranges discussed previously. Note this sample uses the suggested minimum address ranges described previously.
 
 Virtual network | Subnet | IP address prefix | First | Last | IP address count
 Shared hub | snet-default-001 | 10.73.8.0/25 | 10.73.8.0 | 10.73.8.127 | 128
@@ -215,3 +213,12 @@ Dedicated spoke | snet-default-002 | 10.73.9.0/25 | 10.73.9.0 | 10.73.9.127 | 12
 Dedicated spoke | AzureBastionSubnet | 10.73.9.128/27 | 10.73.9.128 | 10.73.9.159 | 32
 Dedicated spoke | Reserved for future use | 10.73.9.160/27 | 10.73.9.160 | 10.73.9.191 | 32
 Dedicated spoke | Reserved for future use | 10.73.9.192/26 | 10.73.9.192 | 10.73.9.255 | 64
+
+#### Deploy customized quick starts
+
+The quick starts must be deployed in the following order:
+
+1. [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/) establishes a shared hub virtual network and shared services.
+1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/) establishes a dedicated spoke virtual network.
+1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) implements a dedicated Windows Server virtual machine connected to the dedicated spoke virtual network.
+1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared hub virtual network and the dedicated spoke virtual network to remote users or a private network.
