@@ -14,7 +14,22 @@ Provisioning | ~5 minutes
 Smoke testing | ~ 15 minutes
 De-provisioning | ~ 5 minutes
 
-## Getting started
+### Getting started with default settings
+
+This section describes how to provision this quick start using default settings.
+
+* Create required secrets in shared key vault
+  * Define values to be used for the following secrets:
+    * *adminuser*: the admin user name to use when provisioning new virtual machines.
+    * *adminpassword*: the admin password to use when provisioning new virtual machines. Note that the password must be at least 12 characters long and meet [defined complexity requirements](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm). Be sure to use the escape character "\\" before any [metacharacters](https://www.gnu.org/software/bash/manual/bash.html#Definitions) in your password.
+  * Run `./setkeyvaultsecrets.sh -u "MyAdminUserName" -p "MyStrongAdminPassword"` using the values defined previously.
+* Run `./run-gen-tfvarsfile.sh` to generate *terraform.tfvars*.  
+* Run `terraform init`.
+* Run `terraform apply`.
+
+### Getting started with custom settings
+
+This section describes how to provision this quick start using custom settings. Refer to [Perform custom quick start deployment](https://github.com/doherty100/azurequickstarts#perform-custom-quick-start-deployment) for more details.
 
 * Create required secrets in shared key vault
   * Define values to be used for the following secrets:
@@ -22,7 +37,16 @@ De-provisioning | ~ 5 minutes
     * *adminpassword*: the admin password to use when provisioning new virtual machines. Note that the password must be at least 12 characters long and meet [defined complexity requirements](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm). Be sure to use the escape character "\\" before any [metacharacters](https://www.gnu.org/software/bash/manual/bash.html#Definitions) in your password.
   * Run `./setkeyvaultsecrets.sh -u "MyAdminUserName" -p "MyStrongAdminPassword"` using the values defined previously.
 * Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
-* Edit `run-gen-tfvarsfile-private.sh` to customize parameter values as needed and save changes.  
+* Edit `run-gen-tfvarsfile-private.sh`. 
+  * -n: Change to a custom *vm_name* if desired.
+  * -s: Change to a different *vm_image_sku* if desired.
+    * Run `az vm image list-skus -l eastus -p MicrosoftWindowsServer -f WindowsServer -o table` for a list of valid image sku names. Change the -l parameter to the desired location.
+  * -z: Change to a different *vm_size* if desired.
+    * Run `az vm list-sizes -l eastus -o table` for a list of sizes. Change the -l parameter to the desired location.
+  * -c: Change to a different *vm_data_disk_count* if desired. Set to "0" of no data disks are required.
+  * -d: Change to a different *vm_data_disk_size_gb* if desired.
+  * -t: Change to a different *tags* map if desired.
+  * Save changes.
 * Run `./run-gen-tfvarsfile-private.sh` to generate *terraform.tfvars*.  
 * Run `terraform init`.
 * Run `terraform apply`.

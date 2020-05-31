@@ -15,10 +15,23 @@ Provisioning | ~10 minutes
 Smoke testing | ~5 minutes
 De-provisioning | ~5 minutes
 
-## Getting started
+### Getting started with default settings
+
+This section describes how to provision this quick start using default settings.
+
+* Run `./run-gen-tfvarsfile.sh` to generate *terraform.tfvars*.  
+* Run `terraform init`
+* Run `terraform apply`
+
+### Getting started with custom settings
+
+This section describes how to provision this quick start using custom settings. Refer to [Perform custom quick start deployment](https://github.com/doherty100/azurequickstarts#perform-custom-quick-start-deployment) for more details.
 
 * Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
-* Edit `run-gen-tfvarsfile-private.sh` to customize parameter values as needed and save changes.  
+* Edit `run-gen-tfvarsfile-private.sh` to customize parameter values as needed and save changes.
+  * -a: Change to a custom *vwan_hub_address_prefix* if desired.
+  * -t: Change to a custom *tags* map if desired.
+  * Save changes.
 * Run `./run-gen-tfvarsfile-private.sh` to generate *terraform.tfvars*.  
 * Run `terraform init`
 * Run `terraform apply`
