@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains a collection of inter-dependent [cloud computing](https://azure.microsoft.com/en-us/overview/what-is-cloud-computing) quick starts for implementing common [Microsoft Azure](https://azure.microsoft.com/en-us/overview/what-is-azure/) services on a single [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription). Collectively these quick starts implement a basic [hub-spoke networking topology](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke) using automation implemented using popular Linux open source tools that are supported on Windows and macOS including:
+This repository contains a collection of inter-dependent [cloud computing](https://azure.microsoft.com/en-us/overview/what-is-cloud-computing) quick starts for implementing common [Microsoft Azure](https://azure.microsoft.com/en-us/overview/what-is-azure/) services on a single [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription). Collectively these quick starts implement a basic [hub-spoke networking topology](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke) using automation implemented using popular open source tools that are supported on Windows, macOS and Linux including:
 
 * [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) for scripting.
 * [jq](https://stedolan.github.io/jq) for processing JSON inputs in Bash scripts.
@@ -11,7 +11,7 @@ This repository contains a collection of inter-dependent [cloud computing](https
 
 ## Quick start index
 
-The quick starts feature a modular design and can be deployed as a whole or incrementally depending upon requirements. Each is listed here in suggested order of deployment.
+The quick starts feature a modular design and can be deployed as a whole or incrementally depending upon requirements, and are intended to demonstrate sound architectural best practices including security and operational efficiency. Each is listed here in suggested order of deployment.
 
 * [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/)
   * Shared [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group)  
