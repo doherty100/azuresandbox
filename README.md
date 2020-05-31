@@ -177,20 +177,27 @@ Alternatively, for speed, simply run `az group delete -g rg-vdc-nonprod-001`. Af
 
 ---
 
-A custom deployment will likely be required to connect the quick starts to an organization's private network. This section provides guidance on how to customize each of the quick starts. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section.
+A custom deployment will likely be required to connect the quick starts to an organization's private network. This section provides guidance on how to customize the quick starts.
 
 #### Determine private network IP address ranges (sample)
 
-Use this section to document one or more private network IP address ranges by consulting a network professional. This is required if you want to establish a [hybrid connection](https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/hybrid-connectivity) between an organization's private network and the quick starts. The sample includes two IP address ranges used in a private network. Make a copy of this table and change the sample values to custom values.  
+Use this section to document one or more private network IP address ranges by consulting a network professional. This is required if you want to establish a [hybrid connection](https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/hybrid-connectivity) between an organization's private network and the quick starts. The sample includes two IP address ranges used in a private network. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section. 
 
 IP address range | CIDR | First | Last | IP address count
 --- | --- | --- | --- | --:
 Primary range | 10.0.0.0/8 | 10.0.0.0 | 10.255.255.255 | 16,777,216
 Secondary range | 162.44.0.0/16 | 162.44.0.0 | 162.44.255.255 | 65,536
 
+A blank table is provided here for convenience. Make a copy of this table and change the *TBD* values to custom values.
+
+IP address range | CIDR | First | Last | IP address count
+--- | --- | --- | --- | --:
+Primary range | TBD | TBD | TBD | TBD
+Secondary range | TBD | TBD | TBD | TBD
+
 #### Determine custom IP address ranges (sample)
 
-Use this section to customize the default IP address ranges used by the quick starts to support routing on an organization's private network. The aggregate range should be determined by consulting a network professional, and will likely be allocated using a range that falls within the private network IP address ranges discussed previously, and the rest of the IP address ranges must be contained within it. Make a copy of this table and change the sample values to custom values. Note this sample uses the suggested minimum address ranges from the default IP address ranges described previously.
+Use this section to customize the default IP address ranges used by the quick starts to support routing on an organization's private network. The aggregate range should be determined by consulting a network professional, and will likely be allocated using a range that falls within the private network IP address ranges discussed previously, and the rest of the IP address ranges must be contained within it. Make a copy of this table and change the sample values to custom values. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section. Note this sample uses the suggested minimum address ranges from the default IP address ranges described previously.
 
 IP address range | CIDR | First | Last | IP address count
 --- | --- | --- | --- | --:
@@ -200,9 +207,19 @@ Dedicated spoke virtual network | 10.73.9.0/24 | 10.73.9.0 | 10.73.9.255 | 256
 Shared virtual wan hub | 10.73.10.0/24 | 10.73.10.0 | 10.73.10.255 | 256
 P2S client VPN connections | 10.73.11.0/24 | 10.73.11.0 | 10.73.11.255 | 256
 
+A blank table is provided here for convenience. Make a copy of this table and change the *TBD* values to custom values.
+
+IP address range | CIDR | First | Last | IP address count
+--- | --- | --- | --- | --:
+Aggregate range | TBD | TBD | TBD | TBD
+Shared hub virtual network | TBD  | TBD | TBD | TBD
+Dedicated spoke virtual network | TBD | TBD | TBD | TBD
+Shared virtual wan hub | TBD | TBD | TBD | TBD
+P2S client VPN connections | TBD | TBD | TBD | TBD
+
 ##### Determine custom subnet IP address prefixes (sample)
 
-Use this section to customize the default subnet IP address prefixes used by the quick starts to support routing on an organization's private network. Make a copy of this table and change these sample values to custom values. Each address prefix must fall within the virtual network IP address ranges discussed previously. Note this sample uses the suggested minimum address ranges described previously.
+Use this section to customize the default subnet IP address prefixes used by the quick starts to support routing on an organization's private network. Make a copy of this table and change these sample values to custom values. Each address prefix must fall within the virtual network IP address ranges discussed previously. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section.
 
 Virtual network | Subnet | IP address prefix | First | Last | IP address count
 --- | --- | --- | --- | --- | --:
@@ -215,9 +232,22 @@ Dedicated spoke | AzureBastionSubnet | 10.73.9.128/27 | 10.73.9.128 | 10.73.9.15
 Dedicated spoke | Reserved for future use | 10.73.9.160/27 | 10.73.9.160 | 10.73.9.191 | 32
 Dedicated spoke | Reserved for future use | 10.73.9.192/26 | 10.73.9.192 | 10.73.9.255 | 64
 
+It is recommended to reserve space for future subnets. A blank table is provided here for convenience. Make a copy of this table and change the *TBD* values to custom values.
+
+Virtual network | Subnet | IP address prefix | First | Last | IP address count
+--- | --- | --- | --- | --- | --:
+Shared hub | snet-default-001 | TBD | TBD | TBD | TBD
+Shared hub | AzureBastionSubnet | TBD | TBD | TBD | TBD
+Shared hub | snet-storage-private-endpoints-001 | TBD | TBD | TBD | TBD
+Shared hub | Reserved for future use | TBD | TBD | TBD | TBD
+Dedicated spoke | snet-default-002 | TBD | TBD | TBD | TBD
+Dedicated spoke | AzureBastionSubnet | TBD | TBD | TBD | TBD
+Dedicated spoke | Reserved for future use | TBD | TBD | TBD | TBD
+Dedicated spoke | Reserved for future use | TBD | TBD | TBD | TBD
+
 #### Deploy customized quick starts
 
-The quick starts must be deployed in the following order:
+The quick starts must be deployed in the following order using customized values for input variables:
 
 1. [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/) establishes a shared hub virtual network and shared services.
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/) establishes a dedicated spoke virtual network.
