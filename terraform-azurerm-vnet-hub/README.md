@@ -13,6 +13,12 @@ De-provisioning | ~15 minutes
 
 ## Getting started
 
+---
+
+### Getting started with default settings
+
+This section describes how to provision this quick start using default settings.
+
 * Run `az logout` and `az account clear` to reset the subscription credentials used by Azure CLI.
 * Run `az login` and sign in using the credentials associated with the subscription you intend to use for the quick starts.
 * Run `az account list -o table` and copy the *Subscription Id* to be used for the quick starts.
@@ -24,13 +30,42 @@ De-provisioning | ~15 minutes
     * Some organizations restrict the ability to enumerate AAD security principals. In this case contact an identity administrator for assistance.
 * Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
 * Edit `run-gen-tfvarsfile-private.sh` and update the following parameters:  
-  * -d: Change this to the *tenantId* determined previously.
-  * -o: Change this to the *objectId* determined previously.  
-  * Customize other parameter values as needed.
-  * Save your changes.
+  * -d: Change this to the *tenantId* determined previously
+  * -o: Change this to the *objectId* determined previously  
+  * Save changes.
 * Run `./run-gen-tfvarsfile-private.sh` to generate *terraform.tfvars*.  
 * Run `terraform init` and note the version of the azurerm provider installed.
 * Run `terraform validate` to check the syntax of the configuration.
+* Run `terraform apply` to apply the configuration.
+
+### Getting started with custom settings
+
+This section describes how to provision this quick start using custom settings. Refer to the section "Perform custom quick start deployment" in [azurequickstarts](..\.) for more details.
+
+* Run `az logout` and `az account clear` to reset the subscription credentials used by Azure CLI.
+* Run `az login` and sign in using the credentials associated with the subscription you intend to use for the quick starts.
+* Run `az account list -o table` and copy the *Subscription Id* to be used for the quick starts.
+* Run `az account set -s 00000000-0000-0000-0000-000000000000` using the *Subscription Id* from the previous step to set the default subscription.
+* Run `az account show | jq -r .tenantId` to determine the *tenantId* of the AAD tenant associated with the subscription. The *tenantId* returned is a guid in the format *00000000-0000-0000-0000-000000000000*.
+* Run `az ad user show --id myusername@mydomain.com | jq -r .objectId` to determine *objectId* of the security principal used to administer secrets in the shared key vault. The *objectId* returned is a guid in the format *00000000-0000-0000-0000-000000000000*.
+  * Troubleshooting
+    * Make sure the *--id* parameter is a valid object ID or principal name.
+    * Some organizations restrict the ability to enumerate AAD security principals. In this case contact an identity administrator for assistance.
+* Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
+* Edit `run-gen-tfvarsfile-private.sh` and update the following parameters:
+  * -g: Change to a custom *resource_group_name* if desired.
+  * -l: Change to a custom *location* if desired.
+    * Run `az account list-locations -o table` to view a list of valid location names for the subscription.
+  * -v: Change to a custom *vnet_name* if desired.
+  * -a: Change to a custom *address_space* if desired.
+  * -s: Change to a custom *subnets* map if desired.
+  * -q: Change to a custom *storage_share_quota* if desired.
+  * -d: Change to the *tenantId* determined previously.
+  * -o: Change to the *objectId* determined previously.
+  * -t: Change to a custom *tags* map if desired.
+  * Save changes.
+* Run `./run-gen-tfvarsfile-private.sh` to generate *terraform.tfvars*.  
+* Run `terraform init` and note the version of the azurerm provider installed.
 * Run `terraform apply` to apply the configuration.
 
 ## Resource index
