@@ -69,7 +69,7 @@ Windows 10 users can deploy the quick starts using [WSL](https://docs.microsoft.
 
 * [Ubuntu 18.04.4 LTS](https://www.microsoft.com/store/productId/9N9TNGVNDL3Q)
 * [Install Azure CLI with apt](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest)
-* [Terraform | Linux | 64-bit](https://www.terraform.io/downloads.html).
+* [Terraform | Linux | 64-bit](https://www.terraform.io/downloads.html)
   * Installation helper script: [terraforminstall.sh](./terraform-general/terraforminstall.sh)
 * [VS Code for Windows](https://aka.ms/vscode) with the following extensions:
   * [Remote - WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl)
@@ -84,9 +84,9 @@ Linux and macOS users can deploy the quick starts natively by installing the fol
   * Install Azure CLI on Linux
     * Debian or Ubuntu: [Install Azure CLI with apt](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest)
     * RHEL, Fedora or CentOS: [Install Azure CLI with yum](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-yum?view=azure-cli-latest)
-    * openSUSE or SLE: [Install Azure CLI with zypper](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-zypper?view=azure-cli-latest)
+    * openSUSE or SLES: [Install Azure CLI with zypper](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-zypper?view=azure-cli-latest)
     * [Install Azure CLI on Linux manually](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?view=azure-cli-latest)
-* [Terraform](https://www.terraform.io/downloads.html).
+* [Terraform](https://www.terraform.io/downloads.html)
   * Installation helper script: [terraforminstall.sh](./terraform-general/terraforminstall.sh)
 
 Note the Bash scripts used in the quick starts were developed and tested using `GNU bash, version 4.4.20(1)-release (x86_64-pc-linux-gnu)` and have not been tested on other popular shells like [zsh](https://www.zsh.org/).
