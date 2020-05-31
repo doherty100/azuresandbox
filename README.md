@@ -12,7 +12,7 @@ This repository contains a collection of inter-dependent [cloud computing](https
 
 ## Quick start index
 
-The quick starts feature a modular design and can be deployed as a whole or incrementally depending upon requirements, and are intended to demonstrate sound architectural best practices including security and operational efficiency. Each is listed here in suggested order of deployment.
+The quick starts feature a modular design and can be deployed as a whole or incrementally depending upon requirements. While not comprehensive, the quick starts are intended to accelerate cloud projects using sound architectural best practices including security and operational efficiency. Each is listed here in suggested order of deployment.
 
 * [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/)
   * Shared [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group)  
@@ -96,9 +96,27 @@ Note the Bash scripts used in the quick starts were developed and tested using `
 Now that the client environment has been configured, here's how to start working with the quick starts.
 
 * Open a new command shell in the client environment.
-* Run `git clone https://github.com/doherty100/azurequickstarts` to clone this repository into a new directory in the client environment.
-* Deploy the quick starts in the following order:
-  * Start by deploying the [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/) quick start which establishes a shared hub virtual network and shared services.
-  * Next, deploy the [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/) quick start which establishes a dedicated spoke virtual network.
-  * Proceed by deploying the [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) quick start which implements a dedicated Windows Server virtual machine in the dedicated spoke virtual network.
-  * Finish by deploying the [terraform-azurerm-vwan](./terraform-azurerm-vwan/) quick start which connects the shared hub virtual network and the dedicated spoke virtual network to remote users or a private network.
+* Run `git clone https://github.com/doherty100/azurequickstarts` to clone this repository into a new directory in the client environment. Ensure that the directory you are using is not ephemeral.
+
+#### Default deployment
+
+Deploy the quick starts the first time using defaults in the following order:
+
+1. [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/) establishes a shared hub virtual network and shared services.
+1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/) establishes a dedicated spoke virtual network.
+1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) implements a dedicated Windows Server virtual machine connected to the dedicated spoke virtual network.
+1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared hub virtual network and the dedicated spoke virtual network to remote users or a private network.
+
+#### De-provision default deployment
+
+While a default quick start deployment is fine for testing, it will likely not work with your organization's private network. You must de-provision the default deployment first before doing a custom deployment. You do this by running `terraform destroy` on each quick start in the reverse order in which it was deployed:
+
+1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
+1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
+1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
+1. [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/)
+
+#### Custom deployment
+
+A custom deployment will likely be required to connect the quick starts to an organization's private network. This section provides guidance on how to customize each of the quick starts.
+
