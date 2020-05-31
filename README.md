@@ -181,7 +181,7 @@ A custom deployment will likely be required to connect the quick starts to an or
 
 #### Determine private network IP address ranges (sample)
 
-Use this section to document one or more private network IP address ranges by consulting a network professional. This is required if you want to establish a [hybrid connection](https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/hybrid-connectivity) between an organization's private network and the quick starts. The sample includes two IP address ranges encompassed by a private network. Make a copy of this table and change the sample values to custom values.  
+Use this section to document one or more private network IP address ranges by consulting a network professional. This is required if you want to establish a [hybrid connection](https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/hybrid-connectivity) between an organization's private network and the quick starts. The sample includes two IP address ranges used in a private network. Make a copy of this table and change the sample values to custom values.  
 
 IP address range | CIDR | First | Last | IP address count
 --- | --- | --- | --- | --:
@@ -190,7 +190,7 @@ Secondary range | 162.44.0.0/16 | 162.44.0.0 | 162.44.255.255 | 65,536
 
 #### Determine custom IP address ranges (sample)
 
-Use this section to customize the default IP address ranges used by the quick starts to support routing on an organization's private network. The aggregate range should be determined by consulting a network professional, and will likely be allocated using a range that falls within the private network ip address ranges discussed previously, and the rest of the ip address ranges must be contained within it. Make a copy of this table and change the sample values to custom values. Note this sample uses the suggested minimum address ranges from the default IP address ranges described previously.
+Use this section to customize the default IP address ranges used by the quick starts to support routing on an organization's private network. The aggregate range should be determined by consulting a network professional, and will likely be allocated using a range that falls within the private network IP address ranges discussed previously, and the rest of the IP address ranges must be contained within it. Make a copy of this table and change the sample values to custom values. Note this sample uses the suggested minimum address ranges from the default IP address ranges described previously.
 
 IP address range | CIDR | First | Last | IP address count
 --- | --- | --- | --- | --:
@@ -205,6 +205,7 @@ P2S client VPN connections | 10.73.11.0/24 | 10.73.11.0 | 10.73.11.255 | 256
 Use this section to customize the default subnet IP address prefixes used by the quick starts to support routing on an organization's private network. Make a copy of this table and change these sample values to custom values. Each address prefix must fall within the virtual network IP address ranges discussed previously. Note this sample uses the suggested minimum address ranges described previously.
 
 Virtual network | Subnet | IP address prefix | First | Last | IP address count
+--- | --- | --- | --- | --- | --:
 Shared hub | snet-default-001 | 10.73.8.0/25 | 10.73.8.0 | 10.73.8.127 | 128
 Shared hub | AzureBastionSubnet | 10.73.8.128/27 | 10.73.8.128 | 10.73.8.159 | 32
 Shared hub | snet-storage-private-endpoints-001 | 10.73.8.160/27 | 10.73.8.160 | 10.73.8.191 | 32
