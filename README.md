@@ -10,6 +10,8 @@ This repository contains a collection of inter-dependent [cloud computing](https
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/what-is-azure-cli?view=azure-cli-latest) is a command line interface for Azure.
 * [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
 
+Miscellaneous quick starts are also provided for other functionality.
+
 ## Quick start index
 
 The quick starts feature a modular design and can be deployed as a whole or incrementally depending upon requirements. While not comprehensive, the quick starts are intended to accelerate cloud projects using sound architectural best practices including security and operational efficiency. Each is listed here in suggested order of deployment.
@@ -30,7 +32,12 @@ The quick starts feature a modular design and can be deployed as a whole or incr
   * Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm)
 * [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
   * Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources)
-  * Shared [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/README.md) and [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/README.md)  
+  * Shared [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/README.md) and [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/README.md)
+* Miscellaneous quick starts
+  * [az-graph](./az-graph/)
+    * Common [Azure Resource Graph](https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview) queries used for real world cloud estate discovery projects
+    * Utility script for executing resource graph queries and exporting results
+    * Utility script for provisioning shared resource graph queries
 
 ## Prerequisites
 
@@ -51,7 +58,7 @@ Familiarity with the following topics will be helpful when working with the quic
 
 ### Configure client environment
 
---- 
+---
 
 This section describes the various client environments that can be used to interactively deploy the quick starts.
 
@@ -181,7 +188,7 @@ A custom deployment will likely be required to connect the quick starts to an or
 
 #### Determine private network IP address ranges (sample)
 
-Use this section to document one or more private network IP address ranges by consulting a network professional. This is required if you want to establish a [hybrid connection](https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/hybrid-connectivity) between an organization's private network and the quick starts. The sample includes two IP address ranges used in a private network. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section. 
+Use this section to document one or more private network IP address ranges by consulting a network professional. This is required if you want to establish a [hybrid connection](https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/hybrid-connectivity) between an organization's private network and the quick starts. The sample includes two IP address ranges used in a private network. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section.
 
 IP address range | CIDR | First | Last | IP address count
 --- | --- | --- | --- | --:

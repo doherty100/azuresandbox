@@ -15,18 +15,23 @@ if [[ $# -eq 0  ]]; then
     usage
 fi  
 
-while getopts ":g:" option; do
+while getopts ":g:h" option; do
     case "${option}" in
         g ) 
             RESOURCE_GROUP_NAME=${OPTARG}
             ;;
-        \? )
+        h )
             usage
             ;;
         : ) 
             echo "Error: -${OPTARG} requires an argument."
             usage
             ;;
+        * ) 
+            printf "Error: Unknown option -${OPTARG}.\n"
+            usage
+            ;;
+
     esac
 done
 
