@@ -36,6 +36,12 @@ variable "storage_access_tier" {
   default     = "Hot"
 }
 
+variable "storage_container_name" {
+  type        = string
+  description = "The name for the new blob storage container"
+  default     = "scripts"
+}
+
 variable "storage_replication_type" {
   type        = string
   description = "The type of replication for the new storage account."

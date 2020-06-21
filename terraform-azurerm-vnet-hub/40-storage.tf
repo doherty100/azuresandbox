@@ -14,12 +14,36 @@ resource "azurerm_storage_account" "storage_account_01" {
   tags                     = var.tags
 }
 
+output "storage_account_01_blob_endpoint" {
+  value = azurerm_storage_account.storage_account_01.primary_blob_endpoint
+}
+
 output "storage_account_01_id" {
   value = azurerm_storage_account.storage_account_01.id
 }
 
 output "storage_account_01_name" {
   value = azurerm_storage_account.storage_account_01.name
+}
+
+output "storage_account_01_key" {
+  value = azurerm_storage_account.storage_account_01.primary_access_key
+}
+
+# Shared blob container
+
+resource "azurerm_storage_container" "storage_container_01" {
+  name                  = var.storage_container_name
+  storage_account_name  = azurerm_storage_account.storage_account_01.name
+  container_access_type = "private"
+}
+
+output "storage_countainer_01_name" {
+  value = azurerm_storage_container.storage_container_01.name
+}
+
+output "storage_container_01_id" {
+  value = azurerm_storage_container.storage_container_01.resource_manager_id
 }
 
 # Shared private endpoint

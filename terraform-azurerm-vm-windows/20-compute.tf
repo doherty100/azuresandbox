@@ -33,11 +33,11 @@ resource "azurerm_windows_virtual_machine" "virtual_machine_01" {
   }
 }
 
-output virtual_machine_01_id {
+output "virtual_machine_01_id" {
   value = azurerm_windows_virtual_machine.virtual_machine_01.id
 }
 
-output virtual_machine_01_name {
+output "virtual_machine_01_name" {
   value = azurerm_windows_virtual_machine.virtual_machine_01.name
 }
 
@@ -136,4 +136,34 @@ resource "azurerm_virtual_machine_extension" "virtual_machine_01_extension_depen
       "workspaceKey" : "${data.azurerm_key_vault_secret.log_analytics_workspace_key.value}"
     }
     PROTECTED_SETTINGS
+}
+
+data "azurerm_key_vault_secret" "storage_account_key" {
+  name         = var.storage_account_name
+  key_vault_id = var.key_vault_id
+}
+
+resource "azurerm_virtual_machine_extension" "virtual_machine_01_postdeploy_script" {
+  name                       = "vmext-${azurerm_windows_virtual_machine.virtual_machine_01.name}-postdeploy-script"
+  virtual_machine_id         = azurerm_windows_virtual_machine.virtual_machine_01.id
+  publisher                  = "Microsoft.Compute"
+  type                       = "CustomScriptExtension"
+  type_handler_version       = "1.10"
+  auto_upgrade_minor_version = true
+  tags                       = var.tags
+  depends_on                 = [ azurerm_virtual_machine_data_disk_attachment.virtual_machine_01_data_disk_attachments ]
+
+  settings = <<SETTINGS
+    {
+      "fileUris": [ "${var.post_deploy_script_uri}" ],
+      "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File \"./${var.post_deploy_script_name}\""
+    }    
+  SETTINGS
+
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+      "storageAccountName": "${var.storage_account_name}",
+      "storageAccountKey": "${data.azurerm_key_vault_secret.storage_account_key.value}"
+    }
+  PROTECTED_SETTINGS
 }

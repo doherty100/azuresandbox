@@ -13,9 +13,24 @@ variable "log_analytics_workspace_id" {
   description = "The workspaceId of the log analytics workspace used to monitor the VM"
 }
 
+variable "post_deploy_script_name" {
+  type = string
+  description = "The name of the PowerShell script to be run post-deployment."
+}
+
+variable "post_deploy_script_uri" {
+  type = string
+  description = "The uri of the PowerShell script to be run post-deployment."
+}
+
 variable "resource_group_name" {
   type        = string
   description = "The existing resource group where the VM will be provisioned"
+}
+
+variable "storage_account_name" {
+  type = string
+  description = "The name of the shared storage account."
 }
 
 variable "subnet_id" {

@@ -154,8 +154,20 @@ Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 storage_access_tier | Input | string | Local | Hot (default)
 account_replication_type | Input | string | Local | LRS (default)
+storage_account_01_blob_endpoint | Output | string | Global | <https://st8e644ec51c5be098001.blob.core.windows.net/>
 storage_account_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Storage/storageAccounts/st60fb9730bfbe8ba9001
-storage_account_01_name | Output | string | Local | st60fb9730bfbe8ba9001
+storage_account_01_key | Output | string | Global | Obfuscated for security
+storage_account_01_name | Output | string | Global | st60fb9730bfbe8ba9001
+
+#### Blob storage container
+
+Shared blob storage container for scripts.
+
+Variable | In/Out | Type | Scope | Sample
+--- | --- | --- | --- | ---
+storage_container_name | Input | string | Local | scripts (default)
+storage_container_01_name | Output | string | Global | scripts
+storage_container_01_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Storage/storageAccounts/st8e644ec51c5be098001/blobServices/default/containers/scripts
 
 #### Private endpoint
 

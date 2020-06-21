@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Set these environment variables before running script
+POST_DEPLOY_SCRIPT_NAME="virtual-machine-01-post-deploy.ps1"
 VM_ADMIN_PASSWORD_SECRET="adminpassword"
 VM_ADMIN_USERNAME_SECRET="adminuser"
 VM_IMAGE_PUBLISHER="MicrosoftWindowsServer"
@@ -8,11 +9,16 @@ VM_IMAGE_OFFER="WindowsServer"
 VM_STORAGE_REPLICATION_TYPE="Standard_LRS"
 
 # Set these environment variables by passing parameters to this script 
+BLOB_STORAGE_ENDPOINT=""
+BLOB_STORAGE_CONTAINER_NAME=""
 KEY_VAULT_ID=""
 KEY_VAULT_NAME=""
 LOCATION=""
 LOG_ANALYTICS_WORKSPACE_ID=""
+POST_DEPLOY_SCRIPT_URI=""
 RESOURCE_GROUP_NAME=""
+STORAGE_ACCOUNT_KEY=""
+STORAGE_ACCOUNT_NAME=""
 SUBNET_ID=""
 TAGS=""
 VM_DATA_DISK_COUNT=""
@@ -34,13 +40,16 @@ if [[ $# -eq 0 ]]; then
     usage
 fi  
 
-while getopts ":c:d:n:s:t:z:" option; do
+while getopts ":c:d:hn:s:t:z:" option; do
     case "${option}" in
         c )
             VM_DATA_DISK_COUNT=${OPTARG}
             ;;
         d )
             VM_DATA_DISK_SIZE_GB=${OPTARG}
+            ;;
+        h )
+            usage
             ;;
         n ) 
             VM_NAME=${OPTARG}
@@ -54,11 +63,12 @@ while getopts ":c:d:n:s:t:z:" option; do
         z )
             VM_SIZE=${OPTARG}
             ;;
-        \? )
-            usage
-            ;;
         : ) 
             printf "Error: -${OPTARG} requires an argument.\n"
+            usage
+            ;;
+        * ) 
+            printf "Error: Unknown option -${OPTARG}.\n"
             usage
             ;;
     esac
@@ -113,11 +123,55 @@ if [ $? != 0 ]; then
     usage
 fi
 
+printf "Getting LOCATION...\n"
+LOCATION=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" resource_group_01_location)
+
+if [ $? != 0 ]; then
+    echo "Error: Terraform output variable resource_group_01_location not found."
+    usage
+fi
+
+printf "Getting STORAGE_ACCOUNT_NAME...\n"
+
+STORAGE_ACCOUNT_NAME=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" storage_account_01_name)
+
+if [ $? != 0 ]; then
+    printf "Error: Terraform output variable storage_account_01_name not found.\n"
+    usage
+fi
+
+printf "Getting STORAGE_ACCOUNT_KEY...\n"
+
+STORAGE_ACCOUNT_KEY=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" storage_account_01_key)
+
+if [ $? != 0 ]; then
+    printf "Error: Terraform output variable storage_account_01_key not found.\n"
+    usage
+fi
+
+printf "Getting BLOB_STORAGE_ENDPOINT...\n"
+
+BLOB_STORAGE_ENDPOINT=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" storage_account_01_blob_endpoint)
+
+if [ $? != 0 ]; then
+    printf "Error: Terraform output variable storage_account_01_blob_endpoint not found.\n"
+    usage
+fi
+
+printf "Getting BLOB_STORAGE_CONTAINER_NAME...\n"
+
+BLOB_STORAGE_CONTAINER_NAME=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" storage_countainer_01_name)
+
+if [ $? != 0 ]; then
+    printf "Error: Terraform output variable storage_countainer_01_name not found.\n"
+    usage
+fi
+
 printf "Checking admin username secret...\n"
 az keyvault secret show -n $VM_ADMIN_USERNAME_SECRET --vault-name $KEY_VAULT_NAME
 
 if [ $? != 0 ]; then
-    echo "Error: No secret named $VM_ADMIN_USERNAME_SECRET exists in $KEY_VAULT_NAME."
+    echo "Error: No secret named '$VM_ADMIN_USERNAME_SECRET' exists in key vault '$KEY_VAULT_NAME'."
     usage
 fi
 
@@ -125,7 +179,7 @@ printf "Checking admin password secret...\n"
 az keyvault secret show -n $VM_ADMIN_PASSWORD_SECRET --vault-name $KEY_VAULT_NAME
 
 if [ $? != 0 ]; then
-    echo "Error: No secret named $VM_ADMIN_PASSWORD_SECRET exists in $KEY_VAULT_NAME."
+    echo "Error: No secret named '$VM_ADMIN_PASSWORD_SECRET' exists in key vault '$KEY_VAULT_NAME'."
     usage
 fi
 
@@ -133,9 +187,32 @@ printf "Checking log analytics workspaceKey secret...\n"
 az keyvault secret show -n $LOG_ANALYTICS_WORKSPACE_ID --vault-name $KEY_VAULT_NAME
 
 if [ $? != 0 ]; then
-    printf "Error: No secret named $LOG_ANALYTICS_WORKSPACE_ID exists in $KEY_VAULT_NAME.\n"
+    printf "Error: No secret named '$LOG_ANALYTICS_WORKSPACE_ID' exists in key vault '$KEY_VAULT_NAME'.\n"
     usage
 fi
+
+printf "Checking storage account key secret...\n"
+az keyvault secret show -n $STORAGE_ACCOUNT_NAME --vault-name $KEY_VAULT_NAME
+
+if [ $? != 0 ]; then
+    printf "Error: No secret named '$STORAGE_ACCOUNT_NAME' exists in key vault '$KEY_VAULT_NAME'.\n"
+    usage
+fi
+
+printf "Checking that '${POST_DEPLOY_SCRIPT_NAME}' exists in container '$BLOB_STORAGE_CONTAINER_NAME'...\n"
+
+az storage blob show \
+  --account-name $STORAGE_ACCOUNT_NAME\
+  --account-key $STORAGE_ACCOUNT_KEY\
+  --container-name $BLOB_STORAGE_CONTAINER_NAME\
+  --name $POST_DEPLOY_SCRIPT_NAME
+
+if [ $? != 0 ]; then
+    printf "Error: No script named '${POST_DEPLOY_SCRIPT_NAME}' exists in container '$BLOB_STORAGE_CONTAINER_NAME'.\n"
+    usage
+fi
+
+POST_DEPLOY_SCRIPT_URI="${BLOB_STORAGE_ENDPOINT}${BLOB_STORAGE_CONTAINER_NAME}/${POST_DEPLOY_SCRIPT_NAME}"
 
 printf "Validating VM_NAME '${VM_NAME}'...\n"
 if [ -z $VM_NAME ]; then
@@ -158,13 +235,6 @@ VM_SIZE_PROPERTIES=$(az vm list-sizes -l $LOCATION --query "[?name=='${VM_SIZE}'
 
 if [ "$VM_SIZE_PROPERTIES" = "[]" ]; then
     echo "Error: Virtual machine size '${VM_SIZE}' is not valid."
-    usage
-fi
-
-printf "Validating LOG_ANALYTICS_WORKSPACE_ID '$LOG_ANALYTICS_WORKSPACE_ID'...\n"
-
-if [ -z $LOG_ANALYTICS_WORKSPACE_ID ]; then
-    printf "Error: Invalid LOG_ANALYTICS_WORKSPACE_ID"
     usage
 fi
 
@@ -196,7 +266,10 @@ printf "\Generating terraform.tfvars file...\n\n"
 printf "key_vault_id = \"$KEY_VAULT_ID\"\n" > ./terraform.tfvars
 printf "location = \"$LOCATION\"\n" >> ./terraform.tfvars
 printf "log_analytics_workspace_id = \"$LOG_ANALYTICS_WORKSPACE_ID\"\n" >> ./terraform.tfvars
+printf "post_deploy_script_name = \"$POST_DEPLOY_SCRIPT_NAME\"\n" >> ./terraform.tfvars
+printf "post_deploy_script_uri = \"$POST_DEPLOY_SCRIPT_URI\"\n" >> ./terraform.tfvars
 printf "resource_group_name = \"$RESOURCE_GROUP_NAME\"\n" >> ./terraform.tfvars
+printf "storage_account_name = \"$STORAGE_ACCOUNT_NAME\"\n" >> ./terraform.tfvars
 printf "subnet_id = \"$SUBNET_ID\"\n" >> ./terraform.tfvars
 printf "tags = $TAGS\n" >> ./terraform.tfvars
 printf "vm_admin_password_secret = \"$VM_ADMIN_PASSWORD_SECRET\"\n" >> ./terraform.tfvars

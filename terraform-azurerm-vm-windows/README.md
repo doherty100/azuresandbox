@@ -18,11 +18,11 @@ De-provisioning | ~ 5 minutes
 
 This section describes how to provision this quick start using default settings.
 
-* Create required secrets in shared key vault
+* Create required secrets in shared key vault and provision post-deployment script
   * Define values to be used for the following secrets:
     * *adminuser*: the admin user name to use when provisioning new virtual machines.
     * *adminpassword*: the admin password to use when provisioning new virtual machines. Note that the password must be at least 12 characters long and meet [defined complexity requirements](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm). Be sure to use the escape character "\\" before any [metacharacters](https://www.gnu.org/software/bash/manual/bash.html#Definitions) in your password.
-  * Run `./setkeyvaultsecrets.sh -u "MyAdminUserName" -p "MyStrongAdminPassword"` using the values defined previously.
+  * Run `./pre-deploy.sh -u "MyAdminUserName" -p "MyStrongAdminPassword"` using the values defined previously.
 * Run `./run-gen-tfvarsfile.sh` to generate *terraform.tfvars*.  
 * Run `terraform init`.
 * Run `terraform apply`.
@@ -31,13 +31,13 @@ This section describes how to provision this quick start using default settings.
 
 This section describes how to provision this quick start using custom settings. Refer to [Perform custom quick start deployment](https://github.com/doherty100/azurequickstarts#perform-custom-quick-start-deployment) for more details.
 
-* Create required secrets in shared key vault
+* Create required secrets in shared key vault and provision post-deployment script
   * Define values to be used for the following secrets:
     * *adminuser*: the admin user name to use when provisioning new virtual machines.
     * *adminpassword*: the admin password to use when provisioning new virtual machines. Note that the password must be at least 12 characters long and meet [defined complexity requirements](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm). Be sure to use the escape character "\\" before any [metacharacters](https://www.gnu.org/software/bash/manual/bash.html#Definitions) in your password.
-  * Run `./setkeyvaultsecrets.sh -u "MyAdminUserName" -p "MyStrongAdminPassword"` using the values defined previously.
+  * Run `./pre-deploy.sh -u "MyAdminUserName" -p "MyStrongAdminPassword"` using the values defined previously.
 * Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
-* Edit `run-gen-tfvarsfile-private.sh`. 
+* Edit `run-gen-tfvarsfile-private.sh`.
   * -n: Change to a custom *vm_name* if desired.
   * -s: Change to a different *vm_image_sku* if desired.
     * Run `az vm image list-skus -l eastus -p MicrosoftWindowsServer -f WindowsServer -o table` for a list of valid image sku names. Change the -l parameter to the desired location.
@@ -96,19 +96,23 @@ vm_data_disk_size_gb | Input | string | Local | 32 (Gb)
 
 #### Virtual machine extensions
 
-Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the dedicated Windows Server virtual machine and connected to the shared log analytics workspace using secrets from the shared key vault, including:
+Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the dedicated Windows Server virtual machine including:
 
-* [Log Analytics virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-windows) also known as the *Microsoft Monitoring Agent* (MMA) version 1.0 with automatic minor version upgrades enabled.
-* [Dependency virtual machine extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/agent-dependency-windows) version 9.0 with automatic minor version upgrades enabled.
+* [Log Analytics virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-windows) also known as the *Microsoft Monitoring Agent* (MMA) version 1.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
+* [Dependency virtual machine extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/agent-dependency-windows) version 9.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
+* [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script which partitions and formats new data disks.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
+post_deploy_script_name | Input | string | Local | virtual-machine-01-post-deploy.ps1 (Default)
+post_deploy_script_uri | Input | string | Local | <https://st8e644ec51c5be098001.blob.core.windows.net/scripts/virtual-machine-01-post-deploy.ps1>
+storage_account_name | Input | String | Local | st8e644ec51c5be098001
 
 ## Smoke testing
 
 * Explore newly provisioned resources using the Azure portal.
-  * Review the 3 secrets that were created in the shared key vault.
+  * Review the 4 secrets that were created in the shared key vault.
   * Generate a script for mapping drives to the shared file share.
     * Mapping a drive to an Azure Files file share requires automation due to the use of a complex shared key to authenticate.
     * In the Azure Portal navigate to *storage accounts* > *stxxxxxxxxxxxxxxxx001* > *file service* > *file shares* > *fs-xxxxxxxxxxxxxxxx-001* > *Connect* > *Windows*
@@ -121,7 +125,7 @@ log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-00
     * Verify the the *IP4Address* returned is consistent with the address prefix used for the *snet-storage-private-endpoints-001* subnet in the shared hub virtual network. This name resolution is accomplished using the shared private DNS zone.
     * Execute the PowerShell script copied from the Azure Portal to establish a drive mapping to the shared file share using the private endpoint.
     * Create some directories and sample files on the drive mapped to the shared file share to test functionality.
-  * Partition and format the data disks attached to the virtual machine.
+  * Review the log file created during execution of the post-deployment script in C:/Packages/Plugins/Microsoft.Compute.CustomScriptExtension/1.10.X/Downloads/0.
 
 ## Next steps
 
