@@ -104,7 +104,7 @@ Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azu
 
 * [Log Analytics virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-linux) also known as the *OMS Agent* version 1.13 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
 * [Dependency virtual machine extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/agent-dependency-linux) version 9.10 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
-* [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 2.1 with automatic minor version upgrades enabled and configured to run a post-deployment script.
+* [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-linux) version 2.1 with automatic minor version upgrades enabled and configured to run a post-deployment script.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -125,7 +125,7 @@ storage_account_name | Input | String | Local | stf7250f5be032d651001
   * Partition and mount attached data disks.  See [Connect to the Linux VM to mount the new disk](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/add-disk#connect-to-the-linux-vm-to-mount-the-new-disk) for more details.
   * Confirm access to shared file share private endpoint.
     * Create a new bash script, and paste in the script generated previously.
-    * Copy the fqdn for the file endpoint from line 4\1, for example *stxxxxxxxxxxxxxxxx001.file.core.windows.net*
+    * Copy the fqdn for the file endpoint, for example *stxxxxxxxxxxxxxxxx001.file.core.windows.net*
     * Run `dig stxxxxxxxxxxxxxxxx001.file.core.windows.net` and examine the *ANSWER* section. Verify the the *IP4Address* returned is consistent with the address prefix used for the *snet-storage-private-endpoints-001* subnet in the shared hub virtual network. This name resolution is accomplished using the shared private DNS zone.
     * Execute the bash script copied from the Azure Portal to mount the shared file share using the private endpoint.
     * Create some directories and sample files on the mount point associated with the shared file share to test functionality.
