@@ -30,6 +30,8 @@ The quick starts feature a modular design and can be deployed as a whole or incr
   * Pre-configured bidirectional [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/README.md)  
 * [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
   * Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm)
+* [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/)
+  * Linux [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm)
 * [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
   * Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources)
   * Shared [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/README.md) and [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/README.md)
@@ -167,6 +169,7 @@ Deploy the quick starts the first time using defaults in the following order:
 1. [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/) establishes a shared hub virtual network and shared services.
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/) establishes a dedicated spoke virtual network.
 1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) implements a dedicated Windows Server virtual machine connected to the dedicated spoke virtual network.
+1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/) implements a dedicated Linux virtual machine connected to the dedicated spoke virtual network.
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared hub virtual network and the dedicated spoke virtual network to remote users or a private network.
 
 #### De-provision default quick start deployment
@@ -174,6 +177,7 @@ Deploy the quick starts the first time using defaults in the following order:
 While a default quick start deployment is fine for testing, it may not work with an organization's private network. The default deployment should be de-provisioned first before doing a custom deployment. This is accomplished by running `terraform destroy` on each quick start in the reverse order in which it was deployed:
 
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
+1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/)
 1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
 1. [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/)
@@ -259,4 +263,5 @@ The quick starts must be deployed in the following order using customized values
 1. [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/) establishes a shared hub virtual network and shared services.
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/) establishes a dedicated spoke virtual network.
 1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) implements a dedicated Windows Server virtual machine connected to the dedicated spoke virtual network.
+1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/) implements a dedicated Linux virtual machine connected to the dedicated spoke virtual network.
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared hub virtual network and the dedicated spoke virtual network to remote users or a private network.

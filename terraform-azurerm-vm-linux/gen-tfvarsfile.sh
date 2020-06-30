@@ -1,11 +1,9 @@
 #!/bin/bash
 
 # Set these environment variables before running script
-POST_DEPLOY_SCRIPT_NAME="virtual-machine-01-post-deploy.ps1"
+POST_DEPLOY_SCRIPT_NAME="virtual-machine-02-post-deploy.sh"
 VM_ADMIN_PASSWORD_SECRET="adminpassword"
 VM_ADMIN_USERNAME_SECRET="adminuser"
-VM_IMAGE_PUBLISHER="Canonical"
-VM_IMAGE_OFFER="UbuntuServer"
 VM_STORAGE_REPLICATION_TYPE="Standard_LRS"
 
 # Set these environment variables by passing parameters to this script 
@@ -23,16 +21,20 @@ SUBNET_ID=""
 TAGS=""
 VM_DATA_DISK_COUNT=""
 VM_DATA_DISK_SIZE_GB=""
+VM_IMAGE_OFFER=""
+VM_IMAGE_PUBLISHER=""
 VM_IMAGE_SKU=""
 VM_NAME=""
 VM_SIZE=""
 
 # These are temporary variables
 VM_IMAGE_ID=""
+VM_IMAGE_OFFER_ID=""
+VM_IMAGE_PUBLISHER_ID=""
 VM_SIZE_PROPERTIES=""
 
 usage() {
-    printf "Usage: $0\n  -n VM_NAME\n  -s VM_IMAGE_SKU\n  -z VM_SIZE\n  -c VM_DATA_DISK_COUNT\n  -d VM_DATA_DISK_SIZE_GB\n  -t TAGS\n" 1>&2
+    printf "Usage: $0\n  -n VM_NAME\n  -p VM_IMAGE_PUBLISHER\n  -o VM_IMAGE_OFFER\n  -s VM_IMAGE_SKU\n  -z VM_SIZE\n  -c VM_DATA_DISK_COUNT\n  -d VM_DATA_DISK_SIZE_GB\n  -t TAGS\n" 1>&2
     exit 1
 }
 
@@ -40,7 +42,7 @@ if [[ $# -eq 0 ]]; then
     usage
 fi  
 
-while getopts ":c:d:hn:s:t:z:" option; do
+while getopts ":c:d:hn:o:p:s:t:z:" option; do
     case "${option}" in
         c )
             VM_DATA_DISK_COUNT=${OPTARG}
@@ -53,6 +55,12 @@ while getopts ":c:d:hn:s:t:z:" option; do
             ;;
         n ) 
             VM_NAME=${OPTARG}
+            ;;
+        o )
+            VM_IMAGE_OFFER=${OPTARG}
+            ;;
+        p )
+            VM_IMAGE_PUBLISHER=${OPTARG}
             ;;
         s ) 
             VM_IMAGE_SKU=${OPTARG}
@@ -78,7 +86,7 @@ printf "Getting RESOURCE_GROUP_NAME...\n"
 RESOURCE_GROUP_NAME=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" resource_group_01_name)
 
 if [ $? != 0 ]; then
-    echo "Error: Terraform output variable resource_group_01_name not found."
+    printf "Error: Terraform output variable resource_group_01_name not found.\n"
     usage
 fi
 
@@ -86,7 +94,7 @@ printf "Getting LOCATION...\n"
 LOCATION=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" resource_group_01_location)
 
 if [ $? != 0 ]; then
-    echo "Error: Terraform output variable resource_group_01_location not found."
+    printf "Error: Terraform output variable resource_group_01_location not found.\n"
     usage
 fi
 
@@ -94,7 +102,7 @@ printf "Getting KEY_VAULT_ID...\n"
 KEY_VAULT_ID=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" key_vault_01_id)
 
 if [ $? != 0 ]; then
-    echo "Error: Terraform output variable key_vault_01_id not found."
+    printf "Error: Terraform output variable key_vault_01_id not found.\n"
     usage
 fi
 
@@ -102,7 +110,7 @@ printf "Getting KEY_VAULT_NAME...\n"
 KEY_VAULT_NAME=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" key_vault_01_name)
 
 if [ $? != 0 ]; then
-    echo "Error: Terraform output variable key_vault_01_name not found."
+    printf "Error: Terraform output variable key_vault_01_name not found.\n"
     usage
 fi
 
@@ -111,7 +119,7 @@ printf "Getting LOG_ANALYTICS_WORKSPACE_ID...\n"
 LOG_ANALYTICS_WORKSPACE_ID=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" log_analytics_workspace_01_workspace_id)
 
 if [ $? != 0 ]; then
-    echo "Error: Terraform output variable log_analytics_workspace_01_workspace_id not found."
+    printf "Error: Terraform output variable log_analytics_workspace_01_workspace_id not found.\n"
     usage
 fi
 
@@ -119,7 +127,7 @@ printf "Getting SUBNET_ID...\n"
 SUBNET_ID=$(terraform output -state="../terraform-azurerm-vnet-spoke/terraform.tfstate" vnet_spoke_01_default_subnet_id)
 
 if [ $? != 0 ]; then
-    echo "Error: Terraform output variable vnet_spoke_01_default_subnet_id not found."
+    printf "Error: Terraform output variable vnet_spoke_01_default_subnet_id not found.\n"
     usage
 fi
 
@@ -127,7 +135,7 @@ printf "Getting LOCATION...\n"
 LOCATION=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" resource_group_01_location)
 
 if [ $? != 0 ]; then
-    echo "Error: Terraform output variable resource_group_01_location not found."
+    printf "Error: Terraform output variable resource_group_01_location not found.\n"
     usage
 fi
 
@@ -171,7 +179,7 @@ printf "Checking admin username secret...\n"
 az keyvault secret show -n $VM_ADMIN_USERNAME_SECRET --vault-name $KEY_VAULT_NAME
 
 if [ $? != 0 ]; then
-    echo "Error: No secret named '$VM_ADMIN_USERNAME_SECRET' exists in key vault '$KEY_VAULT_NAME'."
+    printf "Error: No secret named '$VM_ADMIN_USERNAME_SECRET' exists in key vault '$KEY_VAULT_NAME'.\n"
     usage
 fi
 
@@ -179,7 +187,7 @@ printf "Checking admin password secret...\n"
 az keyvault secret show -n $VM_ADMIN_PASSWORD_SECRET --vault-name $KEY_VAULT_NAME
 
 if [ $? != 0 ]; then
-    echo "Error: No secret named '$VM_ADMIN_PASSWORD_SECRET' exists in key vault '$KEY_VAULT_NAME'."
+    printf "Error: No secret named '$VM_ADMIN_PASSWORD_SECRET' exists in key vault '$KEY_VAULT_NAME'.\n"
     usage
 fi
 
@@ -215,17 +223,36 @@ fi
 POST_DEPLOY_SCRIPT_URI="${BLOB_STORAGE_ENDPOINT}${BLOB_STORAGE_CONTAINER_NAME}/${POST_DEPLOY_SCRIPT_NAME}"
 
 printf "Validating VM_NAME '${VM_NAME}'...\n"
+
 if [ -z $VM_NAME ]; then
-    echo "Error: Invalid VM_NAME."
+    printf "Error: Invalid VM_NAME.\n"
+    usage
+fi
+
+printf "Validating VM_IMAGE_PUBLISHER '${VM_IMAGE_PUBLISHER}'...\n"
+
+VM_IMAGE_PUBLISHER_ID=$(az vm image list-publishers -l $LOCATION --query "[?name=='${VM_IMAGE_PUBLISHER}'].id" | tr -d '[]')
+
+if [ -z $VM_IMAGE_PUBLISHER_ID ]; then
+    printf "Error: Virtual machine publisher $VM_IMAGE_PUBLISHER is not valid.\n"
+    usage
+fi
+
+printf "Validating VM_IMAGE_OFFER '${VM_IMAGE_OFFER}'...\n"
+
+VM_IMAGE_OFFER_ID=$(az vm image list-offers -l $LOCATION -p $VM_IMAGE_PUBLISHER --query "[?name=='${VM_IMAGE_OFFER}'].id" | tr -d '[]')
+
+if [ -z $VM_IMAGE_OFFER_ID ]; then
+    printf "Error: Virtual machine offer '${VM_IMAGE_OFFER}' is not valid.\n"
     usage
 fi
 
 printf "Validating VM_IMAGE_SKU '${VM_IMAGE_SKU}'...\n"
 
-VM_IMAGE_ID=$(az vm image list-skus -l $LOCATION -p $VM_IMAGE_PUBLISHER -f $VM_IMAGE_OFFER --query "[?name=='${VM_IMAGE_SKU}'].id" | tr -d '[]" \n')
+VM_IMAGE_ID=$(az vm image list-skus -l $LOCATION -p $VM_IMAGE_PUBLISHER -f $VM_IMAGE_OFFER --query "[?name=='${VM_IMAGE_SKU}'].id" | tr -d '[]')
 
 if [ -z $VM_IMAGE_ID ]; then
-    echo "Error: Virtual machine sku $VM_IMAGE_SKU is not valid."
+    printf "Error: Virtual machine sku $VM_IMAGE_SKU is not valid.\n"
     usage
 fi
 
@@ -234,7 +261,7 @@ printf "Validating VM_SIZE '${VM_SIZE}'...\n"
 VM_SIZE_PROPERTIES=$(az vm list-sizes -l $LOCATION --query "[?name=='${VM_SIZE}']")
 
 if [ "$VM_SIZE_PROPERTIES" = "[]" ]; then
-    echo "Error: Virtual machine size '${VM_SIZE}' is not valid."
+    printf "Error: Virtual machine size '${VM_SIZE}' is not valid."
     usage
 fi
 

@@ -11,14 +11,15 @@ data "azurerm_key_vault_secret" "adminuser" {
 }
 
 resource "azurerm_linux_virtual_machine" "virtual_machine_02" {
-  name                  = var.vm_name
-  resource_group_name   = azurerm_network_interface.virtual_machine_02_nic_01.resource_group_name
-  location              = azurerm_network_interface.virtual_machine_02_nic_01.location
-  size                  = var.vm_size
-  admin_username        = data.azurerm_key_vault_secret.adminuser.value
-  admin_password        = data.azurerm_key_vault_secret.adminpassword.value
-  network_interface_ids = [azurerm_network_interface.virtual_machine_02_nic_01.id]
-  tags                  = var.tags
+  name                            = var.vm_name
+  resource_group_name             = azurerm_network_interface.virtual_machine_02_nic_01.resource_group_name
+  location                        = azurerm_network_interface.virtual_machine_02_nic_01.location
+  size                            = var.vm_size
+  disable_password_authentication = false
+  admin_username                  = data.azurerm_key_vault_secret.adminuser.value
+  admin_password                  = data.azurerm_key_vault_secret.adminpassword.value
+  network_interface_ids           = [azurerm_network_interface.virtual_machine_02_nic_01.id]
+  tags                            = var.tags
 
   os_disk {
     caching              = "ReadWrite"
@@ -34,11 +35,11 @@ resource "azurerm_linux_virtual_machine" "virtual_machine_02" {
 }
 
 output "virtual_machine_02_id" {
-  value = azurerm_windows_virtual_machine.virtual_machine_02.id
+  value = azurerm_linux_virtual_machine.virtual_machine_02.id
 }
 
 output "virtual_machine_02_name" {
-  value = azurerm_windows_virtual_machine.virtual_machine_02.name
+  value = azurerm_linux_virtual_machine.virtual_machine_02.name
 }
 
 # Nics
@@ -73,8 +74,8 @@ output "virtual_machine_02_nic_01_private_ip_address" {
 resource "azurerm_managed_disk" "virtual_machine_02_data_disks" {
   count                = var.vm_data_disk_count
   name                 = "dsk-${var.vm_name}-data_disk-${count.index + 1}"
-  location             = azurerm_windows_virtual_machine.virtual_machine_02.location
-  resource_group_name  = azurerm_windows_virtual_machine.virtual_machine_02.resource_group_name
+  location             = azurerm_linux_virtual_machine.virtual_machine_02.location
+  resource_group_name  = azurerm_linux_virtual_machine.virtual_machine_02.resource_group_name
   storage_account_type = var.vm_storage_replication_type
   create_option        = "Empty"
   disk_size_gb         = var.vm_data_disk_size_gb
@@ -84,7 +85,7 @@ resource "azurerm_managed_disk" "virtual_machine_02_data_disks" {
 resource "azurerm_virtual_machine_data_disk_attachment" "virtual_machine_02_data_disk_attachments" {
   count              = var.vm_data_disk_count
   managed_disk_id    = azurerm_managed_disk.virtual_machine_02_data_disks.*.id[count.index]
-  virtual_machine_id = azurerm_windows_virtual_machine.virtual_machine_02.id
+  virtual_machine_id = azurerm_linux_virtual_machine.virtual_machine_02.id
   lun                = count.index
   caching            = "None"
 }
@@ -97,11 +98,11 @@ data "azurerm_key_vault_secret" "log_analytics_workspace_key" {
 }
 
 resource "azurerm_virtual_machine_extension" "virtual_machine_02_extension_monitoring" {
-  name                       = "vmext-${azurerm_windows_virtual_machine.virtual_machine_02.name}-monitoring"
-  virtual_machine_id         = azurerm_windows_virtual_machine.virtual_machine_02.id
+  name                       = "vmext-${azurerm_linux_virtual_machine.virtual_machine_02.name}-monitoring"
+  virtual_machine_id         = azurerm_linux_virtual_machine.virtual_machine_02.id
   publisher                  = "Microsoft.EnterpriseCloud.Monitoring"
-  type                       = "MicrosoftMonitoringAgent"
-  type_handler_version       = "1.0"
+  type                       = "OmsAgentForLinux"
+  type_handler_version       = "1.13"
   auto_upgrade_minor_version = true
   tags                       = var.tags
 
@@ -118,11 +119,11 @@ resource "azurerm_virtual_machine_extension" "virtual_machine_02_extension_monit
 }
 
 resource "azurerm_virtual_machine_extension" "virtual_machine_02_extension_dependency" {
-  name                       = "vmext-${azurerm_windows_virtual_machine.virtual_machine_02.name}-dependency"
-  virtual_machine_id         = azurerm_windows_virtual_machine.virtual_machine_02.id
+  name                       = "vmext-${azurerm_linux_virtual_machine.virtual_machine_02.name}-dependency"
+  virtual_machine_id         = azurerm_linux_virtual_machine.virtual_machine_02.id
   publisher                  = "Microsoft.Azure.Monitoring.DependencyAgent"
-  type                       = "DependencyAgentWindows"
-  type_handler_version       = "9.0"
+  type                       = "DependencyAgentLinux"
+  type_handler_version       = "9.10"
   auto_upgrade_minor_version = true
   tags                       = var.tags
 
@@ -144,19 +145,19 @@ data "azurerm_key_vault_secret" "storage_account_key" {
 }
 
 resource "azurerm_virtual_machine_extension" "virtual_machine_02_postdeploy_script" {
-  name                       = "vmext-${azurerm_windows_virtual_machine.virtual_machine_02.name}-postdeploy-script"
-  virtual_machine_id         = azurerm_windows_virtual_machine.virtual_machine_02.id
-  publisher                  = "Microsoft.Compute"
-  type                       = "CustomScriptExtension"
-  type_handler_version       = "1.10"
+  name                       = "vmext-${azurerm_linux_virtual_machine.virtual_machine_02.name}-postdeploy-script"
+  virtual_machine_id         = azurerm_linux_virtual_machine.virtual_machine_02.id
+  publisher                  = "Microsoft.Azure.Extensions"
+  type                       = "CustomScript"
+  type_handler_version       = "2.1"
   auto_upgrade_minor_version = true
   tags                       = var.tags
-  depends_on                 = [ azurerm_virtual_machine_data_disk_attachment.virtual_machine_02_data_disk_attachments ]
+  depends_on                 = [azurerm_virtual_machine_data_disk_attachment.virtual_machine_02_data_disk_attachments]
 
   settings = <<SETTINGS
     {
       "fileUris": [ "${var.post_deploy_script_uri}" ],
-      "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File \"./${var.post_deploy_script_name}\""
+      "commandToExecute": "sh ${var.post_deploy_script_name}"
     }    
   SETTINGS
 

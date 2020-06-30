@@ -3,7 +3,7 @@
 # Dependencies: Azure CLI, Terraform
 
 # Set these environment variables before running script
-POST_DEPLOYMENT_SCRIPT_NAME="virtual-machine-01-post-deploy.ps1"
+POST_DEPLOYMENT_SCRIPT_NAME="virtual-machine-02-post-deploy.sh"
 VM_ADMIN_PASSWORD_SECRET="adminpassword"
 VM_ADMIN_USERNAME_SECRET="adminuser"
 
