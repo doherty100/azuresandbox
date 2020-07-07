@@ -34,8 +34,8 @@ The quick starts feature a modular design and can be deployed as a whole or incr
 * [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/)
   * For miscellaneous use as a jump box or admin server.
   * Linux [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm)
-* [terraform-azurerm-tpce](./terraform-azurerm-tpce/)
-  * For use as a pre-configured environment for running [TPC-E](http://www.tpc.org/tpce/default5.asp) benchmarks.
+* [terraform-azurerm-bench-windows](./terraform-azurerm-bench-windows/)
+  * For use as a pre-configured environment for running [HammerDB](https://www.hammerdb.com/) benchmarks.
   * [Windows Server with SQL Server virtual machine](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/microsoftsqlserver.sql2019-ws2019?tab=Overview).
 * [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
   * Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources)
@@ -175,7 +175,7 @@ Deploy the quick starts the first time using defaults in the following order:
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/) establishes a dedicated spoke virtual network.
 1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) implements a dedicated Windows Server virtual machine connected to the dedicated spoke virtual network.
 1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/) implements a dedicated Linux virtual machine connected to the dedicated spoke virtual network.
-1. [terraform-azurerm-tpce](./terraform-azurerm-tpce/) implements a pre-configured environment for running [TPC-E](http://www.tpc.org/tpce/default5.asp) benchmarks.
+1. [terraform-azurerm-bench-windows](./terraform-azurerm-bench-windows/) implements a pre-configured environment for running [HammerDB](https://www.hammerdb.com/) benchmarks.
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared hub virtual network and the dedicated spoke virtual network to remote users or a private network.
 
 #### De-provision default quick start deployment
@@ -183,7 +183,7 @@ Deploy the quick starts the first time using defaults in the following order:
 While a default quick start deployment is fine for testing, it may not work with an organization's private network. The default deployment should be de-provisioned first before doing a custom deployment. This is accomplished by running `terraform destroy` on each quick start in the reverse order in which it was deployed:
 
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
-1. [terraform-azurerm-tpce](./terraform-azurerm-tpce/)
+1. [terraform-azurerm-bench-windows](./terraform-azurerm-bench-windows/)
 1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/)
 1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
@@ -271,5 +271,5 @@ The quick starts must be deployed in the following order using customized values
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/) establishes a dedicated spoke virtual network.
 1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) implements a dedicated Windows Server virtual machine connected to the dedicated spoke virtual network.
 1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/) implements a dedicated Linux virtual machine connected to the dedicated spoke virtual network.
-1. [terraform-azurerm-tpce](./terraform-azurerm-tpce/) implements a pre-configured environment for running [TPC-E](http://www.tpc.org/tpce/default5.asp) benchmarks.
+1. [terraform-azurerm-bench-windows](./terraform-azurerm-bench-windows/) implements a pre-configured environment for running [HammerDB](https://www.hammerdb.com/) benchmarks.
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared hub virtual network and the dedicated spoke virtual network to remote users or a private network.

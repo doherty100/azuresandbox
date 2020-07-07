@@ -129,4 +129,4 @@ storage_account_name | Input | String | Local | st8e644ec51c5be098001
 
 ## Next steps
 
-Move on to the next quick start [terraform-azurerm-tpce](../terraform-azurerm-tpce).
+Move on to the next quick start [terraform-azurerm-bench-windows](../terraform-azurerm-bench-windows).

@@ -1,8 +1,8 @@
-# Azure quick start configuration: terraform-azurerm-vm-tpce  
+# Azure quick start configuration: terraform-azurerm-bench-windows  
 
 ## Overview
 
-This quick start implements a dedicated Windows Server with SQL Server virtual machine connected to the dedicated spoke virtual network for use as a pre-configured environment for running [TPC-E](http://www.tpc.org/tpce/default5.asp) benchmarks. The following quick starts must be deployed first before starting:
+This quick start implements a dedicated Windows Server with SQL Server virtual machine connected to the dedicated spoke virtual network for use as a pre-configured environment for running [HammerDB](https://www.hammerdb.com/) benchmarks. The following quick starts must be deployed first before starting:
 
 * [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub)
 * [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
