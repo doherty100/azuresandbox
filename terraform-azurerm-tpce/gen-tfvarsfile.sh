@@ -1,4 +1,4 @@
-e#!/bin/bash
+#!/bin/bash
 
 # Set these environment variables before running script
 POST_DEPLOY_SCRIPT_NAME="virtual-machine-03-post-deploy.ps1"
