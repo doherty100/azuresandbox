@@ -24,12 +24,12 @@ resource "azurerm_subnet" "vnet_spoke_01_subnets" {
   address_prefixes     = [each.value]
 }
 
-output "vnet_spoke_01_subnets" {
-  value = azurerm_subnet.vnet_spoke_01_subnets
-}
-
 output "vnet_spoke_01_default_subnet_id" {
   value = azurerm_subnet.vnet_spoke_01_subnets["snet-default-002"].id
+}
+
+output "vnet_spoke_01_db_subnet_id" {
+  value = azurerm_subnet.vnet_spoke_01_subnets["snet-db-001"].id
 }
 
 resource "random_id" "random_id_bastion_host_02_name" {

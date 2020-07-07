@@ -15,10 +15,6 @@ output "vnet_hub_01_name" {
   value = azurerm_virtual_network.vnet_hub_01.name
 }
 
-output "vnet_hub_01_subnets" {
-  value = azurerm_subnet.vnet_hub_01_subnets
-}
-
 resource "azurerm_subnet" "vnet_hub_01_subnets" {
   for_each = var.subnets
 

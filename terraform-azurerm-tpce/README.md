@@ -1,8 +1,8 @@
-# Azure quick start configuration: terraform-azurerm-vm-windows  
+# Azure quick start configuration: terraform-azurerm-vm-tpce  
 
 ## Overview
 
-This quick start implements a dedicated Windows Server virtual machine connected to the dedicated spoke virtual network which can be used as a jump box, admin workstation, web server, application server or database server. The following quick starts must be deployed first before starting:
+This quick start implements a dedicated Windows Server with SQL Server virtual machine connected to the dedicated spoke virtual network for use as a pre-configured environment for running [TPC-E](http://www.tpc.org/tpce/default5.asp) benchmarks. The following quick starts must be deployed first before starting:
 
 * [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub)
 * [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
@@ -40,7 +40,7 @@ This section describes how to provision this quick start using custom settings. 
 * Edit `run-gen-tfvarsfile-private.sh`.
   * -n: Change to a custom *vm_name* if desired.
   * -s: Change to a different *vm_image_sku* if desired.
-    * Run `az vm image list-skus -l eastus -p MicrosoftWindowsServer -f WindowsServer -o table` for a list of valid image sku names. Change the -l parameter to the desired location.
+    * Run `az vm image list-skus -l eastus -p MicrosoftSQLServer -f sql2019-ws2019 -o table` for a list of valid image sku names. Change the -l parameter to the desired location.
   * -z: Change to a different *vm_size* if desired.
     * Run `az vm list-sizes -l eastus -o table` for a list of sizes. Change the -l parameter to the desired location.
   * -c: Change to a different *vm_data_disk_count* if desired. Set to "0" of no data disks are required.
@@ -53,50 +53,60 @@ This section describes how to provision this quick start using custom settings. 
 
 ## Resource index
 
-This section provides an index of the ~6 resources included in this quick start.
+This section provides an index of the ~7 resources included in this quick start.
 
 ### Virtual machine
 
 ---
 
-Dedicated Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) connected to the dedicated spoke virtual network with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions.
+Dedicated [Windows Server with SQL Server virtual machine](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/microsoftsqlserver.sql2019-ws2019?tab=Overview) connected to the dedicated spoke virtual network with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vm_name | Input | string | Local | jumpbox01
+vm_name | Input | string | Local | sqldb01
 vm_size | Input | string | Local | Standard_B2ms
 vm_storage_replication_type | Input | string | Local | Standard_LRS
-vm_image_publisher | Input | string | Local | MicrosoftWindowsServer
-vm_image_offer | Input | string | Local | WindowsServer
-vm_image_sku | Input | string | Local | 2019-Datacenter-smalldisk
+vm_image_publisher | Input | string | Local | MicrosoftSQLServer
+vm_image_offer | Input | string | Local | sql2019-ws2019
+vm_image_sku | Input | string | Local | sqldev
 vm_image_version | Input | string | Local | Latest (default)
 tags | Input | string | Local | { costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }
-virtual_machine_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/jumpbox01
-virtual_machine_01_name | Output | string | Local | jumpbox01
+virtual_machine_03_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/sqldb01
+virtual_machine_03_name | Output | string | Local | sqldb01
+
+#### SQL Server virtual machine configuration
+
+The default instance of SQL Server is pre-configured using the following settings:
+
+* *sa* username and password credentials set using key vault
+* sql_license_type = "PAYG"
+* r_services_enabled = true
+* sql_connectivity_port = 1433
+* sql_connectivity_type = "PRIVATE"
 
 #### Network interface
 
-Dedicated [network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface) (NIC) with a dynamic private ip address attached to the dedicated Windows Server virtual machine.
+Dedicated [network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface) (NIC) with a dynamic private ip address attached to the virtual machine.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-virtual_machine_01_nic_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/networkInterfaces/nic-jumpbox01-001
-virtual_machine_01_nic_01_name | Output | string | Local | nic-jumpbox01-001
-virtual_machine_01_nic_01_private_ip_address | Output | string | Local | 10.2.0.4
+virtual_machine_03_nic_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/networkInterfaces/nic-sqldb01-001
+virtual_machine_03_nic_01_name | Output | string | Local | nic-sqldb01-001
+virtual_machine_03_nic_01_private_ip_address | Output | string | Local | 10.2.1.36
 
 #### Managed disks and data disk attachments
 
-One or more dedicated [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview) for use by the dedicated Windows Server virtual machine as data disks. Each of the dedicated managed disks is automatically attached to the dedicated Windows Server virtual machine. Note that caching is disabled by default and must be configured post-deployment if needed.
+One or more dedicated [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview) for use by the virtual machine as data disks. Each of the dedicated managed disks is automatically attached to the dedicated Windows Server virtual machine. Note that caching is disabled by default and must be configured post-deployment if needed.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vm_data_disk_count | Input | string | Local | 1
+vm_data_disk_count | Input | string | Local | 2
 vm_storage_replication_type | Input | string | Local | Standard_LRS
 vm_data_disk_size_gb | Input | string | Local | 32 (Gb)
 
 #### Virtual machine extensions
 
-Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the dedicated Windows Server virtual machine including:
+Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the virtual machine including:
 
 * [Log Analytics virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-windows) also known as the *Microsoft Monitoring Agent* (MMA) version 1.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
 * [Dependency virtual machine extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/agent-dependency-windows) version 9.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
@@ -105,8 +115,8 @@ Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azu
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
-post_deploy_script_name | Input | string | Local | virtual-machine-01-post-deploy.ps1 (Default)
-post_deploy_script_uri | Input | string | Local | <https://st8e644ec51c5be098001.blob.core.windows.net/scripts/virtual-machine-01-post-deploy.ps1>
+post_deploy_script_name | Input | string | Local | virtual-machine-03-post-deploy.ps1 (Default)
+post_deploy_script_uri | Input | string | Local | <https://st8e644ec51c5be098001.blob.core.windows.net/scripts/virtual-machine-03-post-deploy.ps1>
 storage_account_name | Input | String | Local | st8e644ec51c5be098001
 
 ## Smoke testing
@@ -126,7 +136,8 @@ storage_account_name | Input | String | Local | st8e644ec51c5be098001
     * Execute the PowerShell script copied from the Azure Portal to establish a drive mapping to the shared file share using the private endpoint.
     * Create some directories and sample files on the drive mapped to the shared file share to test functionality.
   * Review the log file created during execution of the post-deployment script in C:/Packages/Plugins/Microsoft.Compute.CustomScriptExtension/1.10.X/Downloads/0.
+  * Launch SQL Server Management Studio and create a test database. Place the data file and the log file on different data disks.
 
 ## Next steps
 
-Move on to the next quick start [terraform-azurerm-tpce](../terraform-azurerm-tpce).
+Move on to the next quick start [terraform-azurerm-vwan](../terraform-azurerm-vwan).
