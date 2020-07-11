@@ -24,19 +24,20 @@ The quick starts feature a modular design and can be deployed as a whole or incr
   * Shared [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview)  
   * Shared [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment)  
   * Shared [image gallery](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/shared-image-galleries)
-* [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
-  * Dedicated spoke virtual network  
-  * Dedicated bastion  
-  * Pre-configured bidirectional [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/)  
 * [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
   * For miscellaneous use as a jump box or admin server.
   * Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm)
 * [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/)
   * For miscellaneous use as a jump box or admin server.
   * Linux [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm)
+* [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
+  * Dedicated spoke virtual network  
+  * Dedicated bastion  
+  * Pre-configured bidirectional [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/)  
 * [terraform-azurerm-bench-windows](./terraform-azurerm-bench-windows/)
-  * For use as a pre-configured environment for running [HammerDB](https://www.hammerdb.com/) benchmarks.
-  * [Windows Server with SQL Server virtual machine](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/microsoftsqlserver.sql2019-ws2019?tab=Overview).
+  * For use as a pre-configured environment for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications.
+  * Windows Server / SQL Server database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm).
+  * Windows Server web server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm)
 * [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
   * Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources)
   * Shared [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/README.md) and [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/README.md)
@@ -157,7 +158,8 @@ Shared hub | Reserved for future use | 10.1.128.0/17 | 10.1.128.0 | 10.1.255.255
 Dedicated spoke | snet-default-002 | 10.2.0.0/24 | 10.2.0.0 | 10.2.0.255 | 256
 Dedicated spoke | AzureBastionSubnet | 10.2.1.0/27 | 10.2.1.0 | 10.2.1.31 | 32
 Dedicated spoke | snet-db-001 | 10.2.1.32/27 | 10.2.1.32 | 10.2.1.63 | 32
-Dedicated spoke | Reserved for future use | 10.2.1.64/25 | 10.2.1.64 | 10.2.1.127 | 64
+Dedicated spoke | snet-app-001 | 10.2.1.64/27 | 10.2.1.64 | 10.2.1.95 | 32
+Dedicated spoke | Reserved for future use | 10.2.1.96/27 | 10.2.1.96 | 10.2.1.127 | 32
 Dedicated spoke | Reserved for future use | 10.2.1.128/25 | 10.2.1.128 | 10.2.1.255 | 128
 Dedicated spoke | Reserved for future use | 10.2.2.0/23 | 10.2.2.0 | 10.2.3.255 | 512
 Dedicated spoke | Reserved for future use | 10.2.4.0/22 | 10.2.4.0 | 10.2.7.255 | 1,024
@@ -172,10 +174,10 @@ Dedicated spoke | Reserved for future use | 10.2.128.0/17 | 10.2.128.0 | 10.2.25
 Deploy the quick starts the first time using defaults in the following order:
 
 1. [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/) establishes a shared hub virtual network and shared services.
+1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) implements a dedicated Windows Server virtual machine connected to the dedicated hub virtual network.
+1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/) implements a dedicated Linux virtual machine connected to the dedicated hub virtual network.
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/) establishes a dedicated spoke virtual network.
-1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) implements a dedicated Windows Server virtual machine connected to the dedicated spoke virtual network.
-1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/) implements a dedicated Linux virtual machine connected to the dedicated spoke virtual network.
-1. [terraform-azurerm-bench-windows](./terraform-azurerm-bench-windows/) implements a pre-configured environment for running [HammerDB](https://www.hammerdb.com/) benchmarks.
+1. [terraform-azurerm-bench-windows](./terraform-azurerm-bench-windows/) implements a pre-configured environment for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications.
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared hub virtual network and the dedicated spoke virtual network to remote users or a private network.
 
 #### De-provision default quick start deployment
@@ -184,9 +186,9 @@ While a default quick start deployment is fine for testing, it may not work with
 
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
 1. [terraform-azurerm-bench-windows](./terraform-azurerm-bench-windows/)
+1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
 1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/)
 1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
-1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
 1. [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/)
 
 Alternatively, for speed, simply run `az group delete -g rg-vdc-nonprod-001`. After doing this, it is recommended that you remove temporary files from each quick start directory by running `rm -r .terraform/` and `rm terraform.*`.
@@ -248,7 +250,8 @@ Shared hub | Reserved for future use | 10.73.8.192/26 | 10.73.8.192 | 10.73.8.25
 Dedicated spoke | snet-default-002 | 10.73.9.0/25 | 10.73.9.0 | 10.73.9.127 | 128
 Dedicated spoke | AzureBastionSubnet | 10.73.9.128/27 | 10.73.9.128 | 10.73.9.159 | 32
 Dedicated spoke | snet-db-001 | 10.73.9.160/27 | 10.73.9.160 | 10.73.9.191 | 32
-Dedicated spoke | Reserved for future use | 10.73.9.192/26 | 10.73.9.192 | 10.73.9.255 | 64
+Dedicated spoke | snet-app-001 | 10.73.9.192/27 | 10.73.9.192 | 10.73.9.223 | 32
+Dedicated spoke | Reserved for future use | 10.73.9.224/27 | 10.73.9.224 | 10.73.9.255 | 32
 
 It is recommended to reserve space for future subnets. A blank table is provided here for convenience. Make a copy of this table and change the *TBD* values to custom values.
 
@@ -261,6 +264,7 @@ Shared hub | Reserved for future use | TBD | TBD | TBD | TBD
 Dedicated spoke | snet-default-002 | TBD | TBD | TBD | TBD
 Dedicated spoke | AzureBastionSubnet | TBD | TBD | TBD | TBD
 Dedicated spoke | snet-db-001 | TBD | TBD | TBD | TBD
+Dedicated spoke } snet-app-001 | TBD | TBD | TBD | TBD
 Dedicated spoke | Reserved for future use | TBD | TBD | TBD | TBD
 
 #### Deploy customized quick starts
@@ -268,8 +272,8 @@ Dedicated spoke | Reserved for future use | TBD | TBD | TBD | TBD
 The quick starts must be deployed in the following order using customized values for input variables:
 
 1. [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/) establishes a shared hub virtual network and shared services.
+1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) implements a dedicated Windows Server virtual machine connected to the dedicated hub virtual network.
+1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/) implements a dedicated Linux virtual machine connected to the dedicated hub virtual network.
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/) establishes a dedicated spoke virtual network.
-1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) implements a dedicated Windows Server virtual machine connected to the dedicated spoke virtual network.
-1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/) implements a dedicated Linux virtual machine connected to the dedicated spoke virtual network.
-1. [terraform-azurerm-bench-windows](./terraform-azurerm-bench-windows/) implements a pre-configured environment for running [HammerDB](https://www.hammerdb.com/) benchmarks.
+1. [terraform-azurerm-bench-windows](./terraform-azurerm-bench-windows/) implements a pre-configured environment for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testiing web applications.
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared hub virtual network and the dedicated spoke virtual network to remote users or a private network.

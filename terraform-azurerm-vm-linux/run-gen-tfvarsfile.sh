@@ -16,6 +16,6 @@
   -o "UbuntuServer" \
   -s "18.04-LTS" \
   -z "Standard_B2s" \
-  -c "1" \
-  -d "32" \
+  -c "0" \
+  -d "0" \
   -t "{ costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }"

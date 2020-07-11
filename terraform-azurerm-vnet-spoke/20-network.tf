@@ -24,19 +24,24 @@ resource "azurerm_subnet" "vnet_spoke_01_subnets" {
   address_prefixes     = [each.value]
 }
 
-output "vnet_spoke_01_default_subnet_id" {
-  value = azurerm_subnet.vnet_spoke_01_subnets["snet-default-002"].id
+output "vnet_spoke_01_app_subnet_id" {
+  value = azurerm_subnet.vnet_spoke_01_subnets["snet-app-001"].id
 }
 
 output "vnet_spoke_01_db_subnet_id" {
   value = azurerm_subnet.vnet_spoke_01_subnets["snet-db-001"].id
 }
 
+output "vnet_spoke_01_default_subnet_id" {
+  value = azurerm_subnet.vnet_spoke_01_subnets["snet-default-002"].id
+}
+
+# Dedicated bastion
+
 resource "random_id" "random_id_bastion_host_02_name" {
   byte_length = 8
 }
 
-# Dedicated bastion
 resource "azurerm_bastion_host" "bastion_host_02" {
   name                = "bst-${random_id.random_id_bastion_host_02_name.hex}-002"
   location            = azurerm_virtual_network.vnet_spoke_01.location

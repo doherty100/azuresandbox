@@ -62,8 +62,11 @@ done
 
 printf "Validating RESOURCE_GROUP_NAME '${RESOURCE_GROUP_NAME}'...\n"
 
-if [[ -z {$RESOURCE_GROUP_NAME} ]]; then
-    printf "Error: Invalid RESOURCE_GROUP_NAME.\n"
+RESOURCE_GROUP_ID=""
+RESOURCE_GROUP_ID=$(az group show -g ${RESOURCE_GROUP_NAME} --query id 2> /dev/null)
+
+if [[ -n ${RESOURCE_GROUP_ID} ]]; then
+    printf "Error: Resource group '${RESOURCE_GROUP_NAME}' already exits. Choose a different name.\n"
     usage
 fi
 

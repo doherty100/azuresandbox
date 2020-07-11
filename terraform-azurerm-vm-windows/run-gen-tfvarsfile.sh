@@ -11,7 +11,7 @@
 ./gen-tfvarsfile.sh \
   -n "jumpbox01" \
   -s "2019-Datacenter-smalldisk" \
-  -z "Standard_B2ms" \
-  -c "1" \
-  -d "32" \
+  -z "Standard_B2s" \
+  -c "0" \
+  -d "0" \
   -t "{ costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }"

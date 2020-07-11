@@ -25,6 +25,10 @@ resource "azurerm_subnet" "vnet_hub_01_subnets" {
   enforce_private_link_endpoint_network_policies = length(regexall("snet-storage-private-endpoints+", each.key)) > 0 ? true : false
 }
 
+output "vnet_hub_01_default_subnet_id" {
+  value = azurerm_subnet.vnet_hub_01_subnets["snet-default-001"].id
+}
+
 # Dedicated bastion
 resource "random_id" "random_id_bastion_host_01_name" {
   byte_length = 8

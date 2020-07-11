@@ -5,37 +5,22 @@ variable "key_vault_id" {
 
 variable "location" {
   type        = string
-  description = "The Azure region where the VM will be provisioned"
+  description = "The Azure region where the VMs will be provisioned"
 }
 
 variable "log_analytics_workspace_id" {
   type = string
-  description = "The workspaceId of the log analytics workspace used to monitor the VM"
-}
-
-variable "post_deploy_script_name" {
-  type = string
-  description = "The name of the PowerShell script to be run post-deployment."
-}
-
-variable "post_deploy_script_uri" {
-  type = string
-  description = "The uri of the PowerShell script to be run post-deployment."
+  description = "The workspaceId of the log analytics workspace used to monitor the VMs"
 }
 
 variable "resource_group_name" {
   type        = string
-  description = "The existing resource group where the VM will be provisioned"
+  description = "The existing resource group where the VMs will be provisioned"
 }
 
 variable "storage_account_name" {
   type = string
   description = "The name of the shared storage account."
-}
-
-variable "subnet_id" {
-  type        = string
-  description = "The existing subnet which will be used by the VM"
 }
 
 variable "tags" {
@@ -53,49 +38,114 @@ variable "vm_admin_username_secret" {
   description = "The name of the key vault secret containing the admin username"
 }
 
-variable "vm_data_disk_count" {
+variable "vm_db_data_disk_count" {
   type = string
   description = "The number of data disks to be attached to the virtual machine."
 }
 
-variable "vm_data_disk_size_gb" {
+variable "vm_db_data_disk_size_gb" {
   type = string
   description = "The number of data disks to be attached to the virtual machine."
 }
 
-variable "vm_image_offer" {
+variable "vm_db_image_offer" {
   type        = string
-  description = "The offer type of the virtual machine image used to create the VM"
+  description = "The offer type of the virtual machine image used to create the database server VM"
 }
 
-variable "vm_image_publisher" {
+variable "vm_db_image_publisher" {
   type        = string
-  description = "The publisher for the virtual machine image used to create the VM"
+  description = "The publisher for the virtual machine image used to create the database server VM"
 }
 
-variable "vm_image_sku" {
+variable "vm_db_image_sku" {
   type        = string
-  description = "The sku of the virtual machine image used to create the VM"
+  description = "The sku of the virtual machine image used to create the database server VM"
 }
 
-variable "vm_image_version" {
+variable "vm_db_image_version" {
   type        = string
-  description = "The version of the virtual machine image used to create the VM"
+  description = "The version of the virtual machine image used to create the database server VM"
   default     = "Latest"
 }
 
-variable "vm_name" {
+variable "vm_db_name" {
   type        = string
-  description = "The name of the VM"
+  description = "The name of the database server VM"
 }
 
-variable "vm_size" {
+variable "vm_db_post_deploy_script_name" {
+  type = string
+  description = "The name of the PowerShell script to be run post-deployment."
+}
+
+variable "vm_db_post_deploy_script_uri" {
+  type = string
+  description = "The uri of the PowerShell script to be run post-deployment."
+}
+
+variable "vm_db_size" {
   type        = string
   description = "The size of the virtual machine"
 }
 
-variable "vm_storage_replication_type" {
+variable "vm_db_storage_replication_type" {
   type        = string
   description = "The storage replication type to be used for the VMs OS disk"
 }
 
+variable "vm_db_subnet_id" {
+  type        = string
+  description = "The existing subnet which will be used by the VM"
+}
+
+variable "vm_web_image_offer" {
+  type        = string
+  description = "The offer type of the virtual machine image used to create the database server VM"
+}
+
+variable "vm_web_image_publisher" {
+  type        = string
+  description = "The publisher for the virtual machine image used to create the database server VM"
+}
+
+variable "vm_web_image_sku" {
+  type        = string
+  description = "The sku of the virtual machine image used to create the database server VM"
+}
+
+variable "vm_web_image_version" {
+  type        = string
+  description = "The version of the virtual machine image used to create the database server VM"
+  default     = "Latest"
+}
+
+variable "vm_web_name" {
+  type        = string
+  description = "The name of the database server VM"
+}
+
+variable "vm_web_post_deploy_script_name" {
+  type = string
+  description = "The name of the PowerShell script to be run post-deployment."
+}
+
+variable "vm_web_post_deploy_script_uri" {
+  type = string
+  description = "The uri of the PowerShell script to be run post-deployment."
+}
+
+variable "vm_web_size" {
+  type        = string
+  description = "The size of the virtual machine"
+}
+
+variable "vm_web_storage_replication_type" {
+  type        = string
+  description = "The storage replication type to be used for the VMs OS disk"
+}
+
+variable "vm_web_subnet_id" {
+  type        = string
+  description = "The existing subnet which will be used by the VM"
+}

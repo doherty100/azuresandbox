@@ -3,9 +3,10 @@
 # Dependencies: Azure CLI, Terraform
 
 # Set these environment variables before running script
-POST_DEPLOYMENT_SCRIPT_NAME="virtual-machine-03-post-deploy.ps1"
 VM_ADMIN_PASSWORD_SECRET="adminpassword"
 VM_ADMIN_USERNAME_SECRET="adminuser"
+VM_DB_POST_DEPLOYMENT_SCRIPT_NAME="virtual-machine-03-post-deploy.ps1"
+VM_WEB_POST_DEPLOYMENT_SCRIPT_NAME="virtual-machine-04-post-deploy.ps1"
 
 # Set these environment variables by passing parameters to this script 
 VM_ADMIN_PASSWORD=""
@@ -151,17 +152,31 @@ if [ $? != 0 ]; then
     usage
 fi
 
-printf "Uploading post-deployment script...\n"
+printf "Uploading database server post-deployment script...\n"
 
 az storage blob upload \
   --account-name $STORAGE_ACCOUNT_NAME \
   --account-key $STORAGE_ACCOUNT_KEY \
   --container-name $BLOB_STORAGE_CONTAINER_NAME \
-  --name $POST_DEPLOYMENT_SCRIPT_NAME \
-  --file $POST_DEPLOYMENT_SCRIPT_NAME
+  --name $VM_DB_POST_DEPLOYMENT_SCRIPT_NAME \
+  --file $VM_DB_POST_DEPLOYMENT_SCRIPT_NAME
 
 if [ $? != 0 ]; then
-    echo "Error: Failed to upload post-deployment script.\n"
+    echo "Error: Failed to upload database server post-deployment script.\n"
+    usage
+fi
+
+printf "Uploading web server post-deployment script...\n"
+
+az storage blob upload \
+  --account-name $STORAGE_ACCOUNT_NAME \
+  --account-key $STORAGE_ACCOUNT_KEY \
+  --container-name $BLOB_STORAGE_CONTAINER_NAME \
+  --name $VM_WEB_POST_DEPLOYMENT_SCRIPT_NAME \
+  --file $VM_WEB_POST_DEPLOYMENT_SCRIPT_NAME
+
+if [ $? != 0 ]; then
+    echo "Error: Failed to upload web server post-deployment script.\n"
     usage
 fi
 

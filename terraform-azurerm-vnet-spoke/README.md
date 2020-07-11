@@ -61,13 +61,15 @@ vnet_spoke_01_name | output | string | Global | vnet-spoke-001
 
 Shared hub virtual network [subnets](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-vnet-plan-design-arm#subnets). Note the following naming conventions used in the sample values are significant:
 
+* A subnet named *snet-app-001* is required for use in other quick starts.
 * A subnet named *snet-db-001* is required for use in other quick starts.
 * A subnet named *snet-default-002* is required for use in other quick starts.
 * A subnet named *AzureBastionSubnet* is required for the bastion resource described later.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-subnets | Input | map | Local | { snet-default-002 = "10.2.0.0/24", AzureBastionSubnet = "10.2.1.0/27", snet-db-001 = "10.2.1.32/27" }
+subnets | Input | map | Local | { snet-default-002 = "10.2.0.0/24", AzureBastionSubnet = "10.2.1.0/27", snet-db-001 = "10.2.1.32/27", snet-app-001 = "10.2.1.64/27" }
+vnet_spoke_01_app_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-app-001
 vnet_spoke_01_db_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-db-001
 vnet_spoke_01_default_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-default-002
 

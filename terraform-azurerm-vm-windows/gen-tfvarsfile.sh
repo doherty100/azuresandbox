@@ -116,10 +116,10 @@ if [ $? != 0 ]; then
 fi
 
 printf "Getting SUBNET_ID...\n"
-SUBNET_ID=$(terraform output -state="../terraform-azurerm-vnet-spoke/terraform.tfstate" vnet_spoke_01_default_subnet_id)
+SUBNET_ID=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" vnet_hub_01_default_subnet_id)
 
 if [ $? != 0 ]; then
-    echo "Error: Terraform output variable vnet_spoke_01_default_subnet_id not found."
+    echo "Error: Terraform output variable vnet_hub_01_default_subnet_id not found."
     usage
 fi
 

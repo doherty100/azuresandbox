@@ -112,6 +112,7 @@ vnet_hub_01_name | output | string | Global | vnet-hub-001
 
 Shared hub virtual network [subnets](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-vnet-plan-design-arm#subnets). Note the following naming conventions used in the sample values are significant:
 
+* A subnet named *snet-default-001* required for use in other quick starts.
 * A subnet named *snet-storage-private-endpoints-001* required for use in the shared file share resource described later.  
 * A subnet named *AzureBastionSubnet* is required for use by the bastion resource described later.  
 * Subnets starting with the characters *snet-storage-private-endpoints* are automatically configured with [enforce_private_link_endpoint_network_policies](https://www.terraform.io/docs/providers/azurerm/r/subnet.html#enforce_private_link_endpoint_network_policies) set to *true* and are required for configuring the shared file share resource described later.  
@@ -119,6 +120,7 @@ Shared hub virtual network [subnets](https://docs.microsoft.com/en-us/azure/virt
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 subnets | Input | map | Local | { snet-default-001 = \"10.1.0.0/24\", AzureBastionSubnet = \"10.1.1.0/27\", snet-storage-private-endpoints-001 = \"10.1.2.0/24\" }
+vnet_hub_01_default_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-hub-001/subnets/snet-default-001
 
 #### Bastion
 

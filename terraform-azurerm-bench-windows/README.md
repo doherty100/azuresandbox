@@ -2,7 +2,7 @@
 
 ## Overview
 
-This quick start implements a dedicated Windows Server with SQL Server virtual machine connected to the dedicated spoke virtual network for use as a pre-configured environment for running [HammerDB](https://www.hammerdb.com/) benchmarks. The following quick starts must be deployed first before starting:
+This quick start implements a dedicated Windows Server / SQL Server database server virtual machine and a dedicated Windows Server web server virtual machine connected to the dedicated spoke virtual network for use as a pre-configured environment for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications. The following quick starts must be deployed first before starting:
 
 * [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub)
 * [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
@@ -55,24 +55,24 @@ This section describes how to provision this quick start using custom settings. 
 
 This section provides an index of the ~7 resources included in this quick start.
 
-### Virtual machine
+### Database server virtual machine
 
 ---
 
-Dedicated [Windows Server with SQL Server virtual machine](https://azuremarketplace.microsoft.com/en-us/marketplace/apps/microsoftsqlserver.sql2019-ws2019?tab=Overview) connected to the dedicated spoke virtual network with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions.
+Dedicated Windows Server / SQL Server database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) connected to the dedicated spoke virtual network with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vm_name | Input | string | Local | sqldb01
-vm_size | Input | string | Local | Standard_B2ms
-vm_storage_replication_type | Input | string | Local | Standard_LRS
-vm_image_publisher | Input | string | Local | MicrosoftSQLServer
-vm_image_offer | Input | string | Local | sql2019-ws2019
-vm_image_sku | Input | string | Local | sqldev
-vm_image_version | Input | string | Local | Latest (default)
+vm_db_name | Input | string | Local | winbenchdb01
+vm_db_size | Input | string | Local | Standard_B2ms
+vm_db_storage_replication_type | Input | string | Local | Standard_LRS
+vm_db_image_publisher | Input | string | Local | MicrosoftSQLServer
+vm_db_image_offer | Input | string | Local | sql2019-ws2019
+vm_db_image_sku | Input | string | Local | sqldev
+vm_db_image_version | Input | string | Local | Latest (default)
 tags | Input | string | Local | { costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }
-virtual_machine_03_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/sqldb01
-virtual_machine_03_name | Output | string | Local | sqldb01
+virtual_machine_03_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/winbenchdb01
+virtual_machine_03_name | Output | string | Local | winbenchdb01
 
 #### SQL Server virtual machine configuration
 
@@ -84,17 +84,17 @@ The default instance of SQL Server is pre-configured using the following setting
 * sql_connectivity_port = 1433
 * sql_connectivity_type = "PRIVATE"
 
-#### Network interface
+#### Database server network interface
 
 Dedicated [network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface) (NIC) with a dynamic private ip address attached to the virtual machine.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-virtual_machine_03_nic_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/networkInterfaces/nic-sqldb01-001
-virtual_machine_03_nic_01_name | Output | string | Local | nic-sqldb01-001
+virtual_machine_03_nic_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/networkInterfaces/nic-winbenchdb01-001
+virtual_machine_03_nic_01_name | Output | string | Local | nic-winbenchdb01-001
 virtual_machine_03_nic_01_private_ip_address | Output | string | Local | 10.2.1.36
 
-#### Managed disks and data disk attachments
+#### Database server managed disks and data disk attachments
 
 One or more dedicated [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview) for use by the virtual machine as data disks. Each of the dedicated managed disks is automatically attached to the dedicated Windows Server virtual machine. Note that caching is disabled by default and must be configured post-deployment if needed.
 
@@ -104,7 +104,7 @@ vm_data_disk_count | Input | string | Local | 2
 vm_storage_replication_type | Input | string | Local | Standard_LRS
 vm_data_disk_size_gb | Input | string | Local | 32 (Gb)
 
-#### Virtual machine extensions
+#### Database server virtual machine extensions
 
 Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the virtual machine including:
 
@@ -115,8 +115,52 @@ Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azu
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
-post_deploy_script_name | Input | string | Local | virtual-machine-03-post-deploy.ps1 (Default)
-post_deploy_script_uri | Input | string | Local | <https://st8e644ec51c5be098001.blob.core.windows.net/scripts/virtual-machine-03-post-deploy.ps1>
+storage_account_name | Input | String | Local | st8e644ec51c5be098001
+vm_db_post_deploy_script_name | Input | string | Local | virtual-machine-03-post-deploy.ps1 (Default)
+vm_db_post_deploy_script_uri | Input | string | Local | <https://st8e644ec51c5be098001.blob.core.windows.net/scripts/virtual-machine-03-post-deploy.ps1>
+
+### Web server virtual machine
+
+---
+
+Dedicated Windows Server web server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) connected to the dedicated spoke virtual network with pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions.
+
+Variable | In/Out | Type | Scope | Sample
+--- | --- | --- | --- | ---
+vm_web_name | Input | string | Local | winbenchweb01
+vm_web_size | Input | string | Local | Standard_B2s
+vm_web_storage_replication_type | Input | string | Local | Standard_LRS
+vm_web_image_publisher | Input | string | Local | MicrosoftWindowsServer
+vm_web_image_offer | Input | string | Local | WindowsServer
+vm_web_image_sku | Input | string | Local | 2019-Datacenter-smalldisk
+vm_web_image_version | Input | string | Local | Latest (default)
+tags | Input | string | Local | { costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }
+virtual_machine_04_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/winbenchweb01
+virtual_machine_04_name | Output | string | Local | winbenchweb01
+
+#### Web server network interface
+
+Dedicated [network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface) (NIC) with a dynamic private ip address attached to the virtual machine.
+
+Variable | In/Out | Type | Scope | Sample
+--- | --- | --- | --- | ---
+virtual_machine_04_nic_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/networkInterfaces/nic-winbenchweb01-001
+virtual_machine_04_nic_01_name | Output | string | Local | nic-winbenchweb01-001
+virtual_machine_04_nic_01_private_ip_address | Output | string | Local | 10.2.1.68
+
+#### Web server virtual machine extensions
+
+Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the virtual machine including:
+
+* [Log Analytics virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-windows) also known as the *Microsoft Monitoring Agent* (MMA) version 1.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
+* [Dependency virtual machine extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/agent-dependency-windows) version 9.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
+* [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script which partitions and formats new data disks.
+
+Variable | In/Out | Type | Scope | Sample
+--- | --- | --- | --- | ---
+log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
+vm_web_post_deploy_script_name | Input | string | Local | virtual-machine-04-post-deploy.ps1 (Default)
+vm_web_post_deploy_script_uri | Input | string | Local | <https://st8e644ec51c5be098001.blob.core.windows.net/scripts/virtual-machine-04-post-deploy.ps1>
 storage_account_name | Input | String | Local | st8e644ec51c5be098001
 
 ## Smoke testing

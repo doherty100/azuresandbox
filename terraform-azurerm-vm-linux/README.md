@@ -2,7 +2,7 @@
 
 ## Overview
 
-This quick start implements a dedicated Linux virtual machine connected to the dedicated spoke virtual network which can be used as a jump box, admin workstation, web server, application server or database server. The following quick starts must be deployed first before starting:
+This quick start implements a dedicated Linux virtual machine connected to the dedicated hub virtual network which can be used as a jump box, admin workstation, web server, application server or database server. The following quick starts must be deployed first before starting:
 
 * [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub)
 * [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
@@ -57,13 +57,13 @@ This section describes how to provision this quick start using custom settings. 
 
 ## Resource index
 
-This section provides an index of the ~6 resources included in this quick start.
+This section provides an index of the ~5 resources included in this quick start.
 
 ### Virtual machine
 
 ---
 
-Dedicated Linux [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) connected to the dedicated spoke virtual network with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions. Password authentication is enabled.
+Dedicated Linux [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) connected to the dedicated hub virtual network with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions. Password authentication is enabled.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -86,7 +86,7 @@ Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 virtual_machine_02_nic_01_id | Output | string | Local | /subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/networkInterfaces/nic-jumpbox02-001
 virtual_machine_02_nic_01_name | Output | string | Local | nic-jumpbox02-001
-virtual_machine_02_nic_01_private_ip_address | Output | string | Local | 10.2.0.5
+virtual_machine_02_nic_01_private_ip_address | Output | string | Local | 10.1.0.5
 
 #### Managed disks and data disk attachments
 
@@ -94,9 +94,9 @@ One or more dedicated [managed disks](https://docs.microsoft.com/en-us/azure/vir
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vm_data_disk_count | Input | string | Local | 1
+vm_data_disk_count | Input | string | Local | 0
 vm_storage_replication_type | Input | string | Local | Standard_LRS
-vm_data_disk_size_gb | Input | string | Local | 32 (Gb)
+vm_data_disk_size_gb | Input | string | Local | 0 (Gb)
 
 #### Virtual machine extensions
 
