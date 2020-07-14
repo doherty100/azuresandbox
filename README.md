@@ -55,12 +55,16 @@ The following prerequisites are required in order to get started.
 * Identify the [Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-whatis) (AAD) tenant associated with the subscription, or create a new AAD tenant using [Quickstart: Set up a tenant](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-create-new-tenant) and associate the the subscription to it. See [Associate or add an Azure subscription to your Azure Active Directory tenant](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory) for more information.  
 * Identify an existing security principal (user or group account) in the AAD tenant to be used to deploy the quick starts, or create a new security principal. See [Manage app and resource access using Azure Active Directory groups](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-manage-groups) for more information.  
 * Verify the security principal is a member of the Contributor [Azure built-in role](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles). See [Add or remove Azure role assignments using the Azure portal](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal) for more information.
-* Review [Azure subscription and service limits, quotas, and constraints](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits). Requests to increase quotas are submitted by opening an [online customer support request](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-resource-quota). Consult the following table to determine if you need to increase one or more quotas to deploy the quick starts using default settings:
+* Some organizations may institute [Azure policy](https://docs.microsoft.com/en-us/azure/governance/policy/overview) which may cause some quick start deployments to fail. This can be addressed by using custom settings which pass the policy checks, or by disabling the policies on the Azure subscription being used for the quick starts.
+* Some Azure subscriptions may have low quota limits for some Azure resources which may cause some quick start deployments to fail. See [Resolve errors for resource quotas](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-resource-quota) if additional quota is needed. Consult the following table to determine if quota increases are required to deploy the quick starts using default settings:
 
-Resource | Quota required | Command
+Resource |  Quota required per deployment | Command
 --- | --- | ---
-Static Public IP Addresses | 2 | *az network list-usages*
-Virtual Networks | 2 | *az network list-usages*
+Public IP Addresses | 2 | *az network list-usages*
+Standard Sku Public IP Addresses | 2 | *az network list-usages*
+Static Public IP Addresses  | 2 | *az network list-usages*
+
+*Note:* This list is not comprehensive. Quotas vary by Azure subscription offer type and environment. More than one quota may need to be increased for a single resource type, such as [public ip addresses](https://docs.microsoft.com/en-us/azure/virtual-network/public-ip-addresses).
 
 ## Getting started
 
