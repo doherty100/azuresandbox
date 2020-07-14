@@ -51,10 +51,16 @@ The quick starts feature a modular design and can be deployed as a whole or incr
 
 The following prerequisites are required in order to get started.
 
-* Identify an existing subscription or create a new subscription. See [Azure Offer Details](https://azure.microsoft.com/en-us/support/legal/offer-details/) for more information.  
+* Identify an existing Azure [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription) or create a new Azure subscription. See [Azure Offer Details](https://azure.microsoft.com/en-us/support/legal/offer-details/) for more information.
 * Identify the [Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-whatis) (AAD) tenant associated with the subscription, or create a new AAD tenant using [Quickstart: Set up a tenant](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-create-new-tenant) and associate the the subscription to it. See [Associate or add an Azure subscription to your Azure Active Directory tenant](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory) for more information.  
 * Identify an existing security principal (user or group account) in the AAD tenant to be used to deploy the quick starts, or create a new security principal. See [Manage app and resource access using Azure Active Directory groups](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-manage-groups) for more information.  
 * Verify the security principal is a member of the Contributor [Azure built-in role](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles). See [Add or remove Azure role assignments using the Azure portal](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal) for more information.
+* Review [Azure subscription and service limits, quotas, and constraints](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits). Requests to increase quotas are submitted by opening an [online customer support request](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-resource-quota). Consult the following table to determine if you need to increase one or more quotas to deploy the quick starts using default settings:
+
+Resource | Quota required | Command
+--- | --- | ---
+Static Public IP Addresses | 2 | *az network list-usages*
+Virtual Networks | 2 | *az network list-usages*
 
 ## Getting started
 

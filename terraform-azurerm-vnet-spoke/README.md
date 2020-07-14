@@ -137,4 +137,4 @@ Explore newly provisioned resources in the Azure portal.
 
 ## Next steps
 
-Move on to the next quick start [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows/) or [terraform-azurerm-vm-linux](../terraform-azurerm-vm-linux/).
+Move on to the next quick start [terraform-azurerm-bench-windows](../terraform-azurerm-bench-windows).

@@ -291,4 +291,4 @@ shared_image_gallery_01_unique_name | Output | string | Local | 00000000-0000-00
 
 ## Next steps
 
-* Move on to the next quick start [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke).
+* Move on to the next quick start [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows) and/or [terraform-azurerm-vm-linux](../terraform-azurerm-vm/linux).

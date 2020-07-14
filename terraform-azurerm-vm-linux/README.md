@@ -133,4 +133,4 @@ storage_account_name | Input | String | Local | stf7250f5be032d651001
   
 ## Next steps
 
-Move on to the next quick start [terraform-azurerm-vwan](../terraform-azurerm-vwan).
+Move on to the next quick start [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke).
