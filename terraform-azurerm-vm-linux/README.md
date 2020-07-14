@@ -122,7 +122,7 @@ storage_account_name | Input | String | Local | stf7250f5be032d651001
     * In the Azure Portal navigate to *storage accounts* > *stxxxxxxxxxxxxxxxx001* > *file service* > *file shares* > *fs-xxxxxxxxxxxxxxxx-001* > *Connect* > *Linux*
     * Copy the bash script in the right-hand pane for use in the next smoke testing exercise.
 * From the Azure portal, use bastion to open an SSH session with virtual machine and log in with the *adminuser* and *adminpassword* defined previously.
-  * Partition and mount attached data disks.  See [Connect to the Linux VM to mount the new disk](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/add-disk#connect-to-the-linux-vm-to-mount-the-new-disk) for more details.
+  * If you used custom settings and added data disks, you will need to partition and mount them. See [Connect to the Linux VM to mount the new disk](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/add-disk#connect-to-the-linux-vm-to-mount-the-new-disk) for more details.
   * Confirm access to shared file share private endpoint.
     * Create a new bash script, and paste in the script generated previously.
     * Copy the fqdn for the file endpoint, for example *stxxxxxxxxxxxxxxxx001.file.core.windows.net*
