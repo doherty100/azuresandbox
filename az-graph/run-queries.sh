@@ -2,9 +2,8 @@
 
 # Dependencies: Azure CLI and graph extension (preview)
 
-FILE_COUNT=0
 QUERY_TEXT=""
-SUBSCRSUIPTION=""
+SUBSCRIPTION=""
 
 usage() {
     printf "Usage: $0 \n  -s SUBSCRIPTION\n" 1>&2
@@ -36,9 +35,17 @@ else
     printf "Subscription filter '${SUBSCRIPTION}' will be applied...\n"
 fi
 
+FILE_COUNT=0
+
 for FILENAME in ./*.kql
 do
     let "FILE_COUNT++"
+
+    if [ $FILE_COUNT -gt 1 ]; then
+        printf "Sleeping for 30s to avoid throttling...\n"
+        sleep 30s
+    fi
+
     printf "Running resource graph query '${FILENAME}'...\n"
 
     if [[ -z ${SUBSCRIPTION} ]]; then 
@@ -51,6 +58,8 @@ do
         printf "Error: Error running query '${FILENAME}'.\n"
         usage
     fi
+    
+
 done
 
 if [ $FILENAME = "./*.kql" ]; then

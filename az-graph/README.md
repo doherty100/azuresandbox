@@ -43,7 +43,8 @@ Name | Description | Group | Import optimized
 disk-details.kql | List disks with details | IaaS | Yes
 nic-details.kql | List nics with details | IaaS | Yes
 pip-details.kql | List public ips with details | General | Yes
-resource-count.kql | Count of resources by type | General | No
+resource-details.kql | List resources with details | General | Yes
+resource-summary.kql | Summarize resources by type | General | No
 storage-details.kql | List storage accounts with details | PaaS | Yes
 storage-summary.kql | Summarize storage accounts by sku | PaaS | No
 subnet-details.kql | List subnets with details | IaaS | Yes

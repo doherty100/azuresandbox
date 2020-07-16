@@ -1,0 +1,56 @@
+// List resources with details
+// Author: rdoherty@microsoft.com
+// Updated: 16-July-2020 
+
+resources
+| project
+	resourceGroup = tostring(resourceGroup),
+	location = tostring(location),
+    resCategory = tostring(split(type, "/")[0]),
+    resType = tostring(split(type, "/")[1]),
+	resKind = tostring(iif(isempty(kind),"N/A",kind)),
+	resName = tostring(name),
+	resSkuName = tostring(iif(isempty(sku.name),"N/A",sku.name)),
+	resSkuTier =  tostring(iif(isempty(sku.tier),"N/A",sku.tier)),
+	resSkuCapacity = tostring(iif(isempty(sku.capacity),"N/A",sku.capacity)),
+	resSkuFamily = tostring(iif(isempty(sku.family),"N/A",sku.family)),
+	resSkuSize = tostring(iif(isempty(sku.size),"N/A",sku.size)),
+	resPlanPublisher = tostring(iif(isempty(plan.publisher),"N/A",plan.publisher)),
+	resPlanProduct = tostring(iif(isempty(plan.product),"N/A",plan.product)),
+	resPlanName = tostring(iif(isempty(plan.name),"N/A",plan.name)),
+	subId = tostring(subscriptionId),
+    resId = tostring(id)
+| join kind=leftouter
+    (
+        resourcecontainers
+        | where type == "microsoft.resources/subscriptions"
+        | project
+            subId = tostring(subscriptionId),
+            subName = tostring(name)
+    ) on subId
+| project-away subId, subId1
+| project 
+	res000_subName = subName,
+	res010_resourceGroup = resourceGroup,
+	res020_location = location,
+	res030_resCategory = resCategory,
+	res040_resType = resType,
+	res050_resKind = resKind,
+	res060_resName = resName,
+	res070_resSkuName = resSkuName,
+	res080_resSkuTier = resSkuTier,
+	res090_resSkuCapacity = resSkuCapacity,
+	res100_resSkuFamily = resSkuFamily,
+	res110_resSkuSize = resSkuSize,
+	res120_resPlanPublisher = resPlanPublisher,
+	res130_resPlanProduct = resPlanProduct,
+	res140_resPlanName = resPlanName,
+	res999_resId = resId
+| order by 
+	res000_subName asc,
+	res010_resourceGroup asc,
+	res020_location asc,
+	res030_resCategory asc,
+	res040_resType asc,
+	res050_resKind asc,
+	res060_resName asc
