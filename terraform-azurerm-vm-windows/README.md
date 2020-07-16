@@ -2,10 +2,9 @@
 
 ## Overview
 
-This quick start implements a dedicated Windows Server virtual machine connected to the dedicated hub virtual network which can be used as a jump box, admin workstation, web server, application server or database server. The following quick starts must be deployed first before starting:
+This quick start implements a jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Windows virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/) offering. The following quick starts must be deployed first before starting:
 
 * [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub)
-* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
 
 Activity | Estimated time required
 --- | ---
@@ -55,11 +54,11 @@ This section describes how to provision this quick start using custom settings. 
 
 This section provides an index of the ~5 resources included in this quick start.
 
-### Virtual machine
+### Windows jump box virtual machine
 
 ---
 
-Dedicated Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) connected to the dedicated hub virtual network with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions.
+Jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Windows virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/) offering. The virtual machine is connected to the dedicated hub virtual network with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -76,7 +75,7 @@ virtual_machine_01_name | Output | string | Local | jumpbox01
 
 #### Network interface
 
-Dedicated [network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface) (NIC) with a dynamic private ip address attached to the dedicated Windows Server virtual machine.
+Dedicated [network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface) (NIC) with a dynamic private ip address attached to the Windows jump box virtual machine.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -86,7 +85,7 @@ virtual_machine_01_nic_01_private_ip_address | Output | string | Local | 10.1.0.
 
 #### Managed disks and data disk attachments
 
-One or more dedicated [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview) for use by the dedicated Windows Server virtual machine as data disks. Each of the dedicated managed disks is automatically attached to the dedicated Windows Server virtual machine. Note that caching is disabled by default and must be configured post-deployment if needed.
+One or more dedicated [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview) for use by the Windows jump box virtual machine as data disks. Each of the dedicated managed disks is automatically attached to the virtual machine. Note that caching is disabled by default and must be configured post-deployment if needed.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -96,7 +95,7 @@ vm_data_disk_size_gb | Input | string | Local | 0 (Gb)
 
 #### Virtual machine extensions
 
-Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the dedicated Windows Server virtual machine including:
+Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the Windows jump box virtual machine including:
 
 * [Log Analytics virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-windows) also known as the *Microsoft Monitoring Agent* (MMA) version 1.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
 * [Dependency virtual machine extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/agent-dependency-windows) version 9.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
@@ -111,6 +110,7 @@ storage_account_name | Input | String | Local | st8e644ec51c5be098001
 
 ## Smoke testing
 
+* Review the post-deployment script code in `virtual-machine-01-post-deploy.ps1`. Use the Azure portal to confirm the script was uploaded to shared blob storage container.
 * Explore newly provisioned resources using the Azure portal.
   * Review the 4 secrets that were created in the shared key vault.
   * Generate a script for mapping drives to the shared file share.
@@ -129,4 +129,7 @@ storage_account_name | Input | String | Local | st8e644ec51c5be098001
 
 ## Next steps
 
-Move on to the next quick start [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke).
+Move on to the following quick starts next:
+
+* [terraform-azurerm-vm-linux](../terraform-azurerm-vm-linux) (optional)
+* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)

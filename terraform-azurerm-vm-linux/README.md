@@ -2,10 +2,9 @@
 
 ## Overview
 
-This quick start implements a dedicated Linux virtual machine connected to the dedicated hub virtual network which can be used as a jump box, admin workstation, web server, application server or database server. The following quick starts must be deployed first before starting:
+This quick start implements a jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Linux virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/) offering. The following quick starts must be deployed first before starting:
 
 * [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub)
-* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
 
 Activity | Estimated time required
 --- | ---
@@ -59,11 +58,11 @@ This section describes how to provision this quick start using custom settings. 
 
 This section provides an index of the ~5 resources included in this quick start.
 
-### Virtual machine
+### Linux jump box virtual machine
 
 ---
 
-Dedicated Linux [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) connected to the dedicated hub virtual network with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions. Password authentication is enabled.
+Linux jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Linux virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/) offering. The virtual machine is connected to the dedicated hub virtual network with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions. Password authentication is enabled.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -80,7 +79,7 @@ virtual_machine_02_name | Output | string | Local | jumpbox02
 
 #### Network interface
 
-Dedicated [network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface) (NIC) with a dynamic private ip address attached to the dedicated Linux virtual machine.
+Dedicated [network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface) (NIC) with a dynamic private ip address attached to the Linux jump box virtual machine.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -90,7 +89,7 @@ virtual_machine_02_nic_01_private_ip_address | Output | string | Local | 10.1.0.
 
 #### Managed disks and data disk attachments
 
-One or more dedicated [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview) for use by the dedicated Linux virtual machine as data disks. Each of the dedicated managed disks is automatically attached to the dedicated Linux virtual machine, but must be partitioned and mounted manually. Note that caching is disabled by default and must be configured post-deployment if needed. Performance optimization of managed disks for Linux guest operating systems vary widely by distribution, file system and workload. See [Optimize your Linux VM on Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/optimization) for Azure specific best practices.
+One or more dedicated [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview) for use by the Linux jump box virtual machine as data disks. Each of the dedicated managed disks is automatically attached to the virtual machine, but must be partitioned and mounted manually. Note that caching is disabled by default and must be configured post-deployment if needed. Performance optimization of managed disks for Linux guest operating systems vary widely by distribution, file system and workload. See [Optimize your Linux VM on Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/optimization) for Azure specific best practices.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -100,7 +99,7 @@ vm_data_disk_size_gb | Input | string | Local | 0 (Gb)
 
 #### Virtual machine extensions
 
-Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the dedicated Linux virtual machine including:
+Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the Linux jump box virtual machine including:
 
 * [Log Analytics virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-linux) also known as the *OMS Agent* version 1.13 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
 * [Dependency virtual machine extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/agent-dependency-linux) version 9.10 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
@@ -115,6 +114,7 @@ storage_account_name | Input | String | Local | stf7250f5be032d651001
 
 ## Smoke testing
 
+* Review the post-deployment script code in `virtual-machine-02-post-deploy.sh`. Use the Azure portal to confirm the script was uploaded to shared blob storage container.
 * Explore newly provisioned resources using the Azure portal.
   * Review the 4 secrets that were created in the shared key vault.
   * Generate a bash script for mapping drives to the shared file share.
@@ -133,4 +133,7 @@ storage_account_name | Input | String | Local | stf7250f5be032d651001
   
 ## Next steps
 
-Move on to the next quick start [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke).
+Move on to the following quick starts next:
+
+* [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows) (optional)
+* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)

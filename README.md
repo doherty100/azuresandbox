@@ -25,19 +25,17 @@ The quick starts feature a modular design and can be deployed as a whole or incr
   * Shared [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment)  
   * Shared [image gallery](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/shared-image-galleries)
 * [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
-  * For miscellaneous use as a jump box or admin server.
-  * Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm)
+  * Jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Windows virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/) offering
 * [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/)
-  * For miscellaneous use as a jump box or admin server.
-  * Linux [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm)
+  * Jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Linux virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/) offering
 * [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
   * Dedicated spoke virtual network  
   * Dedicated bastion  
   * Pre-configured bidirectional [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/)  
 * [terraform-azurerm-bench-windows](./terraform-azurerm-bench-windows/)
-  * For use as a pre-configured environment for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications.
-  * Windows Server / SQL Server database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm).
-  * Windows Server web server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm)
+  * For use as a pre-configured environment for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications
+  * Database Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server on Azure Virtual Machine \(Windows\)](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview) offering
+  * Web server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Windows virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/) offering
 * [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
   * Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources)
   * Shared [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-hub](./terraform-azurerm-vnet-hub/README.md) and [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/README.md)
@@ -56,13 +54,14 @@ The following prerequisites are required in order to get started.
 * Identify an existing security principal (user or group account) in the AAD tenant to be used to deploy the quick starts, or create a new security principal. See [Manage app and resource access using Azure Active Directory groups](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-manage-groups) for more information.  
 * Verify the security principal is a member of the Contributor [Azure built-in role](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles). See [Add or remove Azure role assignments using the Azure portal](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal) for more information.
 * Some organizations may institute [Azure policy](https://docs.microsoft.com/en-us/azure/governance/policy/overview) which may cause some quick start deployments to fail. This can be addressed by using custom settings which pass the policy checks, or by disabling the policies on the Azure subscription being used for the quick starts.
-* Some Azure subscriptions may have low quota limits for some Azure resources which may cause some quick start deployments to fail. See [Resolve errors for resource quotas](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-resource-quota) if additional quota is needed. Consult the following table to determine if quota increases are required to deploy the quick starts using default settings:
+* Some Azure subscriptions may have low quota limits for specific Azure resources which may cause quick start deployments to fail. See [Resolve errors for resource quotas](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-resource-quota) for more information. Consult the following table to determine if quota increases are required to deploy the quick starts using default settings:
 
 Resource |  Quota required per deployment | Command
---- | --- | ---
-Public IP Addresses | 2 | *az network list-usages*
-Standard Sku Public IP Addresses | 2 | *az network list-usages*
-Static Public IP Addresses  | 2 | *az network list-usages*
+--- | :-: | ---
+Public IP Addresses | ~2 | *az network list-usages*
+Standard BS Family vCPUs | ~5 | *az vm list-usage*
+Standard Sku Public IP Addresses | ~2 | *az network list-usages*
+Static Public IP Addresses  | ~2 | *az network list-usages*
 
 *Note:* This list is not comprehensive. Quotas vary by Azure subscription offer type and environment. More than one quota may need to be increased for a single resource type, such as [public ip addresses](https://docs.microsoft.com/en-us/azure/virtual-network/public-ip-addresses).
 
