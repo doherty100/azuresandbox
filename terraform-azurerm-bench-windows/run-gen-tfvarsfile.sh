@@ -13,7 +13,7 @@
 ./gen-tfvarsfile.sh \
   -n "winbench" \
   -s "sqldev" \
-  -z "Standard_B2ms" \
+  -z "Standard_B4ms" \
   -c "2" \
   -d "32" \
   -S "2019-Datacenter-smalldisk" \

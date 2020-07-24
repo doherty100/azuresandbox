@@ -2,9 +2,10 @@
 
 ## Overview
 
-This quick start implements a dedicated Windows Server / SQL Server database server virtual machine and a dedicated Windows Server web server virtual machine connected to the dedicated spoke virtual network for use as a pre-configured environment for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications. The following quick starts must be deployed first before starting:
+This quick start implements a collection of services for testing Windows based web applications and running database benchmarks like [HammerDB](https://www.hammerdb.com/) using an [IaaS](https://azure.microsoft.com/en-us/overview/what-is-azure/iaas/) approach. The following quick starts must be deployed first before starting:
 
 * [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub)
+* [terraform-azurerm-vm-windows](../terraofrm-azurerm-vm-windows)
 * [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
 
 Activity | Estimated time required
@@ -59,13 +60,13 @@ This section provides an index of the ~7 resources included in this quick start.
 
 ---
 
-Dedicated Windows Server / SQL Server database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) connected to the dedicated spoke virtual network with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions.
+Database Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server on Azure Virtual Machine \(Windows\)](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview) offering which is connected to the dedicated spoke virtual network, supports a configurable number of data disks, pre-configured administrator credentials using key vault and pre-configured virtual machine extensions.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 vm_db_name | Input | string | Local | winbenchdb01
-vm_db_size | Input | string | Local | Standard_B2ms
-vm_db_storage_replication_type | Input | string | Local | Standard_LRS
+vm_db_size | Input | string | Local | Standard_B4ms
+vm_db_storage_replication_type | Input | string | Local | StandardSSD_LRS
 vm_db_image_publisher | Input | string | Local | MicrosoftSQLServer
 vm_db_image_offer | Input | string | Local | sql2019-ws2019
 vm_db_image_sku | Input | string | Local | sqldev
@@ -73,16 +74,6 @@ vm_db_image_version | Input | string | Local | Latest (default)
 tags | Input | string | Local | { costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }
 virtual_machine_03_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/winbenchdb01
 virtual_machine_03_name | Output | string | Local | winbenchdb01
-
-#### SQL Server virtual machine configuration
-
-The default instance of SQL Server is pre-configured using the following settings:
-
-* *sa* username and password credentials set using key vault
-* sql_license_type = "PAYG"
-* r_services_enabled = true
-* sql_connectivity_port = 1433
-* sql_connectivity_type = "PRIVATE"
 
 #### Database server network interface
 
@@ -104,6 +95,16 @@ vm_data_disk_count | Input | string | Local | 2
 vm_storage_replication_type | Input | string | Local | Standard_LRS
 vm_data_disk_size_gb | Input | string | Local | 32 (Gb)
 
+#### SQL Server virtual machine resource provider configuration
+
+The database virtual machine is registered with the [Microsoft.SqlVirtualMachine](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-vm-resource-provider-register) resource provider using the following defaults:
+
+* *sa* username and password credentials set using key vault
+* sql_license_type = "PAYG"
+* r_services_enabled = true
+* sql_connectivity_port = 1433
+* sql_connectivity_type = "PRIVATE"
+
 #### Database server virtual machine extensions
 
 Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the virtual machine including:
@@ -111,6 +112,7 @@ Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azu
 * [Log Analytics virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-windows) also known as the *Microsoft Monitoring Agent* (MMA) version 1.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
 * [Dependency virtual machine extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/agent-dependency-windows) version 9.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
 * [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script which partitions and formats new data disks.
+* [SQL Server IaaS agent extension](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management) is automatically installed when the virtual machine is registered with the SQL Server virtual machine resource provider.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -123,7 +125,7 @@ vm_db_post_deploy_script_uri | Input | string | Local | <https://st8e644ec51c5be
 
 ---
 
-Dedicated Windows Server web server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) connected to the dedicated spoke virtual network with pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions.
+Web server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Windows virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/) offering which is connected to the dedicated spoke virtual network with pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -167,11 +169,12 @@ storage_account_name | Input | String | Local | st8e644ec51c5be098001
 
 * Explore newly provisioned resources using the Azure portal.
   * Review the 4 secrets that were created in the shared key vault.
+  * Review the database server virtual machine configuration using both the *Virtual machine* UI and the *SQL virtual machine* UI.
   * Generate a script for mapping drives to the shared file share.
     * Mapping a drive to an Azure Files file share requires automation due to the use of a complex shared key to authenticate.
     * In the Azure Portal navigate to *storage accounts* > *stxxxxxxxxxxxxxxxx001* > *file service* > *file shares* > *fs-xxxxxxxxxxxxxxxx-001* > *Connect* > *Windows*
     * Copy the PowerShell script in the right-hand pane for use in the next smoke testing exercise.
-* Connect to the dedicated virtual machine in the Azure portal using bastion and log in with the *adminuser* and *adminpassword* defined previously.
+* Connect to the database server virtual machine in the Azure portal using bastion and log in with the *adminuser* and *adminpassword* defined previously.
   * Confirm access to shared file share private endpoint.
     * Run Windows PowerShell ISE, create a new script, and paste in the script generated previously.
     * Copy the fqdn for the file endpoint from line 4, for example *stxxxxxxxxxxxxxxxx001.file.core.windows.net*
@@ -180,7 +183,7 @@ storage_account_name | Input | String | Local | st8e644ec51c5be098001
     * Execute the PowerShell script copied from the Azure Portal to establish a drive mapping to the shared file share using the private endpoint.
     * Create some directories and sample files on the drive mapped to the shared file share to test functionality.
   * Review the log file created during execution of the post-deployment script in C:/Packages/Plugins/Microsoft.Compute.CustomScriptExtension/1.10.X/Downloads/0.
-  * Launch SQL Server Management Studio and create a test database. Place the data file and the log file on different data disks.
+  * Launch SQL Server Management Studio and create a test database.
 
 ## Next steps
 

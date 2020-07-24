@@ -52,4 +52,48 @@ foreach ($disk in $disks)
     $count++
 }
 
+# Install PowerShell prerequisites for using the SQL Server IaaS agent extension
+
+Write-Log "Install NuGet provider..."
+
+try 
+{
+    Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force 
+}
+catch 
+{
+    $ErrorMessage = $_
+    Write-Log "There was an exception during the process, please review"
+    Write-Log "$ErrorMessage"
+    Exit 2
+}
+
+Write-Log "Set PSGallery as a trusted repository..."
+
+try 
+{
+    Set-PSRepository -Name PSGallery -InstallationPolicy Trusted    
+}
+catch 
+{
+    $ErrorMessage = $_
+    Write-Log "There was an exception during the process, please review"
+    Write-Log "$ErrorMessage"
+    Exit 2    
+}
+
+Write-Log "Installing Azure PowerShell module..."
+
+try 
+{
+    Install-Module -Name Az -AllowClobber -Scope AllUsers
+}
+catch
+{
+    $ErrorMessage = $_
+    Write-Log "There was an exception during the process, please review"
+    Write-Log "$ErrorMessage"
+    Exit 2
+}
+
 Write-Log "Exiting normally..."

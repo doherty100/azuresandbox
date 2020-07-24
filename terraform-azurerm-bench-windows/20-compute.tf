@@ -20,7 +20,7 @@ data "azurerm_key_vault_secret" "storage_account_key" {
   key_vault_id = var.key_vault_id
 }
 
-# Windows Server virtual machine with SQL Server
+# Database server virtual machine
 
 resource "azurerm_windows_virtual_machine" "virtual_machine_03" {
   name                  = var.vm_db_name
@@ -51,22 +51,6 @@ output "virtual_machine_03_id" {
 
 output "virtual_machine_03_name" {
   value = azurerm_windows_virtual_machine.virtual_machine_03.name
-}
-
-resource "azurerm_mssql_virtual_machine" "virtual_machine_03_sql" {
-  virtual_machine_id = azurerm_windows_virtual_machine.virtual_machine_03.id
-  sql_license_type = "PAYG"
-  r_services_enabled = true
-  sql_connectivity_port = 1433
-  sql_connectivity_type = "PRIVATE"
-  sql_connectivity_update_username = data.azurerm_key_vault_secret.adminuser.value
-  sql_connectivity_update_password = data.azurerm_key_vault_secret.adminpassword.value
-
-  auto_patching {
-    day_of_week = "Sunday"
-    maintenance_window_duration_in_minutes = 60
-    maintenance_window_starting_hour = 2
-  }
 }
 
 # Nics
@@ -186,7 +170,26 @@ resource "azurerm_virtual_machine_extension" "virtual_machine_03_postdeploy_scri
   PROTECTED_SETTINGS
 }
 
-# Windows Server virtual machine with IIS
+# Register with Microsoft.SqlVirtualMachine resource provider
+
+resource "azurerm_mssql_virtual_machine" "virtual_machine_03_sql" {
+  virtual_machine_id = azurerm_windows_virtual_machine.virtual_machine_03.id
+  sql_license_type = "PAYG"
+  r_services_enabled = true
+  sql_connectivity_port = 1433
+  sql_connectivity_type = "PRIVATE"
+  sql_connectivity_update_username = data.azurerm_key_vault_secret.adminuser.value
+  sql_connectivity_update_password = data.azurerm_key_vault_secret.adminpassword.value
+  depends_on = [ azurerm_virtual_machine_extension.virtual_machine_03_postdeploy_script ]
+
+  auto_patching {
+    day_of_week = "Sunday"
+    maintenance_window_duration_in_minutes = 60
+    maintenance_window_starting_hour = 2
+  }
+}
+
+# Web server virtual machine
 
 resource "azurerm_windows_virtual_machine" "virtual_machine_04" {
   name                  = var.vm_web_name
