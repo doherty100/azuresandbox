@@ -2,10 +2,10 @@
 
 # Removes temporary files and folders recursively from current directory
 
-printf "Removing all files matching 'terraform.*' and '*.txt'...\n"
+printf "Removing all files matching 'terraform.*', '*.txt' and '*.json'...\n"
 
-find . -type f -name 'terraform.*' -or -name '*.txt'
-find . -type f -name 'terraform.*' -or -name '*.txt'| xargs -r rm
+find . -type f -name 'terraform.*' -or -name '*.txt' -or -name '*.json'
+find . -type f -name 'terraform.*' -or -name '*.txt' -or -name '*.json' | xargs -r rm
 
 printf "Removing all directories matching '.terraform'...\n"
 

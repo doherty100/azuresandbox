@@ -2,16 +2,20 @@
 
 # Dependencies: Azure CLI and graph extension (preview)
 
+LOCATION=""
 QUERY_TEXT=""
 SUBSCRIPTION=""
 
 usage() {
-    printf "Usage: $0 \n  -s SUBSCRIPTION\n" 1>&2
+    printf "Usage: $0 \n  -l LOCATION\n  -s SUBSCRIPTION\n" 1>&2
     exit 1
 }
 
-while getopts ":hs:" option; do
+while getopts ":hl:s:" option; do
     case "${option}" in
+        l )
+            LOCATION=${OPTARG}
+            ;;
         h ) 
             usage
             ;;
@@ -28,6 +32,25 @@ while getopts ":hs:" option; do
             ;;
     esac
 done
+
+printf "Validating LOCATION '${LOCATION}'...\n"
+
+LOCATION_ID=""
+LOCATION_ID=$(az account list-locations --query "[?name=='${LOCATION}'].id" | tr -d '[]" \n')
+
+if [[ -z ${LOCATION_ID} ]]; then
+    printf "Error: Invalid LOCATION.\n"
+    usage
+fi
+
+printf "Generating vm-sizes.json...\n"
+
+az vm list-sizes -l ${LOCATION} -o json > vm-sizes.json
+
+if [ $? != 0 ]; then
+    printf "Error: Unable to generate vm-sizes.json.\n"
+    usage
+fi
 
 if [[ -z ${SUBSCRIPTION} ]]; then
     printf "No subscription filter will be applied...\n"
@@ -49,9 +72,9 @@ do
     printf "Running resource graph query '${FILENAME}'...\n"
 
     if [[ -z ${SUBSCRIPTION} ]]; then 
-        az graph query -q "$(<${FILENAME})" --first 5000 -o table | sed '2d' > ${FILENAME}.txt
+        az graph query -q "$(<${FILENAME})" --first 5000 -o json > ${FILENAME}.json
     else
-        az graph query -q "$(<${FILENAME})" -s ${SUBSCRIPTION} --first 5000 -o table | sed '2d' > ${FILENAME}.txt
+        az graph query -q "$(<${FILENAME})" -s ${SUBSCRIPTION} --first 5000 -o json > ${FILENAME}.json
     fi
     
     if [ $? != 0 ]; then
@@ -69,6 +92,6 @@ fi
 
 printf "\nRan ${FILE_COUNT} resource graph queries.\n\n"
 
-ls ./*.txt
+ls ./*.json
 
 exit 0
