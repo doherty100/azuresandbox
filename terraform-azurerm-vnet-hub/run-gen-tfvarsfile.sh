@@ -16,7 +16,7 @@
   -l "eastus" \
   -v "vnet-hub-001" \
   -a "10.1.0.0/16" \
-  -s "{ snet-default-001 = \"10.1.0.0/24\", AzureBastionSubnet = \"10.1.1.0/27\", snet-storage-private-endpoints-001 = \"10.1.2.0/24\" }" \
+  -s "{ default = [ \"snet-default-001\", \"10.1.0.0/24\" ], AzureBastionSubnet = [ \"AzureBastionSubnet\", \"10.1.1.0/27\" ], private_endpoints = [ \"snet-storage-private-endpoints-001\", \"10.1.2.0/24\" ] }" \
   -q "1024" \
   -d "00000000-0000-0000-0000-000000000000" \
   -o "00000000-0000-0000-0000-000000000000" \

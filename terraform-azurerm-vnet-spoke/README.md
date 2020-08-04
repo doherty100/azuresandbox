@@ -59,12 +59,11 @@ vnet_spoke_01_name | output | string | Global | vnet-spoke-001
 
 #### Subnets
 
-Shared hub virtual network [subnets](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-vnet-plan-design-arm#subnets). Note the following naming conventions used in the sample values are significant:
+Dedicated spoke virtual network [subnets](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-vnet-plan-design-arm#subnets). Note the following subnets used in the sample values are significant:
 
-* A subnet named *snet-app-001* is required for use in other quick starts.
-* A subnet named *snet-db-001* is required for use in other quick starts.
-* A subnet named *snet-default-002* is required for use in other quick starts.
-* A subnet named *AzureBastionSubnet* is required for the bastion resource described later.
+* An *application* subnet is required for use in other quick starts.
+* A *database* subnet is required for use in other quick starts.
+* An *AzureBastionSubnet* subnet is required for the bastion resource.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---

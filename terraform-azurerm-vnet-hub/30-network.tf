@@ -18,15 +18,15 @@ output "vnet_hub_01_name" {
 resource "azurerm_subnet" "vnet_hub_01_subnets" {
   for_each = var.subnets
 
-  name                                           = each.key
+  name                                           = each.value[0]
   resource_group_name                            = azurerm_resource_group.resource_group_01.name
   virtual_network_name                           = azurerm_virtual_network.vnet_hub_01.name
-  address_prefixes                               = [each.value]
-  enforce_private_link_endpoint_network_policies = length(regexall("snet-storage-private-endpoints+", each.key)) > 0 ? true : false
+  address_prefixes                               = [each.value[1]]
+  enforce_private_link_endpoint_network_policies = length(regexall("snet-storage-private-endpoints+", each.value[0])) > 0 ? true : false
 }
 
 output "vnet_hub_01_default_subnet_id" {
-  value = azurerm_subnet.vnet_hub_01_subnets["snet-default-001"].id
+  value = azurerm_subnet.vnet_hub_01_subnets["default"].id
 }
 
 # Dedicated bastion

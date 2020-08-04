@@ -110,12 +110,13 @@ vnet_hub_01_name | output | string | Global | vnet-hub-001
 
 #### Subnets
 
-Shared hub virtual network [subnets](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-vnet-plan-design-arm#subnets). Note the following naming conventions used in the sample values are significant:
+Shared hub virtual network [subnets](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-vnet-plan-design-arm#subnets). Note the following subnets used in the sample values are significant:
 
-* A subnet named *snet-default-001* required for use in other quick starts.
-* A subnet named *snet-storage-private-endpoints-001* required for use in the shared file share resource described later.  
-* A subnet named *AzureBastionSubnet* is required for use by the bastion resource described later.  
-* Subnets starting with the characters *snet-storage-private-endpoints* are automatically configured with [enforce_private_link_endpoint_network_policies](https://www.terraform.io/docs/providers/azurerm/r/subnet.html#enforce_private_link_endpoint_network_policies) set to *true* and are required for configuring the shared file share resource described later.  
+* A *default* subnet named is required for use in other quick starts.
+* A *private_endpoints* subnet is required for use by the file share resource.  
+* An *AzureBastionSubnet* subnet is required for use by the bastion resource.  
+
+*Note:* Subnets starting with the characters *snet-storage-private-endpoints* are automatically configured with [enforce_private_link_endpoint_network_policies](https://www.terraform.io/docs/providers/azurerm/r/subnet.html#enforce_private_link_endpoint_network_policies) set to *true* and are required for configuring the file share resource.  
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---

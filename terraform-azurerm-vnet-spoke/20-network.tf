@@ -18,22 +18,22 @@ output "vnet_spoke_01_name" {
 resource "azurerm_subnet" "vnet_spoke_01_subnets" {
   for_each = var.subnets
 
-  name                 = each.key
+  name                 = each.value[0]
   resource_group_name  = azurerm_virtual_network.vnet_spoke_01.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet_spoke_01.name
-  address_prefixes     = [each.value]
+  address_prefixes     = [each.value[1]]
 }
 
 output "vnet_spoke_01_app_subnet_id" {
-  value = azurerm_subnet.vnet_spoke_01_subnets["snet-app-001"].id
+  value = azurerm_subnet.vnet_spoke_01_subnets["application"].id
 }
 
 output "vnet_spoke_01_db_subnet_id" {
-  value = azurerm_subnet.vnet_spoke_01_subnets["snet-db-001"].id
+  value = azurerm_subnet.vnet_spoke_01_subnets["database"].id
 }
 
 output "vnet_spoke_01_default_subnet_id" {
-  value = azurerm_subnet.vnet_spoke_01_subnets["snet-default-002"].id
+  value = azurerm_subnet.vnet_spoke_01_subnets["default"].id
 }
 
 # Dedicated bastion

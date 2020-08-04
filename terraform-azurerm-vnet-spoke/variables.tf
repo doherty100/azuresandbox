@@ -19,10 +19,10 @@ variable "resource_group_name" {
 }
 
 variable "subnets" {
-  type        = map
+  type        = map(list(string))
   description = "The list of subnets to be created in the new spoke virtual network."
 
-  # default = { snet-default-002 = "10.2.0.0/24", AzureBastionSubnet = "10.2.1.0/27" }
+  # default = [\"snet-default-002\", \"10.2.0.0/24\"], AzureBastionSubnet = [ \"AzureBastionSubnet\", \"10.2.1.0/27\"], database = [\"snet-db-001\", \"10.2.1.32/27\"], application = [\"snet-app-001\", \"10.2.1.64/27\" ] }
 }
 
 variable "tags" {
