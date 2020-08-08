@@ -38,7 +38,7 @@ resource "azurerm_storage_container" "storage_container_01" {
   container_access_type = "private"
 }
 
-output "storage_countainer_01_name" {
+output "storage_container_01_name" {
   value = azurerm_storage_container.storage_container_01.name
 }
 

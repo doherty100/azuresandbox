@@ -116,11 +116,9 @@ Shared hub virtual network [subnets](https://docs.microsoft.com/en-us/azure/virt
 * A *private_endpoints* subnet is required for use by the file share resource.  
 * An *AzureBastionSubnet* subnet is required for use by the bastion resource.  
 
-*Note:* Subnets starting with the characters *snet-storage-private-endpoints* are automatically configured with [enforce_private_link_endpoint_network_policies](https://www.terraform.io/docs/providers/azurerm/r/subnet.html#enforce_private_link_endpoint_network_policies) set to *true* and are required for configuring the file share resource.  
-
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-subnets | Input | map | Local | { snet-default-001 = \"10.1.0.0/24\", AzureBastionSubnet = \"10.1.1.0/27\", snet-storage-private-endpoints-001 = \"10.1.2.0/24\" }
+subnets | Input | map | Local | { default = { name = \"snet-default-001\", address_prefix = \"10.1.0.0/24\", enforce_private_link_endpoint_network_policies = false }, AzureBastionSubnet = { name = \"AzureBastionSubnet\", address_prefix = \"10.1.1.0/27\", enforce_private_link_endpoint_network_policies = false }, private_endpoints = { name = \"snet-storage-private-endpoints-001\", address_prefix = \"10.1.2.0/24\", enforce_private_link_endpoint_network_policies = true } }
 vnet_hub_01_default_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-hub-001/subnets/snet-default-001
 
 #### Bastion

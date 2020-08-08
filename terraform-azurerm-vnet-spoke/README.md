@@ -67,7 +67,7 @@ Dedicated spoke virtual network [subnets](https://docs.microsoft.com/en-us/azure
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-subnets | Input | map | Local | { snet-default-002 = "10.2.0.0/24", AzureBastionSubnet = "10.2.1.0/27", snet-db-001 = "10.2.1.32/27", snet-app-001 = "10.2.1.64/27" }
+subnets | Input | map | Local | { default  = { name = "snet-default-002", address_prefix = "10.2.0.0/24", enforce_private_link_endpoint_network_policies = false }, AzureBastionSubnet = { name = "AzureBastionSubnet", address_prefix = "10.2.1.0/27", enforce_private_link_endpoint_network_policies = false }, database = {name = "snet-db-001", address_prefix = "10.2.1.32/27", enforce_private_link_endpoint_network_policies = false }, application = { name = "snet-app-001", address_prefix = "10.2.1.64/27", enforce_private_link_endpoint_network_policies = false } }
 vnet_spoke_01_app_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-app-001
 vnet_spoke_01_db_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-db-001
 vnet_spoke_01_default_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-default-002

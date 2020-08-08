@@ -96,4 +96,18 @@ catch
     Exit 2
 }
 
+Write-Log "Installing StorageDsc PowerShell module..."
+
+try 
+{
+    Install-Module -Name StorageDsc -AllowClobber -Scope AllUsers
+}
+catch
+{
+    $ErrorMessage = $_
+    Write-Log "There was an exception during the process, please review"
+    Write-Log "$ErrorMessage"
+    Exit 2
+}
+
 Write-Log "Exiting normally..."

@@ -55,13 +55,25 @@ variable "storage_share_quota_gb" {
 }
 
 variable "subnets" {
-  type = map(list(string))
+  type        = map
   description = "The subnets to be created in the new virtual network. AzureBastionSubnet is required."
-  # default = { 
-  #     default = [ "snet-default-001", "10.1.0.0/24" ],
-  #     AzureBastionSubnet = [ "AzureBastionSubnet", "10.1.1.0/27" ], 
-  #     private_endpoints = [ "snet-storage-private-endpoints-001", "10.1.2.0/24" ]
+  # default = {
+  #   default = {
+  #     name                                           = "snet-default-001",
+  #     address_prefix                                 = "10.1.0.0/24",
+  #     enforce_private_link_endpoint_network_policies = false
+  #   },
+  #   AzureBastionSubnet = {
+  #     name                                           = "AzureBastionSubnet",
+  #     address_prefix                                 = "10.1.1.0/27",
+  #     enforce_private_link_endpoint_network_policies = false
+  #   },
+  #   private_endpoints = {
+  #     name                                           = "snet-storage-private-endpoints-001",
+  #     address_prefix                                 = "10.1.2.0/24",
+  #     enforce_private_link_endpoint_network_policies = true
   #   }
+  # }
 }
 
 variable "tags" {

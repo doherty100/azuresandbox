@@ -144,7 +144,7 @@ fi
 
 printf "Getting BLOB_STORAGE_CONTAINER_NAME...\n"
 
-BLOB_STORAGE_CONTAINER_NAME=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" storage_countainer_01_name)
+BLOB_STORAGE_CONTAINER_NAME=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" storage_container_01_name)
 
 if [ $? != 0 ]; then
     printf "Error: Terraform output variable storage_countainer_01_name not found.\n"

@@ -83,22 +83,24 @@ output "virtual_machine_03_nic_01_private_ip_address" {
 # Data disks
 
 resource "azurerm_managed_disk" "virtual_machine_03_data_disks" {
-  count                = var.vm_db_data_disk_count
-  name                 = "dsk-${var.vm_db_name}-data_disk-${count.index + 1}"
+  for_each = var.vm_db_data_disk_config
+
+  name                 = each.value.name
   location             = azurerm_windows_virtual_machine.virtual_machine_03.location
   resource_group_name  = azurerm_windows_virtual_machine.virtual_machine_03.resource_group_name
   storage_account_type = var.vm_db_storage_replication_type
   create_option        = "Empty"
-  disk_size_gb         = var.vm_db_data_disk_size_gb
+  disk_size_gb         = each.value.disk_size_gb
   tags                 = var.tags
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "virtual_machine_03_data_disk_attachments" {
-  count              = var.vm_db_data_disk_count
-  managed_disk_id    = azurerm_managed_disk.virtual_machine_03_data_disks.*.id[count.index]
+  for_each = var.vm_db_data_disk_config
+
+  managed_disk_id    = azurerm_managed_disk.virtual_machine_03_data_disks[ each.key ].id
   virtual_machine_id = azurerm_windows_virtual_machine.virtual_machine_03.id
-  lun                = count.index
-  caching            = "None"
+  lun                = each.value.lun
+  caching            = each.value.caching
 }
 
 # Virtual machine extensions
@@ -153,7 +155,7 @@ resource "azurerm_virtual_machine_extension" "virtual_machine_03_postdeploy_scri
   type_handler_version       = "1.10"
   auto_upgrade_minor_version = true
   tags                       = var.tags
-  depends_on                 = [ azurerm_virtual_machine_data_disk_attachment.virtual_machine_03_data_disk_attachments ]
+  depends_on                 = [azurerm_virtual_machine_data_disk_attachment.virtual_machine_03_data_disk_attachments]
 
   settings = <<SETTINGS
     {
@@ -173,19 +175,20 @@ resource "azurerm_virtual_machine_extension" "virtual_machine_03_postdeploy_scri
 # Register with Microsoft.SqlVirtualMachine resource provider
 
 resource "azurerm_mssql_virtual_machine" "virtual_machine_03_sql" {
-  virtual_machine_id = azurerm_windows_virtual_machine.virtual_machine_03.id
-  sql_license_type = "PAYG"
-  r_services_enabled = true
-  sql_connectivity_port = 1433
-  sql_connectivity_type = "PRIVATE"
+  virtual_machine_id               = azurerm_windows_virtual_machine.virtual_machine_03.id
+  sql_license_type                 = "PAYG"
+  r_services_enabled               = true
+  sql_connectivity_port            = 1433
+  sql_connectivity_type            = "PRIVATE"
   sql_connectivity_update_username = data.azurerm_key_vault_secret.adminuser.value
   sql_connectivity_update_password = data.azurerm_key_vault_secret.adminpassword.value
-  depends_on = [ azurerm_virtual_machine_extension.virtual_machine_03_postdeploy_script ]
+  tags                             = var.tags
+  depends_on                       = [azurerm_virtual_machine_extension.virtual_machine_03_postdeploy_script]
 
   auto_patching {
-    day_of_week = "Sunday"
+    day_of_week                            = "Sunday"
     maintenance_window_duration_in_minutes = 60
-    maintenance_window_starting_hour = 2
+    maintenance_window_starting_hour       = 2
   }
 }
 

@@ -14,8 +14,7 @@ VM_WEB_STORAGE_REPLICATION_TYPE="Standard_LRS"
 
 # Set these environment variables by passing parameters to this script 
 TAGS=""
-VM_DB_DATA_DISK_COUNT=""
-VM_DB_DATA_DISK_SIZE_GB=""
+VM_DB_DATA_DISK_CONFIG=""
 VM_DB_IMAGE_SKU=""
 VM_DB_SIZE=""
 VM_NAME_PREFIX=""
@@ -40,7 +39,7 @@ VM_DB_SUBNET_ID=""
 VM_WEB_SUBNET_ID=""
 
 usage() {
-    printf "Usage: $0\n  -n VM_NAME_PREFIX\n  -s VM_DB_IMAGE_SKU\n  -z VM_DB_SIZE\n  -c VM_DB_DATA_DISK_COUNT\n  -d VM_DB_DATA_DISK_SIZE_GB\n  -S VM_WEB_IMAGE_SKU\n  -Z VM_WEB_SIZE\n  --t TAGS\n" 1>&2
+    printf "Usage: $0\n  -n VM_NAME_PREFIX\n  -s VM_DB_IMAGE_SKU\n  -z VM_DB_SIZE\n  -c VM_DB_DATA_DISK_CONFIG\n  -S VM_WEB_IMAGE_SKU\n  -Z VM_WEB_SIZE\n  --t TAGS\n" 1>&2
     exit 1
 }
 
@@ -51,10 +50,7 @@ fi
 while getopts ":c:d:hn:s:S:t:z:Z:" option; do
     case "${option}" in
         c )
-            VM_DB_DATA_DISK_COUNT=${OPTARG}
-            ;;
-        d )
-            VM_DB_DATA_DISK_SIZE_GB=${OPTARG}
+            VM_DB_DATA_DISK_CONFIG=${OPTARG}
             ;;
         h )
             usage
@@ -182,10 +178,10 @@ fi
 
 printf "Getting BLOB_STORAGE_CONTAINER_NAME...\n"
 
-BLOB_STORAGE_CONTAINER_NAME=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" storage_countainer_01_name)
+BLOB_STORAGE_CONTAINER_NAME=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" storage_container_01_name)
 
 if [ $? != 0 ]; then
-    printf "Error: Terraform output variable storage_countainer_01_name not found.\n"
+    printf "Error: Terraform output variable storage_container_01_name not found.\n"
     usage
 fi
 
@@ -302,17 +298,10 @@ if [[ -z ${TAGS} ]]; then
     usage
 fi
 
-printf "Validating VM_DB_DATA_DISK_COUNT '${VM_DB_DATA_DISK_COUNT}'...\n"
+printf "Validating VM_DB_DATA_DISK_CONFIG '${VM_DB_DATA_DISK_CONFIG}'...\n"
 
 if [[ -z ${TAGS} ]]; then
-    printf "Error: Invalid VM_DB_DATA_DISK_COUNT.\n"
-    usage
-fi
-
-printf "Validating VM_DB_DATA_DISK_SIZE_GB '${VM_DB_DATA_DISK_SIZE_GB}'...\n"
-
-if [[ -z ${TAGS} ]]; then
-    printf "Error: Invalid VM_DB_DATA_DISK_SIZE_GB.\n"
+    printf "Error: Invalid VM_DB_DATA_DISK_CONFIG.\n"
     usage
 fi
 
@@ -329,8 +318,7 @@ printf "vm_db_subnet_id = \"$VM_DB_SUBNET_ID\"\n" >> ./terraform.tfvars
 printf "tags = $TAGS\n" >> ./terraform.tfvars
 printf "vm_admin_password_secret = \"$VM_ADMIN_PASSWORD_SECRET\"\n" >> ./terraform.tfvars
 printf "vm_admin_username_secret = \"$VM_ADMIN_USERNAME_SECRET\"\n" >> ./terraform.tfvars
-printf "vm_db_data_disk_count = \"$VM_DB_DATA_DISK_COUNT\"\n" >> ./terraform.tfvars
-printf "vm_db_data_disk_size_gb = \"$VM_DB_DATA_DISK_SIZE_GB\"\n" >> ./terraform.tfvars
+printf "vm_db_data_disk_config = $VM_DB_DATA_DISK_CONFIG\n" >> ./terraform.tfvars
 printf "vm_db_image_offer = \"$VM_DB_IMAGE_OFFER\"\n" >> ./terraform.tfvars
 printf "vm_db_image_publisher = \"$VM_DB_IMAGE_PUBLISHER\"\n" >> ./terraform.tfvars
 printf "vm_db_image_sku = \"$VM_DB_IMAGE_SKU\"\n" >> ./terraform.tfvars

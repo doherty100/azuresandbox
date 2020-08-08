@@ -18,10 +18,11 @@ output "vnet_spoke_01_name" {
 resource "azurerm_subnet" "vnet_spoke_01_subnets" {
   for_each = var.subnets
 
-  name                 = each.value[0]
-  resource_group_name  = azurerm_virtual_network.vnet_spoke_01.resource_group_name
-  virtual_network_name = azurerm_virtual_network.vnet_spoke_01.name
-  address_prefixes     = [each.value[1]]
+  name                                           = each.value.name
+  resource_group_name                            = azurerm_virtual_network.vnet_spoke_01.resource_group_name
+  virtual_network_name                           = azurerm_virtual_network.vnet_spoke_01.name
+  address_prefixes                               = [ each.value.address_prefix ]
+  enforce_private_link_endpoint_network_policies = each.value.enforce_private_link_endpoint_network_policies
 }
 
 output "vnet_spoke_01_app_subnet_id" {

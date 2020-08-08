@@ -38,14 +38,23 @@ variable "vm_admin_username_secret" {
   description = "The name of the key vault secret containing the admin username"
 }
 
-variable "vm_db_data_disk_count" {
-  type = string
-  description = "The number of data disks to be attached to the virtual machine."
-}
-
-variable "vm_db_data_disk_size_gb" {
-  type = string
-  description = "The number of data disks to be attached to the virtual machine."
+variable "vm_db_data_disk_config" {
+  type = map
+  description = "Data disk configuration for SQL Server virtual machine."
+  # default = { 
+  #   datadisk = {
+  #     name = "dsk_sqldata_001", 
+  #     disk_size_gb = "128", 
+  #     lun = "0",
+  #     caching = "ReadOnly"
+  #   },
+  #   logdisk = {
+  #     name = "dsk_sqllog_001", 
+  #     disk_size_gb = "32", 
+  #     lun = "1",
+  #     caching = "None"
+  #   }
+  # }
 }
 
 variable "vm_db_image_offer" {
