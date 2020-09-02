@@ -4,53 +4,10 @@ $logpath = $PSCommandPath + '.log'
 function Write-Log
 {
 	param($msg)
-	"$(Get-Date -Format G) : $msg" | Out-File -FilePath $logpath -Append -Force
+	"$(Get-Date -Format FileDateTimeUniversal) : $msg" | Out-File -FilePath $logpath -Append -Force
 }
 
 Write-Log "Running: $PSCommandPath..."
-
-# Initialize data disks
-
-Write-Log "Looking for raw disks.."
-
-$disks = Get-Disk | Where partitionstyle -eq 'raw' | sort number
-
-if ($disks -ne $null)
-{
-    Write-Log $disks
-}
-else
-{
-    Write-Log 'No raw disks found.'
-}
-
-$letters = 70..89 | ForEach-Object { [char]$_ }
-$count = 0
-
-foreach ($disk in $disks) 
-{
-    $driveLetter = $letters[$count].ToString()
-
-    Write-Log "Initializing disk..."
-    Write-Log $disk
-
-    try 
-    {
-        $disk | 
-            Initialize-Disk -PartitionStyle MBR -PassThru | 
-            New-Partition -UseMaximumSize -DriveLetter $driveLetter |
-            Format-Volume -FileSystem NTFS -NewFileSystemLabel $driveLetter -Confirm:$false -Force
-    }
-    catch
-    {
-        $ErrorMessage = $_
-        Write-Log "There was an exception during the process, please review"
-        Write-Log "$ErrorMessage"
-        Exit 2
-    }
-    
-    $count++
-}
 
 # Install PowerShell prerequisites for using the SQL Server IaaS agent extension
 
@@ -96,18 +53,102 @@ catch
     Exit 2
 }
 
-Write-Log "Installing StorageDsc PowerShell module..."
+# Get local raw disks
 
-try 
-{
-    Install-Module -Name StorageDsc -AllowClobber -Scope AllUsers
+Write-Log "Looking for local raw disks..."
+
+$localRawDisks = Get-Disk | Where PartitionStyle -EQ 'RAW'
+
+Write-Log "Located $($localRawDisks.Count) local raw disks...`n"
+
+$localRawDiskIndex = 0
+
+foreach( $localRawDisk in $localRawDisks) {
+    Write-Log "Local disk index ----------: $localRawDiskIndex"
+    Write-Log "Local disk DiskNumber -----: $($localRawDisk.DiskNumber)"
+    Write-Log "Local disk UniqueId -------: $($localRawDisk.UniqueId)"
+    Write-Log "Local disk PartitionStyle -: $($localRawDisk.PartitionStyle)"
+    Write-Log "Local disk Size -----------: $($localRawDisk.Size / [Math]::Pow(1024,3)) Gb"
+    Write-Log "Local disk Location -------: $($localRawDisk.Location)"
+    Write-Log "Local disk LUN ------------: $($localRawDisk.Location.Split(":").Trim()[4] -replace 'LUN ','')"
+    Write-Log "Local disk BusType --------: $($localRawDisk.BusType)`n"
+    
+    $localRawDiskIndex ++    
 }
-catch
-{
+
+# Get Azure data disk storage profile
+
+Write-Log "Querying Azure instance metadata service for VM storageProfile..."
+
+try {
+    $storageProfile = Invoke-RestMethod -Headers @{"Metadata"="true"} -Method GET -Uri http://169.254.169.254/metadata/instance/compute/storageProfile?api-version=2020-06-01
+    $azureDataDisks = $storageProfile.dataDisks
+}
+catch {
     $ErrorMessage = $_
     Write-Log "There was an exception during the process, please review"
     Write-Log "$ErrorMessage"
     Exit 2
+}
+
+Write-Log "Located $($azureDataDisks.Count) attached Azure data disks...`n"
+
+$azureDiskIndex = 0
+
+foreach( $azureDataDisk in $azureDataDisks ) {
+    Write-Log "Azure data disk index -----: $azureDiskIndex"
+    Write-Log "Azure data disk name ------: $($azureDataDisk.name)"
+    Write-Log "Azure data disk size ------: $($azureDataDisk.diskSizeGb) Gb"
+    Write-Log "Azure data disk LUN -------: $($azureDataDisk.lun)`n"
+    
+    $azureDiskIndex ++
+}
+
+$letters = 70..89 | ForEach-Object { [char]$_ }
+$count = 0
+
+foreach ($disk in $localRawDisks) 
+{
+    Write-Log "Initializing and formatting raw disk UniqueId $($disk.UniqueId)..."
+
+    $partitionStyle = "GPT"
+    Write-Log "Using PartitionStyle $($partitionStyle)..."
+
+    $fileSystem = "NTFS"
+    Write-Log "Using FileSytem $($fileSystem)..."
+
+    $driveLetter = $letters[$count].ToString()
+    Write-Log "Using drive letter $($driveLetter)..."
+
+    $allocationUnitSize = 65536
+    Write-Log "Using allocationUnitSize $($allocationUnitSize)..."
+
+    $lun = $disk.Location.Split(":").Trim()[4] -replace 'LUN ',''
+    $azureDataDisk = $azureDataDisks | Where lun -EQ $lun
+    
+    $fileSystemLabel = $azureDataDisk.name
+
+    Write-Log "Using fileSystemLabel $($fileSystemLabel)..."
+    
+    try 
+    {
+        $disk | 
+            Initialize-Disk -PartitionStyle $partitionStyle -PassThru | 
+            New-Partition -UseMaximumSize -DriveLetter $driveLetter |
+            Format-Volume -FileSystem $fileSystem -NewFileSystemLabel $fileSystemLabel -AllocationUnitSize $allocationUnitSize -Confirm:$false -Force
+        
+    }
+    catch
+    {
+        $ErrorMessage = $_
+        Write-Log "There was an exception during the process, please review..."
+        Write-Log "$ErrorMessage"
+        Exit 2
+    }
+
+    Write-Log "Disk UniqueId $($disk.UniqueId) initialized and formatted...`n"
+    
+    $count++
 }
 
 Write-Log "Exiting normally..."

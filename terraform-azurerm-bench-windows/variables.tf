@@ -38,6 +38,57 @@ variable "vm_admin_username_secret" {
   description = "The name of the key vault secret containing the admin username"
 }
 
+variable "vm_app_image_offer" {
+  type        = string
+  description = "The offer type of the virtual machine image used to create the application server VM"
+}
+
+variable "vm_app_image_publisher" {
+  type        = string
+  description = "The publisher for the virtual machine image used to create the application server VM"
+}
+
+variable "vm_app_image_sku" {
+  type        = string
+  description = "The sku of the virtual machine image used to create the application server VM"
+}
+
+variable "vm_app_image_version" {
+  type        = string
+  description = "The version of the virtual machine image used to create the application server VM"
+  default     = "Latest"
+}
+
+variable "vm_app_name" {
+  type        = string
+  description = "The name of the aplication server VM"
+}
+
+variable "vm_app_post_deploy_script_name" {
+  type = string
+  description = "The name of the PowerShell script to be run post-deployment."
+}
+
+variable "vm_app_post_deploy_script_uri" {
+  type = string
+  description = "The uri of the PowerShell script to be run post-deployment."
+}
+
+variable "vm_app_size" {
+  type        = string
+  description = "The size of the virtual machine"
+}
+
+variable "vm_app_storage_replication_type" {
+  type        = string
+  description = "The storage replication type to be used for the VMs OS disk"
+}
+
+variable "vm_app_subnet_id" {
+  type        = string
+  description = "The existing subnet which will be used by the VM"
+}
+
 variable "vm_db_data_disk_config" {
   type = map
   description = "Data disk configuration for SQL Server virtual machine."
@@ -104,57 +155,6 @@ variable "vm_db_storage_replication_type" {
 }
 
 variable "vm_db_subnet_id" {
-  type        = string
-  description = "The existing subnet which will be used by the VM"
-}
-
-variable "vm_web_image_offer" {
-  type        = string
-  description = "The offer type of the virtual machine image used to create the database server VM"
-}
-
-variable "vm_web_image_publisher" {
-  type        = string
-  description = "The publisher for the virtual machine image used to create the database server VM"
-}
-
-variable "vm_web_image_sku" {
-  type        = string
-  description = "The sku of the virtual machine image used to create the database server VM"
-}
-
-variable "vm_web_image_version" {
-  type        = string
-  description = "The version of the virtual machine image used to create the database server VM"
-  default     = "Latest"
-}
-
-variable "vm_web_name" {
-  type        = string
-  description = "The name of the database server VM"
-}
-
-variable "vm_web_post_deploy_script_name" {
-  type = string
-  description = "The name of the PowerShell script to be run post-deployment."
-}
-
-variable "vm_web_post_deploy_script_uri" {
-  type = string
-  description = "The uri of the PowerShell script to be run post-deployment."
-}
-
-variable "vm_web_size" {
-  type        = string
-  description = "The size of the virtual machine"
-}
-
-variable "vm_web_storage_replication_type" {
-  type        = string
-  description = "The storage replication type to be used for the VMs OS disk"
-}
-
-variable "vm_web_subnet_id" {
   type        = string
   description = "The existing subnet which will be used by the VM"
 }

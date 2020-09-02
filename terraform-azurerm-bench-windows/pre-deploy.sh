@@ -5,8 +5,8 @@
 # Set these environment variables before running script
 VM_ADMIN_PASSWORD_SECRET="adminpassword"
 VM_ADMIN_USERNAME_SECRET="adminuser"
+VM_APP_POST_DEPLOYMENT_SCRIPT_NAME="virtual-machine-04-post-deploy.ps1"
 VM_DB_POST_DEPLOYMENT_SCRIPT_NAME="virtual-machine-03-post-deploy.ps1"
-VM_WEB_POST_DEPLOYMENT_SCRIPT_NAME="virtual-machine-04-post-deploy.ps1"
 
 # Set these environment variables by passing parameters to this script 
 VM_ADMIN_PASSWORD=""
@@ -54,7 +54,7 @@ done
 printf "Getting VAULT_NAME...\n"
 VAULT_NAME=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" key_vault_01_name)
 
-if [ $? != 0 ]; then
+if [ -z $VAULT_NAME ]; then
     printf "Error: Terraform output variable log_analytics_workspace_01_primary_shared_key not found.\n"
     usage
 fi
@@ -62,7 +62,7 @@ fi
 printf "Getting LOG_ANALYTICS_WORKSPACE_ID...\n"
 LOG_ANALYTICS_WORKSPACE_ID=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" log_analytics_workspace_01_workspace_id)
 
-if [ $? != 0 ]; then
+if [ -z $LOG_ANALYTICS_WORKSPACE_ID ]; then
     printf "Error: Terraform output variable log_analytics_workspace_01_workspace_id not found.\n"
     usage
 fi
@@ -70,7 +70,7 @@ fi
 printf "Getting LOG_ANALYTICS_WORKSPACE_KEY...\n"
 LOG_ANALYTICS_WORKSPACE_KEY=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" log_analytics_workspace_01_primary_shared_key)
 
-if [ $? != 0 ]; then
+if [ -z $LOG_ANALYTICS_WORKSPACE_KEY ]; then
     printf "Error: Terraform output variable log_analytics_workspace_01_primary_shared_key not found.\n"
     usage
 fi
@@ -120,7 +120,7 @@ printf "Getting STORAGE_ACCOUNT_NAME...\n"
 
 STORAGE_ACCOUNT_NAME=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" storage_account_01_name)
 
-if [ $? != 0 ]; then
+if [ -z $STORAGE_ACCOUNT_NAME ]; then
     printf "Error: Terraform output variable storage_account_01_name not found.\n"
     usage
 fi
@@ -129,7 +129,7 @@ printf "Getting STORAGE_ACCOUNT_KEY...\n"
 
 STORAGE_ACCOUNT_KEY=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" storage_account_01_key)
 
-if [ $? != 0 ]; then
+if [ -z $STORAGE_ACCOUNT_KEY ]; then
     printf "Error: Terraform output variable storage_account_01_key not found.\n"
     usage
 fi
@@ -147,8 +147,22 @@ printf "Getting BLOB_STORAGE_CONTAINER_NAME...\n"
 
 BLOB_STORAGE_CONTAINER_NAME=$(terraform output -state="../terraform-azurerm-vnet-hub/terraform.tfstate" storage_container_01_name)
 
-if [ $? != 0 ]; then
+if [ -z $BLOB_STORAGE_CONTAINER_NAME ]; then
     printf "Error: Terraform output variable storage_container_01_name not found.\n"
+    usage
+fi
+
+printf "Uploading app server post-deployment script...\n"
+
+az storage blob upload \
+  --account-name $STORAGE_ACCOUNT_NAME \
+  --account-key $STORAGE_ACCOUNT_KEY \
+  --container-name $BLOB_STORAGE_CONTAINER_NAME \
+  --name $VM_APP_POST_DEPLOYMENT_SCRIPT_NAME \
+  --file $VM_APP_POST_DEPLOYMENT_SCRIPT_NAME
+
+if [ $? != 0 ]; then
+    echo "Error: Failed to upload web server post-deployment script.\n"
     usage
 fi
 
@@ -163,20 +177,6 @@ az storage blob upload \
 
 if [ $? != 0 ]; then
     echo "Error: Failed to upload database server post-deployment script.\n"
-    usage
-fi
-
-printf "Uploading web server post-deployment script...\n"
-
-az storage blob upload \
-  --account-name $STORAGE_ACCOUNT_NAME \
-  --account-key $STORAGE_ACCOUNT_KEY \
-  --container-name $BLOB_STORAGE_CONTAINER_NAME \
-  --name $VM_WEB_POST_DEPLOYMENT_SCRIPT_NAME \
-  --file $VM_WEB_POST_DEPLOYMENT_SCRIPT_NAME
-
-if [ $? != 0 ]; then
-    echo "Error: Failed to upload web server post-deployment script.\n"
     usage
 fi
 

@@ -5,8 +5,8 @@
 # -s VM_DB_IMAGE_SKU
 # -z VM_DB_SIZE
 # -c VM_DB_DATA_DISK_CONFIG
-# -S VM_WEB_IMAGE_SKU
-# -Z VM_WEB_SIZE
+# -S VM_APP_IMAGE_SKU
+# -Z VM_APP_SIZE
 # -t TAGS
 
 ./gen-tfvarsfile.sh \

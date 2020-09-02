@@ -192,13 +192,13 @@ resource "azurerm_mssql_virtual_machine" "virtual_machine_03_sql" {
   }
 }
 
-# Web server virtual machine
+# App server virtual machine
 
 resource "azurerm_windows_virtual_machine" "virtual_machine_04" {
-  name                  = var.vm_web_name
+  name                  = var.vm_app_name
   resource_group_name   = azurerm_network_interface.virtual_machine_04_nic_01.resource_group_name
   location              = azurerm_network_interface.virtual_machine_04_nic_01.location
-  size                  = var.vm_web_size
+  size                  = var.vm_app_size
   admin_username        = data.azurerm_key_vault_secret.adminuser.value
   admin_password        = data.azurerm_key_vault_secret.adminpassword.value
   network_interface_ids = [azurerm_network_interface.virtual_machine_04_nic_01.id]
@@ -206,14 +206,14 @@ resource "azurerm_windows_virtual_machine" "virtual_machine_04" {
 
   os_disk {
     caching              = "ReadWrite"
-    storage_account_type = var.vm_web_storage_replication_type
+    storage_account_type = var.vm_app_storage_replication_type
   }
 
   source_image_reference {
-    publisher = var.vm_web_image_publisher
-    offer     = var.vm_web_image_offer
-    sku       = var.vm_web_image_sku
-    version   = var.vm_web_image_version
+    publisher = var.vm_app_image_publisher
+    offer     = var.vm_app_image_offer
+    sku       = var.vm_app_image_sku
+    version   = var.vm_app_image_version
   }
 }
 
@@ -228,14 +228,14 @@ output "virtual_machine_04_name" {
 # Nic
 
 resource "azurerm_network_interface" "virtual_machine_04_nic_01" {
-  name                = "nic-${var.vm_web_name}-001"
+  name                = "nic-${var.vm_app_name}-001"
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = var.tags
 
   ip_configuration {
-    name                          = "ipc-${var.vm_web_name}-001"
-    subnet_id                     = var.vm_web_subnet_id
+    name                          = "ipc-${var.vm_app_name}-001"
+    subnet_id                     = var.vm_app_subnet_id
     private_ip_address_allocation = "Dynamic"
   }
 }
@@ -307,8 +307,8 @@ resource "azurerm_virtual_machine_extension" "virtual_machine_04_postdeploy_scri
 
   settings = <<SETTINGS
     {
-      "fileUris": [ "${var.vm_web_post_deploy_script_uri}" ],
-      "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File \"./${var.vm_web_post_deploy_script_name}\""
+      "fileUris": [ "${var.vm_app_post_deploy_script_uri}" ],
+      "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File \"./${var.vm_app_post_deploy_script_name}\""
     }    
   SETTINGS
 
