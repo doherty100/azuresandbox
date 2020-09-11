@@ -1,5 +1,5 @@
 provider "azurerm" {
-  version = "~> 2.25"
+  version = "~> 2.27"
   features {}
   # subscription_id = "REPLACE-WITH-YOUR-SUBSCRIPTION-ID"
   # client_id       = "REPLACE-WITH-YOUR-CLIENT-ID"
