@@ -104,6 +104,12 @@ foreach( $azureDataDisk in $azureDataDisks ) {
     $azureDiskIndex ++
 }
 
+# Initialize and format data disks
+
+$partitionStyle = "GPT"
+$fileSystem = "NTFS"
+$allocationUnitSize = 65536
+
 $letters = 70..89 | ForEach-Object { [char]$_ }
 $count = 0
 
@@ -111,16 +117,13 @@ foreach ($disk in $localRawDisks)
 {
     Write-Log "Initializing and formatting raw disk UniqueId $($disk.UniqueId)..."
 
-    $partitionStyle = "GPT"
     Write-Log "Using PartitionStyle $($partitionStyle)..."
 
-    $fileSystem = "NTFS"
     Write-Log "Using FileSytem $($fileSystem)..."
 
     $driveLetter = $letters[$count].ToString()
     Write-Log "Using drive letter $($driveLetter)..."
 
-    $allocationUnitSize = 65536
     Write-Log "Using allocationUnitSize $($allocationUnitSize)..."
 
     $lun = $disk.Location.Split(":").Trim()[4] -replace 'LUN ',''
