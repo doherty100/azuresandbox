@@ -41,6 +41,11 @@ variable "subnets" {
   #     name = "snet-app-001", 
   #     address_prefix = "10.2.1.64/27",
   #     enforce_private_link_endpoint_network_policies = false
+  #   }, 
+  #   private_endpoints = { 
+  #     name = "snet-storage-private-endpoints-002", 
+  #     address_prefix = "10.2.1.96/27", 
+  #     enforce_private_link_endpoint_network_policies = true 
   #   }
   # }
 }

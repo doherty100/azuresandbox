@@ -37,6 +37,10 @@ output "vnet_spoke_01_default_subnet_id" {
   value = azurerm_subnet.vnet_spoke_01_subnets["default"].id
 }
 
+output "vnet_spoke_01_private_endpoints_subnet_id" {
+  value = azurerm_subnet.vnet_spoke_01_subnets["private_endpoints"].id
+}
+
 # Dedicated bastion
 
 resource "random_id" "random_id_bastion_host_02_name" {

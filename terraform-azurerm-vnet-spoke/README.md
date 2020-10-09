@@ -64,13 +64,15 @@ Dedicated spoke virtual network [subnets](https://docs.microsoft.com/en-us/azure
 * An *application* subnet is required for use in other quick starts.
 * A *database* subnet is required for use in other quick starts.
 * An *AzureBastionSubnet* subnet is required for the bastion resource.
+* A *private_endpoints* subnet is required for other quick starts.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-subnets | Input | map | Local | { default  = { name = "snet-default-002", address_prefix = "10.2.0.0/24", enforce_private_link_endpoint_network_policies = false }, AzureBastionSubnet = { name = "AzureBastionSubnet", address_prefix = "10.2.1.0/27", enforce_private_link_endpoint_network_policies = false }, database = {name = "snet-db-001", address_prefix = "10.2.1.32/27", enforce_private_link_endpoint_network_policies = false }, application = { name = "snet-app-001", address_prefix = "10.2.1.64/27", enforce_private_link_endpoint_network_policies = false } }
+subnets | Input | map | Local | { default = { name = "snet-default-002", address_prefix = "10.2.0.0/24", enforce_private_link_endpoint_network_policies = false }, AzureBastionSubnet = { name = "AzureBastionSubnet", address_prefix = "10.2.1.0/27", enforce_private_link_endpoint_network_policies = false }, database = { name = "snet-db-001", address_prefix = "10.2.1.32/27", enforce_private_link_endpoint_network_policies = false},application = {name = "snet-app-001", address_prefix = "10.2.1.64/27",enforce_private_link_endpoint_network_policies = false}, private_endpoints = { name = "snet-storage-private-endpoints-002", address_prefix = "10.2.1.96/27", enforce_private_link_endpoint_network_policies = true } }
 vnet_spoke_01_app_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-app-001
 vnet_spoke_01_db_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-db-001
 vnet_spoke_01_default_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-default-002
+vnet_spoke_01_private_endpoints_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-storage-private-endpoints-002
 
 #### Bastion
 

@@ -11,8 +11,11 @@ TAGS=""
 KEY_VAULT_ID=""
 KEY_VAULT_NAME=""
 LOCATION="" 
+PRIVATE_ENDPOINTS_SUBNET_ID=""
 RESOURCE_GROUP_NAME=""
 SQL_DATABASE_NAME=""
+VNET_SPOKE_01_ID=""
+VNET_SPOKE_01_NAME=""
 
 usage() {
     printf "Usage: $0\n  -d SQL_DATABASE_NAME\n  -t TAGS\n" 1>&2
@@ -74,6 +77,30 @@ if [ -z $KEY_VAULT_NAME ]; then
     usage
 fi
 
+printf "Getting PRIVATE_ENDPOINTS_SUBNET_ID...\n"
+PRIVATE_ENDPOINTS_SUBNET_ID=$(terraform output -state="../terraform-azurerm-vnet-spoke/terraform.tfstate" vnet_spoke_01_private_endpoints_subnet_id)
+
+if [ -z $PRIVATE_ENDPOINTS_SUBNET_ID ]; then
+    printf "Error: Terraform output variable vnet_spoke_01_private_endpoints_subnet_id not found.\n"
+    usage
+fi
+
+printf "Getting VNET_SPOKE_01_ID...\n"
+VNET_SPOKE_01_ID=$(terraform output -state="../terraform-azurerm-vnet-spoke/terraform.tfstate" vnet_spoke_01_id)
+
+if [ -z $VNET_SPOKE_01_ID ]; then
+    printf "Error: Terraform output variable vnet_spoke_01_id not found.\n"
+    usage
+fi
+
+printf "Getting VNET_SPOKE_01_NAME...\n"
+VNET_SPOKE_01_NAME=$(terraform output -state="../terraform-azurerm-vnet-spoke/terraform.tfstate" vnet_spoke_01_name)
+
+if [ -z $VNET_SPOKE_01_NAME ]; then
+    printf "Error: Terraform output variable vnet_spoke_01_name not found.\n"
+    usage
+fi
+
 printf "Checking admin username secret...\n"
 az keyvault secret show -n $SQL_ADMIN_USERNAME_SECRET --vault-name $KEY_VAULT_NAME
 
@@ -110,11 +137,14 @@ printf "\Generating terraform.tfvars file...\n\n"
 
 printf "key_vault_id = \"$KEY_VAULT_ID\"\n" > ./terraform.tfvars
 printf "location = \"$LOCATION\"\n" >> ./terraform.tfvars
+printf "private_endpoints_subnet_id = \"$PRIVATE_ENDPOINTS_SUBNET_ID\"\n" >> ./terraform.tfvars
 printf "resource_group_name = \"$RESOURCE_GROUP_NAME\"\n" >> ./terraform.tfvars
 printf "tags = $TAGS\n" >> ./terraform.tfvars
 printf "sql_admin_password_secret = \"$SQL_ADMIN_PASSWORD_SECRET\"\n" >> ./terraform.tfvars
 printf "sql_admin_username_secret = \"$SQL_ADMIN_USERNAME_SECRET\"\n" >> ./terraform.tfvars
 printf "sql_database_name = \"$SQL_DATABASE_NAME\"\n" >> ./terraform.tfvars
+printf "vnet_spoke_01_id = \"$VNET_SPOKE_01_ID\"\n" >> ./terraform.tfvars
+printf "vnet_spoke_01_name = \"$VNET_SPOKE_01_NAME\"\n" >> ./terraform.tfvars
 
 printf "Generated terraform.tfvars file:\n\n"
 

@@ -281,6 +281,16 @@ shared_image_gallery_01_id | Output | string | Local | /subscriptions/00000000-0
 shared_image_gallery_01_name | Output | string | Local | sigefc3bc469570d895001
 shared_image_gallery_01_unique_name | Output | string | Local | 00000000-0000-0000-0000-000000000000-SIGEFC3BC469570D895001
 
+### Automation account
+
+---
+
+Shared automation account for use with [Azure Automation](https://docs.microsoft.com/en-us/azure/automation/automation-intro) features like process automation, configuration management and update management that is linked to the shared log analytics workspace. An automatically generated random name is assigned following the grep pattern "autoacct-\[a-z0-9\]\{16\}-001".
+
+Variable | In/Out | Type | Scope | Sample
+--- | --- | --- | --- | ---
+automation_account_01_name | Output | string | Local | autoacct-feb1e2ddafa54a87-001
+
 ## Smoke testing
 
 * Explore your newly provisioned resources in the Azure portal.
