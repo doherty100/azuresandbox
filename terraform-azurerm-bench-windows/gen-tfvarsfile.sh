@@ -6,11 +6,12 @@ VM_ADMIN_USERNAME_SECRET="adminuser"
 VM_DB_IMAGE_OFFER="sql2019-ws2019"
 VM_DB_IMAGE_PUBLISHER="MicrosoftSQLServer"
 VM_DB_POST_DEPLOY_SCRIPT_NAME="virtual-machine-03-post-deploy.ps1"
-VM_DB_STORAGE_REPLICATION_TYPE="Premium_LRS"
+VM_DB_STORAGE_REPLICATION_TYPE="StandardSSD_LRS"
 VM_APP_IMAGE_OFFER="WindowsServer"
 VM_APP_IMAGE_PUBLISHER="MicrosoftWindowsServer"
 VM_APP_POST_DEPLOY_SCRIPT_NAME="virtual-machine-04-post-deploy.ps1"
 VM_APP_STORAGE_REPLICATION_TYPE="Standard_LRS"
+VM_SQL_STARTUP_SCRIPT_NAME="SQL-startup.ps1"
 
 # Set these environment variables by passing parameters to this script 
 TAGS=""
@@ -31,12 +32,13 @@ LOG_ANALYTICS_WORKSPACE_ID=""
 RESOURCE_GROUP_NAME=""
 STORAGE_ACCOUNT_KEY=""
 STORAGE_ACCOUNT_NAME=""
+VM_APP_POST_DEPLOY_SCRIPT_URI=""
+VM_APP_SUBNET_ID=""
+VM_DB_SUBNET_ID=""
+VM_DB_POST_DEPLOY_SCRIPT_URI=""
 VM_IMAGE_ID=""
 VM_SIZE_PROPERTIES=""
-VM_DB_POST_DEPLOY_SCRIPT_URI=""
-VM_APP_POST_DEPLOY_SCRIPT_URI=""
-VM_DB_SUBNET_ID=""
-VM_APP_SUBNET_ID=""
+VM_SQL_STARTUP_SCRIPT_URI=""
 
 usage() {
     printf "Usage: $0\n  -n VM_NAME_PREFIX\n  -s VM_DB_IMAGE_SKU\n  -z VM_DB_SIZE\n  -c VM_DB_DATA_DISK_CONFIG\n  -S VM_APP_IMAGE_SKU\n  -Z VM_APP_SIZE\n  --t TAGS\n" 1>&2
@@ -247,6 +249,21 @@ fi
 
 VM_APP_POST_DEPLOY_SCRIPT_URI="${BLOB_STORAGE_ENDPOINT}${BLOB_STORAGE_CONTAINER_NAME}/${VM_APP_POST_DEPLOY_SCRIPT_NAME}"
 
+printf "Checking that '${VM_SQL_STARTUP_SCRIPT_NAME}' exists in container '$BLOB_STORAGE_CONTAINER_NAME'...\n"
+
+az storage blob show \
+  --account-name $STORAGE_ACCOUNT_NAME\
+  --account-key $STORAGE_ACCOUNT_KEY\
+  --container-name $BLOB_STORAGE_CONTAINER_NAME\
+  --name $VM_SQL_STARTUP_SCRIPT_NAME
+
+if [ $? != 0 ]; then
+    printf "Error: Script '${VM_SQL_STARTUP_SCRIPT_NAME}' missing from container '$BLOB_STORAGE_CONTAINER_NAME'.\n"
+    usage
+fi
+
+VM_SQL_STARTUP_SCRIPT_URI="${BLOB_STORAGE_ENDPOINT}${BLOB_STORAGE_CONTAINER_NAME}/${VM_SQL_STARTUP_SCRIPT_NAME}"
+
 printf "Validating VM_NAME_PREFIX '${VM_NAME_PREFIX}'...\n"
 if [ -z $VM_NAME_PREFIX ]; then
     printf "Error: Invalid VM_NAME_PREFIX."
@@ -310,6 +327,7 @@ fi
 printf "\Generating terraform.tfvars file...\n\n"
 
 printf "key_vault_id = \"$KEY_VAULT_ID\"\n" > ./terraform.tfvars
+printf "key_vault_name = \"$KEY_VAULT_NAME\"\n" >> ./terraform.tfvars
 printf "location = \"$LOCATION\"\n" >> ./terraform.tfvars
 printf "log_analytics_workspace_id = \"$LOG_ANALYTICS_WORKSPACE_ID\"\n" >> ./terraform.tfvars
 printf "resource_group_name = \"$RESOURCE_GROUP_NAME\"\n" >> ./terraform.tfvars
@@ -336,6 +354,8 @@ printf "vm_db_post_deploy_script_name = \"$VM_DB_POST_DEPLOY_SCRIPT_NAME\"\n" >>
 printf "vm_db_post_deploy_script_uri = \"$VM_DB_POST_DEPLOY_SCRIPT_URI\"\n" >> ./terraform.tfvars
 printf "vm_db_size = \"$VM_DB_SIZE\"\n" >> ./terraform.tfvars
 printf "vm_db_storage_replication_type = \"$VM_DB_STORAGE_REPLICATION_TYPE\"\n" >> ./terraform.tfvars
+printf "vm_sql_startup_script_name = \"$VM_SQL_STARTUP_SCRIPT_NAME\"\n" >> ./terraform.tfvars
+printf "vm_sql_startup_script_uri = \"$VM_SQL_STARTUP_SCRIPT_URI\"\n" >> ./terraform.tfvars
 
 printf "Generated terraform.tfvars file:\n\n"
 

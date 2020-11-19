@@ -12,8 +12,8 @@ Activity | Estimated time required
 --- | ---
 Pre-configuration | ~10 minutes
 Provisioning | ~5 minutes
-Smoke testing | ~ 15 minutes
-De-provisioning | ~ 5 minutes
+Smoke testing | ~15 minutes
+De-provisioning | ~5 minutes
 
 ### Getting started with default settings
 
@@ -60,13 +60,13 @@ This section provides an index of the ~7 resources included in this quick start.
 
 ---
 
-Database Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server on Azure Virtual Machine \(Windows\)](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview) offering which is connected to the dedicated spoke virtual network, supports a configurable number of data disks, pre-configured administrator credentials using key vault and pre-configured virtual machine extensions.
+Database Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server on Azure Virtual Machine \(Windows\)](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview) offering which is connected to the dedicated spoke virtual network, supports a configurable number of data disks, pre-configured administrator credentials using key vault and pre-configured virtual machine extensions. The quick start implements [Performance guidelines for SQL Server on Azure Virtual Machines](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices) using a post-deployment script.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 vm_db_name | Input | string | Local | winbenchdb01
 vm_db_size | Input | string | Local | Standard_B4ms
-vm_db_storage_replication_type | Input | string | Local | StandardSSD_LRS
+vm_db_storage_replication_type | Input | string | Local | StandardSSD_LRS (Note: change this to "Premium_LRS" to observe best practices for Microsoft SQL Server.)
 vm_db_image_publisher | Input | string | Local | MicrosoftSQLServer
 vm_db_image_offer | Input | string | Local | sql2019-ws2019
 vm_db_image_sku | Input | string | Local | sqldev
@@ -87,12 +87,25 @@ virtual_machine_03_nic_01_private_ip_address | Output | string | Local | 10.2.1.
 
 #### Database server managed disks and data disk attachments
 
-One or more [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview) for use by the virtual machine as data disks. Each of the managed disks is automatically attached to the virtual machine. The default settings implement separate data disks for SQL Server data files (with caching set to *ReadOnly*) and SQL Server log files (with caching set to *None*).
+One or more [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview) for use by the virtual machine as data disks. Each of the managed disks is automatically attached to the virtual machine with naming parity between the resource name for the managed disk and the volume label applied when the post-deployment script formats the disk. The default settings implement two data disks using a map variable named *vm_db_data_disk_config*, the value for which must follow these conventions:
+
+* Data disk: "sqldata" (used for SQL Server data files)
+  * name: Must follow the convention "vol_sqldata_\[driveletter\]", e.g. "vol_sqldata_F". Note drives A - E are reserved for use by Azure Virtual Machines.
+  * disk_size_gb: e.g. "128"
+  * Caching: "ReadOnly" as per best practices for Microsoft SQL Server.
+  * lun: must be unique integer from 0 - 15, e.g. "0"
+* Data disk: "sqllog" (used for SQL Server data files)
+  * name: Must follow the convention "vol_sqllog_\[driveletter\]", e.g. "vol_sqllog_L". Note drives A - E are reserved for use by Azure Virtual Machines.
+  * disk_size_gb: e.g. "32"
+  * Caching: "None" as per best practices for SQL Server log files
+  * lun: must be unique integer from 0 - 15, e.g. "1"
+
+Note the post-deployment script has dependencies on these naming conventions, and also implements a 64K allocation unit size when formatting volumes as per best practices for SQL Server data and log files. The post deployment script also moves the SQL Server tempdb data and log files to the [Ephemeral OS disk](https://docs.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks) as per best practices for Microsoft SQL Server, and a scheduled task is created to run on system startup that re-creates the tempdb folders on the ephemeral drive.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vm_db_data_disk_config | Input | string | Local | { datadisk = { name = "dsk_sqldata_001", disk_size_gb = "128", lun = "0", caching = "ReadOnly" }, logdisk = { name = "dsk_sqllog_001", disk_size_gb = "32", lun = "1", caching = "None" } }
-vm_storage_replication_type | Input | string | Local | Standard_LRS
+vm_db_data_disk_config | Input | string | Local | { sqldata = { name = "vol_sqldata_F", disk_size_gb = "128", lun = "0", caching = "ReadOnly" }, sqllog = { name = "vol_sqllog_L", disk_size_gb = "32", lun = "1", caching = "None" } }
+vm_storage_replication_type | Input | string | Local | StandardSSD_LRS (Note: change this to "Premium_LRS" to observe best practices for Microsoft SQL Server.)
 
 #### SQL Server virtual machine resource provider configuration
 
@@ -110,7 +123,7 @@ Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azu
 
 * [Log Analytics virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-windows) also known as the *Microsoft Monitoring Agent* (MMA) version 1.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
 * [Dependency virtual machine extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/agent-dependency-windows) version 9.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
-* [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script installs software and configures data disks.
+* [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script installs software, configures data disks, and reconfigures SQL Server to follow reccomendations in [Performance guidelines for SQL Server on Azure Virtual Machines](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices).
 * [SQL Server IaaS agent extension](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management) is automatically installed when the virtual machine is registered with the SQL Server virtual machine resource provider.
 
 Variable | In/Out | Type | Scope | Sample

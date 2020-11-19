@@ -1,6 +1,11 @@
 variable "key_vault_id" {
   type        = string
-  description = "The existing key vault where secrets are stored"
+  description = "The id of the existing key vault where secrets are stored"
+}
+
+variable "key_vault_name" {
+  type        = string
+  description = "The name of the existing key vault where secrets are stored"
 }
 
 variable "location" {
@@ -9,7 +14,7 @@ variable "location" {
 }
 
 variable "log_analytics_workspace_id" {
-  type = string
+  type        = string
   description = "The workspaceId of the log analytics workspace used to monitor the VMs"
 }
 
@@ -19,12 +24,12 @@ variable "resource_group_name" {
 }
 
 variable "storage_account_name" {
-  type = string
+  type        = string
   description = "The name of the shared storage account."
 }
 
 variable "tags" {
-  type = map
+  type        = map
   description = "The ARM tags to be applied to all new resources created."
 }
 
@@ -65,12 +70,12 @@ variable "vm_app_name" {
 }
 
 variable "vm_app_post_deploy_script_name" {
-  type = string
+  type        = string
   description = "The name of the PowerShell script to be run post-deployment."
 }
 
 variable "vm_app_post_deploy_script_uri" {
-  type = string
+  type        = string
   description = "The uri of the PowerShell script to be run post-deployment."
 }
 
@@ -90,20 +95,20 @@ variable "vm_app_subnet_id" {
 }
 
 variable "vm_db_data_disk_config" {
-  type = map
+  type        = map
   description = "Data disk configuration for SQL Server virtual machine."
-  # default = { 
-  #   datadisk = {
-  #     name = "dsk_sqldata_001", 
-  #     disk_size_gb = "128", 
-  #     lun = "0",
-  #     caching = "ReadOnly"
+  # default = {
+  #   sqldata = {
+  #     name         = "vol_sqldata_F",
+  #     disk_size_gb = "128",
+  #     lun          = "0",
+  #     caching      = "ReadOnly"
   #   },
-  #   logdisk = {
-  #     name = "dsk_sqllog_001", 
-  #     disk_size_gb = "32", 
-  #     lun = "1",
-  #     caching = "None"
+  #   sqllog = {
+  #     name         = "vol_sqllog_L",
+  #     disk_size_gb = "32",
+  #     lun          = "1",
+  #     caching      = "None"
   #   }
   # }
 }
@@ -135,12 +140,12 @@ variable "vm_db_name" {
 }
 
 variable "vm_db_post_deploy_script_name" {
-  type = string
+  type        = string
   description = "The name of the PowerShell script to be run post-deployment."
 }
 
 variable "vm_db_post_deploy_script_uri" {
-  type = string
+  type        = string
   description = "The uri of the PowerShell script to be run post-deployment."
 }
 
@@ -157,4 +162,14 @@ variable "vm_db_storage_replication_type" {
 variable "vm_db_subnet_id" {
   type        = string
   description = "The existing subnet which will be used by the VM"
+}
+
+variable "vm_sql_startup_script_name" {
+  type        = string
+  description = "The name of the SQL Startup Powershell script."
+}
+
+variable "vm_sql_startup_script_uri" {
+  type        = string
+  description = "The URI for the SQL Startup Powershell script."
 }

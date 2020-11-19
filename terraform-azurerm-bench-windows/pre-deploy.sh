@@ -7,6 +7,7 @@ VM_ADMIN_PASSWORD_SECRET="adminpassword"
 VM_ADMIN_USERNAME_SECRET="adminuser"
 VM_APP_POST_DEPLOYMENT_SCRIPT_NAME="virtual-machine-04-post-deploy.ps1"
 VM_DB_POST_DEPLOYMENT_SCRIPT_NAME="virtual-machine-03-post-deploy.ps1"
+VM_SQL_STARTUP_SCRIPT="SQL-startup.ps1"
 
 # Set these environment variables by passing parameters to this script 
 VM_ADMIN_PASSWORD=""
@@ -177,6 +178,20 @@ az storage blob upload \
 
 if [ $? != 0 ]; then
     echo "Error: Failed to upload database server post-deployment script.\n"
+    usage
+fi
+
+printf "Uploading SQL startup script...\n"
+
+az storage blob upload \
+  --account-name $STORAGE_ACCOUNT_NAME \
+  --account-key $STORAGE_ACCOUNT_KEY \
+  --container-name $BLOB_STORAGE_CONTAINER_NAME \
+  --name $VM_SQL_STARTUP_SCRIPT \
+  --file $VM_SQL_STARTUP_SCRIPT
+
+if [ $? != 0 ]; then
+    echo "Error: Failed to upload SQL startup script.\n"
     usage
 fi
 
