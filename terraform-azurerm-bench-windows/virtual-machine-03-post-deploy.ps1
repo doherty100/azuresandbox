@@ -112,51 +112,42 @@ else {
 $azSqlVirtualMachineModule = Get-Module -ListAvailable -Name Az.SqlVirtualMachine
 Write-Log "PowerShell Az.SqlVirtualMachine version $($azSqlVirtualMachineModule.Version) is installed..."
 
+# Get Azure data disk storage profile
+
+Write-Log "Querying Azure instance metadata service for virtual machine storageProfile..."
+
+try {
+    $storageProfile = Invoke-RestMethod -Headers @{"Metadata" = "true" } -Method GET -Uri http://169.254.169.254/metadata/instance/compute/storageProfile?api-version=2020-06-01
+    $azureDataDisks = $storageProfile.dataDisks
+}
+catch {
+    Exit-WithError $_
+}
+
+Write-Log "$('=' * 80)"
+Write-Log "Located $($azureDataDisks.Count) attached Azure data disks..."
+$azureDiskIndex = 0
+
+foreach ( $azureDataDisk in $azureDataDisks ) {
+    Write-Log "$('=' * 80)"
+    Write-Log "Azure data disk index -----: $azureDiskIndex"
+    Write-Log "Azure data disk name ------: $($azureDataDisk.name)"
+    Write-Log "Azure data disk size ------: $($azureDataDisk.diskSizeGb) Gb"
+    Write-Log "Azure data disk LUN -------: $($azureDataDisk.lun)"
+    $azureDiskIndex ++
+}
+
+Write-Log "$('=' * 80)"
+
 # Initialize data disks
 
 $localRawDisks = Get-Disk | Where-Object PartitionStyle -eq 'RAW'
 
 if ($null -eq $localRawDisks ) {
-    Write-Log "No local raw disks found, skipping data disk initialization and formatting..."
+    Write-Log "No local raw disks found, skipping data disk preparation..."
 }
 else {
     Write-Log "Located $($localRawDisks.Count) local raw disks..."
-    $localRawDiskIndex = 0
-
-    foreach ( $localRawDisk in $localRawDisks) {
-        Write-Log "Local disk index ----------: $localRawDiskIndex"
-        Write-Log "Local disk DiskNumber -----: $($localRawDisk.DiskNumber)"
-        Write-Log "Local disk UniqueId -------: $($localRawDisk.UniqueId)"
-        Write-Log "Local disk PartitionStyle -: $($localRawDisk.PartitionStyle)"
-        Write-Log "Local disk Size -----------: $($localRawDisk.Size / [Math]::Pow(1024,3)) Gb"
-        Write-Log "Local disk Location -------: $($localRawDisk.Location)"
-        Write-Log "Local disk LUN ------------: $($localRawDisk.Location.Split(":").Trim()[4] -replace 'LUN ','')"
-        Write-Log "Local disk BusType --------: $($localRawDisk.BusType)"
-        $localRawDiskIndex ++    
-    }
-
-    # Get Azure data disk storage profile
-
-    Write-Log "Querying Azure instance metadata service for virtual machine storageProfile..."
-
-    try {
-        $storageProfile = Invoke-RestMethod -Headers @{"Metadata" = "true" } -Method GET -Uri http://169.254.169.254/metadata/instance/compute/storageProfile?api-version=2020-06-01
-        $azureDataDisks = $storageProfile.dataDisks
-    }
-    catch {
-        Exit-WithError $_
-    }
-
-    Write-Log "Located $($azureDataDisks.Count) attached Azure data disks..."
-    $azureDiskIndex = 0
-
-    foreach ( $azureDataDisk in $azureDataDisks ) {
-        Write-Log "Azure data disk index -----: $azureDiskIndex"
-        Write-Log "Azure data disk name ------: $($azureDataDisk.name)"
-        Write-Log "Azure data disk size ------: $($azureDataDisk.diskSizeGb) Gb"
-        Write-Log "Azure data disk LUN -------: $($azureDataDisk.lun)"
-        $azureDiskIndex ++
-    }
 
     # Partition and format disks
 
@@ -164,6 +155,18 @@ else {
 
     foreach ($disk in $localRawDisks) {
         $lun = $disk.Location.Split(":").Trim()[4] -replace 'LUN ', ''
+        $sizeGb = $disk.Size / [Math]::Pow(1024,3)
+        
+        Write-Log "$('=' * 80)"
+        Write-Log "Local disk index ----------: $count"
+        Write-Log "Local disk DiskNumber -----: $($disk.DiskNumber)"
+        Write-Log "Local disk UniqueId -------: $($disk.UniqueId)"
+        Write-Log "Local disk PartitionStyle -: $($disk.PartitionStyle)"
+        Write-Log "Local disk Size -----------: $sizeGb Gb"
+        Write-Log "Local disk Location -------: $($disk.Location)"
+        Write-Log "Local disk LUN ------------: $lun"
+        Write-Log "Local disk BusType --------: $($disk.BusType)"
+        
         $azureDataDisk = $azureDataDisks | Where-Object lun -eq $lun
         $partitionStyle = "GPT"
 
@@ -204,6 +207,8 @@ else {
         $count++
     }
 }
+
+Write-Log "$('=' * 80)"
 
 # Get admin credentials
 
@@ -259,23 +264,23 @@ $adminPasswordSecure.MakeReadOnly()
 
 Write-Log "Using adminpassword '$('*' * $adminPasswordSecure.Length)'..."
 
-# Configure SQL Server data and log directories
+# Configure data disks
 
-Write-Log "Preparing SQL Server data and log directories..."
-
+Write-Log "$('=' * 80)"
+Write-Log "Configuring data disks..."
 
 $volumes = Get-Volume
-$volumeIndex = 0
+$volumeIndex = -1
 
 foreach ( $volume in $volumes) {
+    $volumeIndex ++ 
+    Write-Log "$('=' * 80)"
     Write-Log "Volume index -------------: $volumeIndex"
     Write-Log "Volume DriveLetter -------: $($volume.DriveLetter)"
     Write-Log "Volume FileSystemLabel ---: $($volume.FileSystemLabel)"
     Write-Log "Volume FileSystemType ----: $($volume.FileSystemType)"
     Write-Log "Volume DriveType ---------: $($volume.DriveType)"
     
-    $volumeIndex ++ 
-
     if ( $volume.FileSystemLabel -in @( 'System Reserved', 'Windows' ) ) {
         Write-Log "Skipping FileSystemLabel '$($volume.FileSystemLabel)'..."
         continue 
@@ -312,38 +317,55 @@ foreach ( $volume in $volumes) {
         continue 
     }
 
-    if ( $volume.FileSystemLabel -like "*sqldata*" ) {
-        $path = "$($volume.DriveLetter):\MSSQL\DATA"
-        Write-Log "Creating $($path)..."
+    # Create SQL Server data and log directories if they don't already exist
 
-        if ( -not ( Test-Path $path ) ) {
+    $sqlPath = $null
+
+    switch -Wildcard ( $volume.FileSystemLabel ) {
+        '*sqldata*' {
+            $sqlPath = "$($volume.DriveLetter):\MSSQL\DATA"
+        }
+        '*sqllog*' {
+            $sqlPath = "$($volume.DriveLetter):\MSSQL\LOG"
+        }
+    }
+
+    if ( ( $null -ne $sqlPath )  -and ( -not ( Test-Path $sqlPath ) )) {
+        Write-Log "Creating $($sqlPath)..."
+
+        try {
+            New-Item -ItemType Directory -Path $sqlPath -Force 
+        }
+        catch {
+            Exit-WithError $_
+        }
+    }
+
+    # Check alignment of drive letters
+
+    $azureDataDisk = $azureDataDisks | Where-Object name -like "*$($volume.FileSystemLabel)*"
+
+    if ( $null -ne $azureDataDisks ) {
+        $azureDataDiskName = $azureDataDisk.name
+        $azureFileSystemLabel = $azureDataDiskName.Split("-").Trim()[2]
+        $azureDriveLetter = $azureFileSystemLabel.Substring($azureFileSystemLabel.Length - 1, 1)
+
+        if ( $volume.DriveLetter -ne $azureDriveLetter ) {
+            Write-Log "Changing drive letter for volume '$($volume.FileSystemLabel)' from '$($volume.DriveLetter)' to '$azureDriveLetter'..."
+
             try {
-                New-Item -ItemType Directory -Path $path -Force 
+                 Set-Partition -DriveLetter $volume.DriveLetter -NewDriveLetter $azureDriveLetter
             }
             catch {
                 Exit-WithError $_
             }
         }
-
-        continue 
     }
 
-    if ( $volume.FileSystemLabel -like "*sqllog*" ) {
-        $path = "$($volume.DriveLetter):\MSSQL\LOG"
-        Write-Log "Creating $($path)..."
-
-        if ( -not ( Test-Path $path ) ) {
-            try {
-                New-Item -ItemType Directory -Path $path -Force 
-            }
-            catch {
-                Exit-WithError $_
-            }
-        }
-        
-        continue 
-    }
+    continue
 }
+
+Write-Log "$('=' * 80)"
 
 # Set SQL for manaual startup 
 

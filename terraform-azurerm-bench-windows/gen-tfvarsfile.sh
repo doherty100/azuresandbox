@@ -3,7 +3,7 @@
 # Set these environment variables before running script
 VM_ADMIN_PASSWORD_SECRET="adminpassword"
 VM_ADMIN_USERNAME_SECRET="adminuser"
-VM_DB_IMAGE_OFFER="sql2019-ws2019"
+VM_DB_IMAGE_OFFER="sql2016sp2-ws2019"
 VM_DB_IMAGE_PUBLISHER="MicrosoftSQLServer"
 VM_DB_POST_DEPLOY_SCRIPT_NAME="virtual-machine-03-post-deploy.ps1"
 VM_DB_STORAGE_REPLICATION_TYPE="StandardSSD_LRS"
