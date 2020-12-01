@@ -4,7 +4,7 @@
 
 This quick start implements a collection of services for testing Windows based web applications and running database benchmarks like [HammerDB](https://www.hammerdb.com/) using an [IaaS](https://azure.microsoft.com/en-us/overview/what-is-azure/iaas/) approach. The following quick starts must be deployed first before starting:
 
-* [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub)
+* [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
 * [terraform-azurerm-vm-windows](../terraofrm-azurerm-vm-windows)
 * [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
 

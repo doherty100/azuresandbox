@@ -4,7 +4,7 @@
 
 This quick start implements the spoke portion of a basic hub-spoke networking topology and establishes bi-directional virtual network peering with the shared hub virtual network. The following quick starts must be deployed first before starting:
 
-* [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub)
+* [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
 
 Activity | Estimated time required
 --- | ---
@@ -96,7 +96,7 @@ public_ip_bastion_host_02_name | Output | string | Local | pip-619c4233fe9c0bc0-
 
 #### Private DNS zone virtual network link
 
-A link to the dedicated spoke virtual network is established with the shared private DNS zone *privatelink.file.core.windows.net* for use with the shared private endpoint resource in [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub).
+A link to the dedicated spoke virtual network is established with the shared private DNS zone *privatelink.file.core.windows.net* for use with the shared private endpoint resource in [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared).
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---

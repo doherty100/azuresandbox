@@ -3,11 +3,6 @@ variable "aad_tenant_id" {
   description = "The Azure Active Directory tenant id to be associated with the new key vault."
 }
 
-variable "key_vault_admin_object_id" {
-  type        = string
-  description = "The object id of the security principle (user or group) with administrative rights for the new key vault."
-}
-
 variable "key_vault_sku_name" {
   type        = string
   description = "The name of the SKU to be used for the new key vault."
@@ -23,6 +18,11 @@ variable "log_analytics_workspace_retention_days" {
   type        = string
   description = "The retention period for the new log analytics workspace."
   default     = "30"
+}
+
+variable "owner_object_id" {
+  type        = string
+  description = "The object id of the security principal (user or group) with owner rights."
 }
 
 variable "resource_group_name" {
@@ -51,7 +51,7 @@ variable "storage_replication_type" {
 variable "storage_share_quota_gb" {
   type        = string
   description = "The storage quota for the Azure Files share to be provisioned in GB."
-  # default = "1024"
+  default     = "1024"
 }
 
 variable "subnets" {

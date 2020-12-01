@@ -4,7 +4,7 @@
 
 This quick start implements a jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Linux virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/) offering. The following quick starts must be deployed first before starting:
 
-* [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub)
+* [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
 
 Activity | Estimated time required
 --- | ---

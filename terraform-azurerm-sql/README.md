@@ -4,7 +4,7 @@
 
 This quick start implements an Azure SQL Database for testing web applications and running database benchmarks like [HammerDB](https://www.hammerdb.com/) using a [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) approach. The following quick starts must be deployed first before starting:
 
-* [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub)
+* [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
 * [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
 * [terraform-azurerm-bench-windows](../terraform-azurerm-bench-windows)
 
@@ -117,7 +117,7 @@ sql_database_01_name | Output | String | Local | sqldb-benchmarktest-01
   * Review the 2 secrets that were created in the shared key vault.
   * Review the spoke virtual network and the subnet used for private endpoints.
   * Review the Azure SQL Database logical server
-    * Make a note of the server name fqdn for use later, e.g. *sql-xxxxxxxxxxxxxxxx-001.database.windows.net* 
+    * Make a note of the server name fqdn for use later, e.g. *sql-xxxxxxxxxxxxxxxx-001.database.windows.net*
     * Review the private endpoint connection and note that it was auto approved
     * Review the Azure SQL Database
   * Review the private DNS zone *privatelink.database.windows.net*

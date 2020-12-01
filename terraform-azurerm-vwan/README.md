@@ -4,7 +4,7 @@
 
 This quick start implements a shared virtual wan to connect the shared hub virtual network and the dedicated spoke virtual network to remote users and/or private networks. The following quick starts must be deployed first before starting:
 
-* [terraform-azurerm-vnet-hub](../terraform-azurerm-vnet-hub)
+* [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
 * [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
 * [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows)
 
