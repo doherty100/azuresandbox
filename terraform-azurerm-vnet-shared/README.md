@@ -72,8 +72,8 @@ Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 vnet_name | Input | string | Local | vnet-shared-001
 address_space | Input | string | Local | 10.1.0.0/16
-vnet_hub_01_id | output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-hub-001
-vnet_hub_01_name | output | string | Global | vnet-shared-001
+vnet_shared_01_id | output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-shared-001
+vnet_shared_01_name | output | string | Global | vnet-shared-001
 
 #### Subnets
 
@@ -86,7 +86,7 @@ The shared services virtual network is divided into [subnets](https://docs.micro
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 subnets | Input | map | Local | { default = { name = "snet-default-001", address_prefix = "10.1.0.0/24", enforce_private_link_endpoint_network_policies = false }, AzureBastionSubnet = { name = "AzureBastionSubnet", address_prefix = "10.1.1.0/27", enforce_private_link_endpoint_network_policies = false }, PrivateLink = {  name = "snet-storage-private-endpoints-001", address_prefix = "10.1.2.0/24", enforce_private_link_endpoint_network_policies = true } }
-vnet_hub_01_default_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-hub-001/subnets/snet-default-001
+vnet_shared_01_default_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-shared-001/subnets/snet-default-001
 
 #### Bastion
 
@@ -176,12 +176,12 @@ private_dns_a_record_1_name | Output | string | Local | st60fb9730bfbe8ba9001
 
 ##### Private DNS zone virtual network link
 
-A [virtual network link](https://docs.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links) to the shared hub virtual network is established with the private DNS zone *privatelink.file.core.windows.net* for use with the file share private endpoint resource.
+A [virtual network link](https://docs.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links) to the shared services virtual network is established with the private DNS zone *privatelink.file.core.windows.net* for use with the file share private endpoint resource.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-virtual_network_link_vnet_hub_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/privateDnsZones/privatelink.file.core.windows.net/virtualNetworkLinks/pdnslnk-vnet-hub-001-001
-virtual_network_link_vnet_hub_01_name | Output | string | Local | pdnslnk-vnet-hub-001-001
+virtual_network_link_vnet_shared_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/privateDnsZones/privatelink.file.core.windows.net/virtualNetworkLinks/pdnslnk-vnet-shared-001-001
+virtual_network_link_vnet_shared_01_name | Output | string | Local | pdnslnk-vnet-shared-001-001
 
 ### Key vault
 

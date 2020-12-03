@@ -97,9 +97,9 @@ output "public_ip_bastion_host_02_ip_name" {
   value = azurerm_public_ip.public_ip_bastion_host_02.name
 }
 
-# Bi-directional virtual network peering between hub and spoke virtual networks
-resource "azurerm_virtual_network_peering" "vnet_hub_01_to_vnet_spoke_01_peering" {
-  name                         = "vnet_hub_01_to_vnet_spoke_01_peering"
+# Bi-directional virtual network peering between shared services and spoke virtual networks
+resource "azurerm_virtual_network_peering" "vnet_shared_01_to_vnet_spoke_01_peering" {
+  name                         = "vnet_shared_01_to_vnet_spoke_01_peering"
   resource_group_name          = var.resource_group_name
   virtual_network_name         = var.remote_virtual_network_name
   remote_virtual_network_id    = azurerm_virtual_network.vnet_spoke_01.id
@@ -108,16 +108,16 @@ resource "azurerm_virtual_network_peering" "vnet_hub_01_to_vnet_spoke_01_peering
   allow_gateway_transit        = true
 }
 
-output "vnet_hub_01_to_vnet_spoke_01_peering_id" {
-  value = azurerm_virtual_network_peering.vnet_hub_01_to_vnet_spoke_01_peering.id
+output "vnet_shared_01_to_vnet_spoke_01_peering_id" {
+  value = azurerm_virtual_network_peering.vnet_shared_01_to_vnet_spoke_01_peering.id
 }
 
-output "vnet_hub_01_to_vnet_spoke_01_peering_name" {
-  value = azurerm_virtual_network_peering.vnet_hub_01_to_vnet_spoke_01_peering.name
+output "vnet_shared_01_to_vnet_spoke_01_peering_name" {
+  value = azurerm_virtual_network_peering.vnet_shared_01_to_vnet_spoke_01_peering.name
 }
 
-resource "azurerm_virtual_network_peering" "vnet_spoke_01_to_vnet_hub_01_peering" {
-  name                         = "vnet_spoke_01_to_vnet_hub_01_peering"
+resource "azurerm_virtual_network_peering" "vnet_spoke_01_to_vnet_shared_01_peering" {
+  name                         = "vnet_spoke_01_to_vnet_shared_01_peering"
   resource_group_name          = azurerm_virtual_network.vnet_spoke_01.resource_group_name
   virtual_network_name         = azurerm_virtual_network.vnet_spoke_01.name
   remote_virtual_network_id    = var.remote_virtual_network_id
@@ -125,12 +125,12 @@ resource "azurerm_virtual_network_peering" "vnet_spoke_01_to_vnet_hub_01_peering
   allow_forwarded_traffic      = true
 }
 
-output "vnet_spoke_01_to_vnet_hub_01_peering_id" {
-  value = azurerm_virtual_network_peering.vnet_spoke_01_to_vnet_hub_01_peering.id
+output "vnet_spoke_01_to_vnet_shared_01_peering_id" {
+  value = azurerm_virtual_network_peering.vnet_spoke_01_to_vnet_shared_01_peering.id
 }
 
-output "vnet_spoke_01_to_vnet_hub_01_peering_name" {
-  value = azurerm_virtual_network_peering.vnet_spoke_01_to_vnet_hub_01_peering.name
+output "vnet_spoke_01_to_vnet_shared_01_peering_name" {
+  value = azurerm_virtual_network_peering.vnet_spoke_01_to_vnet_shared_01_peering.name
 }
 
 # Private DNS zone virtual network link

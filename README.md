@@ -185,12 +185,12 @@ Spoke | Reserved for future use | 10.2.128.0/17 | 10.2.128.0 | 10.2.255.255 | 32
 Deploy the quick starts in the following order:
 
 1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) establishes a shared services virtual network.
-1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) implements a dedicated Windows Server virtual machine connected to the dedicated hub virtual network.
-1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/) implements a dedicated Linux virtual machine connected to the dedicated hub virtual network.
+1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) implements a dedicated Windows Server virtual machine connected to the shared services virtual network.
+1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/) implements a dedicated Linux virtual machine connected to the shared services virtual network.
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/) establishes a dedicated spoke virtual network.
 1. [terraform-azurerm-bench-windows](./terraform-azurerm-bench-windows/) implements a pre-configured environment for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications using an [IaaS](https://azure.microsoft.com/en-us/overview/what-is-azure/iaas/) approach.
 1. [terraform-azurerm-sql](./terraform-azurerm-sql/) implements an Azure SQL Database for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications using a [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) approach.
-1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared hub virtual network and the dedicated spoke virtual network to remote users or a private network.
+1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared services virtual network and the dedicated spoke virtual network to remote users or a private network.
 
 #### De-provision default quick start deployment
 
@@ -245,7 +245,7 @@ A blank table is provided here for convenience. Make a copy of this table and ch
 IP address range | CIDR | First | Last | IP address count
 --- | --- | --- | --- | --:
 Aggregate range | TBD | TBD | TBD | TBD
-Shared hub virtual network | TBD  | TBD | TBD | TBD
+Shared services virtual network | TBD  | TBD | TBD | TBD
 Spoke virtual network | TBD | TBD | TBD | TBD
 Virtual wan hub | TBD | TBD | TBD | TBD
 P2S client VPN connections | TBD | TBD | TBD | TBD

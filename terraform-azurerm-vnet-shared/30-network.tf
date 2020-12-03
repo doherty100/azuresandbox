@@ -1,5 +1,5 @@
-# Shared hub virtual network
-resource "azurerm_virtual_network" "vnet_hub_01" {
+# Shared services virtual network
+resource "azurerm_virtual_network" "vnet_shared_01" {
   name                = var.vnet_name
   location            = azurerm_resource_group.resource_group_01.location
   resource_group_name = azurerm_resource_group.resource_group_01.name
@@ -7,26 +7,26 @@ resource "azurerm_virtual_network" "vnet_hub_01" {
   tags                = var.tags
 }
 
-output "vnet_hub_01_id" {
-  value = azurerm_virtual_network.vnet_hub_01.id
+output "vnet_shared_01_id" {
+  value = azurerm_virtual_network.vnet_shared_01.id
 }
 
-output "vnet_hub_01_name" {
-  value = azurerm_virtual_network.vnet_hub_01.name
+output "vnet_shared_01_name" {
+  value = azurerm_virtual_network.vnet_shared_01.name
 }
 
-resource "azurerm_subnet" "vnet_hub_01_subnets" {
+resource "azurerm_subnet" "vnet_shared_01_subnets" {
   for_each = var.subnets
 
   name                                           = each.value.name
   resource_group_name                            = azurerm_resource_group.resource_group_01.name
-  virtual_network_name                           = azurerm_virtual_network.vnet_hub_01.name
+  virtual_network_name                           = azurerm_virtual_network.vnet_shared_01.name
   address_prefixes                               = [ each.value.address_prefix ]
   enforce_private_link_endpoint_network_policies = each.value.enforce_private_link_endpoint_network_policies
 }
 
-output "vnet_hub_01_default_subnet_id" {
-  value = azurerm_subnet.vnet_hub_01_subnets["default"].id
+output "vnet_shared_01_default_subnet_id" {
+  value = azurerm_subnet.vnet_shared_01_subnets["default"].id
 }
 
 # Dedicated bastion
@@ -42,7 +42,7 @@ resource "azurerm_bastion_host" "bastion_host_01" {
 
   ip_configuration {
     name                 = "ipc-${random_id.random_id_bastion_host_01_name.hex}-001"
-    subnet_id            = azurerm_subnet.vnet_hub_01_subnets["AzureBastionSubnet"].id
+    subnet_id            = azurerm_subnet.vnet_shared_01_subnets["AzureBastionSubnet"].id
     public_ip_address_id = azurerm_public_ip.public_ip_bastion_host_01.id
   }
 }
@@ -83,4 +83,3 @@ output "public_ip_bastion_host_01_ip_address" {
 output "public_ip_bastion_host_01_name" {
   value = azurerm_public_ip.public_ip_bastion_host_01.name
 }
-

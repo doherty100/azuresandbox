@@ -2,7 +2,7 @@
 
 ## Overview
 
-This quick start implements a shared virtual wan to connect the shared hub virtual network and the dedicated spoke virtual network to remote users and/or private networks. The following quick starts must be deployed first before starting:
+This quick start implements a shared virtual wan to connect the shared services virtual network and the dedicated spoke virtual network to remote users and/or private networks. The following quick starts must be deployed first before starting:
 
 * [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
 * [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
@@ -44,7 +44,7 @@ This section provides an index of the 6 resources included in this quick start.
 
 ---
 
-Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) to connect the shared hub and dedicated spoke virtual networks to remote users and/or private networks with an automatically generated name following the grep format "vwan-\[a-z0-9\]\{16\}-001". The following arguments are configured by default:
+Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) to connect the shared services and dedicated spoke virtual networks to remote users and/or private networks with an automatically generated name following the grep format "vwan-\[a-z0-9\]\{16\}-001". The following arguments are configured by default:
 
 * [disable_vpn_encryption](https://www.terraform.io/docs/providers/azurerm/r/virtual_wan.html#disable_vpn_encryption) = false
 * [allow_branch_to_branch_traffic](https://www.terraform.io/docs/providers/azurerm/r/virtual_wan.html#allow_branch_to_branch_traffic) = true
@@ -58,7 +58,7 @@ vwan_01_name | Output | string | Local | vwan-e2b88962e7284da0-001
 
 #### Virtual wan hub
 
-Shared [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) attached to the shared virtual wan with an automatically generated name following the grep format "vhub-\[a-z0-9\]\{16\}-001". Pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) are established with the shared hub virtual network and the dedicated spoke virtual network.
+Shared [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) attached to the shared virtual wan with an automatically generated name following the grep format "vhub-\[a-z0-9\]\{16\}-001". Pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) are established with the shared services virtual network and the dedicated spoke virtual network.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---

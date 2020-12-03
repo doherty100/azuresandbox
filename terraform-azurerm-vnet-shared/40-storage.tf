@@ -55,7 +55,7 @@ resource "azurerm_private_endpoint" "storage_account_01_private_endpoint_file" {
   name                = "pend-${random_id.random_id_storage_account_01_private_endpoint_file_name.hex}-001"
   resource_group_name = azurerm_resource_group.resource_group_01.name
   location            = azurerm_resource_group.resource_group_01.location
-  subnet_id           = azurerm_subnet.vnet_hub_01_subnets["PrivateLink"].id
+  subnet_id           = azurerm_subnet.vnet_shared_01_subnets["PrivateLink"].id
   tags                = var.tags
 
   private_service_connection {
@@ -129,19 +129,19 @@ output "private_dns_a_record_1_name" {
 }
 
 # Private DNS zone virtual network link
-resource "azurerm_private_dns_zone_virtual_network_link" "virtual_network_link_vnet_hub_01" {
-  name                  = "pdnslnk-${azurerm_virtual_network.vnet_hub_01.name}-001"
+resource "azurerm_private_dns_zone_virtual_network_link" "virtual_network_link_vnet_shared_01" {
+  name                  = "pdnslnk-${azurerm_virtual_network.vnet_shared_01.name}-001"
   resource_group_name   = azurerm_resource_group.resource_group_01.name
   private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_1.name
-  virtual_network_id    = azurerm_virtual_network.vnet_hub_01.id
+  virtual_network_id    = azurerm_virtual_network.vnet_shared_01.id
   registration_enabled  = false
   tags                  = var.tags
 }
 
-output "virtual_network_link_vnet_hub_01_id" {
-  value = azurerm_private_dns_zone_virtual_network_link.virtual_network_link_vnet_hub_01.id
+output "virtual_network_link_vnet_shared_01_id" {
+  value = azurerm_private_dns_zone_virtual_network_link.virtual_network_link_vnet_shared_01.id
 }
 
-output "virtual_network_link_vnet_hub_01_name" {
-  value = azurerm_private_dns_zone_virtual_network_link.virtual_network_link_vnet_hub_01.name
+output "virtual_network_link_vnet_shared_01_name" {
+  value = azurerm_private_dns_zone_virtual_network_link.virtual_network_link_vnet_shared_01.name
 }

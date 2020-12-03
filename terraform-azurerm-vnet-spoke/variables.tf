@@ -5,12 +5,12 @@ variable "location" {
 
 variable "remote_virtual_network_id" {
   type        = string
-  description = "The id of the existing hub virtual network that the new spoke virtual network will be peered with."
+  description = "The id of the existing shared services virtual network that the new spoke virtual network will be peered with."
 }
 
 variable "remote_virtual_network_name" {
   type        = string
-  description = "The name of the existing hub virtual network that the new spoke virtual network will be peered with."
+  description = "The name of the existing shared services virtual network that the new spoke virtual network will be peered with."
 }
 
 variable "resource_group_name" {

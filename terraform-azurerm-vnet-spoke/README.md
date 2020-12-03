@@ -2,7 +2,7 @@
 
 ## Overview
 
-This quick start implements the spoke portion of a basic hub-spoke networking topology and establishes bi-directional virtual network peering with the shared hub virtual network. The following quick starts must be deployed first before starting:
+This quick start implements the spoke portion of a basic hub-spoke networking topology and establishes bi-directional virtual network peering with the shared services virtual network. The following quick starts must be deployed first before starting:
 
 * [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
 
@@ -105,11 +105,11 @@ virtual_network_link_vnet_spoke_01_name | Output | string | Local | pdnslnk-vnet
 
 #### Virtual network peering
 
-Bi-directional [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) is established between this virtual network and the shared hub virtual network.
+Bi-directional [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) is established between this virtual network and the shared services virtual network.
 
-##### Hub to spoke virtual network peering
+##### Shared services to spoke virtual network peering
 
-This peering is between the shared hub virtual network and the dedicated spoke virtual network. The following arguments are enabled by default:
+This peering is between the shared services virtual network and the dedicated spoke virtual network. The following arguments are enabled by default:
 
 * [allow_virtual_network_access](https://www.terraform.io/docs/providers/azurerm/r/virtual_network_peering.html#allow_virtual_network_access)
 * [allow_forwarded_traffic](https://www.terraform.io/docs/providers/azurerm/r/virtual_network_peering.html#allow_forwarded_traffic)
@@ -117,20 +117,20 @@ This peering is between the shared hub virtual network and the dedicated spoke v
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vnet_hub_01_to_vnet_spoke_01_peering_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-hub-001/virtualNetworkPeerings/vnet_hub_01_to_vnet_spoke_01_peering
-vnet_hub_01_to_vnet_spoke_01_peering_name | Output | string | Local | vnet_hub_01_to_vnet_spoke_01_peering
+vnet_shared_01_to_vnet_spoke_01_peering_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-shared-001/virtualNetworkPeerings/vnet_shared_01_to_vnet_spoke_01_peering
+vnet_shared_01_to_vnet_spoke_01_peering_name | Output | string | Local | vnet_shared_01_to_vnet_spoke_01_peering
 
-##### Spoke to hub virtual network peering
+##### Spoke to shared services virtual network peering
 
-This peering is between the dedicated spoke virtual network and the shared hub virtual network. The following arguments are enabled by default:
+This peering is between the dedicated spoke virtual network and the shared services virtual network. The following arguments are enabled by default:
 
 * [allow_virtual_network_access](https://www.terraform.io/docs/providers/azurerm/r/virtual_network_peering.html#allow_virtual_network_access)
 * [allow_forwarded_traffic](https://www.terraform.io/docs/providers/azurerm/r/virtual_network_peering.html#allow_forwarded_traffic)
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vnet_spoke_01_to_vnet_hub_01_peering_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/virtualNetworkPeerings/vnet_spoke_01_to_vnet_hub_01_peering
-vnet_spoke_01_to_vnet_hub_01_peering_name | Output | string | Local | vnet_spoke_01_to_vnet_hub_01_peering
+vnet_spoke_01_to_vnet_shared_01_peering_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/virtualNetworkPeerings/vnet_spoke_01_to_vnet_shared_01_peering
+vnet_spoke_01_to_vnet_shared_01_peering_name | Output | string | Local | vnet_spoke_01_to_vnet_shared_01_peering
 
 ## Smoke testing
 
