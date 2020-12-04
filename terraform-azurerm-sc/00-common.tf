@@ -1,6 +1,6 @@
-# Provision a new hub virtual network and shared services in Azure including:
+# Provision a new shared services virtual network and shared services in Azure including:
 #   - Resource Group
-#   - Virtual Network (hub)
+#   - Shared services virtual network 
 #   - Storage account (blob storage)
 #   - Key Vault
 #   - Shared Image Gallery
