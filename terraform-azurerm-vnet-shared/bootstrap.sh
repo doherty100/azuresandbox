@@ -91,7 +91,7 @@ subnets="${subnets}    enforce_private_link_endpoint_network_policies = true\n"
 subnets="${subnets}  }\n"
 subnets="${subnets}}"
 
-# Built tags map
+# Build tags map
 tags=""
 tags="${tags}{\n"
 tags="${tags}  project     = \"$project\",\n"

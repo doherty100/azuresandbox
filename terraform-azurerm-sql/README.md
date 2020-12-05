@@ -98,7 +98,7 @@ A [virtual network link](https://docs.microsoft.com/en-us/azure/dns/private-dns-
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 virtual_network_link_vnet_spoke_01_id | Output | string | Local | /subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/privateDnsZones/privatelink.database.windows.net/virtualNetworkLinks/pdnslnk-vnet-spoke-001-002
-virtual_network_link_vnet_hub_01_name | Output | string | Local | pdnslnk-vnet-spoke-001-002
+virtual_network_link_vnet_shared_01_name | Output | string | Local | pdnslnk-vnet-spoke-001-002
 
 #### Azure SQL Database
 

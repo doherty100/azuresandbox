@@ -18,6 +18,10 @@ output "resource_group_01_name" {
   value = azurerm_resource_group.resource_group_01.name
 }
 
+output "resource_group_01_tags" {
+  value = azurerm_resource_group.resource_group_01.tags
+}
+
 # Role assignment
 
 resource "azurerm_role_assignment" "resource_group_01_role_assignment_owner" {

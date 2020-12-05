@@ -20,9 +20,10 @@ This section describes how to provision this quick start using default settings.
 * Run `az account list -o table` and copy the *Subscription Id* to be used for the quick starts.
 * Run `az account set -s 00000000-0000-0000-0000-000000000000` using the *Subscription Id* from the previous step to set the default subscription.
 * Run `./bootstrap.sh` using the default settings or your own custom settings.
-* Run `terraform init` and note the version of the azurerm provider installed.
+* Run `terraform init` and note the version of the *azurerm* provider installed.
 * Run `terraform validate` to check the syntax of the configuration.
-* Run `terraform apply` to apply the configuration.
+* Run `terraform plan` and review the plan output.
+* Run `terraform apply` to apply the plan.
 
 ## Resource index
 
@@ -46,6 +47,7 @@ tags | Input | map | Local | { project = "#AzureQuickStarts", costcenter  = "101
 resource_group_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001
 resource_group_01_location | Output | string | Global | eastus
 resource_group_01_name | Output | string | Global | rg-vdc-nonprod-001
+resource_group_01_tags | Output | map | Global | { project = "#AzureQuickStarts", costcenter = "10177772", environment = "dev" }
 
 #### Role assignment
 

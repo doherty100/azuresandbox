@@ -62,7 +62,7 @@ This section provides an index of the ~5 resources included in this quick start.
 
 ---
 
-Linux jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Linux virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/) offering. The virtual machine is connected to the dedicated hub virtual network with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions. Password authentication is enabled.
+Linux jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Linux virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/) offering. The virtual machine is connected to the shared services virtual network with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions. Password authentication is enabled.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -126,7 +126,7 @@ storage_account_name | Input | String | Local | stf7250f5be032d651001
   * Confirm access to shared file share private endpoint.
     * Create a new bash script, and paste in the script generated previously.
     * Copy the fqdn for the file endpoint, for example *stxxxxxxxxxxxxxxxx001.file.core.windows.net*
-    * Run `dig stxxxxxxxxxxxxxxxx001.file.core.windows.net` and examine the *ANSWER* section. Verify the the *IP4Address* returned is consistent with the address prefix used for the *snet-storage-private-endpoints-001* subnet in the shared hub virtual network. This name resolution is accomplished using the shared private DNS zone.
+    * Run `dig stxxxxxxxxxxxxxxxx001.file.core.windows.net` and examine the *ANSWER* section. Verify the the *IP4Address* returned is consistent with the address prefix used for the *snet-storage-private-endpoints-001* subnet in the shared services virtual network. This name resolution is accomplished using the shared private DNS zone.
     * Execute the bash script copied from the Azure Portal to mount the shared file share using the private endpoint.
     * Create some directories and sample files on the mount point associated with the shared file share to test functionality.
   * Review the log file created during execution of the post-deployment script in `/var/lib/waagent/custom-script/download/0/`.
