@@ -6,8 +6,8 @@ writelog() {
     printf "${TIMESTAMP}: ${MSG}\n" >> $0.log
 }
 
-writelog "Updating packages..."
-apt update
+writelog "Installing updates..."
+sudo apt update
 
 writelog "Exiting normally..."
 exit 0

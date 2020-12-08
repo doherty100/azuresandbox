@@ -13,46 +13,15 @@ Provisioning | ~5 minutes
 Smoke testing | ~ 15 minutes
 De-provisioning | ~ 5 minutes
 
-### Getting started with default settings
+### Getting started
 
 This section describes how to provision this quick start using default settings.
 
-* Create required secrets in shared key vault and provision post-deployment script.
-  * Define values to be used for the following secrets:
-    * *adminuser*: the admin user name to use when provisioning new virtual machines. See [What are the username requirements when creating a VM?](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/faq) for additional guidance.
-    * *adminpassword*: the admin password to use when provisioning new virtual machines. Be sure to use the escape character "\\" before any [metacharacters](https://www.gnu.org/software/bash/manual/bash.html#Definitions) in your password. See [What are the password requirements when creating a VM?](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/faq#what-are-the-password-requirements-when-creating-a-vm) for additional guidance.
-  * Run `./pre-deploy.sh -u "MyAdminUserName" -p "MyStrongAdminPassword"` using the values defined previously.
-* Run `./run-gen-tfvarsfile.sh` to generate *terraform.tfvars*.  
-* Run `terraform init`.
-* Run `terraform apply`.
-
-### Getting started with custom settings
-
-This section describes how to provision this quick start using custom settings. Refer to [Perform custom quick start deployment](https://github.com/doherty100/azurequickstarts#perform-custom-quick-start-deployment) for more details.
-
-* Create required secrets in shared key vault and provision post-deployment script.
-  * Define values to be used for the following secrets:
-    * *adminuser*: the admin user name to use when provisioning new virtual machines. See [What are the username requirements when creating a VM?](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/faq) for additional guidance.
-    * *adminpassword*: the admin password to use when provisioning new virtual machines. Be sure to use the escape character "\\" before any [metacharacters](https://www.gnu.org/software/bash/manual/bash.html#Definitions) in your password. See [What are the password requirements when creating a VM?](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/faq#what-are-the-password-requirements-when-creating-a-vm) for additional guidance.
-  * Run `./pre-deploy.sh -u "MyAdminUserName" -p "MyStrongAdminPassword"` using the values defined previously.
-* Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
-* Edit `run-gen-tfvarsfile-private.sh`.
-  * -n: Change to a custom *VM_NAME* if desired.
-  * -p: Change to a different *VM_IMAGE_PUBLISHER* if desired.
-    * Run `az vm image list-publishers` to get a list of publishers.
-  * -o: Change to a different *VM_IMAGE_OFFER* if desired.
-    * Run `az vm image list-offers` to get a list of offers.
-  * -s: Change to a different *VM_IMAGE_SKU* if desired.
-    * Run `az vm image list-skus` to get a list of image skus.
-  * -z: Change to a different *VM_SIZE* if desired.
-    * Run `az vm list-sizes` to get a list of available virtual machine sizes.
-  * -c: Change to a different *VM_DATA_DISK_COUNT* if desired. Set to "0" of no data disks are required.
-  * -d: Change to a different *VM_DATA_DISK_SIZE_GB* if desired.
-  * -t: Change to a different *TAGS* map if desired.
-  * Save changes.
-* Run `./run-gen-tfvarsfile-private.sh` to generate *terraform.tfvars*.  
-* Run `terraform init`.
-* Run `terraform apply`.
+* Run `./bootstrap.sh` using the default settings or your own custom settings.
+* Run `terraform init` and note the version of the *azurerm* provider installed.
+* Run `terraform validate` to check the syntax of the configuration.
+* Run `terraform plan` and review the plan output.
+* Run `terraform apply` to apply the configuration.
 
 ## Resource index
 
@@ -62,20 +31,19 @@ This section provides an index of the ~5 resources included in this quick start.
 
 ---
 
-Linux jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Linux virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/) offering. The virtual machine is connected to the shared services virtual network with a configurable number of data disks, pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions. Password authentication is enabled.
+Linux jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Linux virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/) offering. The virtual machine is connected to the shared services virtual network with pre-configured administrator credentials using key vault and pre-configured virtual machine extensions. Password authentication is enabled.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vm_name | Input | string | Local | jumpbox02
+vm_name | Input | string | Local | ubuntu-jumpbox-02
 vm_size | Input | string | Local | Standard_B2s
-vm_storage_replication_type | Input | string | Local | Standard_LRS
+vm_storage_account_type | Input | string | Local | Standard_LRS
 vm_image_publisher | Input | string | Local | Canonical
 vm_image_offer | Input | string | Local | UbuntuServer
 vm_image_sku | Input | string | Local | 18.04-LTS
-vm_image_version | Input | string | Local | Latest (default)
-tags | Input | string | Local | { costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }
-virtual_machine_02_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/jumpbox02
-virtual_machine_02_name | Output | string | Local | jumpbox02
+vm_image_version | Input | string | Local | Latest
+virtual_machine_02_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/ubuntu-jumpbox-02
+virtual_machine_02_name | Output | string | Local | ubuntu-jumpbox-02
 
 #### Network interface
 
@@ -83,19 +51,18 @@ Dedicated [network interface](https://docs.microsoft.com/en-us/azure/virtual-net
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-virtual_machine_02_nic_01_id | Output | string | Local | /subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/networkInterfaces/nic-jumpbox02-001
-virtual_machine_02_nic_01_name | Output | string | Local | nic-jumpbox02-001
+virtual_machine_02_nic_01_id | Output | string | Local | /subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/networkInterfaces/nic-ubuntu-jumpbox-02-001
+virtual_machine_02_nic_01_name | Output | string | Local | nic-ubuntu-jumpbox-02-001
 virtual_machine_02_nic_01_private_ip_address | Output | string | Local | 10.1.0.5
 
 #### Managed disks and data disk attachments
 
-One or more dedicated [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview) for use by the Linux jump box virtual machine as data disks. Each of the dedicated managed disks is automatically attached to the virtual machine, but must be partitioned and mounted manually. Note that caching is disabled by default and must be configured post-deployment if needed. Performance optimization of managed disks for Linux guest operating systems vary widely by distribution, file system and workload. See [Optimize your Linux VM on Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/optimization) for Azure specific best practices.
+One or more [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview) for use by the Linux jump box virtual machine as data disks. Each of the managed disks is automatically attached to the virtual machine, but must be partitioned and mounted manually. Performance optimization of managed disks for Linux guest operating systems varies widely by distribution, file system and workload. See [Optimize your Linux VM on Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/optimization) for Azure specific best practices.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vm_data_disk_count | Input | string | Local | 0
-vm_storage_replication_type | Input | string | Local | Standard_LRS
-vm_data_disk_size_gb | Input | string | Local | 0 (Gb)
+vm_data_disk_config | Input | map | string | Local | { data = { name = "vol_data_N", disk_size_gb = "4", lun = "0", caching = "ReadWrite" } }
+vm_storage_account_type | Input | string | Local | Standard_LRS
 
 #### Virtual machine extensions
 
@@ -108,13 +75,13 @@ Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azu
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
-post_deploy_script_name | Input | string | Local | virtual-machine-02-post-deploy.sh (Default)
-post_deploy_script_uri | Input | string | Local | <https://stf7250f5be032d651001.blob.core.windows.net/scripts/virtual-machine-02-post-deploy.sh>
+post_deploy_script_name | Input | string | Local | post-deploy-app-vm.sh
+app_vm_post_deploy_script_uri | Input | string | Local | <https://stf7250f5be032d651001.blob.core.windows.net/scripts/post-deploy-app-vm.sh>
 storage_account_name | Input | String | Local | stf7250f5be032d651001
 
 ## Smoke testing
 
-* Review the post-deployment script code in `virtual-machine-02-post-deploy.sh`. Use the Azure portal to confirm the script was uploaded to shared blob storage container.
+* Review the post-deployment script code in `post-deploy-app-vm.sh`. Use the Azure portal to confirm the script was uploaded to shared blob storage container.
 * Explore newly provisioned resources using the Azure portal.
   * Review the 4 secrets that were created in the shared key vault.
   * Generate a bash script for mapping drives to the shared file share.

@@ -22,6 +22,10 @@ resource "azurerm_windows_virtual_machine" "virtual_machine_01" {
     sku       = var.vm_image_sku
     version   = var.vm_image_version
   }
+
+  identity {
+    type = "SystemAssigned"
+  }
 }
 
 output "virtual_machine_01_id" {
@@ -92,17 +96,6 @@ resource "azurerm_virtual_machine_extension" "virtual_machine_01_extension_monit
   type_handler_version       = "1.0"
   auto_upgrade_minor_version = true
   tags                       = var.tags
-
-  settings           = <<SETTINGS
-    {
-      "workspaceId": "${var.log_analytics_workspace_id}"
-    }
-    SETTINGS
-  protected_settings = <<PROTECTED_SETTINGS
-    {
-      "workspaceKey" : "${data.azurerm_key_vault_secret.log_analytics_workspace_key.value}"
-    }
-    PROTECTED_SETTINGS
 }
 
 resource "azurerm_virtual_machine_extension" "virtual_machine_01_extension_dependency" {

@@ -108,6 +108,6 @@ variable "vm_size" {
 
 variable "vm_storage_account_type" {
   type        = string
-  description = "The storage replication type to be used for the VMs OS disk"
+  description = "The storage replication type to be used for the VMs OS and data disks."
   default     = "Standard_LRS"
 }
