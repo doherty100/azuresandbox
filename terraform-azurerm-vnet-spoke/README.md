@@ -2,7 +2,7 @@
 
 ## Overview
 
-This quick start implements the spoke portion of a basic hub-spoke networking topology and establishes bi-directional virtual network peering with the shared services virtual network. The following quick starts must be deployed first before starting:
+This quick start implements the spoke portion of a basic hub-spoke networking topology and establishes bi-directional virtual network peering with the shared services virtual network. The spoke virtual network can be used for hosting solution infrastructure. The following quick starts must be deployed first before starting:
 
 * [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
 
@@ -13,62 +13,49 @@ Provisioning | ~5 minutes
 Smoke testing | ~ 5 minutes
 De-provisioning | ~10 minutes
 
-### Getting started with default settings
+## Getting started
 
 This section describes how to provision this quick start using default settings.
 
-* Run `./run-gen-tfvarsfile.sh` to generate *terraform.tfvars*.  
-* Run `terraform init`.
-* Run `terraform apply`.
-
-### Getting started with custom settings
-
-This section describes how to provision this quick start using custom settings. Refer to [Perform custom quick start deployment](https://github.com/doherty100/azurequickstarts#perform-custom-quick-start-deployment) for more details.
-
-* Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
-* Edit `run-gen-tfvarsfile-private.sh`.
-  * -v: Change to a custom *vnet_name* if desired.
-  * -a: Change to a custom *vnet_address_space* if desired.
-  * -s: Change to a custom *subnets* map if desired.
-  * -t: Change to a custom *tags* map if desired.
-  * Save changes.
-* Run `./run-gen-tfvarsfile-private.sh` to generate *terraform.tfvars*.  
-* Run `terraform init`.
-* Run `terraform apply`.
+* Run `./bootstrap.sh` using the default settings or your own custom settings.
+* Run `terraform init` and note the version of the *azurerm* provider installed.
+* Run `terraform validate` to check the syntax of the configuration.
+* Run `terraform plan` and review the plan output.
+* Run `terraform apply` to apply the configuration.
 
 ## Resource index
 
-This section provides an index of the 10 resources included in this quick start.
+This section provides an index of the 13 resources included in this quick start.
 
 ### Virtual network
 
 ---
 
-Dedicated spoke [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet). Note there are dependencies on this resource in the following quick starts:  
+Spoke [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting solution infrastructure. Note the following quick starts have dependencies on this quick start:  
 
-* [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows)
+* [terraform-azurerm-bench-windows](../terraform-azurerm-bench-windows)
+* [terraform-azurerm-sql](../terraform-azurerm-sql)
 * [terraform-azurerm-vwan](../terraform-azurerm-vwan)
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 vnet_name | Input | string | Local | vnet-spoke-001
 vnet_address_space | Input | string | Local | 10.2.0.0/16
-tags | Input  | map | Local | { costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }
 vnet_spoke_01_id | output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001
 vnet_spoke_01_name | output | string | Global | vnet-spoke-001
 
 #### Subnets
 
-Dedicated spoke virtual network [subnets](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-vnet-plan-design-arm#subnets). Note the following subnets used in the sample values are significant:
+The spoke virtual network is divided into [subnets](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-vnet-plan-design-arm#subnets). Note there are dependencies on the following subnets:
 
-* An *application* subnet is required for use in other quick starts.
-* A *database* subnet is required for use in other quick starts.
+* An *application* subnet is required for deploying application server virtual machines in other quick starts.
+* A *database* subnet is required for deploying database server virtual machines in other quick starts.
 * An *AzureBastionSubnet* subnet is required for the bastion resource.
-* A *private_endpoints* subnet is required for other quick starts.
+* A *PrivateLink* subnet is required for private endpoints created in other quick starts.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-subnets | Input | map | Local | { default = { name = "snet-default-002", address_prefix = "10.2.0.0/24", enforce_private_link_endpoint_network_policies = false }, AzureBastionSubnet = { name = "AzureBastionSubnet", address_prefix = "10.2.1.0/27", enforce_private_link_endpoint_network_policies = false }, database = { name = "snet-db-001", address_prefix = "10.2.1.32/27", enforce_private_link_endpoint_network_policies = false},application = {name = "snet-app-001", address_prefix = "10.2.1.64/27",enforce_private_link_endpoint_network_policies = false}, private_endpoints = { name = "snet-storage-private-endpoints-002", address_prefix = "10.2.1.96/27", enforce_private_link_endpoint_network_policies = true } }
+subnets | Input | map | Local | { default = { name = "snet-default-002", address_prefix = "10.2.0.0/24", enforce_private_link_endpoint_network_policies = false }, AzureBastionSubnet = { name = "AzureBastionSubnet", address_prefix = "10.2.1.0/27", enforce_private_link_endpoint_network_policies = false }, PrivateLink = { name = "snet-storage-private-endpoints-002", address_prefix = "10.2.1.96/27", enforce_private_link_endpoint_network_policies = true }, database = { name = "snet-db-001", address_prefix = "10.2.1.32/27", enforce_private_link_endpoint_network_policies = false }, application = { name = "snet-app-001",address_prefix = "10.2.1.64/27", enforce_private_link_endpoint_network_policies = false } }
 vnet_spoke_01_app_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-app-001
 vnet_spoke_01_db_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-db-001
 vnet_spoke_01_default_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-default-002

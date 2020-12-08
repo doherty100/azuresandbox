@@ -38,18 +38,12 @@ read -e -i $default_admin_password_secret     -p "admin password secret -----: "
 read -e -s                                    -p "admin password value ------: " admin_password
 printf "password length ${#admin_password}\n"
 
+vm_name=${vm_name:-$default_vm_name}
 app_vm_post_deploy_script=${app_vm_post_deploy_script:-$default_app_vm_post_deploy_script}
 admin_username_secret=${admin_username_secret:-$default_admin_username_secret}
 admin_username=${admin_username:-$default_admin_username}
 admin_password_secret=${admin_password_secret:-$default_admin_password_secret}
 app_vm_post_deploy_script_uri="https://$default_storage_account_name.blob.core.windows.net/$default_blob_storage_container_name/$app_vm_post_deploy_script"
-
-# Validate VM name
-if [ -z "$vm_name" ]
-then
-  printf "Invalid VM name '$vm_name'...\n"
-  usage
-fi
 
 # Bootstrap keyvault secrets
 printf "Setting secret '$admin_username_secret' with value '$admin_username' in keyvault '$default_key_vault_name'...\n"

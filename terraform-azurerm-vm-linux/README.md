@@ -13,7 +13,7 @@ Provisioning | ~5 minutes
 Smoke testing | ~ 15 minutes
 De-provisioning | ~ 5 minutes
 
-### Getting started
+## Getting started
 
 This section describes how to provision this quick start using default settings.
 

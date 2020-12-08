@@ -38,7 +38,7 @@ output "vnet_spoke_01_default_subnet_id" {
 }
 
 output "vnet_spoke_01_private_endpoints_subnet_id" {
-  value = azurerm_subnet.vnet_spoke_01_subnets["private_endpoints"].id
+  value = azurerm_subnet.vnet_spoke_01_subnets["PrivateLink"].id
 }
 
 # Dedicated bastion

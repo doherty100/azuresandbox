@@ -21,40 +21,11 @@ variable "resource_group_name" {
 variable "subnets" {
   type        = map
   description = "The list of subnets to be created in the new spoke virtual network."
-  # default = {
-  #   default  = {
-  #     name = "snet-default-002", 
-  #     address_prefix = "10.2.0.0/24", 
-  #     enforce_private_link_endpoint_network_policies = false
-  #   },
-  #   AzureBastionSubnet = {
-  #     name = "AzureBastionSubnet", 
-  #     address_prefix = "10.2.1.0/27", 
-  #     enforce_private_link_endpoint_network_policies = false
-  #   },
-  #   database = {
-  #     name = "snet-db-001", 
-  #     address_prefix = "10.2.1.32/27", 
-  #     enforce_private_link_endpoint_network_policies = false
-  #   },
-  #   application = {
-  #     name = "snet-app-001", 
-  #     address_prefix = "10.2.1.64/27",
-  #     enforce_private_link_endpoint_network_policies = false
-  #   }, 
-  #   private_endpoints = { 
-  #     name = "snet-storage-private-endpoints-002", 
-  #     address_prefix = "10.2.1.96/27", 
-  #     enforce_private_link_endpoint_network_policies = true 
-  #   }
-  # }
 }
 
 variable "tags" {
   type        = map
   description = "The tags in map format to be used when creating new resources."
-
-  # default = { costcenter = "MyCostCenter", division = "MyDivision", group = "MyGroup" }
 }
 
 variable "vnet_address_space" {
