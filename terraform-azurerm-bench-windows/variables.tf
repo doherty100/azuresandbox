@@ -1,3 +1,23 @@
+variable "admin_password_secret" {
+  type        = string
+  description = "The name of the key vault secret containing the admin password"
+}
+
+variable "admin_username_secret" {
+  type        = string
+  description = "The name of the key vault secret containing the admin username"
+}
+
+variable "app_subnet_id" {
+  type        = string
+  description = "The existing subnet which will be used by the VM"
+}
+
+variable "db_subnet_id" {
+  type        = string
+  description = "The existing subnet which will be used by the VM"
+}
+
 variable "key_vault_id" {
   type        = string
   description = "The id of the existing key vault where secrets are stored"
@@ -33,29 +53,22 @@ variable "tags" {
   description = "The ARM tags to be applied to all new resources created."
 }
 
-variable "vm_admin_password_secret" {
-  type        = string
-  description = "The name of the key vault secret containing the admin password"
-}
-
-variable "vm_admin_username_secret" {
-  type        = string
-  description = "The name of the key vault secret containing the admin username"
-}
-
 variable "vm_app_image_offer" {
   type        = string
   description = "The offer type of the virtual machine image used to create the application server VM"
+  default     = "WindowsServer"
 }
 
 variable "vm_app_image_publisher" {
   type        = string
   description = "The publisher for the virtual machine image used to create the application server VM"
+  default     = "MicrosoftWindowsServer"
 }
 
 variable "vm_app_image_sku" {
   type        = string
   description = "The sku of the virtual machine image used to create the application server VM"
+  default     = "2019-Datacenter"
 }
 
 variable "vm_app_image_version" {
@@ -69,7 +82,7 @@ variable "vm_app_name" {
   description = "The name of the aplication server VM"
 }
 
-variable "vm_app_post_deploy_script_name" {
+variable "vm_app_post_deploy_script" {
   type        = string
   description = "The name of the PowerShell script to be run post-deployment."
 }
@@ -82,50 +95,50 @@ variable "vm_app_post_deploy_script_uri" {
 variable "vm_app_size" {
   type        = string
   description = "The size of the virtual machine"
+  default     = "Standard_B2s"
 }
 
-variable "vm_app_storage_replication_type" {
+variable "vm_app_storage_account_type" {
   type        = string
   description = "The storage replication type to be used for the VMs OS disk"
-}
-
-variable "vm_app_subnet_id" {
-  type        = string
-  description = "The existing subnet which will be used by the VM"
+  default     = "Standard_LRS"
 }
 
 variable "vm_db_data_disk_config" {
   type        = map
   description = "Data disk configuration for SQL Server virtual machine."
-  # default = {
-  #   sqldata = {
-  #     name         = "vol_sqldata_F",
-  #     disk_size_gb = "128",
-  #     lun          = "0",
-  #     caching      = "ReadOnly"
-  #   },
-  #   sqllog = {
-  #     name         = "vol_sqllog_L",
-  #     disk_size_gb = "32",
-  #     lun          = "1",
-  #     caching      = "None"
-  #   }
-  # }
+  default = {
+    sqldata = {
+      name         = "vol_sqldata_M",
+      disk_size_gb = "128",
+      lun          = "0",
+      caching      = "ReadOnly"
+    },
+    sqllog = {
+      name         = "vol_sqllog_L",
+      disk_size_gb = "32",
+      lun          = "1",
+      caching      = "None"
+    }
+  }
 }
 
 variable "vm_db_image_offer" {
   type        = string
   description = "The offer type of the virtual machine image used to create the database server VM"
+  default     = "sql2016sp2-ws2019"
 }
 
 variable "vm_db_image_publisher" {
   type        = string
   description = "The publisher for the virtual machine image used to create the database server VM"
+  default     = "MicrosoftSQLServer"
 }
 
 variable "vm_db_image_sku" {
   type        = string
   description = "The sku of the virtual machine image used to create the database server VM"
+  default     = "sqldev"
 }
 
 variable "vm_db_image_version" {
@@ -139,7 +152,7 @@ variable "vm_db_name" {
   description = "The name of the database server VM"
 }
 
-variable "vm_db_post_deploy_script_name" {
+variable "vm_db_post_deploy_script" {
   type        = string
   description = "The name of the PowerShell script to be run post-deployment."
 }
@@ -152,24 +165,21 @@ variable "vm_db_post_deploy_script_uri" {
 variable "vm_db_size" {
   type        = string
   description = "The size of the virtual machine"
+  default     = "Standard_B4ms"
 }
 
-variable "vm_db_storage_replication_type" {
+variable "vm_db_storage_account_type" {
   type        = string
   description = "The storage replication type to be used for the VMs OS disk"
+  default     = "StandardSSD_LRS"
 }
 
-variable "vm_db_subnet_id" {
-  type        = string
-  description = "The existing subnet which will be used by the VM"
-}
-
-variable "vm_sql_startup_script_name" {
+variable "vm_db_sql_startup_script" {
   type        = string
   description = "The name of the SQL Startup Powershell script."
 }
 
-variable "vm_sql_startup_script_uri" {
+variable "vm_db_sql_startup_script_uri" {
   type        = string
   description = "The URI for the SQL Startup Powershell script."
 }

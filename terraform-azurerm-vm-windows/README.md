@@ -68,7 +68,7 @@ vm_storage_account_type | Input | string | Local | Standard_LRS
 
 Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the Windows jump box virtual machine including:
 
-* [Azure Monitor virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-windows) known as the *Azure Monitor Agent* (AMA) version 1.0 with automatic minor version upgrades enabled and automatically connected to the log analytics workspace.
+* [Azure Monitor virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-windows) known as the *Azure Monitor Agent* (AMA) version 1.0 with automatic minor version upgrades enabled.
 * [Dependency virtual machine extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/agent-dependency-windows) version 9.0 with automatic minor version upgrades enabled and automatically connected to the log analytics workspace.
 * [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script.
 

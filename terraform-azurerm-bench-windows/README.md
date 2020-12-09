@@ -5,7 +5,6 @@
 This quick start implements a collection of services for testing Windows based web applications and running database benchmarks like [HammerDB](https://www.hammerdb.com/) using an [IaaS](https://azure.microsoft.com/en-us/overview/what-is-azure/iaas/) approach. The following quick starts must be deployed first before starting:
 
 * [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
-* [terraform-azurerm-vm-windows](../terraofrm-azurerm-vm-windows)
 * [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
 
 Activity | Estimated time required
@@ -15,42 +14,15 @@ Provisioning | ~5 minutes
 Smoke testing | ~15 minutes
 De-provisioning | ~5 minutes
 
-### Getting started with default settings
+## Getting started
 
 This section describes how to provision this quick start using default settings.
 
-* Create required secrets in shared key vault and provision post-deployment script
-  * Define values to be used for the following secrets:
-    * *adminuser*: the admin user name to use when provisioning new virtual machines.
-    * *adminpassword*: the admin password to use when provisioning new virtual machines. Note that the password must be at least 12 characters long and meet [defined complexity requirements](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm). Be sure to use the escape character "\\" before any [metacharacters](https://www.gnu.org/software/bash/manual/bash.html#Definitions) in your password.
-  * Run `./pre-deploy.sh -u "MyAdminUserName" -p "MyStrongAdminPassword"` using the values defined previously.
-* Run `./run-gen-tfvarsfile.sh` to generate *terraform.tfvars*.  
-* Run `terraform init`.
-* Run `terraform apply`.
-
-### Getting started with custom settings
-
-This section describes how to provision this quick start using custom settings. Refer to [Perform custom quick start deployment](https://github.com/doherty100/azurequickstarts#perform-custom-quick-start-deployment) for more details.
-
-* Create required secrets in shared key vault and provision post-deployment script
-  * Define values to be used for the following secrets:
-    * *adminuser*: the admin user name to use when provisioning new virtual machines.
-    * *adminpassword*: the admin password to use when provisioning new virtual machines. Note that the password must be at least 12 characters long and meet [defined complexity requirements](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-password-requirements-when-creating-a-vm). Be sure to use the escape character "\\" before any [metacharacters](https://www.gnu.org/software/bash/manual/bash.html#Definitions) in your password.
-  * Run `./pre-deploy.sh -u "MyAdminUserName" -p "MyStrongAdminPassword"` using the values defined previously.
-* Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
-* Edit `run-gen-tfvarsfile-private.sh`.
-  * -n: Change to a custom *vm_name* if desired.
-  * -s: Change to a different *vm_image_sku* if desired.
-    * Run `az vm image list-skus -l eastus -p MicrosoftSQLServer -f sql2019-ws2019 -o table` for a list of valid image sku names. Change the -l parameter to the desired location.
-  * -z: Change to a different *vm_size* if desired.
-    * Run `az vm list-sizes -l eastus -o table` for a list of sizes. Change the -l parameter to the desired location.
-  * -c: Change to a different *vm_data_disk_count* if desired. Set to "0" of no data disks are required.
-  * -d: Change to a different *vm_data_disk_size_gb* if desired.
-  * -t: Change to a different *tags* map if desired.
-  * Save changes.
-* Run `./run-gen-tfvarsfile-private.sh` to generate *terraform.tfvars*.  
-* Run `terraform init`.
-* Run `terraform apply`.
+* Run `./bootstrap.sh` using the default settings or your own custom settings.
+* Run `terraform init` and note the version of the *azurerm* provider installed.
+* Run `terraform validate` to check the syntax of the configuration.
+* Run `terraform plan` and review the plan output.
+* Run `terraform apply` to apply the configuration.
 
 ## Resource index
 
@@ -66,14 +38,14 @@ Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 vm_db_name | Input | string | Local | winbenchdb01
 vm_db_size | Input | string | Local | Standard_B4ms
-vm_db_storage_replication_type | Input | string | Local | StandardSSD_LRS (Note: change this to "Premium_LRS" to observe best practices for Microsoft SQL Server.)
+vm_db_storage_account_type | Input | string | Local | StandardSSD_LRS (Note: change this to "Premium_LRS" to observe best practices for Microsoft SQL Server.)
 vm_db_image_publisher | Input | string | Local | MicrosoftSQLServer
 vm_db_image_offer | Input | string | Local | sql2019-ws2019
 vm_db_image_sku | Input | string | Local | sqldev
-vm_db_image_version | Input | string | Local | Latest (default)
-tags | Input | string | Local | { costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }
+vm_db_image_version | Input | string | Local | Latest
 virtual_machine_03_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/winbenchdb01
 virtual_machine_03_name | Output | string | Local | winbenchdb01
+virtual_machine_03_principal_id | Output | string | Local | 00000000-0000-0000-0000-000000000000
 
 #### Database server network interface
 
@@ -90,7 +62,7 @@ virtual_machine_03_nic_01_private_ip_address | Output | string | Local | 10.2.1.
 One or more [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview) for use by the virtual machine as data disks. Each of the managed disks is automatically attached to the virtual machine with naming parity between the resource name for the managed disk and the volume label applied when the post-deployment script formats the disk. The default settings implement two data disks using a map variable named *vm_db_data_disk_config*, the value for which must follow these conventions:
 
 * Data disk: "sqldata" (used for SQL Server data files)
-  * name: Must follow the convention "vol_sqldata_\[driveletter\]", e.g. "vol_sqldata_F". Note drives A - E are reserved for use by Azure Virtual Machines.
+  * name: Must follow the convention "vol_sqldata_\[driveletter\]", e.g. "vol_sqldata_M". Note drives A - E are reserved for use by Azure Virtual Machines.
   * disk_size_gb: e.g. "128"
   * Caching: "ReadOnly" as per best practices for Microsoft SQL Server.
   * lun: must be unique integer from 0 - 15, e.g. "0"
@@ -104,8 +76,8 @@ Note the post-deployment script has dependencies on these naming conventions, an
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vm_db_data_disk_config | Input | string | Local | { sqldata = { name = "vol_sqldata_F", disk_size_gb = "128", lun = "0", caching = "ReadOnly" }, sqllog = { name = "vol_sqllog_L", disk_size_gb = "32", lun = "1", caching = "None" } }
-vm_storage_replication_type | Input | string | Local | StandardSSD_LRS (Note: change this to "Premium_LRS" to observe best practices for Microsoft SQL Server.)
+vm_db_data_disk_config | Input | string | Local | { sqldata = { name = "vol_sqldata_M", disk_size_gb = "128", lun = "0", caching = "ReadOnly" }, sqllog = { name = "vol_sqllog_L", disk_size_gb = "32", lun = "1", caching = "None" } }
+vm_storage_account_type | Input | string | Local | StandardSSD_LRS (Note: change this to "Premium_LRS" to observe best practices for Microsoft SQL Server.)
 
 #### SQL Server virtual machine resource provider configuration
 
@@ -121,17 +93,19 @@ The database virtual machine is registered with the [Microsoft.SqlVirtualMachine
 
 Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the virtual machine including:
 
-* [Log Analytics virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-windows) also known as the *Microsoft Monitoring Agent* (MMA) version 1.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
+* [Azure Monitor virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-windows) known as the *Azure Monitor Agent* (AMA) version 1.0 with automatic minor version upgrades enabled.
 * [Dependency virtual machine extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/agent-dependency-windows) version 9.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
-* [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script installs software, configures data disks, and reconfigures SQL Server to follow reccomendations in [Performance guidelines for SQL Server on Azure Virtual Machines](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices).
+* [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script installs software, configures data disks, and reconfigures SQL Server to follow recommendations in [Performance guidelines for SQL Server on Azure Virtual Machines](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices).
 * [SQL Server IaaS agent extension](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management) is automatically installed when the virtual machine is registered with the SQL Server virtual machine resource provider.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
 storage_account_name | Input | String | Local | st8e644ec51c5be098001
-vm_db_post_deploy_script_name | Input | string | Local | virtual-machine-03-post-deploy.ps1 (Default)
-vm_db_post_deploy_script_uri | Input | string | Local | <https://st8e644ec51c5be098001.blob.core.windows.net/scripts/virtual-machine-03-post-deploy.ps1>
+vm_db_post_deploy_script | Input | string | Local | post-deploy-sql-vm.ps1
+vm_db_post_deploy_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d8001.blob.core.windows.net/scripts/post-deploy-sql-vm.ps1>
+vm_db_sql_startup_script | Input | string | Local | sql-startup.ps1
+vm_db_sql_startup_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d8001.blob.core.windows.net/scripts/sql-startup.ps1>
 
 ### App server virtual machine
 
@@ -143,14 +117,14 @@ Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 vm_app_name | Input | string | Local | winbenchapp01
 vm_app_size | Input | string | Local | Standard_B2s
-vm_app_storage_replication_type | Input | string | Local | Standard_LRS
+vm_app_storage_account_type | Input | string | Local | Standard_LRS
 vm_app_image_publisher | Input | string | Local | MicrosoftWindowsServer
 vm_app_image_offer | Input | string | Local | WindowsServer
-vm_app_image_sku | Input | string | Local | 2019-Datacenter-smalldisk
-vm_app_image_version | Input | string | Local | Latest (default)
-tags | Input | string | Local | { costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }
+vm_app_image_sku | Input | string | Local | 2019-Datacenter
+vm_app_image_version | Input | string | Local | Latest
 virtual_machine_04_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/winbenchapp01
 virtual_machine_04_name | Output | string | Local | winbenchapp01
+virtual_machine_04_principal_id | Output | string | Local | 00000000-0000-0000-0000-000000000000
 
 #### Web server network interface
 
@@ -173,8 +147,8 @@ Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azu
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
-vm_app_post_deploy_script_name | Input | string | Local | virtual-machine-04-post-deploy.ps1 (Default)
-vm_app_post_deploy_script_uri | Input | string | Local | <https://st8e644ec51c5be098001.blob.core.windows.net/scripts/virtual-machine-04-post-deploy.ps1>
+vm_app_post_deploy_script | Input | string | Local | post-deploy-app-vm.ps1
+vm_app_post_deploy_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d8001.blob.core.windows.net/scripts/post-deploy-app-vm.ps1>
 storage_account_name | Input | String | Local | st8e644ec51c5be098001
 
 ## Smoke testing
