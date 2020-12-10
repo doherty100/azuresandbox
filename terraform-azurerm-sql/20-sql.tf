@@ -1,14 +1,4 @@
 # Azure SQL Datbase Server
-data "azurerm_key_vault_secret" "adminpassword" {
-  name         = var.sql_admin_password_secret
-  key_vault_id = var.key_vault_id
-}
-
-data "azurerm_key_vault_secret" "adminuser" {
-  name         = var.sql_admin_username_secret
-  key_vault_id = var.key_vault_id
-}
-
 resource "random_id" "random_id_sql_server_01_name" {
   byte_length = 8
 }
@@ -100,15 +90,15 @@ output "private_dns_a_record_2_name" {
 
 # Private DNS zone virtual network link
 resource "azurerm_private_dns_zone_virtual_network_link" "virtual_network_link_vnet_spoke_01" {
-  name                  = "pdnslnk-${var.vnet_spoke_01_name}-002"
+  name                  = "pdnslnk-${var.vnet_name}-002"
   resource_group_name   = var.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_2.name
-  virtual_network_id    = var.vnet_spoke_01_id
+  virtual_network_id    = var.vnet_id
   registration_enabled  = false
   tags                  = var.tags
 }
 
-output "virtual_network_link_vnet_spoke_01_id" {
+output "virtual_network_link_vnet_id" {
   value = azurerm_private_dns_zone_virtual_network_link.virtual_network_link_vnet_spoke_01.id
 }
 

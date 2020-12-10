@@ -15,40 +15,19 @@ Provisioning | ~5 minutes
 Smoke testing | ~ 15 minutes
 De-provisioning | ~ 5 minutes
 
-### Getting started with default settings
+## Getting started
 
 This section describes how to provision this quick start using default settings.
 
-* Create required secrets in shared key vault
-  * Define values to be used for the following secrets:
-    * *adminuser*: the admin user name to use when provisioning the new Azure SQL Database logical server.
-    * *adminpassword*: the admin password to use when provisioning the new Azure SQL Database logical server. Note that the password must meet SQL Server [Password Complexity](https://docs.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=sql-server-ver15#password-complexity) requirements. Be sure to use the escape character "\\" before any [metacharacters](https://www.gnu.org/software/bash/manual/bash.html#Definitions) in your password.
-  * Run `./pre-deploy.sh -u "MyAdminUserName" -p "MyStrongAdminPassword"` using the values defined previously.
-* Run `./run-gen-tfvarsfile.sh` to generate *terraform.tfvars*.  
-* Run `terraform init`.
-* Run `terraform apply`.
-
-### Getting started with custom settings
-
-This section describes how to provision this quick start using custom settings. Refer to [Perform custom quick start deployment](https://github.com/doherty100/azurequickstarts#perform-custom-quick-start-deployment) for more details.
-
-* Create required secrets in shared key vault
-  * Define values to be used for the following secrets:
-    * *adminuser*: the admin user name to use when provisioning the new Azure SQL Database logical server.
-    * *adminpassword*: the admin password to use when provisioning the new Azure SQL Database logical server. Note that the password must meet SQL Server [Password Complexity](https://docs.microsoft.com/en-us/sql/relational-databases/security/password-policy?view=sql-server-ver15#password-complexity) requirements. Be sure to use the escape character "\\" before any [metacharacters](https://www.gnu.org/software/bash/manual/bash.html#Definitions) in your password.
-  * Run `./pre-deploy.sh -u "MyAdminUserName" -p "MyStrongAdminPassword"` using the values defined previously.
-* Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
-* Edit `run-gen-tfvarsfile-private.sh`.
-  * -d: Change to a different *sql_database_name* if desired.
-  * -t: Change to a different *tags* map if desired.
-  * Save changes.
-* Run `./run-gen-tfvarsfile-private.sh` to generate *terraform.tfvars*.  
-* Run `terraform init`.
-* Run `terraform apply`.
+* Run `./bootstrap.sh` using the default settings or your own custom settings.
+* Run `terraform init` and note the version of the *azurerm* provider installed.
+* Run `terraform validate` to check the syntax of the configuration.
+* Run `terraform plan` and review the plan output.
+* Run `terraform apply` to apply the configuration.
 
 ## Resource index
 
-This section provides an index of the 2 resources included in this quick start.
+This section provides an index of the 8 resources included in this quick start.
 
 ### Azure SQL Database logical server
 
@@ -58,7 +37,6 @@ Azure SQL Database [logical server](https://docs.microsoft.com/en-us/azure/azure
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-tags | Input | string | Local | { costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }
 sql_server_01_fqdn | Output | string | Local | sql-7d967bca17b9b938-001.database.windows.net
 sql_server_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Sql/servers/sql-7d967bca17b9b938-001
 sql_server_01_name | Output | string | Local |  sql-7d967bca17b9b938-001
@@ -97,6 +75,8 @@ A [virtual network link](https://docs.microsoft.com/en-us/azure/dns/private-dns-
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
+vnet_id | Input | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001
+vnet_name | Input | string | Local | vnet-spoke-001
 virtual_network_link_vnet_spoke_01_id | Output | string | Local | /subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/privateDnsZones/privatelink.database.windows.net/virtualNetworkLinks/pdnslnk-vnet-spoke-001-002
 virtual_network_link_vnet_shared_01_name | Output | string | Local | pdnslnk-vnet-spoke-001-002
 
@@ -107,7 +87,6 @@ virtual_network_link_vnet_shared_01_name | Output | string | Local | pdnslnk-vne
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 sql_database_name | Input | String | Local | sqldb-benchmarktest-01
-tags | Input | string | Local | { costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }
 sql_database_01_id | Output | String | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Sql/servers/sql-7d967bca17b9b938-001/databases/sqldb-benchmarktest-01
 sql_database_01_name | Output | String | Local | sqldb-benchmarktest-01
 

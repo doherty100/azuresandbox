@@ -26,7 +26,7 @@ This section describes how to provision this quick start using default settings.
 
 ## Resource index
 
-This section provides an index of the ~7 resources included in this quick start.
+This section provides an index of the 16 resources included in this quick start.
 
 ### Database server virtual machine
 
