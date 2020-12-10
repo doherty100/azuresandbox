@@ -91,11 +91,22 @@ resource "azurerm_virtual_machine_data_disk_attachment" "virtual_machine_01_data
 resource "azurerm_virtual_machine_extension" "virtual_machine_01_extension_monitoring" {
   name                       = "vmext-${azurerm_windows_virtual_machine.virtual_machine_01.name}-monitoring"
   virtual_machine_id         = azurerm_windows_virtual_machine.virtual_machine_01.id
-  publisher                  = "Microsoft.Azure.Monitor"
-  type                       = "AzureMonitorWindowsAgent"
+  publisher                  = "Microsoft.EnterpriseCloud.Monitoring"
+  type                       = "MicrosoftMonitoringAgent"
   type_handler_version       = "1.0"
   auto_upgrade_minor_version = true
   tags                       = var.tags
+
+  settings           = <<SETTINGS
+    {
+      "workspaceId": "${var.log_analytics_workspace_id}"
+    }
+    SETTINGS
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+      "workspaceKey" : "${data.azurerm_key_vault_secret.log_analytics_workspace_key.value}"
+    }
+    PROTECTED_SETTINGS
 }
 
 resource "azurerm_virtual_machine_extension" "virtual_machine_01_extension_dependency" {
