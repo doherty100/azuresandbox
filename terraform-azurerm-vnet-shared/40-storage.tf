@@ -28,6 +28,7 @@ output "storage_account_01_name" {
 
 output "storage_account_01_key" {
   value = azurerm_storage_account.storage_account_01.primary_access_key
+  sensitive = true
 }
 
 # Shared blob container
