@@ -6,7 +6,6 @@ This quick start implements a shared virtual wan to connect the shared services 
 
 * [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
 * [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
-* [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows)
 
 Activity | Estimated time required
 --- | ---
@@ -15,26 +14,15 @@ Provisioning | ~10 minutes
 Smoke testing | ~5 minutes
 De-provisioning | ~5 minutes
 
-### Getting started with default settings
+## Getting started
 
 This section describes how to provision this quick start using default settings.
 
-* Run `./run-gen-tfvarsfile.sh` to generate *terraform.tfvars*.  
-* Run `terraform init`
-* Run `terraform apply`
-
-### Getting started with custom settings
-
-This section describes how to provision this quick start using custom settings. Refer to [Perform custom quick start deployment](https://github.com/doherty100/azurequickstarts#perform-custom-quick-start-deployment) for more details.
-
-* Run `cp run-gen-tfvarsfile.sh run-gen-tfvarsfile-private.sh` to ensure custom settings don't get clobbered in the future.
-* Edit `run-gen-tfvarsfile-private.sh` to customize parameter values as needed and save changes.
-  * -a: Change to a custom *vwan_hub_address_prefix* if desired.
-  * -t: Change to a custom *tags* map if desired.
-  * Save changes.
-* Run `./run-gen-tfvarsfile-private.sh` to generate *terraform.tfvars*.  
-* Run `terraform init`
-* Run `terraform apply`
+* Run `./bootstrap.sh` using the default settings or your own custom settings.
+* Run `terraform init` and note the version of the *azurerm* provider installed.
+* Run `terraform validate` to check the syntax of the configuration.
+* Run `terraform plan` and review the plan output.
+* Run `terraform apply` to apply the configuration.
 
 ## Resource index
 
@@ -48,11 +36,9 @@ Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-
 
 * [disable_vpn_encryption](https://www.terraform.io/docs/providers/azurerm/r/virtual_wan.html#disable_vpn_encryption) = false
 * [allow_branch_to_branch_traffic](https://www.terraform.io/docs/providers/azurerm/r/virtual_wan.html#allow_branch_to_branch_traffic) = true
-* [allow_vnet_to_vnet_traffic](https://www.terraform.io/docs/providers/azurerm/r/virtual_wan.html#allow_vnet_to_vnet_traffic) = false
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-tags | Input | map | Local | { costcenter = \"MyCostCenter\", division = \"MyDivision\", group = \"MyGroup\" }
 vwan_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualWans/vwan-e2b88962e7284da0-001
 vwan_01_name | Output | string | Local | vwan-e2b88962e7284da0-001
 

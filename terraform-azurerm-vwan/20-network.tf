@@ -10,7 +10,6 @@ resource "azurerm_virtual_wan" "vwan_01" {
   location                       = var.location
   disable_vpn_encryption         = false
   allow_branch_to_branch_traffic = true
-  allow_vnet_to_vnet_traffic     = false
   tags                           = var.tags
 }
 
@@ -45,7 +44,7 @@ output "vwan_01_hub_01_name" {
 }
 
 resource "azurerm_virtual_hub_connection" "vwan_01_hub_01_connections" {
-  for_each = var.remote_virtual_network_ids
+  for_each = var.virtual_network_ids
 
   name                      = each.key
   virtual_hub_id            = azurerm_virtual_hub.vwan_01_hub_01.id

@@ -19,19 +19,36 @@ default_admin_username="bootstrapadmin"
 default_admin_password_secret="adminpassword"
 
 # Intialize runtime defaults
-default_resource_group_name=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" resource_group_01_name)
-default_location=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" resource_group_01_location)
-default_key_vault_id=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" key_vault_01_id)
-default_key_vault_name=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" key_vault_01_name)
-default_log_analytics_workspace_id=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" log_analytics_workspace_01_workspace_id)
-default_law_workspace_key=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" log_analytics_workspace_01_primary_shared_key)
-default_storage_account_name=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" storage_account_01_name)
-default_storage_account_key=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" storage_account_01_key)
-default_blob_storage_endpoint=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" storage_account_01_blob_endpoint)
-default_blob_storage_container_name=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" storage_container_01_name)
-default_tags=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" resource_group_01_tags)
-default_app_subnet_id=$(terraform output -state="../terraform-azurerm-vnet-spoke/terraform.tfstate" vnet_spoke_01_app_subnet_id)
-default_db_subnet_id=$(terraform output -state="../terraform-azurerm-vnet-spoke/terraform.tfstate" vnet_spoke_01_db_subnet_id)
+state_file="../terraform-azurerm-vnet-shared/terraform.tfstate"
+if [ ! -f $state_file ]
+then
+    printf "Unable to locate '$state_file'...\n"
+    printf "See README.md for quick starts that must be deployed first...\n"
+    usage
+fi
+
+default_resource_group_name=$(terraform output -state=$state_file resource_group_01_name)
+default_location=$(terraform output -state=$state_file resource_group_01_location)
+default_key_vault_id=$(terraform output -state=$state_file key_vault_01_id)
+default_key_vault_name=$(terraform output -state=$state_file key_vault_01_name)
+default_log_analytics_workspace_id=$(terraform output -state=$state_file log_analytics_workspace_01_workspace_id)
+default_law_workspace_key=$(terraform output -state=$state_file log_analytics_workspace_01_primary_shared_key)
+default_storage_account_name=$(terraform output -state=$state_file storage_account_01_name)
+default_storage_account_key=$(terraform output -state=$state_file storage_account_01_key)
+default_blob_storage_endpoint=$(terraform output -state=$state_file storage_account_01_blob_endpoint)
+default_blob_storage_container_name=$(terraform output -state=$state_file storage_container_01_name)
+default_tags=$(terraform output -state=$state_file resource_group_01_tags)
+
+state_file="../terraform-azurerm-vnet-spoke/terraform.tfstate"
+if [ ! -f $state_file ]
+then
+    printf "Unable to locate '$state_file'...\n"
+    printf "See README.md for quick starts that must be deployed first...\n"
+    usage
+fi
+
+default_app_subnet_id=$(terraform output -state=$state_file vnet_spoke_01_app_subnet_id)
+default_db_subnet_id=$(terraform output -state=$state_file vnet_spoke_01_db_subnet_id)
 
 
 # Get user input

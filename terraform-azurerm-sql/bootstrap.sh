@@ -15,14 +15,31 @@ default_admin_password_secret="adminpassword"
 default_sql_database_name="sqldb-benchmarktest-01"
 
 # Intialize runtime defaults
-default_resource_group_name=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" resource_group_01_name)
-default_location=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" resource_group_01_location)
-default_key_vault_id=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" key_vault_01_id)
-default_key_vault_name=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" key_vault_01_name)
-default_tags=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" resource_group_01_tags)
-default_private_endpoints_subnet_id=$(terraform output -state="../terraform-azurerm-vnet-spoke/terraform.tfstate" vnet_spoke_01_private_endpoints_subnet_id)
-default_vnet_id=$(terraform output -state="../terraform-azurerm-vnet-spoke/terraform.tfstate" vnet_spoke_01_id)
-default_vnet_name=$(terraform output -state="../terraform-azurerm-vnet-spoke/terraform.tfstate" vnet_spoke_01_name)
+state_file="../terraform-azurerm-vnet-shared/terraform.tfstate"
+if [ ! -f $state_file ]
+then
+    printf "Unable to locate '$state_file'...\n"
+    printf "See README.md for quick starts that must be deployed first...\n"
+    usage
+fi
+
+default_resource_group_name=$(terraform output -state=$state_file resource_group_01_name)
+default_location=$(terraform output -state=$state_file resource_group_01_location)
+default_key_vault_id=$(terraform output -state=$state_file key_vault_01_id)
+default_key_vault_name=$(terraform output -state=$state_file key_vault_01_name)
+default_tags=$(terraform output -state=$state_file resource_group_01_tags)
+
+state_file="../terraform-azurerm-vnet-spoke/terraform.tfstate"
+if [ ! -f $state_file ]
+then
+    printf "Unable to locate '$state_file'...\n"
+    printf "See README.md for quick starts that must be deployed first...\n"
+    usage
+fi
+
+default_private_endpoints_subnet_id=$(terraform output -state=$state_file vnet_spoke_01_private_endpoints_subnet_id)
+default_vnet_id=$(terraform output -state=$state_file vnet_spoke_01_id)
+default_vnet_name=$(terraform output -state=$state_file vnet_spoke_01_name)
 
 # Get user input
 read -e -i $default_sql_database_name       -p "sql database name -----: " sql_database_name
