@@ -122,10 +122,14 @@ Note the Bash scripts used in the quick starts were developed and tested using `
 
 ## Next steps
 
-Now that the client environment has been configured, here's how to start working with the quick starts.
+Now that the client environment has been configured, here's how to clone a copy of this repo and start working with the latest release of code.
 
-* Open a new command shell in the client environment.
-* Run `git clone https://github.com/doherty100/azurequickstarts` to clone this repository into a new directory in the client environment. Ensure that the directory you are using is not ephemeral.
+```lang-bash
+git clone https://github.com/doherty100/azurequickstarts
+cd azurequickstarts
+latestTag=$(git describe --tags $(git rev-list --tags --max-count=1))
+git checkout $latestTag
+```
 
 ### Perform default quick start deployment
 
