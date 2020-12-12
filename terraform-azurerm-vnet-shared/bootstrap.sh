@@ -113,7 +113,7 @@ printf "vnet_name           = \"$vnet_name\"\n"           >> ./terraform.tfvars
 
 cat ./terraform.tfvars
 
-printf "\nReview defaults in 'variables.tf' prior to applying Terraform plans...\n"
+printf "\nReview defaults in \"variables.tf\" prior to applying Terraform configurations...\n"
 printf "\nBootstrapping complete...\n"
 
 exit 0

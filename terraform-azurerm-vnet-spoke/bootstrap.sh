@@ -23,11 +23,19 @@ default_application_subnet_name="snet-app-001"
 default_application_subnet_address_prefix="10.2.1.64/27"
 
 # Intialize runtime defaults
-default_resource_group_name=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" resource_group_01_name)
-default_location=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" resource_group_01_location)
-default_tags=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" resource_group_01_tags)
-default_remote_virtual_network_id=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" vnet_shared_01_id)
-default_remote_virtual_network_name=$(terraform output -state="../terraform-azurerm-vnet-shared/terraform.tfstate" vnet_shared_01_name)
+state_file="../terraform-azurerm-vnet-shared/terraform.tfstate"
+if [ ! -f $state_file ]
+then
+    printf "Unable to locate \"$state_file\"...\n"
+    printf "See README.md for quick starts that must be deployed first...\n"
+    usage
+fi
+
+default_resource_group_name=$(terraform output -state=$state_file resource_group_01_name)
+default_location=$(terraform output -state=$state_file resource_group_01_location)
+default_tags=$(terraform output -json -state=$state_file resource_group_01_tags)
+default_remote_virtual_network_id=$(terraform output -state=$state_file vnet_shared_01_id)
+default_remote_virtual_network_name=$(terraform output -state=$state_file vnet_shared_01_name)
 
 # User input
 read -e -i $default_vnet_name                         -p "vnet name -------------------------: " vnet_name
@@ -89,18 +97,18 @@ subnets="${subnets}}"
 # Generate terraform.tfvars file
 printf "\nGenerating terraform.tfvars file...\n\n"
 
-printf "location                    = \"$default_location\"\n"                    > ./terraform.tfvars
-printf "remote_virtual_network_id   = \"$default_remote_virtual_network_id\"\n"   >> ./terraform.tfvars
-printf "remote_virtual_network_name = \"$default_remote_virtual_network_name\"\n" >> ./terraform.tfvars
-printf "resource_group_name         = \"$default_resource_group_name\"\n"         >> ./terraform.tfvars
-printf "subnets                     = $subnets\n"                                 >> ./terraform.tfvars
-printf "tags                        = $default_tags\n"                            >> ./terraform.tfvars
-printf "vnet_address_space          = \"$vnet_address_space\"\n"                  >> ./terraform.tfvars
-printf "vnet_name                   = \"$vnet_name\"\n"                           >> ./terraform.tfvars
+printf "location                    = $default_location\n"                    > ./terraform.tfvars
+printf "remote_virtual_network_id   = $default_remote_virtual_network_id\n"   >> ./terraform.tfvars
+printf "remote_virtual_network_name = $default_remote_virtual_network_name\n" >> ./terraform.tfvars
+printf "resource_group_name         = $default_resource_group_name\n"         >> ./terraform.tfvars
+printf "subnets                     = $subnets\n"                             >> ./terraform.tfvars
+printf "tags                        = $default_tags\n"                        >> ./terraform.tfvars
+printf "vnet_address_space          = \"$vnet_address_space\"\n"              >> ./terraform.tfvars
+printf "vnet_name                   = \"$vnet_name\"\n"                       >> ./terraform.tfvars
 
 cat ./terraform.tfvars
 
-printf "\nReview defaults in 'variables.tf' prior to applying Terraform plans...\n"
+printf "\nReview defaults in \"variables.tf\" prior to applying Terraform configurations...\n"
 printf "\nBootstrapping complete...\n"
 
 exit 0
