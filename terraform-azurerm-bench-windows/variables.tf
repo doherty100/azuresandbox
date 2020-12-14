@@ -13,6 +13,11 @@ variable "app_subnet_id" {
   description = "The existing subnet which will be used by the VM"
 }
 
+variable "backup_policy_vm_id" {
+  type        = string
+  description = "The id of the backup policy to be used for VMs."
+}
+
 variable "db_subnet_id" {
   type        = string
   description = "The existing subnet which will be used by the VM"
@@ -38,6 +43,11 @@ variable "log_analytics_workspace_id" {
   description = "The workspaceId of the log analytics workspace used to monitor the VMs"
 }
 
+variable "recovery_services_vault_name" {
+  type        = string
+  description = "The name of the recovery services vault used for Azure VM backups."
+}
+
 variable "resource_group_name" {
   type        = string
   description = "The existing resource group where the VMs will be provisioned"
@@ -49,7 +59,7 @@ variable "storage_account_name" {
 }
 
 variable "tags" {
-  type        = map
+  type        = map(any)
   description = "The ARM tags to be applied to all new resources created."
 }
 
@@ -105,7 +115,7 @@ variable "vm_app_storage_account_type" {
 }
 
 variable "vm_db_data_disk_config" {
-  type        = map
+  type        = map(any)
   description = "Data disk configuration for SQL Server virtual machine."
   default = {
     sqldata = {

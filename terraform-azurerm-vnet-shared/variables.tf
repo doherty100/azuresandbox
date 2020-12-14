@@ -3,6 +3,24 @@ variable "aad_tenant_id" {
   description = "The Azure Active Directory tenant id to be associated with the new key vault."
 }
 
+variable "backup_policy_retention_daily" {
+  type        = number
+  description = "The number of daily backups that should be retained."
+  default     = 7
+}
+
+variable "backup_policy_time" {
+  type        = string
+  description = "The time of day to start backup jobs."
+  default     = "04:00"
+}
+
+variable "backup_policy_timezone" {
+  type        = string
+  description = "The default time zone to be used for be used for backups."
+  default     = "UTC"
+}
+
 variable "key_vault_sku_name" {
   type        = string
   description = "The name of the SKU to be used for the new key vault."
@@ -55,7 +73,7 @@ variable "storage_share_quota_gb" {
 }
 
 variable "subnets" {
-  type        = map
+  type        = map(any)
   description = "The subnets to be created in the new virtual network. AzureBastionSubnet is required."
   # default = {
   #   default = {
@@ -77,7 +95,7 @@ variable "subnets" {
 }
 
 variable "tags" {
-  type        = map
+  type        = map(any)
   description = "The tags in map format to be used when creating new resources."
 
   default = { costcenter = "MyCostCenter", division = "MyDivision", group = "MyGroup" }
