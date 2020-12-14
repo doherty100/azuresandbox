@@ -22,7 +22,7 @@ resource "azurerm_windows_virtual_machine" "virtual_machine_04" {
     sku       = var.vm_app_image_sku
     version   = var.vm_app_image_version
   }
-  
+
   identity {
     type = "SystemAssigned"
   }
@@ -135,4 +135,14 @@ resource "azurerm_virtual_machine_extension" "virtual_machine_04_postdeploy_scri
       "storageAccountKey": "${data.azurerm_key_vault_secret.storage_account_key.value}"
     }
   PROTECTED_SETTINGS
+}
+
+# Virtual Machine Backup Configuration
+
+resource "azurerm_backup_protected_vm" "virtual_machine_04_backup" {
+  resource_group_name = var.resource_group_name
+  recovery_vault_name = var.recovery_services_vault_name
+  source_vm_id        = azurerm_windows_virtual_machine.virtual_machine_04.id
+  backup_policy_id    = var.backup_policy_vm_id
+  tags                = var.tags
 }

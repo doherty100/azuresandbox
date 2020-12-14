@@ -26,13 +26,14 @@ This section describes how to provision this quick start using default settings.
 
 ## Resource index
 
-This section provides an index of the 16 resources included in this quick start.
+This section provides an index of the 18 resources included in this quick start.
 
 ### Database server virtual machine
 
 ---
 
-Database Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server on Azure Virtual Machine \(Windows\)](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview) offering which is connected to the dedicated spoke virtual network, supports a configurable number of data disks, pre-configured administrator credentials using key vault and pre-configured virtual machine extensions. The quick start implements [Performance guidelines for SQL Server on Azure Virtual Machines](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices) using a post-deployment script.
+Database Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server on Azure Virtual Machine \(Windows\)](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview) offering which is connected to the dedicated spoke virtual network, supports a configurable number of data disks, pre-configured administrator credentials using key vault and pre-configured virtual machine extensions. The quick start implements [Performance guidelines for SQL Server on Azure Virtual Machines](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices) using a post-deployment script. Pre-configured support for [Azure VM backup](https://docs.microsoft.com/en-us/azure/backup/backup-azure-vms-introduction) is enabled on the virtual machine for application consistent backups using the backup policy and recovery services vault already pre-configured in the shared services vnet quick start. Note that SQL Server database backups are handled separately.
+
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -111,7 +112,7 @@ vm_db_sql_startup_script_uri | Input | string | Local | <https://st4f68ad5fe009d
 
 ---
 
-App server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Windows virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/) offering which is connected to the dedicated spoke virtual network with pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions.
+App server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Windows virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/) offering which is connected to the dedicated spoke virtual network with pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions. Pre-configured support for [Azure VM backup](https://docs.microsoft.com/en-us/azure/backup/backup-azure-vms-introduction) is enabled on the virtual machine for application consistent backups using the backup policy and recovery services vault already pre-configured in the shared services vnet quick start.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---

@@ -27,7 +27,7 @@ This section describes how to provision this quick start using default settings.
 
 ## Resource index
 
-This section provides an index of the 32 resources included in this quick start.
+This section provides an index of the 33 resources included in this quick start.
 
 ### Resource group
 
@@ -269,7 +269,18 @@ automation_account_01_name | Output | string | Local | autoacct-feb1e2ddafa54a87
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 recovery_services_vault_01_id | Output | string | Local | /subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.RecoveryServices/vaults/rsv-176bda033fa422f5-001
-recovery_services_vault_01_name | Output | string | Local | rsv-176bda033fa422f5-001
+recovery_services_vault_01_name | Output | string | Global | rsv-176bda033fa422f5-001
+
+#### Virtual machine backup policy
+
+Pre-configured [Backup policy](https://docs.microsoft.com/en-us/azure/backup/backup-azure-arm-vms-prepare#apply-a-backup-policy) associated with recovery services vault to be used for virtual machine backups. Defaults are configured to backup VMs daily at 04:00 UTC and retain the minimum 7 of daily backups.
+
+Variable | In/Out | Type | Scope | Sample
+--- | --- | --- | --- | ---
+backup_policy_retention_daily | Input | number | Local | 7
+backup_policy_time | Input | string | Local | 04:00
+backup_policy_timezone | Input | string | Local | UTC
+backup_policy_vm_01_id | Output | string | Global | /subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.RecoveryServices/vaults/rsv-f79aaba266ebcd8c-001/backupPolicies/rsv-rsv-f79aaba266ebcd8c-001-backup-policy-vm
 
 ## Smoke testing
 
