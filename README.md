@@ -208,9 +208,9 @@ While a default quick start deployment is fine for testing, it may not work with
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
 1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/)
 1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
-1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/)
+1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/). Note: backups must be manually deleted first.
 
-Alternatively, for speed, simply run `az group delete -g rg-vdc-nonprod-001`. After doing this, it is recommended that you remove temporary files from each quick start directory by running `./clean-temp.sh`.
+Alternatively, for speed, simply run `az group delete -g rg-vdc-nonprod-001`. This will delete everything unless there are backups, in which case you must manually delete the backups first. See [Proper way to delete a vault](https://docs.microsoft.com/en-us/azure/backup/backup-azure-delete-vault#proper-way-to-delete-a-vault) for more information.
 
 ### Perform custom quick start deployment
 

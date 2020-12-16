@@ -264,7 +264,7 @@ automation_account_01_name | Output | string | Local | autoacct-feb1e2ddafa54a87
 
 ---
 
-[Recovery services vault](https://docs.microsoft.com/en-us/azure/backup/backup-azure-recovery-services-vault-overview) with an automatically generated random name following the grep pattern "rsv-\[a-z0-9\]\{16\}-001". This is intended to be used for [Azure VM backup](https://docs.microsoft.com/en-us/azure/backup/backup-azure-vms-introduction). Soft delete is enabled by default.
+[Recovery services vault](https://docs.microsoft.com/en-us/azure/backup/backup-azure-recovery-services-vault-overview) with an automatically generated random name following the grep pattern "rsv-\[a-z0-9\]\{16\}-001". This is intended to be used for [Azure VM backup](https://docs.microsoft.com/en-us/azure/backup/backup-azure-vms-introduction). Note that soft delete is disabled by default to enable easy cleanup of this quick start, and should be enabled for production environments. Backups must be manually deleted first before attempting to destroy the recovery services vault. See [Proper way to delete a vault](https://docs.microsoft.com/en-us/azure/backup/backup-azure-delete-vault#proper-way-to-delete-a-vault) for more information.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
