@@ -9,7 +9,7 @@ usage() {
 }
 
 # Set these defaults prior to running the script.
-default_vm_name="winjump01"
+default_vm_name="winjump1"
 default_app_vm_post_deploy_script="post-deploy-app-vm.ps1"
 default_admin_username_secret="adminuser"
 default_admin_username="bootstrapadmin"

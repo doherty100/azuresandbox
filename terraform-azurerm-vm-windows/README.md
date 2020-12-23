@@ -35,15 +35,15 @@ Jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vm_name | Input | string | Local | winjump01
+vm_name | Input | string | Local | winjump1
 vm_size | Input | string | Local | Standard_B2s
 vm_storage_account_type | Input | string | Local | Standard_LRS
 vm_image_publisher | Input | string | Local | MicrosoftWindowsServer
 vm_image_offer | Input | string | Local | WindowsServer
 vm_image_sku | Input | string | Local | 2019-Datacenter
 vm_image_version | Input | string | Local | Latest
-virtual_machine_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/winjump01
-virtual_machine_01_name | Output | string | Local | winjump01
+virtual_machine_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/winjump1
+virtual_machine_01_name | Output | string | Local | winjump1
 
 #### Network interface
 
@@ -52,7 +52,7 @@ Dedicated [network interface](https://docs.microsoft.com/en-us/azure/virtual-net
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 virtual_machine_01_nic_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/networkInterfaces/nic-jumpbox01-001
-virtual_machine_01_nic_01_name | Output | string | Local | nic-winjump01-001
+virtual_machine_01_nic_01_name | Output | string | Local | nic-winjump1-001
 virtual_machine_01_nic_01_private_ip_address | Output | string | Local | 10.1.0.4
 
 #### Managed disks and data disk attachments

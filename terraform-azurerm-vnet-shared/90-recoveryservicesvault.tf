@@ -8,7 +8,7 @@ resource "azurerm_recovery_services_vault" "recovery_services_vault_01" {
   location            = azurerm_resource_group.resource_group_01.location
   resource_group_name = azurerm_resource_group.resource_group_01.name
   sku                 = "Standard"
-  soft_delete_enabled = var.recovery_services_vault_soft_delete_enabed
+  soft_delete_enabled = var.recovery_services_vault_soft_delete_enabled
   tags                = var.tags
 
   identity {

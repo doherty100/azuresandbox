@@ -43,7 +43,7 @@ variable "owner_object_id" {
   description = "The object id of the security principal (user or group) with owner rights."
 }
 
-variable "recovery_services_vault_soft_delete_enabed" {
+variable "recovery_services_vault_soft_delete_enabled" {
   type        = bool
   description = "Sets whether soft delete is enabled on the recovery services vault. Set to true for production environments."
   default     = false

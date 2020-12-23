@@ -254,7 +254,7 @@ shared_image_gallery_01_unique_name | Output | string | Local | 00000000-0000-00
 
 ---
 
-Automation account for use with [Azure Automation](https://docs.microsoft.com/en-us/azure/automation/automation-intro) features like process automation, configuration management and update management that is linked to the shared log analytics workspace. An automatically generated random name is assigned following the grep pattern "autoacct-\[a-z0-9\]\{16\}-001".
+Automation account for use with [Azure Automation](https://docs.microsoft.com/en-us/azure/automation/automation-intro) features like process automation, configuration management and update management that is linked to the log analytics workspace. An automatically generated random name is assigned following the grep pattern "autoacct-\[a-z0-9\]\{16\}-001".
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -268,6 +268,7 @@ automation_account_01_name | Output | string | Local | autoacct-feb1e2ddafa54a87
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
+recovery_services_vault_soft_delete_enabled | Input | bool | Local | false
 recovery_services_vault_01_id | Output | string | Local | /subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.RecoveryServices/vaults/rsv-176bda033fa422f5-001
 recovery_services_vault_01_name | Output | string | Global | rsv-176bda033fa422f5-001
 
