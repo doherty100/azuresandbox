@@ -23,6 +23,7 @@ then
     usage
 fi
 
+default_subscription_id=$(terraform output -state=$state_file subscription_id)
 default_resource_group_name=$(terraform output -state=$state_file resource_group_01_name)
 default_location=$(terraform output -state=$state_file resource_group_01_location)
 default_key_vault_id=$(terraform output -state=$state_file key_vault_01_id)
@@ -64,16 +65,17 @@ az keyvault secret set --vault-name ${default_key_vault_name:1:-1} --name $admin
 # Generate terraform.tfvars file
 printf "\nGenerating terraform.tfvars file...\n\n"
 
-printf "admin_password_secret =         \"$admin_password_secret\"\n"           > ./terraform.tfvars
-printf "admin_username_secret =         \"$admin_username_secret\"\n"           >> ./terraform.tfvars
-printf "key_vault_id =                  $default_key_vault_id\n"                >> ./terraform.tfvars
-printf "location =                      $default_location\n"                    >> ./terraform.tfvars
-printf "private_endpoints_subnet_id =   $default_private_endpoints_subnet_id\n" >> ./terraform.tfvars
-printf "resource_group_name =           $default_resource_group_name\n"         >> ./terraform.tfvars
-printf "sql_database_name =             \"$sql_database_name\"\n"               >> ./terraform.tfvars
-printf "tags =                          $default_tags\n"                        >> ./terraform.tfvars
-printf "vnet_id =                       $default_vnet_id\n"                     >> ./terraform.tfvars
-printf "vnet_name =                     $default_vnet_name\n"                   >> ./terraform.tfvars
+printf "admin_password_secret       = \"$admin_password_secret\"\n"             > ./terraform.tfvars
+printf "admin_username_secret       = \"$admin_username_secret\"\n"             >> ./terraform.tfvars
+printf "key_vault_id                = $default_key_vault_id\n"                  >> ./terraform.tfvars
+printf "location                    = $default_location\n"                      >> ./terraform.tfvars
+printf "private_endpoints_subnet_id = $default_private_endpoints_subnet_id\n"   >> ./terraform.tfvars
+printf "resource_group_name         = $default_resource_group_name\n"           >> ./terraform.tfvars
+printf "sql_database_name           = \"$sql_database_name\"\n"                 >> ./terraform.tfvars
+printf "subscription_id             = $default_subscription_id\n"               >> ./terraform.tfvars
+printf "tags                        = $default_tags\n"                          >> ./terraform.tfvars
+printf "vnet_id                     = $default_vnet_id\n"                       >> ./terraform.tfvars
+printf "vnet_name                   = $default_vnet_name\n"                     >> ./terraform.tfvars
 
 cat ./terraform.tfvars
 

@@ -23,6 +23,11 @@ variable "subnets" {
   description = "The list of subnets to be created in the new spoke virtual network."
 }
 
+variable "subscription_id" {
+  type        = string
+  description = "The Azure subscription id used to provision resources."
+}
+
 variable "tags" {
   type        = map
   description = "The tags in map format to be used when creating new resources."

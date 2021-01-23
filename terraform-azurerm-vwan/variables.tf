@@ -15,6 +15,11 @@ variable "resource_group_name" {
   description = "The name of the existing resource group."
 }
 
+variable "subscription_id" {
+  type        = string
+  description = "The Azure subscription id used to provision resources."
+}
+
 variable "tags" {
   type        = map
   description = "The tags in map format to be used when creating new resources."

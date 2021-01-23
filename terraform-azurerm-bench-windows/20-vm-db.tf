@@ -110,15 +110,11 @@ resource "azurerm_mssql_virtual_machine" "virtual_machine_03_sql" {
   }
 }
 
-# Key vault access policy
-resource "azurerm_key_vault_access_policy" "key_vault_01_access_policy_virtual_machine_03_secrets_reader" {
-  key_vault_id = var.key_vault_id
-  tenant_id    = azurerm_windows_virtual_machine.virtual_machine_03.identity[0].tenant_id
-  object_id    = azurerm_windows_virtual_machine.virtual_machine_03.identity[0].principal_id
-
-  secret_permissions = [
-    "get"
-  ]
+# RBAC role assignments for VM managed identity
+resource "azurerm_role_assignment" "virtual_machine_03_rbac_role_key_vault_secrets_user" {
+  scope                = "/subscriptions/${var.subscription_id}"
+  role_definition_name = var.rbac_role_key_vault_secrets_user
+  principal_id         = azurerm_windows_virtual_machine.virtual_machine_03.identity[0].principal_id
 }
 
 # Virtual machine extensions

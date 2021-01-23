@@ -33,6 +33,11 @@ variable "sql_database_name" {
   description = "The name of the Azure SQL Database to be provisioned"
 }
 
+variable "subscription_id" {
+  type        = string
+  description = "The Azure subscription id used to provision resources."
+}
+
 variable "tags" {
   type        = map
   description = "The ARM tags to be applied to all new resources created."

@@ -100,6 +100,11 @@ variable "subnets" {
   # }
 }
 
+variable "subscription_id" {
+  type        = string
+  description = "The Azure subscription id used to provision resources."
+}
+
 variable "tags" {
   type        = map(any)
   description = "The tags in map format to be used when creating new resources."

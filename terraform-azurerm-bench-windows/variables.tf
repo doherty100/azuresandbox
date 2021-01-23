@@ -43,6 +43,12 @@ variable "log_analytics_workspace_id" {
   description = "The workspaceId of the log analytics workspace used to monitor the VMs"
 }
 
+variable "rbac_role_key_vault_secrets_user" {
+  type        = string
+  description = "The name of the RBAC role for 'Key Vault Secrets User'"
+  default     = "Key Vault Secrets User (preview)"
+}
+
 variable "recovery_services_vault_name" {
   type        = string
   description = "The name of the recovery services vault used for Azure VM backups."
@@ -58,10 +64,17 @@ variable "storage_account_name" {
   description = "The name of the shared storage account."
 }
 
+variable "subscription_id" {
+  type        = string
+  description = "The Azure subscription id used to provision resources."
+}
+
 variable "tags" {
   type        = map(any)
   description = "The ARM tags to be applied to all new resources created."
 }
+
+# Application VM variables
 
 variable "vm_app_image_offer" {
   type        = string
@@ -113,6 +126,8 @@ variable "vm_app_storage_account_type" {
   description = "The storage replication type to be used for the VMs OS disk"
   default     = "Standard_LRS"
 }
+
+# Database VM variables
 
 variable "vm_db_data_disk_config" {
   type        = map(any)

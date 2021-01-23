@@ -14,6 +14,7 @@ default_costcenter="10177772"
 default_environment="dev"
 default_resource_group_name="rg-vdc-nonprod-001"
 default_location="eastus2"
+default_rbac_role_key_vault_admins="Key Vault Administrator (preview)"
 default_vnet_name="vnet-shared-001"
 default_vnet_address_space="10.1.0.0/16"
 default_default_subnet_name="snet-default-001"
@@ -26,9 +27,11 @@ default_privatelink_subnet_address_prefix="10.1.2.0/24"
 # Intialize runtime defaults
 upn=$(az ad signed-in-user show --query userPrincipalName --output tsv)
 default_owner_object_id=$(az ad user show --id $upn --query objectId --output tsv)
-default_aad_tenant_id=$(az account list --query "[? isDefault]|[0].tenantId" --output tsv)
+default_aad_tenant_id=$(az account list --query "[? isDefault]|[0].tenantId" --only-show-errors --output tsv)
+default_subscription_id=$(az account list --query "[? isDefault]|[0].id" --only-show-errors --output tsv)
 
 # User input
+read -e -i $default_subscription_id                   -p "subscription id -------------------: " subscription_id
 read -e -i $default_project                           -p "project ---------------------------: " project
 read -e -i $default_costcenter                        -p "costcenter ------------------------: " costcenter
 read -e -i $default_environment                       -p "environment -----------------------: " environment
@@ -45,6 +48,7 @@ read -e -i $default_bastion_subnet_address_prefix     -p "bastion subnet address
 read -e -i $default_privatelink_subnet_name           -p "privatelink subnet name -----------: " privatelink_subnet_name
 read -e -i $default_privatelink_subnet_address_prefix -p "privatelink subnet address prefix -: " privatelink_subnet_address_prefix
 
+subscription_id=${subscription_id:-$default_subscription_id}
 project=${project:-$default_project}
 costcenter=${costcenter:-$default_costcenter}
 environment=${environment:-$default_environment}
@@ -61,6 +65,17 @@ bastion_subnet_address_prefix=${bastion_subnet_address_prefix:-default_bastion_s
 privatelink_subnet_name=${privatelink_subnet_name:-default_privatelink_subnet_name}
 privatelink_subnet_address_prefix=${privatelink_subnet_address_prefix:-default_privatelink_subnet_address_prefix}
 
+# Validate subscription
+subscription_name=$(az account show -s $subscription_id --query name --output tsv)
+
+if [ -n "$subscription_name" ]
+then 
+  printf "Found subscription '$subscription_name'...\n"
+else
+  printf "Invalid subscription id '$subscription_id'...\n"
+  usage
+fi
+
 # Validate location
 location_id=$(az account list-locations --query "[?name=='$location'].id" --output tsv)
 
@@ -69,6 +84,14 @@ then
   printf "Invalid location '$location'...\n"
   usage
 fi
+
+# Bootstrap RBAC role assignments
+printf "Adding role assingment for '$default_owner_object_id' to '$default_rbac_role_key_vault_admins' on subscription '$subscription_id'...\n"
+
+az role assignment create \
+  --assignee $default_owner_object_id \
+  --role "$default_rbac_role_key_vault_admins" \
+  --scope "/subscriptions/$subscription_id"
 
 # Build subnet map
 
@@ -107,6 +130,7 @@ printf "location            = \"$location\"\n"            >> ./terraform.tfvars
 printf "owner_object_id     = \"$owner_object_id\"\n"     >> ./terraform.tfvars
 printf "resource_group_name = \"$resource_group_name\"\n" >> ./terraform.tfvars
 printf "subnets             = $subnets\n"                 >> ./terraform.tfvars
+printf "subscription_id     = \"$subscription_id\"\n"     >> ./terraform.tfvars
 printf "tags                = $tags\n"                    >> ./terraform.tfvars
 printf "vnet_address_space  = \"$vnet_address_space\"\n"  >> ./terraform.tfvars
 printf "vnet_name           = \"$vnet_name\"\n"           >> ./terraform.tfvars

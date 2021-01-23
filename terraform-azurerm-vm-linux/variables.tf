@@ -53,6 +53,11 @@ variable "subnet_id" {
   description = "The existing subnet which will be used by the VM"
 }
 
+variable "subscription_id" {
+  type        = string
+  description = "The Azure subscription id used to provision resources."
+}
+
 variable "tags" {
   type = map
   description = "The ARM tags to be applied to all new resources created."

@@ -20,6 +20,7 @@ then
     usage
 fi
 
+default_subscription_id=$(terraform output -state=$state_file subscription_id)
 default_resource_group_name=$(terraform output -state=$state_file resource_group_01_name)
 default_location=$(terraform output -state=$state_file resource_group_01_location)
 default_tags=$(terraform output -json -state=$state_file resource_group_01_tags)
@@ -54,6 +55,7 @@ printf "\nGenerating terraform.tfvars file...\n\n"
 printf "location                = $default_location\n"              > ./terraform.tfvars
 printf "virtual_network_ids     = $default_vnets\n"                 >> ./terraform.tfvars
 printf "resource_group_name     = $default_resource_group_name\n"   >> ./terraform.tfvars
+printf "subscription_id         = $default_subscription_id\n"       >> ./terraform.tfvars
 printf "tags                    = $default_tags\n"                  >> ./terraform.tfvars
 printf "vwan_hub_address_prefix = \"$vwan_hub_address_prefix\"\n"   >> ./terraform.tfvars
 

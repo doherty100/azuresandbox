@@ -24,6 +24,7 @@ then
     usage
 fi
 
+default_subscription_id=$(terraform output -state=$state_file subscription_id)
 default_resource_group_name=$(terraform output -state=$state_file resource_group_01_name)
 default_location=$(terraform output -state=$state_file resource_group_01_location)
 default_key_vault_id=$(terraform output -state=$state_file key_vault_01_id)
@@ -79,19 +80,20 @@ az storage blob upload-batch \
 # Generate terraform.tfvars file
 printf "\nGenerating terraform.tfvars file...\n\n"
 
-printf "admin_password_secret = \"$admin_password_secret\"\n"                 > ./terraform.tfvars
-printf "admin_username_secret = \"$admin_username_secret\"\n"                 >> ./terraform.tfvars
-printf "app_vm_post_deploy_script_name = \"$app_vm_post_deploy_script\"\n"    >> ./terraform.tfvars
-printf "app_vm_post_deploy_script_uri = \"$app_vm_post_deploy_script_uri\"\n" >> ./terraform.tfvars
-printf "key_vault_id = $default_key_vault_id\n"                               >> ./terraform.tfvars
-printf "key_vault_name = $default_key_vault_name\n"                           >> ./terraform.tfvars
-printf "location = $default_location\n"                                       >> ./terraform.tfvars
-printf "log_analytics_workspace_id = $default_log_analytics_workspace_id\n"   >> ./terraform.tfvars
-printf "resource_group_name = $default_resource_group_name\n"                 >> ./terraform.tfvars
-printf "storage_account_name = $default_storage_account_name\n"               >> ./terraform.tfvars
-printf "subnet_id = $default_subnet_id\n"                                     >> ./terraform.tfvars
-printf "tags = $default_tags\n"                                               >> ./terraform.tfvars
-printf "vm_name = \"$vm_name\"\n"                                             >> ./terraform.tfvars
+printf "admin_password_secret           = \"$admin_password_secret\"\n"             > ./terraform.tfvars
+printf "admin_username_secret           = \"$admin_username_secret\"\n"             >> ./terraform.tfvars
+printf "app_vm_post_deploy_script_name  = \"$app_vm_post_deploy_script\"\n"         >> ./terraform.tfvars
+printf "app_vm_post_deploy_script_uri   = \"$app_vm_post_deploy_script_uri\"\n"     >> ./terraform.tfvars
+printf "key_vault_id                    = $default_key_vault_id\n"                  >> ./terraform.tfvars
+printf "key_vault_name                  = $default_key_vault_name\n"                >> ./terraform.tfvars
+printf "location                        = $default_location\n"                      >> ./terraform.tfvars
+printf "log_analytics_workspace_id      = $default_log_analytics_workspace_id\n"    >> ./terraform.tfvars
+printf "resource_group_name             = $default_resource_group_name\n"           >> ./terraform.tfvars
+printf "storage_account_name            = $default_storage_account_name\n"          >> ./terraform.tfvars
+printf "subnet_id                       = $default_subnet_id\n"                     >> ./terraform.tfvars
+printf "subscription_id                 = $default_subscription_id\n"               >> ./terraform.tfvars
+printf "tags                            = $default_tags\n"                          >> ./terraform.tfvars
+printf "vm_name                         = \"$vm_name\"\n"                           >> ./terraform.tfvars
 
 cat ./terraform.tfvars
 

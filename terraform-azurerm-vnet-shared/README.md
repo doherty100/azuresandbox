@@ -194,6 +194,7 @@ Shared [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/over
 * [enabled_for_deployment](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_deployment)  
 * [enabled_for_disk_encryption](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_disk_encryption)  
 * [enabled_for_template_deployment](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_template_deployment)  
+* [enable_rbac_authorization](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault#enable_rbac_authorization)
 
 Note there are dependencies on this resource in the the [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows) quick start.
 
@@ -204,25 +205,6 @@ key_vault_sku_name | Input | string | Local | standard (default)
 key_vault_01_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.KeyVault/vaults/kv-e054bd29698d4fc7-001
 key_vault_01_name | Output | string | Global | kv-e054bd29698d4fc7-001
 key_vault_01_uri | Output | string | Local | Obfuscated for security
-
-#### Key vault access policy
-
-Shared key vault [access policy](https://docs.microsoft.com/en-us/azure/key-vault/general/secure-your-key-vault#data-plane-and-access-policies) for the security principal associated with *key_vault_admin_object_id* with the following [secret access control permissions](https://docs.microsoft.com/en-us/azure/key-vault/secrets/about-secrets#secret-access-control):
-
-* backup  
-* delete  
-* get
-* list
-* purge
-* recover
-* restore
-* set
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-aad_tenant_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
-key_vault_admin_object_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
-key_vault_01_access_policy_secrets_admin_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.KeyVault/vaults/kv-e054bd29698d4fc7-001/objectId/00000000-0000-0000-0000-000000000000
 
 ### Log analytics workspace
 
