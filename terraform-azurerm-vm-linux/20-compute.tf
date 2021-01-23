@@ -88,48 +88,6 @@ resource "azurerm_virtual_machine_data_disk_attachment" "virtual_machine_02_data
 
 # Virtual machine extensions
 
-resource "azurerm_virtual_machine_extension" "virtual_machine_02_extension_monitoring" {
-  name                       = "vmext-${azurerm_linux_virtual_machine.virtual_machine_02.name}-monitoring"
-  virtual_machine_id         = azurerm_linux_virtual_machine.virtual_machine_02.id
-  publisher                  = "Microsoft.EnterpriseCloud.Monitoring"
-  type                       = "OmsAgentForLinux"
-  type_handler_version       = "1.13"
-  auto_upgrade_minor_version = true
-  tags                       = var.tags
-
-  settings           = <<SETTINGS
-    {
-      "workspaceId": "${var.log_analytics_workspace_id}"
-    }
-    SETTINGS
-  protected_settings = <<PROTECTED_SETTINGS
-    {
-      "workspaceKey" : "${data.azurerm_key_vault_secret.log_analytics_workspace_key.value}"
-    }
-    PROTECTED_SETTINGS
-}
-
-resource "azurerm_virtual_machine_extension" "virtual_machine_02_extension_dependency" {
-  name                       = "vmext-${azurerm_linux_virtual_machine.virtual_machine_02.name}-dependency"
-  virtual_machine_id         = azurerm_linux_virtual_machine.virtual_machine_02.id
-  publisher                  = "Microsoft.Azure.Monitoring.DependencyAgent"
-  type                       = "DependencyAgentLinux"
-  type_handler_version       = "9.10"
-  auto_upgrade_minor_version = true
-  tags                       = var.tags
-
-  settings           = <<SETTINGS
-    {
-      "workspaceId": "${var.log_analytics_workspace_id}"
-    }
-    SETTINGS
-  protected_settings = <<PROTECTED_SETTINGS
-    {
-      "workspaceKey" : "${data.azurerm_key_vault_secret.log_analytics_workspace_key.value}"
-    }
-    PROTECTED_SETTINGS
-}
-
 resource "azurerm_virtual_machine_extension" "virtual_machine_02_postdeploy_script" {
   name                       = "vmext-${azurerm_linux_virtual_machine.virtual_machine_02.name}-postdeploy-script"
   virtual_machine_id         = azurerm_linux_virtual_machine.virtual_machine_02.id

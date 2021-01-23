@@ -68,8 +68,6 @@ vm_storage_account_type | Input | string | Local | Standard_LRS
 
 Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the Linux jump box virtual machine including:
 
-* [Log Analytics virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-linux) also known as the *OMS Agent* version 1.13 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
-* [Dependency virtual machine extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/agent-dependency-linux) version 9.10 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
 * [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-linux) version 2.1 with automatic minor version upgrades enabled and configured to run a post-deployment script.
 
 Variable | In/Out | Type | Scope | Sample

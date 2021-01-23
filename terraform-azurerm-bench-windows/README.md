@@ -34,7 +34,6 @@ This section provides an index of the 18 resources included in this quick start.
 
 Database Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server on Azure Virtual Machine \(Windows\)](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview) offering which is connected to the dedicated spoke virtual network, supports a configurable number of data disks, pre-configured administrator credentials using key vault and pre-configured virtual machine extensions. The quick start implements [Performance guidelines for SQL Server on Azure Virtual Machines](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices) using a post-deployment script. Pre-configured support for [Azure VM backup](https://docs.microsoft.com/en-us/azure/backup/backup-azure-vms-introduction) is enabled on the virtual machine for application consistent backups using the backup policy and recovery services vault already pre-configured in the shared services vnet quick start. Note that SQL Server database backups are handled separately.
 
-
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 vm_db_name | Input | string | Local | winbenchdb01
@@ -94,8 +93,6 @@ The database virtual machine is registered with the [Microsoft.SqlVirtualMachine
 
 Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the virtual machine including:
 
-* [Azure Monitor virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-windows) known as the *Azure Monitor Agent* (AMA) version 1.0 with automatic minor version upgrades enabled.
-* [Dependency virtual machine extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/agent-dependency-windows) version 9.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
 * [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script installs software, configures data disks, and reconfigures SQL Server to follow recommendations in [Performance guidelines for SQL Server on Azure Virtual Machines](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices).
 * [SQL Server IaaS agent extension](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management) is automatically installed when the virtual machine is registered with the SQL Server virtual machine resource provider.
 
@@ -141,8 +138,6 @@ virtual_machine_04_nic_01_private_ip_address | Output | string | Local | 10.2.1.
 
 Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the virtual machine including:
 
-* [Log Analytics virtual machine extension](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/agent-windows) also known as the *Microsoft Monitoring Agent* (MMA) version 1.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
-* [Dependency virtual machine extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/agent-dependency-windows) version 9.0 with automatic minor version upgrades enabled and automatically connected to the shared log analytics workspace.
 * [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script which partitions and formats new data disks.
 
 Variable | In/Out | Type | Scope | Sample
