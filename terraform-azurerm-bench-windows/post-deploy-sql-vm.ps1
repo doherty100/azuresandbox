@@ -1,35 +1,58 @@
 $logpath = $PSCommandPath + '.log'
 
 function Write-Log {
-    param($msg)
+    param( [string] $msg)
     "$(Get-Date -Format FileDateTimeUniversal) : $msg" | Out-File -FilePath $logpath -Append -Force
 }
 
 function Exit-WithError {
-    param($msg)
+    param( [string]$msg )
     Write-Log "There was an exception during the process, please review..."
     Write-Log $msg
     Exit 2
 }
 
-function Restart-SqlServer {
-    Write-Log "Restarting SQL Server..."
+function Stop-SqlServer {
+    Write-Log "Stopping SQL Server..."
         
     try {
         Stop-Service -Name SQLSERVERAGENT
         Stop-Service -Name MSSQLLaunchpad
         Stop-Service -Name MSSQLSERVER
-        Start-Service -Name MSSQLSERVER
-        Start-Service -Name MSSQLLaunchpad
-        Start-Service -Name SQLSERVERAGENT
     }
     catch {
         Exit-WithError $_
     }        
 }
 
+function Start-SqlServer {
+    Write-Log "Starting SQL Server..."
+        
+    try {
+        Start-Service -Name MSSQLSERVER
+        Start-Service -Name MSSQLLaunchpad
+        Start-Service -Name SQLSERVERAGENT
+    }
+    catch {
+        Exit-WithError $_
+    }
+    
+    $sqlService = Get-Service -Name MSSQLSERVER
+
+    if ($sqlService.Status -eq "Stopped") {
+        Exit-WithError "Unable to start SQL Server. Please check the SQL Server error log."
+    }
+}
+function Restart-SqlServer {
+    Stop-SqlServer
+    Start-SqlServer
+}
+
 function Invoke-Sql {
-    param([string]$SqlCommand, [string]$User, [SecureString]$Password)
+    param (
+        [string]$SqlCommand, 
+        [string]$User, 
+        [SecureString]$Password )
 
     $cred = New-Object System.Data.SqlClient.SqlCredential($User, $Password)
     $cxnstring = New-Object System.Data.SqlClient.SqlConnectionStringBuilder
@@ -57,10 +80,128 @@ function Invoke-Sql {
     $cxn.Close()
 }
 
+function Move-SqlDatabase {
+    param (
+        [string]$DefaultSqlInstance,
+        [string]$Name,
+        [string]$DataDeviceName,
+        [string]$DataFileName,
+        [string]$LogDeviceName,
+        [string]$LogFileName,
+        [string]$SqlDataPath,
+        [string]$SqlLogPath )
+    
+    Write-Log "Move-SqlDatabase: Checking if database '$Name' needs to be moved..."
+    
+    if ((Test-Path "$SqlDataPath\$DataFileName" -PathType leaf) -and 
+        (Test-Path "$SqlLogPath\$LogFileName" -PathType leaf)) {
+        Write-Log "Move-SqlDatabase: Database '$Name' does not need to be moved..."
+        return
+    }
+
+    # Get SQL Server setup data root 
+    Write-Log "Move-SqlDatabase: Looking for default SQL Server setup data root directory..."
+
+    try {
+        $sqlDataRootObject = Get-ItemProperty -Path "HKLM:\Software\Microsoft\Microsoft SQL Server\$DefaultSqlInstance\Setup" -Name SQLDataRoot
+        $sqlDataRoot = "$($sqlDataRootObject.SQLDataRoot)\DATA"
+    }
+    catch {
+        Exit-WithError $_
+    }
+
+    Write-Log "Move-SqlDatabase: SQL Server setup data root directory is '$sqlDataRoot'..."
+
+    # Check that data file exists
+    $currentDataFilePath = "$sqlDataRoot\$DataFileName"
+
+    if (-not (Test-Path $currentDataFilePath -PathType leaf) ) {
+        Write-Log "Move-SqlDatabase: Unable to locate data file '$currentDataFilePath'..."
+        Exit-WithError $_
+    }
+
+    # Check that log file exists
+    $currentLogFilePath = "$sqlDataRoot\$LogFileName"
+
+    if (-not (Test-Path $currentLogFilePath -PathType leaf) ) {
+        Write-Log "Move-SqlDatabase: Unable to locate log file '$currentLogFilePath'..."
+        Exit-WithError $_
+    }
+
+    $newDataFilePath = "$SqlDataPath\$DataFileName"
+    $newLogFilePath = "$SqlLogPath\$LogFileName"
+
+    if ($Name -eq 'master') {
+        Write-Log "Move-SqlDatabase: Updating SQL Server startup parameters to new master database file locations..."
+
+        try {
+            Set-ItemProperty -Path "HKLM:\Software\Microsoft\Microsoft SQL Server\$DefaultSqlInstance\MSSQLServer\Parameters" -Name SQLArg0 -Value "-d$newDataFilePath"
+            Set-ItemProperty -Path "HKLM:\Software\Microsoft\Microsoft SQL Server\$DefaultSqlInstance\MSSQLServer\Parameters" -Name SQLArg2 -Value "-l$newLogFilePath"
+        }
+        catch {
+            Exit-WithError $_
+        }
+    }
+    elseif ( ( $Name -eq 'model' ) -or ( $Name -eq 'msdb' ) ) {
+        Write-Log "Move-SqlDatabase: Altering '$Name' and setting database file location to '$newDataFilePath'..."
+        $sqlCommand = "ALTER DATABASE $Name MODIFY FILE ( NAME = $DataDeviceName, FILENAME = N'$newDataFilePath' );"
+        Invoke-Sql $sqlCommand $adminUser $adminPasswordSecure
+
+        Write-Log "Move-SqlDatabase: Altering '$Name' and setting log file location to '$newLogFilePath'..."
+        $sqlCommand = "ALTER DATABASE $Name MODIFY FILE ( NAME = $LogDeviceName, FILENAME = N'$newLogFilePath' ) "
+        Invoke-Sql $sqlCommand $adminUser $adminPasswordSecure
+    }
+
+    Stop-SqlServer
+
+    Write-Log "Move-SqlDatabase: Moving '$Name' database data file from '$currentDataFilePath' to '$newDataFilePath'..."
+    try {
+        Move-Item -Path $currentDataFilePath -Destination $newDataFilePath
+    }
+    catch {
+        Exit-WithError $_
+    }
+
+    Write-Log "Move-SqlDatabase: Moving '$Name' database log file from '$currentLogFilePath' to '$newLogFilePath'..."
+    try {
+        Move-Item -Path $currentLogFilePath -Destination $newLogFilePath
+    }
+    catch {
+        Exit-WithError $_
+    }
+    
+    Start-SqlServer
+}
+
+function Grant-SqlFullContol {
+    param ( [string]$FolderPath )
+
+    Write-Log "Getting SQL Server Service account..."
+    
+    try {
+        $serviceAccount = Get-WmiObject -Class Win32_service -Filter "name='MSSQLSERVER'" | ForEach-Object {return $_.startname}
+    }
+    catch {
+        Exit-WithError $_
+    }
+
+    Write-Log "Updating ACL for folder '$FolderPath' to allow 'FullControl' for '$serviceAccount'..."
+
+    try {
+        $folderAcl = Get-ACL $FolderPath
+        $fileSystemAccessRule = New-Object -TypeName System.Security.AccessControl.FileSystemAccessRule( $serviceAccount, "FullControl", 3, 0, "Allow" )
+        $folderAcl.SetAccessRule( $fileSystemAccessRule )
+        Set-Acl -Path $FolderPath -AclObject $folderAcl
+    }
+    catch {
+        Exit-WithError $_
+    }
+}
+
+# Start main
 Write-Log "Running: $PSCommandPath..."
 
 # Install PowerShell prerequisites for using the SQL Server IaaS agent extension
-
 $nugetPackage = Get-PackageProvider | Where-Object Name -eq 'NuGet'
 
 if ($null -eq $nugetPackage) {
@@ -96,7 +237,7 @@ else {
 $azModule = Get-Module -ListAvailable -Name Az*
 
 if ($null -eq $azModule ) {
-    Write-Log "Installing PowerShell Az module..."
+    Write-Log "Installing PowerShell 'Az' module..."
 
     try {
         Install-Module -Name Az -AllowClobber -Scope AllUsers
@@ -113,7 +254,6 @@ $azSqlVirtualMachineModule = Get-Module -ListAvailable -Name Az.SqlVirtualMachin
 Write-Log "PowerShell Az.SqlVirtualMachine version $($azSqlVirtualMachineModule.Version) is installed..."
 
 # Get Azure data disk storage profile
-
 Write-Log "Querying Azure instance metadata service for virtual machine storageProfile..."
 
 try {
@@ -140,7 +280,6 @@ foreach ( $azureDataDisk in $azureDataDisks ) {
 Write-Log "$('=' * 80)"
 
 # Initialize data disks
-
 $localRawDisks = Get-Disk | Where-Object PartitionStyle -eq 'RAW'
 
 if ($null -eq $localRawDisks ) {
@@ -150,7 +289,6 @@ else {
     Write-Log "Located $($localRawDisks.Count) local raw disks..."
 
     # Partition and format disks
-
     $count = 0
 
     foreach ($disk in $localRawDisks) {
@@ -211,8 +349,7 @@ else {
 Write-Log "$('=' * 80)"
 
 # Get admin credentials
-
-Write-Log "Getting virtual machine tags..."
+Write-Log "Getting virtual machine tags from instance metadata service..."
 
 try {
     $tags = Invoke-RestMethod -Headers @{"Metadata" = "true" } -Method GET -Uri http://169.254.169.254/metadata/instance/compute/tagsList?api-version=2020-06-01 
@@ -228,7 +365,7 @@ if ( $null -eq $kvname ) {
 }
 
 Write-Log "Using key vault name '$kvname'..."
-Write-Log "Getting token using virtual machine managed identity..."
+Write-Log "Getting managed identity token from instance metadata service..."
 
 try {
     $token = (Invoke-RestMethod -Headers @{"Metadata" = "true" } -Method GET -Uri 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2020-06-01&resource=https%3A%2F%2Fvault.azure.net').access_token
@@ -237,7 +374,7 @@ catch {
     Exit-WithError $_
 }
 
-Write-Log "Retrieving adminuser secret from key vault..."
+Write-Log "Retrieving adminuser secret from key vault using managed identity..."
 $secretName = "adminuser"
 
 try {
@@ -249,7 +386,7 @@ catch {
 
 $adminUser = $secret.Value
 Write-Log "Using adminuser '$adminUser'..."
-Write-Log "Retrieving adminpassword secret from key vault..."
+Write-Log "Retrieving adminpassword secret from key vault using managed identity..."
 $secretName = "adminpassword"
 
 try {
@@ -265,7 +402,6 @@ $adminPasswordSecure.MakeReadOnly()
 Write-Log "Using adminpassword '$('*' * $adminPasswordSecure.Length)'..."
 
 # Configure data disks
-
 Write-Log "$('=' * 80)"
 Write-Log "Configuring data disks..."
 
@@ -296,8 +432,9 @@ foreach ( $volume in $volumes) {
         $path = "$($volume.DriveLetter):\SQLTEMP"
 
         if ( -not ( Test-Path $path ) ) {
+            Write-Log "Creating $path..."
+
             try {
-                Write-Log "Creating $($path)..."
                 New-Item -ItemType Directory -Path $path -Force 
             }
             catch {
@@ -305,44 +442,25 @@ foreach ( $volume in $volumes) {
             }
         }
 
+        Write-Log "Altering tempdb and setting primary database file location to '$filePath'..."
         $filePath = "$path\tempdb.mdf"
         $sqlCommand = "ALTER DATABASE tempdb MODIFY FILE ( NAME = tempdev, FILENAME = N'$filePath' );"
-        Write-Log "Altering tempdb and setting database file location to '$filePath'..."
         Invoke-Sql $sqlCommand $adminUser $adminPasswordSecure
+
+        Write-Log "Altering tempdb and setting secondary database file location to '$filePath'..."
+        $filePath = "$path\tempdb_mssql_2.ndf"
+        $sqlCommand = "ALTER DATABASE tempdb MODIFY FILE ( NAME = temp2, FILENAME = N'$filePath' ) "
+        Invoke-Sql $sqlCommand $adminUser $adminPasswordSecure
+
+        Write-Log "Altering tempdb and setting log file location to '$filePath'..."
         $filePath = "$path\templog.ldf"
         $sqlCommand = "ALTER DATABASE tempdb MODIFY FILE ( NAME = templog, FILENAME = N'$filePath' ) "
-        Write-Log "Altering tempdb and setting log file location to '$filePath'..."
         Invoke-Sql $sqlCommand $adminUser $adminPasswordSecure
         Restart-SqlServer                        
         continue 
     }
 
-    # Create SQL Server data and log directories if they don't already exist
-
-    $sqlPath = $null
-
-    switch -Wildcard ( $volume.FileSystemLabel ) {
-        '*sqldata*' {
-            $sqlPath = "$($volume.DriveLetter):\MSSQL\DATA"
-        }
-        '*sqllog*' {
-            $sqlPath = "$($volume.DriveLetter):\MSSQL\LOG"
-        }
-    }
-
-    if ( ( $null -ne $sqlPath )  -and ( -not ( Test-Path $sqlPath ) )) {
-        Write-Log "Creating $($sqlPath)..."
-
-        try {
-            New-Item -ItemType Directory -Path $sqlPath -Force 
-        }
-        catch {
-            Exit-WithError $_
-        }
-    }
-
-    # Check alignment of drive letters
-
+    # Check alignment of drive letter
     $azureDataDisk = $azureDataDisks | Where-Object name -like "*$($volume.FileSystemLabel)*"
 
     if ( $null -ne $azureDataDisks ) {
@@ -362,13 +480,116 @@ foreach ( $volume in $volumes) {
         }
     }
 
+    # Create SQL Server data and log directories if they don't already exist, and set default data and log directories
+    $sqlPath = $null
+
+    switch -Wildcard ( $volume.FileSystemLabel ) {
+        '*sqldata*' {
+            $sqlPath = "$($volume.DriveLetter):\MSSQL\DATA"
+            Write-Log "Changing default SQL Server data directory to '$sqlPath'..."
+            Set-ItemProperty -Path "HKLM:\Software\Microsoft\Microsoft SQL Server\$($defaultSqlInstance.MSSQLSERVER)\MSSQLServer" -Name DefaultData -Value $sqlPath
+            $sqlDataPath = $sqlPath
+            break
+        }
+
+        '*sqllog*' {
+            $sqlPath = "$($volume.DriveLetter):\MSSQL\LOG"
+            Write-Log "Changing default SQL Server log directory to '$sqlPath'..."
+            Set-ItemProperty -Path "HKLM:\Software\Microsoft\Microsoft SQL Server\$($defaultSqlInstance.MSSQLSERVER)\MSSQLServer" -Name DefaultLog -Value $sqlPath
+            $sqlLogPath = $sqlPath
+            break
+        }
+    }
+
+    if ( ( $null -ne $sqlPath )  -and ( -not ( Test-Path $sqlPath ) )) {
+        Write-Log "Creating $($sqlPath)..."
+
+        try {
+            New-Item -ItemType Directory -Path $sqlPath -Force 
+        }
+        catch {
+            Exit-WithError $_
+        }
+
+        Grant-SqlFullContol $sqlPath
+    }
+
+    Restart-SqlServer
     continue
 }
 
 Write-Log "$('=' * 80)"
 
-# Set SQL for manaual startup 
+# Get SQL Server default instance
+Write-Log "Move-SqlDatabase: Looking for default SQL Server instance..."
 
+try {
+    $defaultSqlInstanceObject = Get-ItemProperty -Path 'HKLM:\Software\Microsoft\Microsoft SQL Server\Instance Names\SQL' -Name MSSQLSERVER
+    $defaultSqlInstance = $defaultSqlInstanceObject.MSSQLSERVER
+}
+catch {
+    Exit-WithError $_
+}
+
+Write-Log "Move-SqlDatabase: Default SQL Server instance '$defaultSqlInstance' located..."    
+
+# Move databases 
+Move-SqlDatabase `
+    -DefaultSqlInstance $defaultSqlInstance `
+    -Name 'master' `
+    -DataFileName 'master.mdf' `
+    -LogFileName 'mastlog.ldf' `
+    -SqlDataPath $sqlDataPath `
+    -SqlLogPath $sqlLogPath
+
+Move-SqlDatabase `
+    -DefaultSqlInstance $defaultSqlInstance `
+    -Name 'msdb' `
+    -DataDeviceName 'MSDBData' `
+    -DataFileName 'MSDBData.mdf' `
+    -LogDeviceName 'MSDBLog' `
+    -LogFileName 'MSDBLog.ldf' `
+    -SqlDataPath $sqlDataPath `
+    -SqlLogPath $sqlLogPath
+
+Move-SqlDatabase `
+    -DefaultSqlInstance $defaultSqlInstance `
+    -Name 'model' `
+    -DataDeviceName 'modeldev' `
+    -DataFileName 'model.mdf' `
+    -LogDeviceName 'modellog' `
+    -LogFileName 'modellog.ldf' `
+    -SqlDataPath $sqlDataPath `
+    -SqlLogPath $sqlLogPath
+
+# Update errorlog file location
+$sqlErrorlogPath = "$($sqlDataPath.Substring(0,2))\MSSQL\Log"
+
+if ( ( $null -ne $sqlErrorlogPath )  -and ( -not ( Test-Path $sqlErrorlogPath ) )) {
+    Write-Log "Creating SQL Server ERRORLOG directory '$sqlErrorlogPath'..."
+
+    try {
+        New-Item -ItemType Directory -Path $sqlErrorlogPath -Force 
+    }
+    catch {
+        Exit-WithError $_
+    }
+
+    Grant-SqlFullContol $sqlErrorlogPath
+}
+
+Write-Log "Updating SQL Server startup parameter for ERRORLOG path to '$sqlErrorlogPath'..."
+
+try {
+    Set-ItemProperty -Path "HKLM:\Software\Microsoft\Microsoft SQL Server\$defaultSqlInstance\MSSQLServer\Parameters" -Name SQLArg1 -Value "-e$sqlErrorlogPath\ERRORLOG"
+}
+catch {
+    Exit-WithError $_
+}
+
+Restart-SqlServer
+
+# Set SQL for manaual startup 
 Write-Log "Configuring SQL Server services for manual startup..."
 
 try {
@@ -380,7 +601,6 @@ catch {
 }
 
 # Register scheduled task to recreate SQL Server tempdb folders on ephemeral drive
-
 $taskName = "SQL-startup"
 $sqlStartupScriptPath = "$((Get-Item $PSCommandPath).DirectoryName)\$taskName.ps1"
 

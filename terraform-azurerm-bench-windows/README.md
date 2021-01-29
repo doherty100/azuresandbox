@@ -26,7 +26,7 @@ This section describes how to provision this quick start using default settings.
 
 ## Resource index
 
-This section provides an index of the 18 resources included in this quick start.
+This section provides an index of the resources included in this quick start.
 
 ### Database server virtual machine
 
@@ -47,7 +47,7 @@ virtual_machine_03_id | Output | string | Local | /subscriptions/00000000-0000-0
 virtual_machine_03_name | Output | string | Local | winbenchdb01
 virtual_machine_03_principal_id | Output | string | Local | 00000000-0000-0000-0000-000000000000
 
-#### Database server network interface
+#### Network interface
 
 [Virtual network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface) (NIC) with a dynamic private ip address attached to the virtual machine.
 
@@ -57,7 +57,7 @@ virtual_machine_03_nic_01_id | Output | string | Local | /subscriptions/00000000
 virtual_machine_03_nic_01_name | Output | string | Local | nic-winbenchdb01-001
 virtual_machine_03_nic_01_private_ip_address | Output | string | Local | 10.2.1.36
 
-#### Database server managed disks and data disk attachments
+#### Managed disks and data disk attachments
 
 One or more [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview) for use by the virtual machine as data disks. Each of the managed disks is automatically attached to the virtual machine with naming parity between the resource name for the managed disk and the volume label applied when the post-deployment script formats the disk. The default settings implement two data disks using a map variable named *vm_db_data_disk_config*, the value for which must follow these conventions:
 
@@ -72,7 +72,7 @@ One or more [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machi
   * Caching: "None" as per best practices for SQL Server log files
   * lun: must be unique integer from 0 - 15, e.g. "1"
 
-Note the post-deployment script has dependencies on these naming conventions, and also implements a 64K allocation unit size when formatting volumes as per best practices for SQL Server data and log files. The post deployment script also moves the SQL Server tempdb data and log files to the [Ephemeral OS disk](https://docs.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks) as per best practices for Microsoft SQL Server, and a scheduled task is created to run on system startup that re-creates the tempdb folders on the ephemeral drive.
+Note the post-deployment script has dependencies on these naming conventions, and also implements a 64K allocation unit size when formatting volumes as per best practices for SQL Server data and log files. The post deployment script also moves the SQL Server tempdb data and log files to the local temporary disk as per best practices for Microsoft SQL Server, and a scheduled task is created to run on system startup that re-creates the tempdb folders on the local temporary disk. For this reason you should avoid using [Azure VM sizes with no local temporary disk](https://docs.microsoft.com/en-us/azure/virtual-machines/azure-vms-no-temp-disk).
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -89,11 +89,19 @@ The database virtual machine is registered with the [Microsoft.SqlVirtualMachine
 * sql_connectivity_port = 1433
 * sql_connectivity_type = "PRIVATE"
 
-#### Database server virtual machine extensions
+#### Role assignment
+
+Role assignment used to retrieve key vault secrets using system assigned managed identity.
+
+Variable | In/Out | Type | Scope | Sample
+--- | --- | --- | --- | ---
+rbac_role_key_vault_secrets_user | Input | string | Local | Key Vault Secrets User
+
+#### Virtual machine extensions
 
 Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the virtual machine including:
 
-* [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script installs software, configures data disks, and reconfigures SQL Server to follow recommendations in [Performance guidelines for SQL Server on Azure Virtual Machines](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices).
+* [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script installs software, configures data disks, and reconfigures SQL Server to follow recommendations in [Performance guidelines for SQL Server on Azure Virtual Machines](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices). Note this script has only been tested with the *sql2019-ws2019* image offer.
 * [SQL Server IaaS agent extension](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management) is automatically installed when the virtual machine is registered with the SQL Server virtual machine resource provider.
 
 Variable | In/Out | Type | Scope | Sample
@@ -104,6 +112,10 @@ vm_db_post_deploy_script | Input | string | Local | post-deploy-sql-vm.ps1
 vm_db_post_deploy_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d8001.blob.core.windows.net/scripts/post-deploy-sql-vm.ps1>
 vm_db_sql_startup_script | Input | string | Local | sql-startup.ps1
 vm_db_sql_startup_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d8001.blob.core.windows.net/scripts/sql-startup.ps1>
+
+#### Backup protection
+
+Enable backup protection to for virtual machine using recovery services vault.
 
 ### App server virtual machine
 
@@ -124,7 +136,7 @@ virtual_machine_04_id | Output | string | Local | /subscriptions/00000000-0000-0
 virtual_machine_04_name | Output | string | Local | winbenchapp01
 virtual_machine_04_principal_id | Output | string | Local | 00000000-0000-0000-0000-000000000000
 
-#### Web server network interface
+#### Network interface 2
 
 [Virtual network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface) (NIC) with a dynamic private ip address attached to the virtual machine.
 
@@ -134,7 +146,7 @@ virtual_machine_04_nic_01_id | Output | string | Local | /subscriptions/00000000
 virtual_machine_04_nic_01_name | Output | string | Local | nic-winbenchapp01-001
 virtual_machine_04_nic_01_private_ip_address | Output | string | Local | 10.2.1.68
 
-#### Web server virtual machine extensions
+#### Virtual machine extensions 2
 
 Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the virtual machine including:
 
@@ -146,6 +158,10 @@ log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-00
 vm_app_post_deploy_script | Input | string | Local | post-deploy-app-vm.ps1
 vm_app_post_deploy_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d8001.blob.core.windows.net/scripts/post-deploy-app-vm.ps1>
 storage_account_name | Input | String | Local | st8e644ec51c5be098001
+
+#### Backup protection 2
+
+Enable backup protection to for virtual machine using recovery services vault.
 
 ## Smoke testing
 

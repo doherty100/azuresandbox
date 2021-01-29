@@ -196,7 +196,7 @@ Shared [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/over
 * [enabled_for_template_deployment](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_template_deployment)  
 * [enable_rbac_authorization](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault#enable_rbac_authorization)
 
-Note there are dependencies on this resource in the the [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows) quick start.
+Note there are dependencies on this resource in the the [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows) quick start. Use the *Key Vault Administrator* RBAC role to assign administrative privileges. This is done automatically by *bootstraph.sh*.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---

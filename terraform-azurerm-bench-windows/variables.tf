@@ -46,7 +46,7 @@ variable "log_analytics_workspace_id" {
 variable "rbac_role_key_vault_secrets_user" {
   type        = string
   description = "The name of the RBAC role for 'Key Vault Secrets User'"
-  default     = "Key Vault Secrets User (preview)"
+  default     = "Key Vault Secrets User"
 }
 
 variable "recovery_services_vault_name" {
@@ -151,7 +151,7 @@ variable "vm_db_data_disk_config" {
 variable "vm_db_image_offer" {
   type        = string
   description = "The offer type of the virtual machine image used to create the database server VM"
-  default     = "sql2016sp2-ws2019"
+  default     = "sql2019-ws2019"
 }
 
 variable "vm_db_image_publisher" {
