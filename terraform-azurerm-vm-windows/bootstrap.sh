@@ -56,16 +56,31 @@ app_vm_post_deploy_script_uri="https://${default_storage_account_name:1:-1}.blob
 
 # Bootstrap keyvault secrets
 printf "Setting secret \"$admin_username_secret\" with value \"$admin_username\" in keyvault $default_key_vault_name...\n"
-az keyvault secret set --vault-name ${default_key_vault_name:1:-1} --name $admin_username_secret --value "$admin_username"
+az keyvault secret set \
+    --vault-name ${default_key_vault_name:1:-1} \
+    --name $admin_username_secret \
+    --value "$admin_username"
 
 printf "Setting secret \"$admin_password_secret\" with value length \"${#admin_password}\" in keyvault $default_key_vault_name...\n"
-az keyvault secret set --vault-name ${default_key_vault_name:1:-1} --name $admin_password_secret --value "$admin_password"
+az keyvault secret set \
+    --vault-name ${default_key_vault_name:1:-1} \
+    --name $admin_password_secret \
+    --value "$admin_password" \
+    --output none
 
 printf "Setting log analytics secret $default_log_analytics_workspace_id with value $default_law_workspace_key in keyvault $default_key_vault_name...\n"
-az keyvault secret set --vault-name ${default_key_vault_name:1:-1} --name ${default_log_analytics_workspace_id:1:-1} --value "${default_law_workspace_key:1:-1}"
+az keyvault secret set \
+    --vault-name ${default_key_vault_name:1:-1} \
+    --name ${default_log_analytics_workspace_id:1:-1} \
+    --value "${default_law_workspace_key:1:-1}" \
+    --output none
 
 printf "Setting storage account secret $default_storage_account_name with value $default_storage_account_key to keyvault $default_key_vault_name...\n"
-az keyvault secret set --vault-name ${default_key_vault_name:1:-1} --name ${default_storage_account_name:1:-1} --value "${default_storage_account_key:1:-1}"
+az keyvault secret set \
+    --vault-name ${default_key_vault_name:1:-1} \
+    --name ${default_storage_account_name:1:-1} \
+    --value "${default_storage_account_key:1:-1}" \
+    --output none
 
 # Upload post-deployment scripts
 

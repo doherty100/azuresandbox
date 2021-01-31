@@ -1,5 +1,4 @@
 # App server virtual machine
-
 resource "azurerm_windows_virtual_machine" "virtual_machine_04" {
   name                     = var.vm_app_name
   resource_group_name      = azurerm_network_interface.virtual_machine_04_nic_01.resource_group_name
@@ -9,6 +8,7 @@ resource "azurerm_windows_virtual_machine" "virtual_machine_04" {
   admin_password           = data.azurerm_key_vault_secret.adminpassword.value
   network_interface_ids    = [azurerm_network_interface.virtual_machine_04_nic_01.id]
   enable_automatic_updates = true
+  patch_mode               = "AutomaticByPlatform"
   tags                     = var.tags
 
   os_disk {
@@ -41,9 +41,7 @@ output "virtual_machine_04_principal_id" {
   value = azurerm_windows_virtual_machine.virtual_machine_04.identity[0].principal_id
 }
 
-
 # Nic
-
 resource "azurerm_network_interface" "virtual_machine_04_nic_01" {
   name                = "nic-${var.vm_app_name}-001"
   location            = var.location
@@ -70,7 +68,6 @@ output "virtual_machine_04_nic_01_private_ip_address" {
 }
 
 # Virtual machine extensions
-
 resource "azurerm_virtual_machine_extension" "virtual_machine_04_postdeploy_script" {
   name                       = "vmext-${azurerm_windows_virtual_machine.virtual_machine_04.name}-postdeploy-script"
   virtual_machine_id         = azurerm_windows_virtual_machine.virtual_machine_04.id
@@ -96,7 +93,6 @@ resource "azurerm_virtual_machine_extension" "virtual_machine_04_postdeploy_scri
 }
 
 # Virtual Machine Backup Configuration
-
 resource "azurerm_backup_protected_vm" "virtual_machine_04_backup" {
   resource_group_name = var.resource_group_name
   recovery_vault_name = var.recovery_services_vault_name

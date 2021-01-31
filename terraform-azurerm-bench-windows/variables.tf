@@ -75,7 +75,6 @@ variable "tags" {
 }
 
 # Application VM variables
-
 variable "vm_app_image_offer" {
   type        = string
   description = "The offer type of the virtual machine image used to create the application server VM"
@@ -91,7 +90,7 @@ variable "vm_app_image_publisher" {
 variable "vm_app_image_sku" {
   type        = string
   description = "The sku of the virtual machine image used to create the application server VM"
-  default     = "2019-Datacenter"
+  default     = "2019-Datacenter-Core"
 }
 
 variable "vm_app_image_version" {
@@ -128,7 +127,6 @@ variable "vm_app_storage_account_type" {
 }
 
 # Database VM variables
-
 variable "vm_db_data_disk_config" {
   type        = map(any)
   description = "Data disk configuration for SQL Server virtual machine."

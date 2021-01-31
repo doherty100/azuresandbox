@@ -1,5 +1,4 @@
 # Database server virtual machine
-
 resource "azurerm_windows_virtual_machine" "virtual_machine_03" {
   name                     = var.vm_db_name
   resource_group_name      = azurerm_network_interface.virtual_machine_03_nic_01.resource_group_name
@@ -8,7 +7,6 @@ resource "azurerm_windows_virtual_machine" "virtual_machine_03" {
   admin_username           = data.azurerm_key_vault_secret.adminuser.value
   admin_password           = data.azurerm_key_vault_secret.adminpassword.value
   network_interface_ids    = [azurerm_network_interface.virtual_machine_03_nic_01.id]
-  enable_automatic_updates = true
   tags                     = merge(var.tags, { keyvault = var.key_vault_name })
 
   os_disk {
@@ -41,7 +39,6 @@ output "virtual_machine_03_principal_id" {
 }
 
 # Nics
-
 resource "azurerm_network_interface" "virtual_machine_03_nic_01" {
   name                = "nic-${var.vm_db_name}-001"
   location            = var.location
@@ -68,7 +65,6 @@ output "virtual_machine_03_nic_01_private_ip_address" {
 }
 
 # Data disks
-
 resource "azurerm_managed_disk" "virtual_machine_03_data_disks" {
   for_each = var.vm_db_data_disk_config
 
@@ -91,7 +87,6 @@ resource "azurerm_virtual_machine_data_disk_attachment" "virtual_machine_03_data
 }
 
 # Register with Microsoft.SqlVirtualMachine resource provider
-
 resource "azurerm_mssql_virtual_machine" "virtual_machine_03_sql" {
   virtual_machine_id               = azurerm_windows_virtual_machine.virtual_machine_03.id
   sql_license_type                 = "PAYG"
@@ -118,7 +113,6 @@ resource "azurerm_role_assignment" "virtual_machine_03_rbac_role_key_vault_secre
 }
 
 # Virtual machine extensions
-
 resource "azurerm_virtual_machine_extension" "virtual_machine_03_postdeploy_script" {
   name                       = "vmext-${azurerm_windows_virtual_machine.virtual_machine_03.name}-postdeploy-script"
   virtual_machine_id         = azurerm_windows_virtual_machine.virtual_machine_03.id
@@ -145,7 +139,6 @@ resource "azurerm_virtual_machine_extension" "virtual_machine_03_postdeploy_scri
 }
 
 # Virtual Machine Backup Configuration
-
 resource "azurerm_backup_protected_vm" "virtual_machine_03_backup" {
   resource_group_name = var.resource_group_name
   recovery_vault_name = var.recovery_services_vault_name

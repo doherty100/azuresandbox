@@ -401,6 +401,19 @@ $adminPasswordSecure.MakeReadOnly()
 
 Write-Log "Using adminpassword '$('*' * $adminPasswordSecure.Length)'..."
 
+# Get SQL Server default instance
+Write-Log "Looking for default SQL Server instance..."
+
+try {
+    $defaultSqlInstanceObject = Get-ItemProperty -Path 'HKLM:\Software\Microsoft\Microsoft SQL Server\Instance Names\SQL' -Name MSSQLSERVER
+    $defaultSqlInstance = $defaultSqlInstanceObject.MSSQLSERVER
+}
+catch {
+    Exit-WithError $_
+}
+
+Write-Log "Default SQL Server instance '$defaultSqlInstance' located..."    
+
 # Configure data disks
 Write-Log "$('=' * 80)"
 Write-Log "Configuring data disks..."
@@ -442,20 +455,21 @@ foreach ( $volume in $volumes) {
             }
         }
 
-        Write-Log "Altering tempdb and setting primary database file location to '$filePath'..."
         $filePath = "$path\tempdb.mdf"
         $sqlCommand = "ALTER DATABASE tempdb MODIFY FILE ( NAME = tempdev, FILENAME = N'$filePath' );"
+        Write-Log "Altering tempdb and setting primary database file location to '$filePath'..."
         Invoke-Sql $sqlCommand $adminUser $adminPasswordSecure
 
-        Write-Log "Altering tempdb and setting secondary database file location to '$filePath'..."
         $filePath = "$path\tempdb_mssql_2.ndf"
         $sqlCommand = "ALTER DATABASE tempdb MODIFY FILE ( NAME = temp2, FILENAME = N'$filePath' ) "
+        Write-Log "Altering tempdb and setting secondary database file location to '$filePath'..."
         Invoke-Sql $sqlCommand $adminUser $adminPasswordSecure
 
-        Write-Log "Altering tempdb and setting log file location to '$filePath'..."
         $filePath = "$path\templog.ldf"
         $sqlCommand = "ALTER DATABASE tempdb MODIFY FILE ( NAME = templog, FILENAME = N'$filePath' ) "
+        Write-Log "Altering tempdb and setting log file location to '$filePath'..."
         Invoke-Sql $sqlCommand $adminUser $adminPasswordSecure
+
         Restart-SqlServer                        
         continue 
     }
@@ -486,23 +500,37 @@ foreach ( $volume in $volumes) {
     switch -Wildcard ( $volume.FileSystemLabel ) {
         '*sqldata*' {
             $sqlPath = "$($volume.DriveLetter):\MSSQL\DATA"
+            
             Write-Log "Changing default SQL Server data directory to '$sqlPath'..."
-            Set-ItemProperty -Path "HKLM:\Software\Microsoft\Microsoft SQL Server\$($defaultSqlInstance.MSSQLSERVER)\MSSQLServer" -Name DefaultData -Value $sqlPath
+            try {
+                Set-ItemProperty -Path "HKLM:\Software\Microsoft\Microsoft SQL Server\$($defaultSqlInstance)\MSSQLServer" -Name DefaultData -Value $sqlPath
+            }
+            catch {
+                Exit-WithError $_
+            }
+            
             $sqlDataPath = $sqlPath
             break
         }
 
         '*sqllog*' {
             $sqlPath = "$($volume.DriveLetter):\MSSQL\LOG"
+
             Write-Log "Changing default SQL Server log directory to '$sqlPath'..."
-            Set-ItemProperty -Path "HKLM:\Software\Microsoft\Microsoft SQL Server\$($defaultSqlInstance.MSSQLSERVER)\MSSQLServer" -Name DefaultLog -Value $sqlPath
+            try {
+                Set-ItemProperty -Path "HKLM:\Software\Microsoft\Microsoft SQL Server\$($defaultSqlInstance)\MSSQLServer" -Name DefaultLog -Value $sqlPath
+            }
+            catch {
+                Exit-WithError $_
+            }
+
             $sqlLogPath = $sqlPath
             break
         }
     }
 
     if ( ( $null -ne $sqlPath )  -and ( -not ( Test-Path $sqlPath ) )) {
-        Write-Log "Creating $($sqlPath)..."
+        Write-Log "Creating directory '$sqlPath'..."
 
         try {
             New-Item -ItemType Directory -Path $sqlPath -Force 
@@ -519,19 +547,6 @@ foreach ( $volume in $volumes) {
 }
 
 Write-Log "$('=' * 80)"
-
-# Get SQL Server default instance
-Write-Log "Move-SqlDatabase: Looking for default SQL Server instance..."
-
-try {
-    $defaultSqlInstanceObject = Get-ItemProperty -Path 'HKLM:\Software\Microsoft\Microsoft SQL Server\Instance Names\SQL' -Name MSSQLSERVER
-    $defaultSqlInstance = $defaultSqlInstanceObject.MSSQLSERVER
-}
-catch {
-    Exit-WithError $_
-}
-
-Write-Log "Move-SqlDatabase: Default SQL Server instance '$defaultSqlInstance' located..."    
 
 # Move databases 
 Move-SqlDatabase `

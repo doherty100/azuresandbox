@@ -57,10 +57,17 @@ admin_password_secret=${admin_password_secret:-$default_admin_password_secret}
 
 # Bootstrap keyvault secrets
 printf "Setting secret \"$admin_username_secret\" with value \"$admin_username\" in keyvault $default_key_vault_name...\n"
-az keyvault secret set --vault-name ${default_key_vault_name:1:-1} --name $admin_username_secret --value "$admin_username"
+az keyvault secret set \
+    --vault-name ${default_key_vault_name:1:-1} \
+    --name $admin_username_secret \
+    --value "$admin_username"
 
 printf "Setting secret \"$admin_password_secret\" with value length \"${#admin_password}\" in keyvault $default_key_vault_name...\n"
-az keyvault secret set --vault-name ${default_key_vault_name:1:-1} --name $admin_password_secret --value "$admin_password"
+az keyvault secret set \
+    --vault-name ${default_key_vault_name:1:-1} \
+    --name $admin_password_secret \
+    --value "$admin_password" \
+    --output none
 
 # Generate terraform.tfvars file
 printf "\nGenerating terraform.tfvars file...\n\n"
