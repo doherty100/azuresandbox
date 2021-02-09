@@ -91,11 +91,15 @@ resource "azurerm_storage_share" "storage_share_01" {
 }
 
 output "storage_share_01_id" {
-  value = azurerm_storage_share.storage_share_01.id
+  value = azurerm_storage_share.storage_share_01.resource_manager_id
 }
 
 output "storage_share_01_name" {
   value = azurerm_storage_share.storage_share_01.name
+}
+
+output "storage_share_01_url" {
+  value = azurerm_storage_share.storage_share_01.url
 }
 
 # Shared private dns zone
