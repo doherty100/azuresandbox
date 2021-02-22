@@ -41,62 +41,6 @@ output "vnet_spoke_01_private_endpoints_subnet_id" {
   value = azurerm_subnet.vnet_spoke_01_subnets["PrivateLink"].id
 }
 
-# Dedicated bastion
-
-resource "random_id" "random_id_bastion_host_02_name" {
-  byte_length = 8
-}
-
-resource "azurerm_bastion_host" "bastion_host_02" {
-  name                = "bst-${random_id.random_id_bastion_host_02_name.hex}-002"
-  location            = azurerm_virtual_network.vnet_spoke_01.location
-  resource_group_name = azurerm_virtual_network.vnet_spoke_01.resource_group_name
-  tags                = var.tags
-
-  ip_configuration {
-    name                 = "ipc-${random_id.random_id_bastion_host_02_name.hex}-001"
-    subnet_id            = azurerm_subnet.vnet_spoke_01_subnets["AzureBastionSubnet"].id
-    public_ip_address_id = azurerm_public_ip.public_ip_bastion_host_02.id
-  }
-}
-
-output "bastion_host_02_dns_name" {
-  value = azurerm_bastion_host.bastion_host_02.dns_name
-}
-
-output "bastion_host_02_id" {
-  value = azurerm_bastion_host.bastion_host_02.id
-}
-
-output "bastion_host_02_name" {
-  value = azurerm_bastion_host.bastion_host_02.name
-}
-
-resource "random_id" "random_id_public_ip_bastion_host_02_name" {
-  byte_length = 8
-}
-
-resource "azurerm_public_ip" "public_ip_bastion_host_02" {
-  name                = "pip-${random_id.random_id_public_ip_bastion_host_02_name.hex}-002"
-  location            = azurerm_virtual_network.vnet_spoke_01.location
-  resource_group_name = azurerm_virtual_network.vnet_spoke_01.resource_group_name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  tags                = var.tags
-}
-
-output "public_ip_bastion_host_02_id" {
-  value = azurerm_public_ip.public_ip_bastion_host_02.id
-}
-
-output "public_ip_bastion_host_02_ip_address" {
-  value = azurerm_public_ip.public_ip_bastion_host_02.ip_address
-}
-
-output "public_ip_bastion_host_02_ip_name" {
-  value = azurerm_public_ip.public_ip_bastion_host_02.name
-}
-
 # Bi-directional virtual network peering between shared services and spoke virtual networks
 resource "azurerm_virtual_network_peering" "vnet_shared_01_to_vnet_spoke_01_peering" {
   name                         = "vnet_shared_01_to_vnet_spoke_01_peering"

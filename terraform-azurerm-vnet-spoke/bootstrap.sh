@@ -13,14 +13,12 @@ default_vnet_name="vnet-spoke-001"
 default_vnet_address_space="10.2.0.0/16"
 default_default_subnet_name="snet-default-002"
 default_default_subnet_address_prefix="10.2.0.0/24"
-default_bastion_subnet_name="AzureBastionSubnet"
-default_bastion_subnet_address_prefix="10.2.1.0/27"
 default_privatelink_subnet_name="snet-storage-private-endpoints-002"
-default_privatelink_subnet_address_prefix="10.2.1.96/27"
+default_privatelink_subnet_address_prefix="10.2.1.64/27"
 default_database_subnet_name="snet-db-001"
-default_database_subnet_address_prefix="10.2.1.32/27"
+default_database_subnet_address_prefix="10.2.1.0/27"
 default_application_subnet_name="snet-app-001"
-default_application_subnet_address_prefix="10.2.1.64/27"
+default_application_subnet_address_prefix="10.2.1.32/27"
 
 # Intialize runtime defaults
 state_file="../terraform-azurerm-vnet-shared/terraform.tfstate"
@@ -43,8 +41,6 @@ read -e -i $default_vnet_name                         -p "vnet name ------------
 read -e -i $default_vnet_address_space                -p "vnet address space ----------------: " vnet_address_space
 read -e -i $default_default_subnet_name               -p "default subnet name ---------------: " default_subnet_name
 read -e -i $default_default_subnet_address_prefix     -p "default subnet address prefix -----: " default_subnet_address_prefix
-read -e -i $default_bastion_subnet_name               -p "bastion subnet name ---------------: " bastion_subnet_name
-read -e -i $default_bastion_subnet_address_prefix     -p "bastion subnet address prefix -----: " bastion_subnet_address_prefix
 read -e -i $default_privatelink_subnet_name           -p "privatelink subnet name -----------: " privatelink_subnet_name
 read -e -i $default_privatelink_subnet_address_prefix -p "privatelink subnet address prefix -: " privatelink_subnet_address_prefix
 read -e -i $default_database_subnet_name              -p "database subnet name --------------: " database_subnet_name
@@ -56,8 +52,6 @@ vnet_name=${vnet_name:=$default_vnet_name}
 vnet_address_space=${vnet_address_space:-default_vnet_address_space}
 default_subnet_name=${default_subnet_name:-default_default_subnet_name}
 default_subnet_address_prefix=${default_subnet_address_prefix:-default_default_subnet_address_prefix}
-bastion_subnet_name=${bastion_subnet_name:-default_bastion_subnet_name}
-bastion_subnet_address_prefix=${bastion_subnet_address_prefix:-default_bastion_subnet_address_prefix}
 privatelink_subnet_name=${privatelink_subnet_name:-default_privatelink_subnet_name}
 privatelink_subnet_address_prefix=${privatelink_subnet_address_prefix:-default_privatelink_subnet_address_prefix}
 database_subnet_name=${database_subnet_name:-default_database_subnet_name}
@@ -71,11 +65,6 @@ subnets="${subnets}{\n"
 subnets="${subnets}  default = {\n"
 subnets="${subnets}    name                                           = \"$default_subnet_name\",\n"
 subnets="${subnets}    address_prefix                                 = \"$default_subnet_address_prefix\",\n"
-subnets="${subnets}    enforce_private_link_endpoint_network_policies = false\n"
-subnets="${subnets}  },\n"
-subnets="${subnets}  AzureBastionSubnet = {\n"
-subnets="${subnets}    name                                           = \"$bastion_subnet_name\",\n"
-subnets="${subnets}    address_prefix                                 = \"$bastion_subnet_address_prefix\",\n"
 subnets="${subnets}    enforce_private_link_endpoint_network_policies = false\n"
 subnets="${subnets}  },\n"
 subnets="${subnets}  PrivateLink = {\n"

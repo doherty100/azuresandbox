@@ -61,26 +61,6 @@ vnet_spoke_01_db_subnet_id | Output | string | Global | /subscriptions/00000000-
 vnet_spoke_01_default_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-default-002
 vnet_spoke_01_private_endpoints_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-storage-private-endpoints-002
 
-#### Bastion
-
-Dedicated [bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview) with an automatically generated random name following the grep format "bst-\[a-z0-9\]\{16\}-002" that is associated with the subnet *AzureBastionSubnet* as described previously.
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-bastion_host_02_dns_name | Output | string | Local | Obfuscated for security
-bastion_host_02_id  | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/bastionHosts/bst-54ae94029797fd14-002
-bastion_host_02_name | Output | string | Local | bst-54ae94029797fd14-002
-
-##### Public ip
-
-Dedicated standard static [public ip](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-ip-addresses-overview-arm#public-ip-addresses) for use with bastion with an automatically generated name following the grep format "pip-\[a-z0-9\]\{16\}-002".  
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-public_ip_bastion_host_02_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/publicIPAddresses/pip-619c4233fe9c0bc0-002
-public_ip_bastion_host_02_ip_address | Output | string | Local | Obfuscated for security
-public_ip_bastion_host_02_name | Output | string | Local | pip-619c4233fe9c0bc0-002
-
 #### Private DNS zone virtual network link
 
 A link to the dedicated spoke virtual network is established with the shared private DNS zone *privatelink.file.core.windows.net* for use with the shared private endpoint resource in [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared).

@@ -33,7 +33,6 @@ The quick starts feature a modular design and can be deployed as a whole or incr
   * Jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Linux virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/) offering
 * [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
   * Dedicated spoke virtual network  
-  * Dedicated bastion  
   * Pre-configured bidirectional [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/)  
 * [terraform-azurerm-bench-windows](./terraform-azurerm-bench-windows/)
   * For use as a pre-configured environment for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications using an [IaaS](https://azure.microsoft.com/en-us/overview/what-is-azure/iaas/) approach.
@@ -175,10 +174,10 @@ Shared services | Reserved for future use | 10.1.32.0/19 | 10.1.32.0 | 10.1.63.2
 Shared services | Reserved for future use | 10.1.64.0/18 | 10.1.64.0 | 10.1.127.255 | 16,384
 Shared services | Reserved for future use | 10.1.128.0/17 | 10.1.128.0 | 10.1.255.255 | 32,768
 Spoke | snet-default-002 | 10.2.0.0/24 | 10.2.0.0 | 10.2.0.255 | 256
-Spoke | AzureBastionSubnet | 10.2.1.0/27 | 10.2.1.0 | 10.2.1.31 | 32
-Spoke | snet-db-001 | 10.2.1.32/27 | 10.2.1.32 | 10.2.1.63 | 32
-Spoke | snet-app-001 | 10.2.1.64/27 | 10.2.1.64 | 10.2.1.95 | 32
-Spoke | snet-storage-private-endpoints-002 | 10.2.1.96/27 | 10.2.1.96 | 10.2.1.127 | 32
+Spoke | snet-db-001 | 10.2.1.0/27 | 10.2.1.0 | 10.2.1.31 | 32
+Spoke | snet-app-001 | 10.2.1.32/27 | 10.2.1.32 | 10.2.1.63 | 32
+Spoke | snet-storage-private-endpoints-002 | 10.2.1.64/27 | 10.2.1.64 | 10.2.1.95 | 32
+Spoke | Reserved for future use | 10.2.1.96/27 | 10.2.1.96 | 10.2.1.127 | 32
 Spoke | Reserved for future use | 10.2.1.128/25 | 10.2.1.128 | 10.2.1.255 | 128
 Spoke | Reserved for future use | 10.2.2.0/23 | 10.2.2.0 | 10.2.3.255 | 512
 Spoke | Reserved for future use | 10.2.4.0/22 | 10.2.4.0 | 10.2.7.255 | 1,024
