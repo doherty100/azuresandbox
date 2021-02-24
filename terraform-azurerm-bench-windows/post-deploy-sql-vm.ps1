@@ -179,7 +179,7 @@ function Grant-SqlFullContol {
     Write-Log "Getting SQL Server Service account..."
     
     try {
-        $serviceAccount = Get-WmiObject -Class Win32_service -Filter "name='MSSQLSERVER'" | ForEach-Object {return $_.startname}
+        $serviceAccount = Get-WmiObject -Class Win32_service -Filter "name='MSSQLSERVER'" | ForEach-Object { return $_.startname }
     }
     catch {
         Exit-WithError $_
@@ -293,7 +293,7 @@ else {
 
     foreach ($disk in $localRawDisks) {
         $lun = $disk.Location.Split(":").Trim()[4] -replace 'LUN ', ''
-        $sizeGb = $disk.Size / [Math]::Pow(1024,3)
+        $sizeGb = $disk.Size / [Math]::Pow(1024, 3)
         
         Write-Log "$('=' * 80)"
         Write-Log "Local disk index ----------: $count"
@@ -486,7 +486,7 @@ foreach ( $volume in $volumes) {
             Write-Log "Changing drive letter for volume '$($volume.FileSystemLabel)' from '$($volume.DriveLetter)' to '$azureDriveLetter'..."
 
             try {
-                 Set-Partition -DriveLetter $volume.DriveLetter -NewDriveLetter $azureDriveLetter
+                Set-Partition -DriveLetter $volume.DriveLetter -NewDriveLetter $azureDriveLetter
             }
             catch {
                 Exit-WithError $_
@@ -529,7 +529,7 @@ foreach ( $volume in $volumes) {
         }
     }
 
-    if ( ( $null -ne $sqlPath )  -and ( -not ( Test-Path $sqlPath ) )) {
+    if ( ( $null -ne $sqlPath ) -and ( -not ( Test-Path $sqlPath ) )) {
         Write-Log "Creating directory '$sqlPath'..."
 
         try {
@@ -580,7 +580,7 @@ Move-SqlDatabase `
 # Update errorlog file location
 $sqlErrorlogPath = "$($sqlDataPath.Substring(0,2))\MSSQL\Log"
 
-if ( ( $null -ne $sqlErrorlogPath )  -and ( -not ( Test-Path $sqlErrorlogPath ) )) {
+if ( ( $null -ne $sqlErrorlogPath ) -and ( -not ( Test-Path $sqlErrorlogPath ) )) {
     Write-Log "Creating SQL Server ERRORLOG directory '$sqlErrorlogPath'..."
 
     try {
@@ -634,6 +634,21 @@ try {
 catch {
     Exit-WithError $_
 }
+
+# Set SQL Server max memory
+$totalMemoryMb = (Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property capacity -Sum).sum /1mb
+Write-Log "$totalMemoryMb MB of physical memory detected..."
+$sqlMaxMemory = [int]($totalMemoryMb * 0.9)
+Write-Log "Setting SQL Server max server memory to $sqlMaxMemory MB..."
+$sqlCommand = "sp_configure N'show advanced options', 1"
+Invoke-Sql $sqlCommand $adminUser $adminPasswordSecure
+$sqlCommand = "RECONFIGURE"
+Invoke-Sql $sqlCommand $adminUser $adminPasswordSecure
+$sqlCommand = "sp_configure N'max server memory', $sqlMaxMemory"
+Invoke-Sql $sqlCommand $adminUser $adminPasswordSecure
+$sqlCommand = "RECONFIGURE"
+Invoke-Sql $sqlCommand $adminUser $adminPasswordSecure
+Restart-SqlServer
 
 Write-Log "Exiting normally..."
 Exit
