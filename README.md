@@ -268,10 +268,10 @@ Shared services | AzureBastionSubnet | 10.73.8.128/27 | 10.73.8.128 | 10.73.8.15
 Shared services | snet-storage-private-endpoints-001 | 10.73.8.160/27 | 10.73.8.160 | 10.73.8.191 | 32
 Shared services | Reserved for future use | 10.73.8.192/26 | 10.73.8.192 | 10.73.8.255 | 64
 Spoke | snet-default-002 | 10.73.9.0/25 | 10.73.9.0 | 10.73.9.127 | 128
-Spoke | AzureBastionSubnet | 10.73.9.128/27 | 10.73.9.128 | 10.73.9.159 | 32
-Spoke | snet-db-001 | 10.73.9.160/27 | 10.73.9.160 | 10.73.9.191 | 32
-Spoke | snet-app-001 | 10.73.9.192/27 | 10.73.9.192 | 10.73.9.223 | 32
-Spoke | snet-storage-private-endpoints-002 | 10.73.9.224/27 | 10.73.9.224 | 10.73.9.255 | 32
+Spoke | snet-db-001 | 10.73.9.128/27 | 10.73.9.128 | 10.73.9.159 | 32
+Spoke | snet-app-001 | 10.73.9.160/27 | 10.73.9.160 | 10.73.9.191 | 32
+Spoke | snet-storage-private-endpoints-002 | 10.73.9.192/27 | 10.73.9.192 | 10.73.9.223 | 32
+Spoke | Reserved for future use | 10.73.9.224/27 | 10.73.9.224 | 10.73.9.255 | 32
 
 It is recommended to reserve space for future subnets. A blank table is provided here for convenience. Make a copy of this table and change the *TBD* values to your custom values.
 
