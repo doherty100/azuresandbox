@@ -63,19 +63,6 @@ variable "tags" {
   description = "The ARM tags to be applied to all new resources created."
 }
 
-variable "vm_data_disk_config" {
-  type        = map
-  description = "The number of data disks to be attached to the virtual machine."
-  default = {
-    data = {
-      name         = "vol_data_N",
-      disk_size_gb = "4",
-      lun          = "0",
-      caching      = "ReadWrite"
-    }
-  }
-}
-
 variable "vm_image_offer" {
   type        = string
   description = "The offer type of the virtual machine image used to create the VM"

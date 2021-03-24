@@ -1,5 +1,4 @@
 # Linux virtual machine
-
 resource "azurerm_linux_virtual_machine" "virtual_machine_02" {
   name                            = var.vm_name
   resource_group_name             = azurerm_network_interface.virtual_machine_02_nic_01.resource_group_name
@@ -26,6 +25,8 @@ resource "azurerm_linux_virtual_machine" "virtual_machine_02" {
   identity {
     type = "SystemAssigned"
   }
+
+  custom_data = filebase64("${path.module}/cloud-init.yaml")
 }
 
 output "virtual_machine_02_id" {
@@ -37,7 +38,6 @@ output "virtual_machine_02_name" {
 }
 
 # Nics
-
 resource "azurerm_network_interface" "virtual_machine_02_nic_01" {
   name                = "nic-${var.vm_name}-001"
   location            = var.location
@@ -61,53 +61,4 @@ output "virtual_machine_02_nic_01_name" {
 
 output "virtual_machine_02_nic_01_private_ip_address" {
   value = azurerm_network_interface.virtual_machine_02_nic_01.private_ip_addresses[0]
-}
-
-# Data disks
-
-resource "azurerm_managed_disk" "virtual_machine_02_data_disks" {
-  for_each = var.vm_data_disk_config
-
-  name                 = "disk-${var.vm_name}-${each.value.name}"
-  location             = var.location
-  resource_group_name  = var.resource_group_name
-  storage_account_type = var.vm_storage_account_type
-  create_option        = "Empty"
-  disk_size_gb         = each.value.disk_size_gb
-  tags                 = var.tags
-}
-
-resource "azurerm_virtual_machine_data_disk_attachment" "virtual_machine_02_data_disk_attachments" {
-  for_each = var.vm_data_disk_config
-
-  managed_disk_id    = azurerm_managed_disk.virtual_machine_02_data_disks[each.key].id
-  virtual_machine_id = azurerm_linux_virtual_machine.virtual_machine_02.id
-  lun                = each.value.lun
-  caching            = each.value.caching
-}
-
-# Virtual machine extensions
-
-resource "azurerm_virtual_machine_extension" "virtual_machine_02_postdeploy_script" {
-  name                       = "vmext-${azurerm_linux_virtual_machine.virtual_machine_02.name}-postdeploy-script"
-  virtual_machine_id         = azurerm_linux_virtual_machine.virtual_machine_02.id
-  publisher                  = "Microsoft.Azure.Extensions"
-  type                       = "CustomScript"
-  type_handler_version       = "2.1"
-  auto_upgrade_minor_version = true
-  tags                       = var.tags
-
-  settings = <<SETTINGS
-    {
-      "fileUris": [ "${var.app_vm_post_deploy_script_uri}" ],
-      "commandToExecute": "sh ${var.app_vm_post_deploy_script_name}"
-    }    
-  SETTINGS
-
-  protected_settings = <<PROTECTED_SETTINGS
-    {
-      "storageAccountName": "${var.storage_account_name}",
-      "storageAccountKey": "${data.azurerm_key_vault_secret.storage_account_key.value}"
-    }
-  PROTECTED_SETTINGS
 }
