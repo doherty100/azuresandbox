@@ -25,7 +25,7 @@ This section describes how to provision this quick start using default settings.
 
 ## Resource index
 
-This section provides an index of the ~5 resources included in this quick start.
+This section provides an index of the 3 resources included in this quick start.
 
 ### Windows jump box virtual machine
 
@@ -44,6 +44,7 @@ vm_image_sku | Input | string | Local | 2019-Datacenter
 vm_image_version | Input | string | Local | Latest
 virtual_machine_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/winjump1
 virtual_machine_01_name | Output | string | Local | winjump1
+virtual_machine_01_principal_id | Output | string | Local | 00000000-0000-0000-0000-000000000000
 
 #### Network interface
 
@@ -55,15 +56,6 @@ virtual_machine_01_nic_01_id | Output | string | Local | /subscriptions/00000000
 virtual_machine_01_nic_01_name | Output | string | Local | nic-winjump1-001
 virtual_machine_01_nic_01_private_ip_address | Output | string | Local | 10.1.0.4
 
-#### Managed disks and data disk attachments
-
-One or more dedicated [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview) for use by the Windows jump box virtual machine as data disks. Each of the dedicated managed disks is automatically attached to the virtual machine.
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-vm_data_disk_config | Input | map | Local | { data = { name = "vol_data_N", disk_size_gb = "4", lun = "0", caching = "ReadWrite" } }
-vm_storage_account_type | Input | string | Local | Standard_LRS
-
 #### Virtual machine extensions
 
 Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the Windows jump box virtual machine including:
@@ -72,7 +64,6 @@ Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azu
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
 app_vm_post_deploy_script_name | Input | string | Local | post-deploy-app-vm.ps1
 app_vm_post_deploy_script_uri | Input | string | Local | <https://stbfde01d4ee60a358001.blob.core.windows.net/scripts/post-deploy-app-vm.ps1>
 storage_account_name | Input | String | Local | st8e644ec51c5be098001

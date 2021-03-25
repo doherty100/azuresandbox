@@ -33,11 +33,6 @@ variable "location" {
   description = "The Azure region where the VM will be provisioned"
 }
 
-variable "log_analytics_workspace_id" {
-  type        = string
-  description = "The workspaceId of the log analytics workspace used to monitor the VM"
-}
-
 variable "resource_group_name" {
   type        = string
   description = "The existing resource group where the VM will be provisioned"
@@ -61,19 +56,6 @@ variable "subscription_id" {
 variable "tags" {
   type        = map
   description = "The ARM tags to be applied to all new resources created."
-}
-
-variable "vm_data_disk_config" {
-  type        = map
-  description = "The number of data disks to be attached to the virtual machine."
-  default = {
-    data = {
-      name         = "vol_data_N",
-      disk_size_gb = "4",
-      lun          = "0",
-      caching      = "ReadWrite"
-    }
-  }
 }
 
 variable "vm_image_offer" {

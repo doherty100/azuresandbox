@@ -29,8 +29,6 @@ default_resource_group_name=$(terraform output -state=$state_file resource_group
 default_location=$(terraform output -state=$state_file resource_group_01_location)
 default_key_vault_id=$(terraform output -state=$state_file key_vault_01_id)
 default_key_vault_name=$(terraform output -state=$state_file key_vault_01_name)
-default_log_analytics_workspace_id=$(terraform output -state=$state_file log_analytics_workspace_01_workspace_id)
-default_law_workspace_key=$(terraform output -state=$state_file log_analytics_workspace_01_primary_shared_key)
 default_subnet_id=$(terraform output -state=$state_file vnet_shared_01_default_subnet_id)
 default_storage_account_name=$(terraform output -state=$state_file storage_account_01_name)
 default_storage_account_key=$(terraform output -state=$state_file storage_account_01_key)
@@ -68,13 +66,6 @@ az keyvault secret set \
     --value "$admin_password" \
     --output none
 
-printf "Setting log analytics secret $default_log_analytics_workspace_id with value $default_law_workspace_key in keyvault $default_key_vault_name...\n"
-az keyvault secret set \
-    --vault-name ${default_key_vault_name:1:-1} \
-    --name ${default_log_analytics_workspace_id:1:-1} \
-    --value "${default_law_workspace_key:1:-1}" \
-    --output none
-
 printf "Setting storage account secret $default_storage_account_name with value $default_storage_account_key to keyvault $default_key_vault_name...\n"
 az keyvault secret set \
     --vault-name ${default_key_vault_name:1:-1} \
@@ -102,7 +93,6 @@ printf "app_vm_post_deploy_script_uri   = \"$app_vm_post_deploy_script_uri\"\n" 
 printf "key_vault_id                    = $default_key_vault_id\n"                  >> ./terraform.tfvars
 printf "key_vault_name                  = $default_key_vault_name\n"                >> ./terraform.tfvars
 printf "location                        = $default_location\n"                      >> ./terraform.tfvars
-printf "log_analytics_workspace_id      = $default_log_analytics_workspace_id\n"    >> ./terraform.tfvars
 printf "resource_group_name             = $default_resource_group_name\n"           >> ./terraform.tfvars
 printf "storage_account_name            = $default_storage_account_name\n"          >> ./terraform.tfvars
 printf "subnet_id                       = $default_subnet_id\n"                     >> ./terraform.tfvars
