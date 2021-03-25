@@ -4,11 +4,14 @@ resource "azurerm_linux_virtual_machine" "virtual_machine_02" {
   resource_group_name             = azurerm_network_interface.virtual_machine_02_nic_01.resource_group_name
   location                        = azurerm_network_interface.virtual_machine_02_nic_01.location
   size                            = var.vm_size
-  disable_password_authentication = false
   admin_username                  = data.azurerm_key_vault_secret.adminuser.value
-  admin_password                  = data.azurerm_key_vault_secret.adminpassword.value
   network_interface_ids           = [azurerm_network_interface.virtual_machine_02_nic_01.id]
-  tags                            = merge(var.tags, { keyvault = var.key_vault_name })
+  tags                            = var.tags
+  
+  admin_ssh_key {
+    username = data.azurerm_key_vault_secret.adminuser.value
+    public_key = var.ssh_public_key
+  }
 
   os_disk {
     caching              = "ReadWrite"
@@ -37,15 +40,19 @@ output "virtual_machine_02_name" {
   value = azurerm_linux_virtual_machine.virtual_machine_02.name
 }
 
+output "virtual_machine_02_principal_id" {
+  value = azurerm_linux_virtual_machine.virtual_machine_02.identity[0].principal_id
+}
+
 # Nics
 resource "azurerm_network_interface" "virtual_machine_02_nic_01" {
-  name                = "nic-${var.vm_name}-001"
+  name                = "nic-${var.vm_name}"
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = var.tags
 
   ip_configuration {
-    name                          = "ipc-${var.vm_name}-001"
+    name                          = "ipc-${var.vm_name}"
     subnet_id                     = var.subnet_id
     private_ip_address_allocation = "Dynamic"
   }

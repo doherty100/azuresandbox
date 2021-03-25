@@ -25,13 +25,13 @@ This section describes how to provision this quick start using default settings.
 
 ## Resource index
 
-This section provides an index of the ~5 resources included in this quick start.
+This section provides an index of the 2 resources included in this quick start.
 
 ### Linux jump box virtual machine
 
 ---
 
-Linux jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Linux virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/) offering. The virtual machine is connected to the shared services virtual network with pre-configured administrator credentials using key vault and pre-configured virtual machine extensions. Password authentication is enabled.
+Linux jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Linux virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/) offering. The virtual machine is connected to the shared services virtual network with pre-configured administrator credentials using key vault and pre-configured virtual machine extensions. Password authentication is enabled. The [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) is automatically installed using [cloud-init](https://docs.microsoft.com/en-us/troubleshoot/azure/virtual-machines/cloud-init-support-linux-vms).
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -42,59 +42,39 @@ vm_image_publisher | Input | string | Local | Canonical
 vm_image_offer | Input | string | Local | UbuntuServer
 vm_image_sku | Input | string | Local | 18.04-LTS
 vm_image_version | Input | string | Local | Latest
+ssh_public_key | Input | string | Local | ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDCt5TD/JXCa6YLzJgZKYqemVeQKlHj6OsOl+TIuR6lWgt0qauu9cKnThcaQc64HXj9cU2IB8t21mocsCt7Ul+y8+JB5XgqqRFdK9aQ+oMZBhGhv5gd20iqJ+pcxGEnl9stsBaOqbptVI0OhuDMLcGxRt+k3dAmfgOvCLhx+Lb7T/IJ/XNYDrGCUlWNF+ldlCWIbOkVKusQ6jFk9+cNlbOCrehMpaIG0Uwi3hyT5NmvazL1dLDcZ72SVFXC3YAQBBiK5XxOMiOvqrE+u2FyZxje8kOXxD5iycMOWkyJevsCYCkQeIWVHBWxLlFT08GHsyP6Vgv3kx5wkhxMrOZrTGB9HrB9MbMoZnzGGfH5NdKBW8Xq9Q+ENlb8vg156u+Q0e+dhrdKqRDXA0xBOUI4XWDyvS0vuXaqF4M4kd7lvXnklGyeUKQurmXqw0CaDE67Y7akNfolQjDoCa2hPvsYRCadypbP5i3+K0BZYc9JYIvKcxLyGf0H1JqojJ/nrXSd0lqOaOqvSxkg+PqplbDEiNlda5QiGzF6fnUaimDXcocViEgh45wibUuq+XXa4hEYcgm8c+OVNT7inSz8ToypkIcCiEaVKN+yoP52ZQXY6Roiariv5kPzs/bCYtRe3L07h7thB7LoG1I7yf6+PRj7y2d6lA2x1TEnquD92uTVUKuzoQ== bootstrapadmin
 virtual_machine_02_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/ubuntu-jumpbox-02
 virtual_machine_02_name | Output | string | Local | ubuntu-jumpbox-02
+virtual_machine_02_principal_id | Output | string | Local | 00000000-0000-0000-0000-000000000000
 
 #### Network interface
 
-Dedicated [network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface) (NIC) with a dynamic private ip address attached to the Linux jump box virtual machine.
+Dedicated [network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface) (NIC) with a dynamic private ip address attached to the virtual machine.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-virtual_machine_02_nic_01_id | Output | string | Local | /subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/networkInterfaces/nic-ubuntu-jumpbox-02-001
-virtual_machine_02_nic_01_name | Output | string | Local | nic-ubuntu-jumpbox-02-001
+virtual_machine_02_nic_01_id | Output | string | Local | /subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/networkInterfaces/nic-ubuntu-jumpbox-02
+virtual_machine_02_nic_01_name | Output | string | Local | nic-ubuntu-jumpbox-02
 virtual_machine_02_nic_01_private_ip_address | Output | string | Local | 10.1.0.5
-
-#### Managed disks and data disk attachments
-
-One or more [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/managed-disks-overview) for use by the Linux jump box virtual machine as data disks. Each of the managed disks is automatically attached to the virtual machine, but must be partitioned and mounted manually. Performance optimization of managed disks for Linux guest operating systems varies widely by distribution, file system and workload. See [Optimize your Linux VM on Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/optimization) for Azure specific best practices.
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-vm_data_disk_config | Input | map | string | Local | { data = { name = "vol_data_N", disk_size_gb = "4", lun = "0", caching = "ReadWrite" } }
-vm_storage_account_type | Input | string | Local | Standard_LRS
-
-#### Virtual machine extensions
-
-Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the Linux jump box virtual machine including:
-
-* [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-linux) version 2.1 with automatic minor version upgrades enabled and configured to run a post-deployment script.
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
-post_deploy_script_name | Input | string | Local | post-deploy-app-vm.sh
-app_vm_post_deploy_script_uri | Input | string | Local | <https://stf7250f5be032d651001.blob.core.windows.net/scripts/post-deploy-app-vm.sh>
-storage_account_name | Input | String | Local | stf7250f5be032d651001
 
 ## Smoke testing
 
-* Review the post-deployment script code in `post-deploy-app-vm.sh`. Use the Azure portal to confirm the script was uploaded to shared blob storage container.
+* Review the [cloud-init](https://docs.microsoft.com/en-us/troubleshoot/azure/virtual-machines/cloud-init-support-linux-vms) configuration code in `cloud-init.yaml`.
+  * Review the log file created during cloud-init execution at `/var/log/cloud-init-output.log`.
 * Explore newly provisioned resources using the Azure portal.
-  * Review the 4 secrets that were created in the shared key vault.
   * Generate a bash script for mapping drives to the shared file share.
-    * Mapping a drive to an Azure Files file share requires automation due to the use of a complex shared key to authenticate.
     * In the Azure Portal navigate to *storage accounts* > *stxxxxxxxxxxxxxxxx001* > *file service* > *file shares* > *fs-xxxxxxxxxxxxxxxx-001* > *Connect* > *Linux*
     * Copy the bash script in the right-hand pane for use in the next smoke testing exercise.
-* From the Azure portal, use bastion to open an SSH session with virtual machine and log in with the *adminuser* and *adminpassword* defined previously.
-  * If you used custom settings and added data disks, you will need to partition and mount them. See [Connect to the Linux VM to mount the new disk](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/add-disk#connect-to-the-linux-vm-to-mount-the-new-disk) for more details.
-  * Confirm access to shared file share private endpoint.
-    * Create a new bash script, and paste in the script generated previously.
-    * Copy the fqdn for the file endpoint, for example *stxxxxxxxxxxxxxxxx001.file.core.windows.net*
-    * Run `dig stxxxxxxxxxxxxxxxx001.file.core.windows.net` and examine the *ANSWER* section. Verify the the *IP4Address* returned is consistent with the address prefix used for the *snet-storage-private-endpoints-001* subnet in the shared services virtual network. This name resolution is accomplished using the shared private DNS zone.
-    * Execute the bash script copied from the Azure Portal to mount the shared file share using the private endpoint.
-    * Create some directories and sample files on the mount point associated with the shared file share to test functionality.
-  * Review the log file created during execution of the post-deployment script in `/var/lib/waagent/custom-script/download/0/`.
+* From the Azure portal, use bastion to open an SSH session with virtual machine using the values stored in the following key vault secrets:
+  * User: `adminuser`
+  * SSH Private Key: `bootstrapadmin-ssh-key-private`
+  * Advanced > SSH Passphrase: `adminpassword`
+* Confirm access to file share private endpoint.
+  * Create a new bash script, and paste in the script generated previously.
+  * Copy the fqdn for the file endpoint, for example *stxxxxxxxxxxxxxxxx001.file.core.windows.net*
+  * Run `dig stxxxxxxxxxxxxxxxx001.file.core.windows.net` and examine the *ANSWER* section. Verify the the *IP4Address* returned is consistent with the address prefix used for the *snet-storage-private-endpoints-001* subnet in the shared services virtual network. This name resolution is accomplished using the shared private DNS zone.
+  * Execute the bash script copied from the Azure Portal to mount the shared file share using the private endpoint.
+  * Create some directories and sample files on the mount point associated with the file share to test functionality.
   
 ## Next steps
 

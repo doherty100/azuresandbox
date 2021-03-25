@@ -8,16 +8,6 @@ variable "admin_username_secret" {
   description = "The name of the key vault secret containing the admin username"
 }
 
-variable "app_vm_post_deploy_script_name" {
-  type = string
-  description = "The name of the PowerShell script to be run post-deployment."
-}
-
-variable "app_vm_post_deploy_script_uri" {
-  type = string
-  description = "The uri of the PowerShell script to be run post-deployment."
-}
-
 variable "key_vault_id" {
   type        = string
   description = "The existing key vault where secrets are stored"
@@ -33,21 +23,15 @@ variable "location" {
   description = "The Azure region where the VM will be provisioned"
 }
 
-variable "log_analytics_workspace_id" {
-  type = string
-  description = "The workspaceId of the log analytics workspace used to monitor the VM"
-}
-
 variable "resource_group_name" {
   type        = string
   description = "The existing resource group where the VM will be provisioned"
 }
 
-variable "storage_account_name" {
+variable "ssh_public_key" {
   type = string
-  description = "The name of the shared storage account."
+  description = "The SSH public key used for the admin account"
 }
-
 variable "subnet_id" {
   type        = string
   description = "The existing subnet which will be used by the VM"
