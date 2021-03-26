@@ -13,11 +13,6 @@ variable "app_subnet_id" {
   description = "The existing subnet which will be used by the VM"
 }
 
-variable "backup_policy_vm_id" {
-  type        = string
-  description = "The id of the backup policy to be used for VMs."
-}
-
 variable "db_subnet_id" {
   type        = string
   description = "The existing subnet which will be used by the VM"
@@ -36,11 +31,6 @@ variable "key_vault_name" {
 variable "location" {
   type        = string
   description = "The Azure region where the VMs will be provisioned"
-}
-
-variable "log_analytics_workspace_id" {
-  type        = string
-  description = "The workspaceId of the log analytics workspace used to monitor the VMs"
 }
 
 variable "rbac_role_key_vault_secrets_user" {
