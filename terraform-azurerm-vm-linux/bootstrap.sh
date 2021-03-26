@@ -70,13 +70,14 @@ printf "Setting secret '$ssh_public_key_secret_name' with value length \"${#ssh_
 az keyvault secret set \
     --vault-name ${default_key_vault_name:1:-1} \
     --name $ssh_public_key_secret_name \
-    --value "$ssh_public_key_secret_value" \
+    --value "$ssh_public_key_secret_value"
 
 printf "Setting secret '$ssh_private_key_secret_name' with value length \"${#ssh_private_key_secret_value}\" in keyvault '$default_key_vault_name'...\n"
 az keyvault secret set \
     --vault-name ${default_key_vault_name:1:-1} \
     --name $ssh_private_key_secret_name \
     --value "$ssh_private_key_secret_value" \
+    --output none
 
 # Generate terraform.tfvars file
 printf "\nGenerating terraform.tfvars file...\n\n"
