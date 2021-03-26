@@ -113,10 +113,6 @@ vm_db_post_deploy_script_uri | Input | string | Local | <https://st4f68ad5fe009d
 vm_db_sql_startup_script | Input | string | Local | sql-startup.ps1
 vm_db_sql_startup_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d8001.blob.core.windows.net/scripts/sql-startup.ps1>
 
-#### Backup protection
-
-Enable backup protection to for virtual machine using recovery services vault.
-
 ### App server virtual machine
 
 ---
@@ -159,10 +155,6 @@ vm_app_post_deploy_script | Input | string | Local | post-deploy-app-vm.ps1
 vm_app_post_deploy_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d8001.blob.core.windows.net/scripts/post-deploy-app-vm.ps1>
 storage_account_name | Input | String | Local | st8e644ec51c5be098001
 
-#### Backup protection 2
-
-Enable backup protection to for virtual machine using recovery services vault.
-
 ## Smoke testing
 
 * Explore newly provisioned resources using the Azure portal.
@@ -185,4 +177,4 @@ Enable backup protection to for virtual machine using recovery services vault.
 
 ## Next steps
 
-Move on to the next quick start [terraform-azurerm-vwan](../terraform-azurerm-vwan).
+Move on to the next quick start [terraform-azurerm-sql](../terraform-azurerm-sql).

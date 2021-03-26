@@ -24,8 +24,6 @@ The quick starts feature a modular design and can be deployed as a whole or incr
   * [Storage account](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#storage-account)  
   * [Key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview)  
   * [Log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment)  
-  * [Image gallery](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/shared-image-galleries)
-  * [Azure automation account](https://docs.microsoft.com/en-us/azure/automation/) linked to the shared log analytics workspace
   * [Recovery services vault](https://docs.microsoft.com/en-us/azure/backup/backup-azure-recovery-services-vault-overview)
 * [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
   * Jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Windows virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/) offering

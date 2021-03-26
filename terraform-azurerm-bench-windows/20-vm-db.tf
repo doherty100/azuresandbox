@@ -137,12 +137,3 @@ resource "azurerm_virtual_machine_extension" "virtual_machine_03_postdeploy_scri
     }
   PROTECTED_SETTINGS
 }
-
-# Virtual Machine Backup Configuration
-resource "azurerm_backup_protected_vm" "virtual_machine_03_backup" {
-  resource_group_name = var.resource_group_name
-  recovery_vault_name = var.recovery_services_vault_name
-  source_vm_id        = azurerm_windows_virtual_machine.virtual_machine_03.id
-  backup_policy_id    = var.backup_policy_vm_id
-  tags                = var.tags
-}

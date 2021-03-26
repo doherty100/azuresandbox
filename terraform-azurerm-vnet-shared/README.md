@@ -220,28 +220,6 @@ log_analytics_workspace_01_name | Output | string | Local | log-1e884cca24cd4f8c
 log_analytics_workspace_01_workspace_id | Output | string | Global | 00000000-0000-0000-0000-000000000000
 log_analytics_workspace_01_primary_shared_key | Output | string | Global | Obfuscated for security
 
-### Image gallery
-
----
-
-[Image gallery](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/shared-image-galleries) with an automatically generated random name following the grep format "sig\[a-z0-9\]\{16\}001".  
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-shared_image_gallery_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/galleries/sigefc3bc469570d895001
-shared_image_gallery_01_name | Output | string | Local | sigefc3bc469570d895001
-shared_image_gallery_01_unique_name | Output | string | Local | 00000000-0000-0000-0000-000000000000-SIGEFC3BC469570D895001
-
-### Automation account
-
----
-
-Automation account for use with [Azure Automation](https://docs.microsoft.com/en-us/azure/automation/automation-intro) features like process automation, configuration management and update management that is linked to the log analytics workspace. An automatically generated random name is assigned following the grep pattern "autoacct-\[a-z0-9\]\{16\}-001".
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-automation_account_01_name | Output | string | Local | autoacct-feb1e2ddafa54a87-001
-
 ### Recovery services vault
 
 ---
@@ -253,17 +231,6 @@ Variable | In/Out | Type | Scope | Sample
 recovery_services_vault_soft_delete_enabled | Input | bool | Local | false
 recovery_services_vault_01_id | Output | string | Local | /subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.RecoveryServices/vaults/rsv-176bda033fa422f5-001
 recovery_services_vault_01_name | Output | string | Global | rsv-176bda033fa422f5-001
-
-#### Virtual machine backup policy
-
-Pre-configured [Backup policy](https://docs.microsoft.com/en-us/azure/backup/backup-azure-arm-vms-prepare#apply-a-backup-policy) associated with recovery services vault to be used for virtual machine backups. Defaults are configured to backup VMs daily at 04:00 UTC and retain the minimum 7 of daily backups.
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-backup_policy_retention_daily | Input | number | Local | 7
-backup_policy_time | Input | string | Local | 04:00
-backup_policy_timezone | Input | string | Local | UTC
-backup_policy_vm_01_id | Output | string | Global | /subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.RecoveryServices/vaults/rsv-f79aaba266ebcd8c-001/backupPolicies/rsv-rsv-f79aaba266ebcd8c-001-backup-policy-vm
 
 ## Smoke testing
 
