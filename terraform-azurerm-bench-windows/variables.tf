@@ -39,11 +39,6 @@ variable "rbac_role_key_vault_secrets_user" {
   default     = "Key Vault Secrets User"
 }
 
-variable "recovery_services_vault_name" {
-  type        = string
-  description = "The name of the recovery services vault used for Azure VM backups."
-}
-
 variable "resource_group_name" {
   type        = string
   description = "The existing resource group where the VMs will be provisioned"
