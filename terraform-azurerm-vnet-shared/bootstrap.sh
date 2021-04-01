@@ -14,7 +14,6 @@ default_costcenter="10177772"
 default_environment="dev"
 default_resource_group_name="rg-vdc-nonprod-001"
 default_location="eastus2"
-default_rbac_role_key_vault_admins="Key Vault Administrator"
 default_vnet_name="vnet-shared-001"
 default_vnet_address_space="10.1.0.0/16"
 default_default_subnet_name="snet-default-001"
@@ -84,14 +83,6 @@ then
   printf "Invalid location '$location'...\n"
   usage
 fi
-
-# Bootstrap RBAC role assignments
-printf "Adding role assingment for '$default_owner_object_id' to '$default_rbac_role_key_vault_admins' on subscription '$subscription_id'...\n"
-
-az role assignment create \
-  --assignee $default_owner_object_id \
-  --role "$default_rbac_role_key_vault_admins" \
-  --scope "/subscriptions/$subscription_id"
 
 # Build subnet map
 

@@ -140,7 +140,7 @@ storage_container_01_id | Output | string | Global | /subscriptions/00000000-000
 
 #### Private endpoint
 
-Shared [private endpoint](https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints) with an automatically generated random name following the grep format "pend-\[a-z0-9\]\{16\}-001" for use with shared file share described later.
+Shared [private endpoint](https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints) with an automatically generated random name following the grep format "pend-\[a-z0-9\]\{16\}-001" for use with file share described later.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -150,7 +150,7 @@ storage_account_01_private_endpoint_file_prvip | Output | string | Local | 10.1.
 
 #### File share
 
-Shared [file share](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction) with an automatically generated random name following the grep format "fs-\[a-z0-9\]\{16\}-001" associated with the shared private endpoint described previously.
+Shared [file share](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction) with an automatically generated random name following the grep format "fs-\[a-z0-9\]\{16\}-001" associated with the private endpoint described previously.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -169,7 +169,7 @@ private_dns_zone_1_name | Output | string | Global | privatelink.file.core.windo
 
 ##### Private DNS zone A record
 
-A DNS A record is created in the private DNS zone with a default ttl of 300. The name of the A record is set to the name of the shared storage account.
+A DNS A record is created in the private DNS zone with a default ttl of 300. The name of the A record is set to the name of the storage account.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -189,14 +189,11 @@ virtual_network_link_vnet_shared_01_name | Output | string | Local | pdnslnk-vne
 
 ---
 
-Shared [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview) with an automatically generated random name following the grep format "kv-\[a-z0-9\]\{16\}-001". The output variables *key_vault_01_name* and *key_vault_01_id* are used by other configurations to set and retrieve secrets, and the following options are set to *true*:  
+[Key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview) with an automatically generated random name following the grep format "kv-\[a-z0-9\]\{16\}-001". The output variables *key_vault_01_name* and *key_vault_01_id* are used by other configurations to set and retrieve secrets, and the following options are set to *true*:  
 
 * [enabled_for_deployment](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_deployment)  
 * [enabled_for_disk_encryption](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_disk_encryption)  
 * [enabled_for_template_deployment](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_template_deployment)  
-* [enable_rbac_authorization](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault#enable_rbac_authorization)
-
-Note there are dependencies on this resource in the the [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows) quick start. Use the *Key Vault Administrator* RBAC role to assign administrative privileges. This is done automatically by *bootstraph.sh*.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -206,11 +203,30 @@ key_vault_01_id | Output | string | Global | /subscriptions/00000000-0000-0000-0
 key_vault_01_name | Output | string | Global | kv-e054bd29698d4fc7-001
 key_vault_01_uri | Output | string | Local | Obfuscated for security
 
+#### Key vault access policy
+
+Key vault [access policy](https://docs.microsoft.com/en-us/azure/key-vault/general/secure-your-key-vault#data-plane-and-access-policies) for the security principal associated with *key_vault_admin_object_id* with the following [secret access control permissions](https://docs.microsoft.com/en-us/azure/key-vault/secrets/about-secrets#secret-access-control):
+
+* backup  
+* delete  
+* get
+* list
+* purge
+* recover
+* restore
+* set
+
+Variable | In/Out | Type | Scope | Sample
+--- | --- | --- | --- | ---
+aad_tenant_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
+key_vault_admin_object_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
+key_vault_01_access_policy_secrets_admin_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.KeyVault/vaults/kv-e054bd29698d4fc7-001/objectId/00000000-0000-0000-0000-000000000000
+
 ### Log analytics workspace
 
 ---
 
-Shared [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment) with an automatically generated random name following the grep format "log-\[a-z0-9\]\{16\}-001". The [sku](https://www.terraform.io/docs/providers/azurerm/r/log_analytics_workspace.html#sku) is set to *PerGB2018* by default. The *log_analytics_workspace_01_workspace_id* and *log_analytics_workspace_01_primary_shared_key* output variables are used to connect to this log analytics workspace from other configurations. Note there is a dependency on this resource in the [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows) quick start.
+Shared [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment) with an automatically generated random name following the grep format "log-\[a-z0-9\]\{16\}-001". The [sku](https://www.terraform.io/docs/providers/azurerm/r/log_analytics_workspace.html#sku) is set to *PerGB2018* by default. The *log_analytics_workspace_01_workspace_id* and *log_analytics_workspace_01_primary_shared_key* output variables are used to connect to this log analytics workspace from other quick starts.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---

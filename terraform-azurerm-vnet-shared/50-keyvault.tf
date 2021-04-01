@@ -13,7 +13,6 @@ resource "azurerm_key_vault" "key_vault_01" {
   enabled_for_deployment          = true
   enabled_for_disk_encryption     = true
   enabled_for_template_deployment = true
-  enable_rbac_authorization       = true
 }
 
 output "key_vault_01_id" {
@@ -26,4 +25,26 @@ output "key_vault_01_name" {
 
 output "key_vault_01_uri" {
   value = azurerm_key_vault.key_vault_01.vault_uri
+}
+
+# Key vault access policy
+resource "azurerm_key_vault_access_policy" "key_vault_01_access_policy_secrets_admin" {
+  key_vault_id = azurerm_key_vault.key_vault_01.id
+  tenant_id    = var.aad_tenant_id
+  object_id    = var.owner_object_id
+
+  secret_permissions = [
+    "backup",
+    "delete",
+    "get",
+    "list",
+    "purge",
+    "recover",
+    "restore",
+    "set"
+  ]
+}
+
+output "key_vault_01_access_policy_secrets_admin_id" {
+  value = azurerm_key_vault_access_policy.key_vault_01_access_policy_secrets_admin.id
 }
