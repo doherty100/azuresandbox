@@ -13,9 +13,9 @@ This quick start implements a shared virtual wan to connect the shared services 
 Activity | Estimated time required
 --- | ---
 Pre-configuration | ~5 minutes
-Provisioning | ~15 minutes
-Smoke testing | ~30 minutes
-De-provisioning | ~15 minutes
+Provisioning | ~30 minutes
+Smoke testing | ~45 minutes
+De-provisioning | ~30 minutes
 
 ## Getting started
 
