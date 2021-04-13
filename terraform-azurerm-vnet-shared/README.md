@@ -49,17 +49,6 @@ resource_group_01_location | Output | string | Global | eastus2
 resource_group_01_name | Output | string | Global | rg-vdc-nonprod-001
 resource_group_01_tags | Output | map | Global | { project = "#AzureQuickStarts", costcenter = "10177772", environment = "dev" }
 
-#### Role assignment
-
-[Role assignment](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview#role-assignments) scoped to the resource group which grants ownership rights to a security principal associated with a user or group. Owner privileges are then inherited for all resources contained in the resource group.
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-principal_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
-resource_group_01_role_assignment_owner_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Authorization/roleAssignments/00000000-0000-0000-0000-000000000000
-resource_group_01_role_assignment_owner_principal_type | Output | string | Local | User
-resource_group_01_role_assignment_owner_principal_id | Output | string | Global | 00000000-0000-0000-0000-000000000000
-
 ### Virtual network
 
 ---

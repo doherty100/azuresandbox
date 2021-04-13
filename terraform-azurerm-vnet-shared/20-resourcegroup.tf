@@ -21,23 +21,3 @@ output "resource_group_01_name" {
 output "resource_group_01_tags" {
   value = azurerm_resource_group.resource_group_01.tags
 }
-
-# Role assignment
-
-resource "azurerm_role_assignment" "resource_group_01_role_assignment_owner" {
-  scope                = azurerm_resource_group.resource_group_01.id
-  role_definition_name = "Owner"
-  principal_id         = var.owner_object_id
-}
-
-output "resource_group_01_role_assignment_owner_id" {
-  value = azurerm_role_assignment.resource_group_01_role_assignment_owner.id
-}
-
-output "resource_group_01_role_assignment_owner_principal_type" {
-  value = azurerm_role_assignment.resource_group_01_role_assignment_owner.principal_type
-}
-
-output "resource_group_01_role_assignment_owner_principal_id" {
-  value = azurerm_role_assignment.resource_group_01_role_assignment_owner.principal_id
-}
