@@ -164,7 +164,7 @@ storage_account_name | Input | String | Local | st8e644ec51c5be098001
     * Mapping a drive to an Azure Files file share requires automation due to the use of a complex shared key to authenticate.
     * In the Azure Portal navigate to *storage accounts* > *stxxxxxxxxxxxxxxxx001* > *file service* > *file shares* > *fs-xxxxxxxxxxxxxxxx-001* > *Connect* > *Windows*
     * Copy the PowerShell script in the right-hand pane for use in the next smoke testing exercise.
-* Connect to the database server virtual machine in the Azure portal using bastion and log in with the *adminuser* and *adminpassword* defined previously.
+* Connect to the database server virtual machine in the Azure portal using bastion and log in with the value of the *adminuser* secret (e.g. `bootstrapadmin`) and the value of the *adminpassword* secret defined previously.
   * Confirm access to shared file share private endpoint.
     * Run Windows PowerShell ISE, create a new script, and paste in the script generated previously.
     * Copy the fqdn for the file endpoint from line 4, for example *stxxxxxxxxxxxxxxxx001.file.core.windows.net*

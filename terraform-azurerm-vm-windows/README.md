@@ -72,19 +72,19 @@ storage_account_name | Input | String | Local | st8e644ec51c5be098001
 
 * Review the post-deployment script code in `post-deploy-app-vm.ps1`. Use the Azure portal to confirm the script was uploaded to blob storage.
 * Explore newly provisioned resources using the Azure portal.
-  * Review the 4 secrets that were created in the shared key vault.
-  * Generate a script for mapping drives to the shared file share.
+  * Review the 3 secrets that were created in the key vault.
+  * Generate a script for mapping drives to the file share.
     * Mapping a drive to an Azure Files file share requires automation due to the use of a complex shared key to authenticate.
     * In the Azure Portal navigate to *storage accounts* > *stxxxxxxxxxxxxxxxx001* > *file service* > *file shares* > *fs-xxxxxxxxxxxxxxxx-001* > *Connect* > *Windows*
     * Copy the PowerShell script in the right-hand pane for use in the next smoke testing exercise.
 * Connect to the virtual machine in the Azure portal using bastion and log in with the *adminuser* and *adminpassword* defined previously.
-  * Confirm access to shared file share private endpoint.
+  * Confirm access to file share private endpoint.
     * Run Windows PowerShell ISE, create a new script, and paste in the script generated previously.
     * Copy the fqdn for the file endpoint from line 4, for example *stxxxxxxxxxxxxxxxx001.file.core.windows.net*
     * Run `Resolve-DnsName stxxxxxxxxxxxxxxxx001.file.core.windows.net` from the Windows PowerShell ISE console.  
     * Verify the the *IP4Address* returned is consistent with the address prefix used for the *snet-storage-private-endpoints-001* subnet in the shared services virtual network. This name resolution is accomplished using the private DNS zone.
-    * Execute the PowerShell script copied from the Azure Portal to establish a drive mapping to the shared file share using the private endpoint.
-    * Create some directories and sample files on the drive mapped to the shared file share to test functionality.
+    * Execute the PowerShell script copied from the Azure Portal to establish a drive mapping to the file share using the private endpoint.
+    * Create some directories and sample files on the drive mapped to the file share to test functionality.
   * Review the log file created during execution of the post-deployment script in C:/Packages/Plugins/Microsoft.Compute.CustomScriptExtension/1.10.X/Downloads/0.
 
 ## Next steps

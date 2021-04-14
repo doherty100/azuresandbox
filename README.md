@@ -97,9 +97,9 @@ Note that cloud shell containers are ephemeral. Anything not saved in `~/clouddr
 Windows 10 users can deploy the quick starts using [WSL](https://docs.microsoft.com/en-us/windows/wsl/about) which supports a [variety of Linux distributions](https://docs.microsoft.com/en-us/windows/wsl/install-win10#install-your-linux-distribution-of-choice). Here is a sample configuration preferred by the author:
 
 * [Ubuntu 18.04.4 LTS](https://www.microsoft.com/store/productId/9N9TNGVNDL3Q)
-* [Install Azure CLI with apt](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest)
-* [Terraform | Linux | 64-bit](https://www.terraform.io/downloads.html)
-  * Installation helper script: [terraforminstall.sh](./terraform-general/terraforminstall.sh)
+* [Install Azure CLI with apt](https://learn.hashicorp.com/tutorials/terraform/install-cli#install-terraform)
+  * Note: Feel free to skip the [Quick start tutorial](https://learn.hashicorp.com/tutorials/terraform/install-cli#quick-start-tutorial) it is not necessary to complete your Terraform installation.
+* [Terraform | Linux | 64-bit](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 * [VS Code for Windows](https://aka.ms/vscode) with the following extensions:
   * [Remote - WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl)
   * [Terraform](https://marketplace.visualstudio.com/items?itemName=mauve.terraform)
