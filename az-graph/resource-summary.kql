@@ -1,14 +1,12 @@
-// Count of resources by type
-// Author: rdoherty@microsoft.com
-// Updated: 16-July-2020
-  
+// count of resources by resourceGroup and type
+// author: rdoherty@microsoft.com
+// 5-May-2021
+
 resources
-| project
-    id,
-    resCategory = tostring(split(type, "/")[0]),
-    resType = tostring(split(type, "/")[1])
-| summarize 
-    resCount = count() by resCategory, resType
-| order by 
-	resCategory asc,
-	resType asc
+| project
+	id,	
+	resourceGroup,
+	type 
+| summarize resourceCount=count() by resourceGroup, type
+| order by resourceGroup
+
