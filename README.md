@@ -7,8 +7,8 @@ This repository contains a collection of inter-dependent [cloud computing](https
 * [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) for scripting.
 * [git](https://git-scm.com/) for source control.
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/what-is-azure-cli?view=azure-cli-latest) is a command line interface for Azure.
-* [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) v0.15.3 for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
-  * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v2.59.0
+* [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) v1.0.0 for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
+  * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v2.63.0
   * [Random Provider](https://registry.terraform.io/providers/hashicorp/random/latest/docs) (random) v3.1.0
 
 Miscellaneous quick starts are also provided for other functionality. This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doherty-805635b/).
