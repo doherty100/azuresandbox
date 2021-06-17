@@ -29,6 +29,10 @@ output "vnet_shared_01_default_subnet_id" {
   value = azurerm_subnet.vnet_shared_01_subnets["default"].id
 }
 
+output "vnet_shared_01_adds_subnet_id" {
+  value = azurerm_subnet.vnet_shared_01_subnets["adds"].id
+}
+
 # Dedicated bastion
 resource "random_id" "random_id_bastion_host_01_name" {
   byte_length = 8

@@ -73,11 +73,13 @@ The shared services virtual network is divided into [subnets](https://docs.micro
 * A *default* subnet named is required for use in other quick starts.
 * A *PrivateLink* subnet is required for use by the file share resource.  
 * An *AzureBastionSubnet* subnet is required for use by the bastion resource.  
+* An *adds* subnet is required for use for use in other quick starts.  
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-subnets | Input | map | Local | { default = { name = "snet-default-001", address_prefix = "10.1.0.0/24", enforce_private_link_endpoint_network_policies = false }, AzureBastionSubnet = { name = "AzureBastionSubnet", address_prefix = "10.1.1.0/27", enforce_private_link_endpoint_network_policies = false }, PrivateLink = {  name = "snet-storage-private-endpoints-001", address_prefix = "10.1.2.0/24", enforce_private_link_endpoint_network_policies = true } }
+subnets | Input | map | Local | { default = { name = "snet-default-001", address_prefix = "10.1.0.0/24", enforce_private_link_endpoint_network_policies = false }, AzureBastionSubnet = { name = "AzureBastionSubnet", address_prefix = "10.1.1.0/27", enforce_private_link_endpoint_network_policies = false }, PrivateLink = {  name = "snet-storage-private-endpoints-001", address_prefix = "10.1.2.0/24", enforce_private_link_endpoint_network_policies = true }, adds = {  name = "snet-adds-001", address_prefix = "10.1.3.0/24", enforce_private_link_endpoint_network_policies = false } }
 vnet_shared_01_default_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-shared-001/subnets/snet-default-001
+vnet_shared_01_adds_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-shared-001/subnets/snet-adds-001
 
 #### Bastion
 

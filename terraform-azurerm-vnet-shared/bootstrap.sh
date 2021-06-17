@@ -22,6 +22,8 @@ default_bastion_subnet_name="AzureBastionSubnet"
 default_bastion_subnet_address_prefix="10.1.1.0/27"
 default_privatelink_subnet_name="snet-storage-private-endpoints-001"
 default_privatelink_subnet_address_prefix="10.1.2.0/24"
+default_adds_subnet_name="snet-adds-001"
+default_adds_subnet_address_prefix="10.1.3.0/24"
 
 # Intialize runtime defaults
 upn=$(az ad signed-in-user show --query userPrincipalName --output tsv)
@@ -46,6 +48,8 @@ read -e -i $default_bastion_subnet_name               -p "bastion subnet name --
 read -e -i $default_bastion_subnet_address_prefix     -p "bastion subnet address prefix -----: " bastion_subnet_address_prefix
 read -e -i $default_privatelink_subnet_name           -p "privatelink subnet name -----------: " privatelink_subnet_name
 read -e -i $default_privatelink_subnet_address_prefix -p "privatelink subnet address prefix -: " privatelink_subnet_address_prefix
+read -e -i $default_adds_subnet_name                  -p "adds subnet name ------------------: " adds_subnet_name
+read -e -i $default_adds_subnet_address_prefix        -p "adds subnet address prefix --------: " adds_subnet_address_prefix
 
 subscription_id=${subscription_id:-$default_subscription_id}
 project=${project:-$default_project}
@@ -63,9 +67,11 @@ bastion_subnet_name=${bastion_subnet_name:-default_bastion_subnet_name}
 bastion_subnet_address_prefix=${bastion_subnet_address_prefix:-default_bastion_subnet_address_prefix}
 privatelink_subnet_name=${privatelink_subnet_name:-default_privatelink_subnet_name}
 privatelink_subnet_address_prefix=${privatelink_subnet_address_prefix:-default_privatelink_subnet_address_prefix}
+adds_subnet_name=${adds_subnet_name:-default_adds_subnet_name}
+adds_subnet_address_prefix=${adds_subnet_address_prefix:-default_adds_subnet_address_prefix}
 
 # Validate subscription
-subscription_name=$(az account show -s $subscription_id --query name --output tsv)
+subscription_name=$(az account list --query "[?id=='$subscription_id'].name" --output tsv)
 
 if [ -n "$subscription_name" ]
 then 
@@ -102,6 +108,11 @@ subnets="${subnets}  PrivateLink = {\n"
 subnets="${subnets}    name                                           = \"$privatelink_subnet_name\",\n"
 subnets="${subnets}    address_prefix                                 = \"$privatelink_subnet_address_prefix\",\n"
 subnets="${subnets}    enforce_private_link_endpoint_network_policies = true\n"
+subnets="${subnets}  },\n"
+subnets="${subnets}  adds = {\n"
+subnets="${subnets}    name                                           = \"$adds_subnet_name\",\n"
+subnets="${subnets}    address_prefix                                 = \"$adds_subnet_address_prefix\",\n"
+subnets="${subnets}    enforce_private_link_endpoint_network_policies = false\n"
 subnets="${subnets}  }\n"
 subnets="${subnets}}"
 
