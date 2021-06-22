@@ -55,14 +55,16 @@ resource_group_01_tags | Output | map | Global | { project = "#AzureQuickStarts"
 
 Shared services [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet). Note there are dependencies on this resource in the following quick starts:  
 
-* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
 * [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows)
+* [terraform-azurerm-vm-linux](../terraform-azurerm-vm-linux)
+* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
 * [terraform-azurerm-vwan](../terraform-azurerm-vwan)
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 vnet_name | Input | string | Local | vnet-shared-001
 address_space | Input | string | Local | 10.1.0.0/16
+dns_server | Input | string | Global |10.1.3.4
 vnet_shared_01_id | output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-shared-001
 vnet_shared_01_name | output | string | Global | vnet-shared-001
 

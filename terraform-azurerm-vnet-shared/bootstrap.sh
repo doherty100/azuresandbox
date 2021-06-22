@@ -24,6 +24,7 @@ default_privatelink_subnet_name="snet-storage-private-endpoints-001"
 default_privatelink_subnet_address_prefix="10.1.2.0/24"
 default_adds_subnet_name="snet-adds-001"
 default_adds_subnet_address_prefix="10.1.3.0/24"
+default_dns_server="10.1.3.4"
 
 # Intialize runtime defaults
 upn=$(az ad signed-in-user show --query userPrincipalName --output tsv)
@@ -50,6 +51,7 @@ read -e -i $default_privatelink_subnet_name           -p "privatelink subnet nam
 read -e -i $default_privatelink_subnet_address_prefix -p "privatelink subnet address prefix -: " privatelink_subnet_address_prefix
 read -e -i $default_adds_subnet_name                  -p "adds subnet name ------------------: " adds_subnet_name
 read -e -i $default_adds_subnet_address_prefix        -p "adds subnet address prefix --------: " adds_subnet_address_prefix
+read -e -i $default_dns_server                        -p "dns server ------------------------: " dns_server
 
 subscription_id=${subscription_id:-$default_subscription_id}
 project=${project:-$default_project}
@@ -69,6 +71,7 @@ privatelink_subnet_name=${privatelink_subnet_name:-default_privatelink_subnet_na
 privatelink_subnet_address_prefix=${privatelink_subnet_address_prefix:-default_privatelink_subnet_address_prefix}
 adds_subnet_name=${adds_subnet_name:-default_adds_subnet_name}
 adds_subnet_address_prefix=${adds_subnet_address_prefix:-default_adds_subnet_address_prefix}
+dns_server=${dns_server:-default_dns_server}
 
 # Validate subscription
 subscription_name=$(az account list --query "[?id=='$subscription_id'].name" --output tsv)
@@ -128,6 +131,7 @@ tags="${tags}}"
 printf "\nGenerating terraform.tfvars file...\n\n"
 
 printf "aad_tenant_id       = \"$aad_tenant_id\"\n"       > ./terraform.tfvars
+printf "dns_server          = \"$dns_server\"\n"          >> ./terraform.tfvars
 printf "location            = \"$location\"\n"            >> ./terraform.tfvars
 printf "owner_object_id     = \"$owner_object_id\"\n"     >> ./terraform.tfvars
 printf "resource_group_name = \"$resource_group_name\"\n" >> ./terraform.tfvars

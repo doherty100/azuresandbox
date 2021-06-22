@@ -3,6 +3,11 @@ variable "aad_tenant_id" {
   description = "The Azure Active Directory tenant id to be associated with the new key vault."
 }
 
+variable "dns_server" {
+  type        = string
+  description = "The IP address of the DNS server. This should be the first non-reserved IP address in the subnet where the AD DS domain controller is hosted."
+}
+
 variable "key_vault_sku_name" {
   type        = string
   description = "The name of the SKU to be used for the new key vault."
