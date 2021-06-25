@@ -7,7 +7,7 @@ This quick start implements a shared services [virtual network](https://docs.mic
 Activity | Estimated time required
 --- | ---
 Pre-configuration | ~10 minutes
-Provisioning | ~10 minutes
+Provisioning | ~20 minutes
 Smoke testing | ~5 minutes
 De-provisioning | ~15 minutes
 
