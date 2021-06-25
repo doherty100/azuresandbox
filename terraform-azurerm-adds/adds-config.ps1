@@ -1,7 +1,6 @@
 # Derived from https://github.com/adbertram/TestDomainCreator
 
-param
-(
+param (
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [string]$Domain
@@ -21,10 +20,18 @@ function Exit-WithError {
     Exit 2
 }
 
-Configuration BasicDomainConfig
-{
-    param
-    (
+$configData = @{
+    AllNodes = @(
+        @{
+            NodeName = 'localhost'
+			PsDscAllowDomainUser = $true
+            PSDscAllowPlainTextPassword = $true
+        }
+    )
+}
+
+Configuration LabDomainConfig {
+    param (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
@@ -42,63 +49,31 @@ Configuration BasicDomainConfig
 
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName ActiveDirectoryDsc
-             
-    Node $AllNodes.where({ $_.Purpose -eq 'Domain Controller' }).NodeName
-    {
 
-        @($ConfigurationData.NonNodeData.ADGroups).foreach( {
-                ADGroup $_
-                {
-                    Ensure = 'Present'
-                    GroupName = $_
-                    DependsOn = '[ADDomain]ADDomain'
-                }
-            })
+    node 'localhost' {
+        WindowsFeature 'ADDS' {
+            Name = 'AD-Domain-Services'
+            Ensure = 'Present'
+        }
 
-        @($ConfigurationData.NonNodeData.OrganizationalUnits).foreach( {
-                ADOrganizationalUnit $_
-                {
-                    Ensure = 'Present'
-                    Name = ($_ -replace '-')
-                    Path = ('DC={0},DC={1}' -f ($ConfigurationData.NonNodeData.DomainName -split '\.')[0], ($ConfigurationData.NonNodeData.DomainName -split '\.')[1])
-                    DependsOn = '[ADDomain]ADDomain'
-                }
-            })
+        WindowsFeature 'RSAT-AD-PowerShell' {
+            Name = 'RSAT-AD-PowerShell'
+            Ensure = 'Present'
+        }
 
-        @($ConfigurationData.NonNodeData.ADUsers).foreach( {
-                ADUser "$($_.FirstName) $($_.LastName)"
-                {
-                    Ensure = 'Present'
-                    DomainName = $Domain
-                    GivenName = $_.FirstName
-                    SurName = $_.LastName
-                    UserName = ('{0}{1}' -f $_.FirstName.SubString(0, 1), $_.LastName)
-                    Department = $_.Department
-                    Path = ("OU={0},DC={1},DC={2}" -f $_.Department, ($ConfigurationData.NonNodeData.DomainName -split '\.')[0], ($ConfigurationData.NonNodeData.DomainName -split '\.')[1])
-                    JobTitle = $_.Title
-                    Password = $defaultAdUserCred
-                    DependsOn = '[ADDomain]ADDomain'
-                }
-            })
+        WindowsFeature 'RSAT-ADDS' {
+            Name = 'RSAT-ADDS'
+            Ensure = 'Present'
+        }
 
-        ($Node.WindowsFeatures).foreach( {
-                WindowsFeature $_
-                {
-                    Ensure = 'Present'
-                    Name = $_
-                }
-            })        
-        
-        ADDomain ADDomain     
-        {
+        ADDomain 'LABDOMAIN' {
             DomainName = $Domain
             Credential = $AdminCredential
             SafemodeAdministratorPassword = $SafeModePassword
-            ForestMode = $ConfigurationData.NonNodeData.ForestMode
-            DependsOn = '[WindowsFeature]AD-Domain-Services'
+            ForestMode = 'WinThreshold'
         }
-    }         
-}
+    }
+}          
 
 # Start main
 Write-Log "Running: $PSCommandPath..."
@@ -159,13 +134,13 @@ $adminCredential = New-Object System.Management.Automation.PSCredential ($adminU
 
 Write-Log "Compiling basic domain configuration using domain '$Domain'..."
 try {
-    BasicDomainConfig -AdminCredential $adminCredential -SafeModePassword $adminCredential -Domain $Domain -ConfigurationData "$PSScriptRoot\adds-config-data.psd1"
+    LabDomainConfig -AdminCredential $adminCredential -SafeModePassword $adminCredential -Domain $Domain -ConfigurationData $configData -OutputPath "$PSScriptRoot\BasicDomainConfig"
 }
 catch {
     Exit-WithError $_
 }
 
-Write-Log "Starting DSC configuration"
+Write-Log "Starting DSC configuration..."
 try {
     Start-DscConfiguration -Path "$PSScriptRoot\BasicDomainConfig" -Wait -Verbose -Force
 }
@@ -173,5 +148,5 @@ catch {
     Exit-WithError $_
 }
 
-Write-Log "Exiting normally..."
-Exit
+Write-Log "Restarting computer..."
+Restart-Computer

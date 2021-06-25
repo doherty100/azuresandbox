@@ -13,16 +13,6 @@ variable "admin_username_secret" {
   description = "The name of the key vault secret containing the admin username"
 }
 
-variable "adds_vm_config_data_script_name" {
-  type        = string
-  description = "The name of the PowerShell DSC config data script."
-}
-
-variable "adds_vm_config_data_script_uri" {
-  type        = string
-  description = "The uri of the of the PowerShell DSC config data script."
-}
-
 variable "adds_vm_config_script_name" {
   type        = string
   description = "The name of the PowerShell DSC config data script."

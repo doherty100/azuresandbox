@@ -10,7 +10,6 @@ usage() {
 
 # Set these defaults prior to running the script.
 default_vm_name="adds1"
-default_adds_config_data_script="adds-config-data.psd1"
 default_adds_config_script="adds-config.ps1"
 default_adds_vm_post_deploy_script="post-deploy-adds-vm.ps1"
 default_admin_username_secret="adminuser"
@@ -41,7 +40,6 @@ default_tags=$(terraform output -json -state=$state_file resource_group_01_tags)
 
 # Get user input
 read -e -i $default_vm_name                     -p "vm name ---------------------: " vm_name
-read -e -i $default_adds_config_data_script     -p "adds vm config data script --: " adds_vm_config_data_script
 read -e -i $default_adds_config_script          -p "adds vm config script -------: " adds_vm_config_script
 read -e -i $default_adds_vm_post_deploy_script  -p "adds vm post deploy script --: " adds_vm_post_deploy_script
 read -e -i $default_adds_domain_name            -p "adds domain name ------------: " adds_domain_name
@@ -52,14 +50,12 @@ read -e -s                                      -p "admin password value -------
 printf "password length ${#admin_password}\n"
 
 vm_name=${vm_name:-$default_vm_name}
-adds_vm_config_data_script=${adds_vm_config_data_script:-$default_adds_vm_config_data_script}
 adds_vm_config_script=${adds_vm_config_script:-$default_adds_vm_config_script}
 adds_vm_post_deploy_script=${adds_vm_post_deploy_script:-$default_adds_vm_post_deploy_script}
 adds_domain_name=${adds_domain_name:-default_adds_domain_name}
 admin_username_secret=${admin_username_secret:-$default_admin_username_secret}
 admin_username=${admin_username:-$default_admin_username}
 admin_password_secret=${admin_password_secret:-$default_admin_password_secret}
-adds_vm_config_data_script_uri="https://${default_storage_account_name:1:-1}.blob.core.windows.net/${default_blob_storage_container_name:1:-1}/$adds_vm_config_data_script"
 adds_vm_config_script_uri="https://${default_storage_account_name:1:-1}.blob.core.windows.net/${default_blob_storage_container_name:1:-1}/$adds_vm_config_script"
 adds_vm_post_deploy_script_uri="https://${default_storage_account_name:1:-1}.blob.core.windows.net/${default_blob_storage_container_name:1:-1}/$adds_vm_post_deploy_script"
 
@@ -93,22 +89,12 @@ az storage blob upload-batch \
     --source '.' \
     --pattern '*.ps1'
 
-printf "Uploading post-deployment scripts to container $default_blob_storage_container_name in storage account $default_storage_account_name...\n"
-az storage blob upload-batch \
-    --account-name ${default_storage_account_name:1:-1} \
-    --account-key ${default_storage_account_key:1:-1} \
-    --destination ${default_blob_storage_container_name:1:-1} \
-    --source '.' \
-    --pattern '*.psd1'
-
 # Generate terraform.tfvars file
 printf "\nGenerating terraform.tfvars file...\n\n"
 
 printf "adds_domain_name                = \"$adds_domain_name\"\n"                  > ./terraform.tfvars
 printf "admin_password_secret           = \"$admin_password_secret\"\n"             >> ./terraform.tfvars
 printf "admin_username_secret           = \"$admin_username_secret\"\n"             >> ./terraform.tfvars
-printf "adds_vm_config_data_script_name = \"$adds_vm_config_data_script\"\n"        >> ./terraform.tfvars
-printf "adds_vm_config_data_script_uri  = \"$adds_vm_config_data_script_uri\"\n"    >> ./terraform.tfvars
 printf "adds_vm_config_script_name      = \"$adds_vm_config_script\"\n"             >> ./terraform.tfvars
 printf "adds_vm_config_script_uri       = \"$adds_vm_config_script_uri\"\n"         >> ./terraform.tfvars
 printf "adds_vm_post_deploy_script_name = \"$adds_vm_post_deploy_script\"\n"        >> ./terraform.tfvars

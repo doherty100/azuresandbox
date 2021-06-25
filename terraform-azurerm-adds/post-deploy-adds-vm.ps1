@@ -1,5 +1,4 @@
-param
-(
+param (
     [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
     [string]$Domain
@@ -23,7 +22,6 @@ function Exit-WithError {
 Write-Log "Running: $PSCommandPath..."
 
 # Install PowerShell prerequisites
-
 $nugetPackage = Get-PackageProvider | Where-Object Name -eq 'NuGet'
 
 if ($null -eq $nugetPackage) {
@@ -88,10 +86,16 @@ else {
     Write-Log "PowerShell ActiveDirectoryDsc module is already installed..."
 }
 
-$scriptCommand = "$PSScriptRoot\adds-config.ps1 -Domain $Domain"
+# Configure AD DS
+$scriptPath = "$PSScriptRoot\adds-config.ps1"
 
-Write-Log "Running '$scriptCommand'..."
-Invoke-Expression $scriptCommand
+Write-Log "Starting background job '$scriptPath'..."
+try {
+    Start-Job -FilePath $scriptPath -ArgumentList $Domain
+}
+catch {
+    Exit-WithError $_
+}
 
 Write-Log "Exiting normally..."
 Exit

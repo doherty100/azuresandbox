@@ -89,7 +89,7 @@ resource "azurerm_virtual_machine_extension" "virtual_machine_05_postdeploy_scri
 
   settings = <<SETTINGS
     {
-      "fileUris": [ "${var.adds_vm_post_deploy_script_uri}", "${var.adds_vm_config_script_uri}", "${var.adds_vm_config_data_script_uri}" ],
+      "fileUris": [ "${var.adds_vm_post_deploy_script_uri}", "${var.adds_vm_config_script_uri}" ],
       "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File \"./${var.adds_vm_post_deploy_script_name}\" -Domain ${var.adds_domain_name}"
     }    
   SETTINGS
