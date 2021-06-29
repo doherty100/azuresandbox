@@ -80,7 +80,7 @@ Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azu
 
 ##### Custom script extension
 
-[Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to upload PowerShell scripts which configures data disks and SQL Server. Note these scripts have only been tested with the *sql2019-ws2019* image offer.
+[Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to upload PowerShell scripts which configure data disks and SQL Server. Note these scripts have only been tested with the *sql2019-ws2019* image offer.
 
 * [post-deploy-sql-vm.ps1](./post-deploy-sql-vm.ps1): This is the initial script run by the custom script extension and runs under LocalSystem. It's only function is to launch sql-bootstrap.ps1 with elevated privileges.
 * [sql-bootstrap.ps1](./sql-bootstrap.ps1): This script is designed to run as a local administrator and configures SQL Server according to the recommendations in [Checklist: Best practices for SQL Server on Azure VMs](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices-checklist).
