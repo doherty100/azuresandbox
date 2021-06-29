@@ -84,7 +84,7 @@ Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azu
 
 * [post-deploy-sql-vm.ps1](./post-deploy-sql-vm.ps1): This is the initial script run by the custom script extension and runs under LocalSystem. It's only function is to launch sql-bootstrap.ps1 with elevated privileges.
 * [sql-bootstrap.ps1](./sql-bootstrap.ps1): This script is designed to run as a local administrator and configures SQL Server according to the recommendations in [Checklist: Best practices for SQL Server on Azure VMs](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices-checklist).
-* [sql-startup.ps1](./sql-startup.psq): This script is used as a scheduled task during startup to recreate directories on the local temporary disk and start SQL Server if the VM is deallocated.
+* [sql-startup.ps1](./sql-startup.ps1): This script is used as a scheduled task during startup to recreate directories on the local temporary disk and start SQL Server if the VM is deallocated.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
