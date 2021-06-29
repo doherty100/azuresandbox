@@ -76,9 +76,15 @@ vm_storage_account_type | Input | string | Local | StandardSSD_LRS (Note: change
 
 #### Virtual machine extensions
 
-Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the virtual machine including:
+Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the virtual machine.
 
-* [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script installs software, configures data disks, and reconfigures SQL Server to follow recommendations in [Checklist: Best practices for SQL Server on Azure VMs](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices-checklist). Note this script has only been tested with the *sql2019-ws2019* image offer.
+##### Custom script extension
+
+[Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to upload PowerShell scripts and run a post-deployment script which configures data disks and configures SQL Server. Note these scripts have only been tested with the *sql2019-ws2019* image offer.
+
+* [post-deploy-sql-vm.ps1](./post-deploy-sql-vm.ps1): This is the initial script run by the custom script extension and runs under LocalSystem. It's only function is to launch sql-bootstrap.ps1 with elevated privileges.
+* [sql-bootstrap.ps1](./sql-bootstrap.ps1): This script is designed to run as a local administrator and configures SQL Server according to the recommendations in [Checklist: Best practices for SQL Server on Azure VMs](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices-checklist).
+* [sql-startup.ps1](./sql-startup.psq): This script is used as a scheduled task during startup to recreate directories on the local temporary disk and start SQL Server if the VM is deallocated.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
