@@ -2,7 +2,7 @@
 
 ## Overview
 
-This quick start implements database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) using a [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering. This virtual machine can host databases for applications or used to run  benchmarks like [HammerDB](https://www.hammerdb.com/). The following quick starts must be deployed first before starting:
+This quick start implements an [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) using a [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering. This virtual machine can be used to host databases for applications or to run benchmarks like [HammerDB](https://www.hammerdb.com/). The following quick starts must be deployed first before starting:
 
 * [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
 * [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
@@ -10,7 +10,7 @@ This quick start implements database server [virtual machine](https://docs.micro
 Activity | Estimated time required
 --- | ---
 Pre-configuration | ~10 minutes
-Provisioning | ~5 minutes
+Provisioning | ~10 minutes
 Smoke testing | ~15 minutes
 De-provisioning | ~5 minutes
 
@@ -32,7 +32,7 @@ This section provides an index of the 8 resources included in this quick start.
 
 ---
 
-The database server virtual machine is provisioned using a [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering. This virtual machine can host databases for applications or used to run  benchmarks like [HammerDB](https://www.hammerdb.com/). Post-deployment scripts are used to implement the recommendations in [Checklist: Best practices for SQL Server on Azure VMs](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices-checklist). This quick start does not register the new SQL Server instance with the [Microsoft.SqlVirtualMachine]{https://docs.microsoft.com/en-us/azure/templates/microsoft.sqlvirtualmachine/sqlvirtualmachines?tabs=json) resource provider using the [azurerm_mssql_virtual_machine](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/mssql_virtual_machine) resource. This is intentional. Bringing this resource under Terraform management can significantly complicate applying changes to Terraform configurations because it needs to maintain data plane connectivity to the SQL Server instance installed on the VM. If you wish to use this resource provider you should enable [Automatic registration with SQL IaaS Agent extension](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-agent-extension-automatic-registration-all-vms?tabs=azure-cli).
+The database server virtual machine is provisioned using a [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering. Post-deployment scripts are used to implement the recommendations in [Checklist: Best practices for SQL Server on Azure VMs](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices-checklist). This quick start does not register the new SQL Server instance with the [Microsoft.SqlVirtualMachine](https://docs.microsoft.com/en-us/azure/templates/microsoft.sqlvirtualmachine/sqlvirtualmachines?tabs=json) resource provider using the [azurerm_mssql_virtual_machine](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/mssql_virtual_machine) resource. This is intentional. Bringing this resource under Terraform management can significantly complicate applying changes to Terraform configurations because it needs to maintain data plane connectivity to the SQL Server instance installed on the VM. If you wish to use this resource provider you should enable [Automatic registration with SQL IaaS Agent extension](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-agent-extension-automatic-registration-all-vms?tabs=azure-cli).
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
@@ -55,19 +55,19 @@ One or more [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machi
 * Data disk: "sqldata" (used for SQL Server data files)
   * name: Must follow the convention "vol_sqldata_\[driveletter\]", e.g. "vol_sqldata_M". Note drives A - E are reserved for use by Azure Virtual Machines.
   * disk_size_gb: e.g. "128"
-  * Caching: "ReadOnly" as per best practices for Microsoft SQL Server.
+  * Caching: "ReadOnly" as per best practices.
   * lun: must be unique integer from 0 - 15, e.g. "0"
 * Data disk: "sqllog" (used for SQL Server data files)
   * name: Must follow the convention "vol_sqllog_\[driveletter\]", e.g. "vol_sqllog_L". Note drives A - E are reserved for use by Azure Virtual Machines.
   * disk_size_gb: e.g. "32"
-  * Caching: "None" as per best practices for SQL Server log files
+  * Caching: "None" as per best practices.
   * lun: must be unique integer from 0 - 15, e.g. "1"
 
 Note the post-deployment script has dependencies on these naming conventions, and implements the storage recommendations in [Checklist: Best practices for SQL Server on Azure VMs](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices-checklist) including:
 
 * Volumes are formatted using a a 64K allocation unit size
 * SQL Server tempdb data and log files are moved to the local temporary disk.
-* A scheduled task is created to run on system startup that re-creates the required directories on the local temporary disk if  the VM is [deallocated](https://docs.microsoft.com/en-us/azure/virtual-machines/states-billing#power-states-and-billing). For this reason use of a [Azure VM sizes with no local temporary disk](https://docs.microsoft.com/en-us/azure/virtual-machines/azure-vms-no-temp-disk) should be avoided for a SQL Server virtual machine.
+* A scheduled task is created to run on system startup that re-creates the required directories on the local temporary disk if  the VM is [deallocated](https://docs.microsoft.com/en-us/azure/virtual-machines/states-billing#power-states-and-billing). For this reason use of an [Azure VM sizes with no local temporary disk](https://docs.microsoft.com/en-us/azure/virtual-machines/azure-vms-no-temp-disk) should be avoided for a SQL Server virtual machine.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---

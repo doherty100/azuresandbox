@@ -26,18 +26,16 @@ The quick starts feature a modular design and can be deployed as a whole or incr
   * [Log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/platform/design-logs-deployment)  
   * [Recovery services vault](https://docs.microsoft.com/en-us/azure/backup/backup-azure-recovery-services-vault-overview)
 * [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
-  * Jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Windows virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/) offering
+  * [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Windows virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/) offering
 * [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/)
-  * Jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Linux virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/) offering
+  * [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Linux virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/) offering
 * [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
   * Dedicated spoke virtual network  
   * Pre-configured bidirectional [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/)  
 * [terraform-azurerm-vm-sql](./terraform-azurerm-vm-sql/)
-  * For use as a pre-configured environment for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications using an [IaaS](https://azure.microsoft.com/en-us/overview/what-is-azure/iaas/) approach.
-  * Database Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server on Azure Virtual Machine \(Windows\)](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview) offering
-  * Web server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Windows virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/) offering
+  * [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering
 * [terraform-azurerm-sql](./terraform-azurerm-sql/)
-  * For use as a pre-configured database for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications using a [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) approach.
+  * [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database using [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview).
 * [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
   * Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources)
   * Shared [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) and [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
