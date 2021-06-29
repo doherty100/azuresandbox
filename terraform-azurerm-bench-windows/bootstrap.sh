@@ -9,10 +9,9 @@ usage() {
 }
 
 # Set these defaults prior to running the script.
-default_vm_app_name="winbenchapp01"
-default_vm_app_post_deploy_script="post-deploy-app-vm.ps1"
-default_vm_db_name="winbenchdb01"
+default_vm_db_name="winsqldb01"
 default_vm_db_post_deploy_script="post-deploy-sql-vm.ps1"
+default_vm_db_sql_bootstrap_script="sql-bootstrap.ps1"
 default_vm_db_sql_startup_script="sql-startup.ps1"
 default_admin_username_secret="adminuser"
 default_admin_username="bootstrapadmin"
@@ -46,32 +45,29 @@ then
     usage
 fi
 
-default_app_subnet_id=$(terraform output -state=$state_file vnet_spoke_01_app_subnet_id)
 default_db_subnet_id=$(terraform output -state=$state_file vnet_spoke_01_db_subnet_id)
 
 
 # Get user input
-read -e -i $default_vm_app_name                 -p "app vm name ---------------: " vm_app_name
-read -e -i $default_vm_app_post_deploy_script   -p "app vm post deploy script -: " vm_app_post_deploy_script
-read -e -i $default_vm_db_name                  -p "db vm name ----------------: " vm_db_name
-read -e -i $default_vm_db_post_deploy_script    -p "db vm post deploy script --: " vm_db_post_deploy_script
-read -e -i $default_vm_db_sql_startup_script    -p "db vm sql startup script --: " vm_db_sql_startup_script
-read -e -i $default_admin_username_secret       -p "admin username secret -----: " admin_username_secret
-read -e -i $default_admin_username              -p "admin username value ------: " admin_username
-read -e -i $default_admin_password_secret       -p "admin password secret -----: " admin_password_secret
-read -e -s                                      -p "admin password value ------: " admin_password
+read -e -i $default_vm_db_name                  -p "db vm name -----------------: " vm_db_name
+read -e -i $default_vm_db_post_deploy_script    -p "db vm post deploy script ---: " vm_db_post_deploy_script
+read -e -i $default_vm_db_sql_bootstrap_script  -p "db vm sql bootstrap script -: " vm_db_sql_bootstrap_script
+read -e -i $default_vm_db_sql_startup_script    -p "db vm sql startup script ---: " vm_db_sql_startup_script
+read -e -i $default_admin_username_secret       -p "admin username secret ------: " admin_username_secret
+read -e -i $default_admin_username              -p "admin username value -------: " admin_username
+read -e -i $default_admin_password_secret       -p "admin password secret ------: " admin_password_secret
+read -e -s                                      -p "admin password value -------: " admin_password
 printf "password length ${#admin_password}\n"
 
-vm_app_name=${vm_app_name:-$default_vm_app_name}
-vm_app_post_deploy_script=${vm_app_post_deploy_script:-$default_vm_app_post_deploy_script}
 vm_db_name=${vm_db_name:-$default_vm_db_name}
 vm_db_post_deploy_script=${vm_db_post_deploy_script:-$default_vm_db_post_deploy_script}
+vm_db_sql_bootstrap_script=${vm_db_sql_bootstrap_script:-$default_vm_db_sql_bootstrap_script}
 vm_db_sql_startup_script=${vm_db_sql_startup_script:-$default_vm_db_sql_startup_script}
 admin_username_secret=${admin_username_secret:-$default_admin_username_secret}
 admin_username=${admin_username:-$default_admin_username}
 admin_password_secret=${admin_password_secret:-$default_admin_password_secret}
-vm_app_post_deploy_script_uri="https://${default_storage_account_name:1:-1}.blob.core.windows.net/${default_blob_storage_container_name:1:-1}/$vm_app_post_deploy_script"
 vm_db_post_deploy_script_uri="https://${default_storage_account_name:1:-1}.blob.core.windows.net/${default_blob_storage_container_name:1:-1}/$vm_db_post_deploy_script"
+vm_db_sql_bootstrap_script_uri="https://${default_storage_account_name:1:-1}.blob.core.windows.net/${default_blob_storage_container_name:1:-1}/$vm_db_sql_bootstrap_script"
 vm_db_sql_startup_script_uri="https://${default_storage_account_name:1:-1}.blob.core.windows.net/${default_blob_storage_container_name:1:-1}/$vm_db_sql_startup_script"
 
 # Bootstrap keyvault secrets
@@ -109,7 +105,6 @@ printf "\nGenerating terraform.tfvars file...\n\n"
 
 printf "admin_password_secret           = \"$admin_password_secret\"\n"             > ./terraform.tfvars
 printf "admin_username_secret           = \"$admin_username_secret\"\n"             >> ./terraform.tfvars
-printf "app_subnet_id                   = $default_app_subnet_id\n"                 >> ./terraform.tfvars
 printf "db_subnet_id                    = $default_db_subnet_id\n"                  >> ./terraform.tfvars
 printf "key_vault_id                    = $default_key_vault_id\n"                  >> ./terraform.tfvars
 printf "key_vault_name                  = $default_key_vault_name\n"                >> ./terraform.tfvars
@@ -118,12 +113,11 @@ printf "resource_group_name             = $default_resource_group_name\n"       
 printf "storage_account_name            = $default_storage_account_name\n"          >> ./terraform.tfvars
 printf "subscription_id                 = $default_subscription_id\n"               >> ./terraform.tfvars
 printf "tags                            = $default_tags\n"                          >> ./terraform.tfvars
-printf "vm_app_name                     = \"$vm_app_name\"\n"                       >> ./terraform.tfvars
-printf "vm_app_post_deploy_script       = \"$vm_app_post_deploy_script\"\n"         >> ./terraform.tfvars
-printf "vm_app_post_deploy_script_uri   = \"$vm_app_post_deploy_script_uri\"\n"     >> ./terraform.tfvars
 printf "vm_db_name                      = \"$vm_db_name\"\n"                        >> ./terraform.tfvars
 printf "vm_db_post_deploy_script        = \"$vm_db_post_deploy_script\"\n"          >> ./terraform.tfvars
 printf "vm_db_post_deploy_script_uri    = \"$vm_db_post_deploy_script_uri\"\n"      >> ./terraform.tfvars
+printf "vm_db_sql_bootstrap_script      = \"$vm_db_sql_bootstrap_script\"\n"        >> ./terraform.tfvars
+printf "vm_db_sql_bootstrap_script_uri  = \"$vm_db_sql_bootstrap_script_uri\"\n"    >> ./terraform.tfvars
 printf "vm_db_sql_startup_script        = \"$vm_db_sql_startup_script\"\n"          >> ./terraform.tfvars
 printf "vm_db_sql_startup_script_uri    = \"$vm_db_sql_startup_script_uri\"\n"      >> ./terraform.tfvars
 

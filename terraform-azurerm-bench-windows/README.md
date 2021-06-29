@@ -1,8 +1,8 @@
-# Azure quick start configuration: terraform-azurerm-bench-windows  
+# Azure quick start configuration: terraform-azurerm-vm-sql  
 
 ## Overview
 
-This quick start implements a collection of services for testing Windows based web applications and running database benchmarks like [HammerDB](https://www.hammerdb.com/) using an [IaaS](https://azure.microsoft.com/en-us/overview/what-is-azure/iaas/) approach. The following quick starts must be deployed first before starting:
+This quick start implements database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) using a [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering. This virtual machine can host databases for applications or used to run  benchmarks like [HammerDB](https://www.hammerdb.com/). The following quick starts must be deployed first before starting:
 
 * [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
 * [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
@@ -26,36 +26,27 @@ This section describes how to provision this quick start using default settings.
 
 ## Resource index
 
-This section provides an index of the resources included in this quick start.
+This section provides an index of the 8 resources included in this quick start.
 
 ### Database server virtual machine
 
 ---
 
-Database Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server on Azure Virtual Machine \(Windows\)](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview) offering which is connected to the dedicated spoke virtual network, supports a configurable number of data disks, pre-configured administrator credentials using key vault and pre-configured virtual machine extensions. The quick start implements [Performance guidelines for SQL Server on Azure Virtual Machines](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices) using a post-deployment script. Pre-configured support for [Azure VM backup](https://docs.microsoft.com/en-us/azure/backup/backup-azure-vms-introduction) is enabled on the virtual machine for application consistent backups using the backup policy and recovery services vault already pre-configured in the shared services vnet quick start. Note that SQL Server database backups are handled separately. Note that [Automatic VM guest patching](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/automatic-vm-guest-patching) is disabled in favor of using [Automated Patching for SQL Server on Azure virtual machines (Resource Manager)](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/automated-patching).
+The database server virtual machine is provisioned using a [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering. This virtual machine can host databases for applications or used to run  benchmarks like [HammerDB](https://www.hammerdb.com/). Post-deployment scripts are used to implement the recommendations in [Checklist: Best practices for SQL Server on Azure VMs](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices-checklist). This quick start does not register the new SQL Server instance with the [Microsoft.SqlVirtualMachine]{https://docs.microsoft.com/en-us/azure/templates/microsoft.sqlvirtualmachine/sqlvirtualmachines?tabs=json) resource provider using the [azurerm_mssql_virtual_machine](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/mssql_virtual_machine) resource. This is intentional. Bringing this resource under Terraform management can significantly complicate applying changes to Terraform configurations because it needs to maintain data plane connectivity to the SQL Server instance installed on the VM. If you wish to use this resource provider you should enable [Automatic registration with SQL IaaS Agent extension](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-agent-extension-automatic-registration-all-vms?tabs=azure-cli).
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vm_db_name | Input | string | Local | winbenchdb01
+vm_db_name | Input | string | Local | winsqldb01
 vm_db_size | Input | string | Local | Standard_B4ms
 vm_db_storage_account_type | Input | string | Local | StandardSSD_LRS (Note: change this to "Premium_LRS" to observe best practices for Microsoft SQL Server.)
 vm_db_image_publisher | Input | string | Local | MicrosoftSQLServer
 vm_db_image_offer | Input | string | Local | sql2019-ws2019
 vm_db_image_sku | Input | string | Local | sqldev
 vm_db_image_version | Input | string | Local | Latest
-virtual_machine_03_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/winbenchdb01
-virtual_machine_03_name | Output | string | Local | winbenchdb01
-virtual_machine_03_principal_id | Output | string | Local | 00000000-0000-0000-0000-000000000000
 
 #### Network interface
 
 [Virtual network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface) (NIC) with a dynamic private ip address attached to the virtual machine.
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-virtual_machine_03_nic_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/networkInterfaces/nic-winbenchdb01-001
-virtual_machine_03_nic_01_name | Output | string | Local | nic-winbenchdb01-001
-virtual_machine_03_nic_01_private_ip_address | Output | string | Local | 10.2.1.36
 
 #### Managed disks and data disk attachments
 
@@ -72,88 +63,32 @@ One or more [managed disks](https://docs.microsoft.com/en-us/azure/virtual-machi
   * Caching: "None" as per best practices for SQL Server log files
   * lun: must be unique integer from 0 - 15, e.g. "1"
 
-Note the post-deployment script has dependencies on these naming conventions, and also implements a 64K allocation unit size when formatting volumes as per best practices for SQL Server data and log files. The post deployment script also moves the SQL Server tempdb data and log files to the local temporary disk as per best practices for Microsoft SQL Server, and a scheduled task is created to run on system startup that re-creates the tempdb folders on the local temporary disk. For this reason you should avoid using [Azure VM sizes with no local temporary disk](https://docs.microsoft.com/en-us/azure/virtual-machines/azure-vms-no-temp-disk).
+Note the post-deployment script has dependencies on these naming conventions, and implements the storage recommendations in [Checklist: Best practices for SQL Server on Azure VMs](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices-checklist) including:
+
+* Volumes are formatted using a a 64K allocation unit size
+* SQL Server tempdb data and log files are moved to the local temporary disk.
+* A scheduled task is created to run on system startup that re-creates the required directories on the local temporary disk if  the VM is [deallocated](https://docs.microsoft.com/en-us/azure/virtual-machines/states-billing#power-states-and-billing). For this reason use of a [Azure VM sizes with no local temporary disk](https://docs.microsoft.com/en-us/azure/virtual-machines/azure-vms-no-temp-disk) should be avoided for a SQL Server virtual machine.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 vm_db_data_disk_config | Input | string | Local | { sqldata = { name = "vol_sqldata_M", disk_size_gb = "128", lun = "0", caching = "ReadOnly" }, sqllog = { name = "vol_sqllog_L", disk_size_gb = "32", lun = "1", caching = "None" } }
 vm_storage_account_type | Input | string | Local | StandardSSD_LRS (Note: change this to "Premium_LRS" to observe best practices for Microsoft SQL Server.)
 
-#### SQL Server virtual machine resource provider configuration
-
-The database virtual machine is registered with the [Microsoft.SqlVirtualMachine](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-vm-resource-provider-register) resource provider using the following defaults:
-
-* *sa* username and password credentials set using key vault
-* sql_license_type = "PAYG"
-* r_services_enabled = true
-* sql_connectivity_port = 1433
-* sql_connectivity_type = "PRIVATE"
-
-#### Role assignment
-
-Role assignment used to retrieve key vault secrets using system assigned managed identity.
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-rbac_role_key_vault_secrets_user | Input | string | Local | Key Vault Secrets User
-
 #### Virtual machine extensions
 
 Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the virtual machine including:
 
-* [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script installs software, configures data disks, and reconfigures SQL Server to follow recommendations in [Performance guidelines for SQL Server on Azure Virtual Machines](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices). Note this script has only been tested with the *sql2019-ws2019* image offer.
-* [SQL Server IaaS agent extension](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management) is automatically installed when the virtual machine is registered with the SQL Server virtual machine resource provider.
+* [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script installs software, configures data disks, and reconfigures SQL Server to follow recommendations in [Checklist: Best practices for SQL Server on Azure VMs](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices-checklist). Note this script has only been tested with the *sql2019-ws2019* image offer.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
 storage_account_name | Input | String | Local | st8e644ec51c5be098001
 vm_db_post_deploy_script | Input | string | Local | post-deploy-sql-vm.ps1
 vm_db_post_deploy_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d8001.blob.core.windows.net/scripts/post-deploy-sql-vm.ps1>
+vm_db_sql_bootstrap_script | Input | string | Local | sql-bootstrap.ps1
+vm_db_sql_bootstrap_script_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d8001.blob.core.windows.net/scripts/sql-bootstrap.ps1>
 vm_db_sql_startup_script | Input | string | Local | sql-startup.ps1
 vm_db_sql_startup_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d8001.blob.core.windows.net/scripts/sql-startup.ps1>
-
-### App server virtual machine
-
----
-
-App server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Windows virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/) offering which is connected to the dedicated spoke virtual network with pre-configured administrator credentials using key vault, and pre-configured virtual machine extensions. Pre-configured support for [Azure VM backup](https://docs.microsoft.com/en-us/azure/backup/backup-azure-vms-introduction) is enabled on the virtual machine for application consistent backups using the backup policy and recovery services vault already pre-configured in the shared services vnet quick start.
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-vm_app_name | Input | string | Local | winbenchapp01
-vm_app_size | Input | string | Local | Standard_B2s
-vm_app_storage_account_type | Input | string | Local | Standard_LRS
-vm_app_image_publisher | Input | string | Local | MicrosoftWindowsServer
-vm_app_image_offer | Input | string | Local | WindowsServer
-vm_app_image_sku | Input | string | Local | 2019-Datacenter
-vm_app_image_version | Input | string | Local | Latest
-virtual_machine_04_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Compute/virtualMachines/winbenchapp01
-virtual_machine_04_name | Output | string | Local | winbenchapp01
-virtual_machine_04_principal_id | Output | string | Local | 00000000-0000-0000-0000-000000000000
-
-#### Network interface 2
-
-[Virtual network interface](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface) (NIC) with a dynamic private ip address attached to the virtual machine.
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-virtual_machine_04_nic_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/networkInterfaces/nic-winbenchapp01-001
-virtual_machine_04_nic_01_name | Output | string | Local | nic-winbenchapp01-001
-virtual_machine_04_nic_01_private_ip_address | Output | string | Local | 10.2.1.68
-
-#### Virtual machine extensions 2
-
-Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) attached to the virtual machine including:
-
-* [Custom script extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) version 1.10 with automatic minor version upgrades enabled and configured to run a post-deployment script which partitions and formats new data disks.
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-log_analytics_workspace_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
-vm_app_post_deploy_script | Input | string | Local | post-deploy-app-vm.ps1
-vm_app_post_deploy_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d8001.blob.core.windows.net/scripts/post-deploy-app-vm.ps1>
-storage_account_name | Input | String | Local | st8e644ec51c5be098001
 
 ## Smoke testing
 

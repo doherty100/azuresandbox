@@ -8,11 +8,6 @@ variable "admin_username_secret" {
   description = "The name of the key vault secret containing the admin username"
 }
 
-variable "app_subnet_id" {
-  type        = string
-  description = "The existing subnet which will be used by the VM"
-}
-
 variable "db_subnet_id" {
   type        = string
   description = "The existing subnet which will be used by the VM"
@@ -57,58 +52,6 @@ variable "subscription_id" {
 variable "tags" {
   type        = map(any)
   description = "The ARM tags to be applied to all new resources created."
-}
-
-# Application VM variables
-variable "vm_app_image_offer" {
-  type        = string
-  description = "The offer type of the virtual machine image used to create the application server VM"
-  default     = "WindowsServer"
-}
-
-variable "vm_app_image_publisher" {
-  type        = string
-  description = "The publisher for the virtual machine image used to create the application server VM"
-  default     = "MicrosoftWindowsServer"
-}
-
-variable "vm_app_image_sku" {
-  type        = string
-  description = "The sku of the virtual machine image used to create the application server VM"
-  default     = "2019-Datacenter-Core"
-}
-
-variable "vm_app_image_version" {
-  type        = string
-  description = "The version of the virtual machine image used to create the application server VM"
-  default     = "Latest"
-}
-
-variable "vm_app_name" {
-  type        = string
-  description = "The name of the aplication server VM"
-}
-
-variable "vm_app_post_deploy_script" {
-  type        = string
-  description = "The name of the PowerShell script to be run post-deployment."
-}
-
-variable "vm_app_post_deploy_script_uri" {
-  type        = string
-  description = "The uri of the PowerShell script to be run post-deployment."
-}
-
-variable "vm_app_size" {
-  type        = string
-  description = "The size of the virtual machine"
-  default     = "Standard_B2s"
-}
-
-variable "vm_app_storage_account_type" {
-  type        = string
-  description = "The storage replication type to be used for the VMs OS disk"
-  default     = "Standard_LRS"
 }
 
 # Database VM variables
@@ -180,6 +123,16 @@ variable "vm_db_storage_account_type" {
   type        = string
   description = "The storage replication type to be used for the VMs OS disk"
   default     = "StandardSSD_LRS"
+}
+
+variable "vm_db_sql_bootstrap_script" {
+  type        = string
+  description = "The name of the SQL bootstrap Powershell script."
+}
+
+variable "vm_db_sql_bootstrap_script_uri" {
+  type        = string
+  description = "The URI for the SQL bootstrap Powershell script."
 }
 
 variable "vm_db_sql_startup_script" {
