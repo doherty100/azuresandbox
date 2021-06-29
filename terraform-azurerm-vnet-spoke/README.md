@@ -33,7 +33,7 @@ This section provides an index of the 13 resources included in this quick start.
 
 Spoke [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting solution infrastructure. Note the following quick starts have dependencies on this quick start:  
 
-* [terraform-azurerm-bench-windows](../terraform-azurerm-bench-windows)
+* [terraform-azurerm-vm-sql](../terraform-azurerm-vm-sql)
 * [terraform-azurerm-sql](../terraform-azurerm-sql)
 * [terraform-azurerm-vwan](../terraform-azurerm-vwan)
 
@@ -105,4 +105,4 @@ Explore newly provisioned resources in the Azure portal.
 
 ## Next steps
 
-Move on to the next quick start [terraform-azurerm-bench-windows](../terraform-azurerm-bench-windows).
+Move on to the next quick start [terraform-azurerm-vm-sql](../terraform-azurerm-vm-sql).

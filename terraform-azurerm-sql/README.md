@@ -6,7 +6,7 @@ This quick start implements an Azure SQL Database for testing web applications a
 
 * [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
 * [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
-* [terraform-azurerm-bench-windows](../terraform-azurerm-bench-windows)
+* [terraform-azurerm-vm-sql](../terraform-azurerm-vm-sql)
 
 Activity | Estimated time required
 --- | ---
@@ -101,7 +101,7 @@ sql_database_01_name | Output | String | Local | sqldb-benchmarktest-01
     * Review the Azure SQL Database
   * Review the private DNS zone *privatelink.database.windows.net*
     * Review the A record that resolves DNS queries for the Azure SQL Database logical server to a private ip address
-* Connect to the database server virtual machine from [terraform-azurerm-bench-windows](../terraform-azurerm-bench-windows) machine in the Azure portal using bastion and log in with the *adminuser* and *adminpassword* defined previously.
+* Connect to the database server virtual machine from [terraform-azurerm-vm-sql](../terraform-azurerm-vm-sql) machine in the Azure portal using bastion and log in with the *adminuser* and *adminpassword* defined previously.
   * Confirm DNS queries resolve to the Azure SQL Database logical server private endpoint.
     * Launch Windows PowerShell ISE
     * Run `Resolve-DnsName sql-xxxxxxxxxxxxxxxx-001.database.windows.net` from the Windows PowerShell ISE console.  
