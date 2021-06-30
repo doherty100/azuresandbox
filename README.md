@@ -94,7 +94,7 @@ Note that cloud shell containers are ephemeral. Anything not saved in `~/clouddr
 
 Windows 10 users can deploy the quick starts using [WSL](https://docs.microsoft.com/en-us/windows/wsl/about) which supports a [variety of Linux distributions](https://docs.microsoft.com/en-us/windows/wsl/install-win10#install-your-linux-distribution-of-choice). Here is a sample configuration preferred by the author:
 
-* [Ubuntu 18.04.4 LTS](https://www.microsoft.com/store/productId/9N9TNGVNDL3Q)
+* [Ubuntu 20.04.4 LTS](https://www.microsoft.com/store/productId/9N6SVWS3RX71)
 * [Install the Azure CLI on Linux | apt (Ubuntu, Debian)](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt)
 * [Install Terraform | Linux | Ubuntu / Debian](https://learn.hashicorp.com/tutorials/terraform/install-cli#install-terraform)
   * Note: Feel free to skip the [Quick start tutorial](https://learn.hashicorp.com/tutorials/terraform/install-cli#quick-start-tutorial) it is not necessary to complete your Terraform installation.
@@ -116,7 +116,7 @@ Linux and macOS users can deploy the quick starts natively by installing the fol
 * [Terraform](https://www.terraform.io/downloads.html)
   * Installation helper script: [terraforminstall.sh](./terraform-general/terraforminstall.sh)
 
-Note the Bash scripts used in the quick starts were developed and tested using `GNU bash, version 4.4.20(1)-release (x86_64-pc-linux-gnu)` and have not been tested on other popular shells like [zsh](https://www.zsh.org/).
+Note the Bash scripts used in the quick starts were developed and tested using `GNU bash, version 5.0.17(1)-release (x86_64-pc-linux-gnu)` and have not been tested on other popular shells like [zsh](https://www.zsh.org/).
 
 ## Next steps
 
