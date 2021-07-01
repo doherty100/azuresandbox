@@ -251,3 +251,7 @@ recovery_services_vault_01_name | Output | string | Global | rsv-176bda033fa422f
 ## Next steps
 
 * Move on to the next quick start [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows) and/or [terraform-azurerm-vm-linux](../terraform-azurerm-vm-linux).
+
+## Known issues
+
+* [#12447](https://github.com/terraform-providers/terraform-provider-azurerm/issues/12447)
