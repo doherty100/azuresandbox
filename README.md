@@ -4,9 +4,10 @@
 
 This repository contains a collection of inter-dependent [cloud computing](https://azure.microsoft.com/en-us/overview/what-is-cloud-computing) quick starts for implementing common [Microsoft Azure](https://azure.microsoft.com/en-us/overview/what-is-azure/) services on a single [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription). Collectively these quick starts implement a basic [hub-spoke networking topology](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke) with shared services using automation implemented using popular open source tools that are supported on Windows, macOS and Linux including:
 
-* [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) for scripting.
 * [git](https://git-scm.com/) for source control.
+* [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) for scripting.
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/what-is-azure-cli?view=azure-cli-latest) is a command line interface for Azure.
+* [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-5.1) for Windows Server post-deployment scripts.
 * [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) v1.0.1 for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
   * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v2.65.0
   * [Random Provider](https://registry.terraform.io/providers/hashicorp/random/latest/docs) (random) v3.1.0
