@@ -64,16 +64,6 @@ resource "azurerm_virtual_machine_data_disk_attachment" "virtual_machine_sql_01_
   caching            = each.value.caching
 }
 
-resource "azurerm_key_vault_access_policy" "key_vault_01_access_policy_virtual_machine_sql_01_secrets_reader" {
-  key_vault_id = var.key_vault_id
-  tenant_id    = azurerm_windows_virtual_machine.virtual_machine_sql_01.identity[0].tenant_id
-  object_id    = azurerm_windows_virtual_machine.virtual_machine_sql_01.identity[0].principal_id
-
-  secret_permissions = [
-    "get"
-  ]
-}
-
 # Virtual machine extensions
 resource "azurerm_virtual_machine_extension" "virtual_machine_sql_01_postdeploy_script" {
   name                       = "vmext-${azurerm_windows_virtual_machine.virtual_machine_sql_01.name}-postdeploy-script"
@@ -83,8 +73,8 @@ resource "azurerm_virtual_machine_extension" "virtual_machine_sql_01_postdeploy_
   type_handler_version       = "1.10"
   auto_upgrade_minor_version = true
   depends_on                 = [
-    azurerm_virtual_machine_data_disk_attachment.virtual_machine_sql_01_data_disk_attachments,
-    azurerm_key_vault_access_policy.key_vault_01_access_policy_virtual_machine_sql_01_secrets_reader ]
+    azurerm_virtual_machine_data_disk_attachment.virtual_machine_sql_01_data_disk_attachments 
+  ]
 
   settings = <<SETTINGS
     {

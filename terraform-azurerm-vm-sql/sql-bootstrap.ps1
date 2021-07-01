@@ -14,63 +14,6 @@ function Exit-WithError {
     Exit 2
 }
 
-function Get-AdminCredential {
-    # Get admin credentials
-    Write-Log "Getting virtual machine tags from instance metadata service..."
-
-    try {
-        $tags = Invoke-RestMethod -Headers @{"Metadata" = "true" } -Method GET -Uri http://169.254.169.254/metadata/instance/compute/tagsList?api-version=2020-06-01 
-    }
-    catch {
-        Exit-WithError $_
-    }
-
-    $kvname = ($tags | Where-Object { $_.name -eq 'keyvault' }).value
-
-    if ( $null -eq $kvname ) {
-        Exit-WithError "Unable to locate key vault name from virtual machine tags."
-    }
-
-    Write-Log "Using key vault name '$kvname'..."
-    Write-Log "Getting managed identity token from instance metadata service..."
-
-    try {
-        $token = (Invoke-RestMethod -Headers @{"Metadata" = "true" } -Method GET -Uri 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2020-06-01&resource=https%3A%2F%2Fvault.azure.net').access_token
-    }
-    catch {
-        Exit-WithError $_
-    }
-
-    Write-Log "Retrieving adminuser secret from key vault using managed identity..."
-    $secretName = "adminuser"
-
-    try {
-        $secret = Invoke-RestMethod -Headers @{Authorization = "Bearer $token" } -Method GET -Uri "https://$kvname.vault.azure.net/secrets/$($secretName)?api-version=2016-10-01"
-    }
-    catch {
-        Exit-WithError $_
-    }
-
-    $adminUser = $secret.Value
-    Write-Log "Using adminuser '$adminUser'..."
-    Write-Log "Retrieving adminpassword secret from key vault using managed identity..."
-    $secretName = "adminpassword"
-
-    try {
-        $secret = Invoke-RestMethod -Headers @{Authorization = "Bearer $token" } -Method GET -Uri "https://$kvname.vault.azure.net/secrets/$($secretName)?api-version=2016-10-01"
-    }
-    catch {
-        Exit-WithError $_
-    }
-
-    $adminPasswordSecure = ConvertTo-SecureString -String $secret.Value -AsPlainText -Force
-    $adminPasswordSecure.MakeReadOnly()
-
-    Write-Log "Using adminpassword '$('*' * $adminPasswordSecure.Length)'..."
-    $adminCredential = New-Object System.Management.Automation.PSCredential ($adminUser, $adminPasswordSecure)
-
-    return $adminCredential
-}
 function Get-DataDisks {
     $sleepSeconds = 30
     $maxAttempts = 6
