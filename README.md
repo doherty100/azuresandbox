@@ -162,8 +162,8 @@ Shared services | AzureBastionSubnet | 10.1.1.0/27 | 10.1.1.0 | 10.1.1.31 | 32
 Shared services | Reserved for future use | 10.1.1.32/27 | 10.1.1.32 | 10.1.1.63 | 32
 Shared services | Reserved for future use | 10.1.1.64/26 | 10.1.1.64 | 10.1.1.127 | 64
 Shared services | Reserved for future use | 10.1.1.128/25 | 10.1.1.128 | 10.1.1.255 | 128
-Shared services | snet-storage-private-endpoints-001 | 10.1.2.0/24 | 10.1.2.0 | 10.1.2.255 | 256
-Shared services | snet-adds-001 | 10.1.3.0/24 | 10.1.3.0 | 10.1.3.255 | 256
+Shared services | snet-adds-001 | 10.1.2.0/24 | 10.1.2.0 | 10.1.2.255 | 256
+Shared services | Reserved for future use | 10.1.3.0/24 | 10.1.3.0 | 10.1.3.255 | 256
 Shared services | Reserved for future use | 10.1.4.0/22 | 10.1.4.0 | 10.1.7.255 | 1,024
 Shared services | Reserved for future use | 10.1.8.0/21 | 10.1.8.0 | 10.1.15.255 | 2,048
 Shared services | Reserved for future use | 10.1.16.0/20 | 10.1.16.0 | 10.1.31.255 | 4,096
@@ -262,8 +262,8 @@ Virtual network | Subnet | IP address prefix | First | Last | IP address count
 --- | --- | --- | --- | --- | --:
 Shared services | snet-default-001 | 10.73.8.0/25 | 10.73.8.0 | 10.73.8.127 | 128
 Shared services | AzureBastionSubnet | 10.73.8.128/27 | 10.73.8.128 | 10.73.8.159 | 32
-Shared services | snet-storage-private-endpoints-001 | 10.73.8.160/27 | 10.73.8.160 | 10.73.8.191 | 32
-Shared services | snet-adds-001 | 10.73.8.192/27 | 10.73.8.192 | 10.73.8.223 | 32
+Shared services | snet-adds-001 | 10.73.8.160/27 | 10.73.8.160 | 10.73.8.191 | 32
+Shared services | Reserved for future use | 10.73.8.192/27 | 10.73.8.192 | 10.73.8.223 | 32
 Shared services | Reserved for future use | 10.73.8.224/27 | 10.73.8.224 | 10.73.8.255 | 32
 Spoke | snet-default-002 | 10.73.9.0/25 | 10.73.9.0 | 10.73.9.127 | 128
 Spoke | snet-db-001 | 10.73.9.128/27 | 10.73.9.128 | 10.73.9.159 | 32
