@@ -8,15 +8,6 @@ usage() {
     exit 1
 }
 
-# Log out of Azure
-printf "Logging out of Azure..."
-az logout
-az account clear
-
-# Log into Azure
-printf "Logging into Azure..."
-az login
-
 # Initialize constants
 adds_subnet_name="snet-adds-01"
 admin_password_secret="adminpassword"

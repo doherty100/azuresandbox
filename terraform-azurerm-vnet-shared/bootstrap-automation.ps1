@@ -1,30 +1,30 @@
 param (
-    [Parameter(Mandatory = $false)]
-    [String]$TenantId = '72f988bf-86f1-41af-91ab-2d7cd011db47',
+    [Parameter(Mandatory = $true)]
+    [String]$TenantId,
 
-    [Parameter(Mandatory = $false)]
-    [String]$SubscriptionId = 'f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55',
+    [Parameter(Mandatory = $true)]
+    [String]$SubscriptionId,
 
-    [Parameter(Mandatory = $false)]
-    [String]$ResourceGroupName = 'rg-vdc-nonprod-01',
+    [Parameter(Mandatory = $true)]
+    [String]$ResourceGroupName,
 
-    [Parameter(Mandatory = $false)]
-    [String]$Location = 'eastus2',
+    [Parameter(Mandatory = $true)]
+    [String]$Location,
 
-    [Parameter(Mandatory = $false)]
-    [Hashtable]$Tags = @{project = '#AzureQuickStarts'; costcenter = '10177772'; environment = 'dev' },
+    [Parameter(Mandatory = $true)]
+    [String]$AutomationAccountName,
 
-    [Parameter(Mandatory = $false)]
-    [String]$Domain = 'mytestlab.local',
+    [Parameter(Mandatory = $true)]
+    [String]$Domain,
 
-    [Parameter(Mandatory = $false)]
-    [String]$VirtualMachineName = 'adds1',
+    [Parameter(Mandatory = $true)]
+    [String]$VirtualMachineName,
 
-    [Parameter(Mandatory = $false)]
-    [String]$AdminUsername = 'bootstrapadmin',
+    [Parameter(Mandatory = $true)]
+    [String]$AdminUsername,
 
-    [Parameter(Mandatory = $false)]
-    [String]$AdminPassword = '7S+1NXBYfl<y'
+    [Parameter(Mandatory = $true)]
+    [String]$AdminPwd
 )
 
 #region constants
@@ -32,8 +32,6 @@ $AzureEnvironment = 'AzureCloud'
 $AutomationCredentialName = 'bootstrapadmin'
 $DscConfigurationName = 'LabDomainConfig'
 $DscConfigurationScript = 'LabDomainConfig.ps1'
-$DscConfigurationNode = 'localhost'
-
 #endregion
 
 #region functions
@@ -82,7 +80,7 @@ function Import-Module {
         }
 
         Write-Log "Module '$($automationModule.Name)' provisioning state is '$($automationModule.ProvisioningState)'..."
-        Start-Sleep -Seconds 30
+        Start-Sleep -Seconds 10
     }
 
     if ($automationModule.ProvisioningState -eq "Failed") {
@@ -152,6 +150,8 @@ function Set-Variable {
 
 #region main
 Write-Log "Running '$PSCommandPath'..."
+
+# Important: Discontinue use of device authentication for production use
 Write-Log "Logging into Azure using AAD tenant id '$TenantId' and Azure subscription id '$SubscriptionId'..."
 Disconnect-AzAccount
 
@@ -163,28 +163,13 @@ catch {
 }
 
 # Bootstrap automation account
-$automationAccount = Get-AzAutomationAccount -ResourceGroupName $ResourceGroupName | Where-Object { $_.Tags['provisioner'] -eq 'bootstrap-automation.ps1' }
+$automationAccount = Get-AzAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName
 
 if ($null -eq $automationAccount) {
-    $automationAccountNameRandom = "auto-$(New-Guid)-01" 
-    $Tags += @{provisioner = "$($MyInvocation.MyCommand.Name)" }
-    Write-Log "Creating automation account '$automationAccountNameRandom' in resource group '$resourceGroupName'..."
-    try {
-        $automationAccount = New-AzAutomationAccount `
-            -ResourceGroupName $ResourceGroupName `
-            -Name $automationAccountNameRandom `
-            -Location $Location `
-            -Plan 'Basic' `
-            -Tags $Tags `
-            -ErrorAction Stop
-    }
-    catch {
-        Exit-WithError $_
-    }
+    Exit-WithError "Automation account '$AutomationAccountName' was not found..."
 }
-else {
-    Write-Log "Located automation account '$($automationAccount.AutomationAccountName)' in resource group '$resourceGroupName'"
-}
+
+Write-Log "Located automation account '$AutomationAccountName' in resource group '$ResourceGroupName'"
 
 # Bootstrap automation modules
 Import-Module `
@@ -256,12 +241,12 @@ catch {
     Exit-WithError $_
 }
 
-$adminPasswordSecure = ConvertTo-SecureString $AdminPassword -AsPlainText -Force
-$credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $AdminUsername, $adminPasswordSecure
+$AdminPwdSecure = ConvertTo-SecureString $AdminPwd -AsPlainText -Force
+$credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $AdminUsername, $AdminPwdSecure
 
 if ($null -eq $automationCredential) {
-    $adminPasswordSecure = ConvertTo-SecureString $AdminPassword -AsPlainText -Force
-    $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $AdminUsername, $adminPasswordSecure
+    $AdminPwdSecure = ConvertTo-SecureString $AdminPwd -AsPlainText -Force
+    $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $AdminUsername, $AdminPwdSecure
 
     try {
         $automationCredential = New-AzAutomationCredential `
@@ -330,7 +315,7 @@ while($null -eq $dscCompilationJob.EndTime -and $null -eq $dscCompilationJob.Exc
 {
     $dscCompilationJob = $dscCompilationJob | Get-AzAutomationDscCompilationJob
     Write-Log "DSC compilation job ID '$jobId' status is '$($dscCompilationJob.Status)'..."
-    Start-Sleep -Seconds 5
+    Start-Sleep -Seconds 10
 }
 
 if ($dscCompilationJob.Exception) {
@@ -338,48 +323,6 @@ if ($dscCompilationJob.Exception) {
 }
 
 Write-Log "DSC compilation job ID '$jobId' status is '$($dscCompilationJob.Status)'..."
-
-# Register DSC Node
-$nodeConfigName = $DscConfigurationName + '.' + $DscConfigurationNode
-Write-Log "Registering DSC node '$VirtualMachineName' with node configuration '$nodeConfigName'..."
-
-try {
-    Register-AzAutomationDscNode `
-        -ResourceGroupName $ResourceGroupName `
-        -AutomationAccountName $automationAccount.AutomationAccountName `
-        -AzureVMName $VirtualMachineName `
-        -AzureVMResourceGroup $ResourceGroupName `
-        -AzureVMLocation $Location `
-        -NodeConfigurationName $nodeConfigName `
-        -ConfigurationModeFrequencyMins 15 `
-        -ConfigurationMode 'ApplyOnly' `
-        -AllowModuleOverwrite $false `
-        -RebootNodeIfNeeded $true `
-        -ActionAfterReboot 'ContinueConfiguration' `
-        -ErrorAction Stop 
-}
-catch {
-    Exit-WithError $_
-}
-
-Write-Log "Checking status of DSC node '$VirtualMachineName'..."
-
-try {
-    $dscNode = Get-AzAutomationDscNode `
-        -ResourceGroupName $ResourceGroupName `
-        -AutomationAccountName $automationAccount.AutomationAccountName `
-        -Name $VirtualMachineName `
-        -ErrorAction Stop
-}
-catch {
-    Exit-WithError $_
-}
-
-Write-Log "Status for DSC node '$VirtualMachineName' is '$($dscNode.Status)'..."
-
-if ($dscNode.Status -ne 'Compliant') {
-    Exit-WithError "DSC node '$VirtualMachineName' is not compliant..."
-}
 
 Exit 0
 #endregion
