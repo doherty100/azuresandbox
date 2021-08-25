@@ -5,7 +5,7 @@ resource "random_id" "random_id_vwan_01_name" {
 }
 
 resource "azurerm_virtual_wan" "vwan_01" {
-  name                           = "vwan-${random_id.random_id_vwan_01_name.hex}-001"
+  name                           = "vwan-${random_id.random_id_vwan_01_name.hex}-01"
   resource_group_name            = var.resource_group_name
   location                       = var.location
   disable_vpn_encryption         = false
@@ -27,7 +27,7 @@ resource "random_id" "random_id_vwan_01_hub_01_name" {
 }
 
 resource "azurerm_virtual_hub" "vwan_01_hub_01" {
-  name                = "vhub-${random_id.random_id_vwan_01_hub_01_name.hex}-001"
+  name                = "vhub-${random_id.random_id_vwan_01_hub_01_name.hex}-01"
   resource_group_name = azurerm_virtual_wan.vwan_01.resource_group_name
   location            = azurerm_virtual_wan.vwan_01.location
   virtual_wan_id      = azurerm_virtual_wan.vwan_01.id

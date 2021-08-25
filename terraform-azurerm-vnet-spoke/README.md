@@ -39,10 +39,10 @@ Spoke [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cl
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vnet_name | Input | string | Local | vnet-spoke-001
+vnet_name | Input | string | Local | vnet-spoke-01
 vnet_address_space | Input | string | Local | 10.2.0.0/16
-vnet_spoke_01_id | output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001
-vnet_spoke_01_name | output | string | Global | vnet-spoke-001
+vnet_spoke_01_id | output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-spoke-01
+vnet_spoke_01_name | output | string | Global | vnet-spoke-01
 
 #### Subnets
 
@@ -55,11 +55,11 @@ The spoke virtual network is divided into [subnets](https://docs.microsoft.com/e
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-subnets | Input | map | Local | { default = { name = "snet-default-002", address_prefix = "10.2.0.0/24", enforce_private_link_endpoint_network_policies = false }, AzureBastionSubnet = { name = "AzureBastionSubnet", address_prefix = "10.2.1.0/27", enforce_private_link_endpoint_network_policies = false }, PrivateLink = { name = "snet-storage-private-endpoints-002", address_prefix = "10.2.1.96/27", enforce_private_link_endpoint_network_policies = true }, database = { name = "snet-db-001", address_prefix = "10.2.1.32/27", enforce_private_link_endpoint_network_policies = false }, application = { name = "snet-app-001",address_prefix = "10.2.1.64/27", enforce_private_link_endpoint_network_policies = false } }
-vnet_spoke_01_app_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-app-001
-vnet_spoke_01_db_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-db-001
-vnet_spoke_01_default_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-default-002
-vnet_spoke_01_private_endpoints_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/subnets/snet-storage-private-endpoints-002
+subnets | Input | map | Local | { default = { name = "snet-default-02", address_prefix = "10.2.0.0/24", enforce_private_link_endpoint_network_policies = false }, AzureBastionSubnet = { name = "AzureBastionSubnet", address_prefix = "10.2.1.0/27", enforce_private_link_endpoint_network_policies = false }, PrivateLink = { name = "snet-storage-private-endpoints-02", address_prefix = "10.2.1.96/27", enforce_private_link_endpoint_network_policies = true }, database = { name = "snet-db-01", address_prefix = "10.2.1.32/27", enforce_private_link_endpoint_network_policies = false }, application = { name = "snet-app-01",address_prefix = "10.2.1.64/27", enforce_private_link_endpoint_network_policies = false } }
+vnet_spoke_01_app_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-spoke-01/subnets/snet-app-01
+vnet_spoke_01_db_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-spoke-01/subnets/snet-db-01
+vnet_spoke_01_default_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-spoke-01/subnets/snet-default-02
+vnet_spoke_01_private_endpoints_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-spoke-01/subnets/snet-storage-private-endpoints-02
 
 #### Private DNS zone virtual network link
 
@@ -67,8 +67,8 @@ A link to the dedicated spoke virtual network is established with the shared pri
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-virtual_network_link_vnet_spoke_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/privateDnsZones/privatelink.file.core.windows.net/virtualNetworkLinks/pdnslnk-vnet-spoke-001-002
-virtual_network_link_vnet_spoke_01_name | Output | string | Local | pdnslnk-vnet-spoke-001-002
+virtual_network_link_vnet_spoke_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/privateDnsZones/privatelink.file.core.windows.net/virtualNetworkLinks/pdnslnk-vnet-spoke-01-02
+virtual_network_link_vnet_spoke_01_name | Output | string | Local | pdnslnk-vnet-spoke-01-02
 
 #### Virtual network peering
 
@@ -84,7 +84,7 @@ This peering is between the shared services virtual network and the dedicated sp
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vnet_shared_01_to_vnet_spoke_01_peering_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-shared-001/virtualNetworkPeerings/vnet_shared_01_to_vnet_spoke_01_peering
+vnet_shared_01_to_vnet_spoke_01_peering_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-shared-01/virtualNetworkPeerings/vnet_shared_01_to_vnet_spoke_01_peering
 vnet_shared_01_to_vnet_spoke_01_peering_name | Output | string | Local | vnet_shared_01_to_vnet_spoke_01_peering
 
 ##### Spoke to shared services virtual network peering
@@ -96,7 +96,7 @@ This peering is between the dedicated spoke virtual network and the shared servi
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vnet_spoke_01_to_vnet_shared_01_peering_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualNetworks/vnet-spoke-001/virtualNetworkPeerings/vnet_spoke_01_to_vnet_shared_01_peering
+vnet_spoke_01_to_vnet_shared_01_peering_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-spoke-01/virtualNetworkPeerings/vnet_spoke_01_to_vnet_shared_01_peering
 vnet_spoke_01_to_vnet_shared_01_peering_name | Output | string | Local | vnet_spoke_01_to_vnet_shared_01_peering
 
 ## Smoke testing

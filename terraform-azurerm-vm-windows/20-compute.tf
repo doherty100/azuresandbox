@@ -42,13 +42,13 @@ output "virtual_machine_01_principal_id" {
 
 # Nics
 resource "azurerm_network_interface" "virtual_machine_01_nic_01" {
-  name                = "nic-${var.vm_name}-001"
+  name                = "nic-${var.vm_name}-01"
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = var.tags
 
   ip_configuration {
-    name                          = "ipc-${var.vm_name}-001"
+    name                          = "ipc-${var.vm_name}-01"
     subnet_id                     = var.subnet_id
     private_ip_address_allocation = "Dynamic"
   }

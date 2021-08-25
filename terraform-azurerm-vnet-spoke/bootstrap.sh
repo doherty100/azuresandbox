@@ -9,15 +9,15 @@ usage() {
 }
 
 # Set these defaults prior to running the script.
-default_vnet_name="vnet-spoke-001"
+default_vnet_name="vnet-spoke-01"
 default_vnet_address_space="10.2.0.0/16"
-default_default_subnet_name="snet-default-002"
+default_default_subnet_name="snet-default-02"
 default_default_subnet_address_prefix="10.2.0.0/24"
-default_database_subnet_name="snet-db-001"
+default_database_subnet_name="snet-db-01"
 default_database_subnet_address_prefix="10.2.1.0/27"
-default_application_subnet_name="snet-app-001"
+default_application_subnet_name="snet-app-01"
 default_application_subnet_address_prefix="10.2.1.32/27"
-default_privatelink_subnet_name="snet-storage-private-endpoints-002"
+default_privatelink_subnet_name="snet-storage-private-endpoints-02"
 default_privatelink_subnet_address_prefix="10.2.1.64/27"
 
 # Intialize runtime defaults

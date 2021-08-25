@@ -88,13 +88,13 @@ Pre-configured [virtual machine extensions](https://docs.microsoft.com/en-us/azu
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-storage_account_name | Input | String | Local | st8e644ec51c5be098001
+storage_account_name | Input | String | Local | st8e644ec51c5be09801
 vm_db_post_deploy_script | Input | string | Local | post-deploy-sql-vm.ps1
-vm_db_post_deploy_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d8001.blob.core.windows.net/scripts/post-deploy-sql-vm.ps1>
+vm_db_post_deploy_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d801.blob.core.windows.net/scripts/post-deploy-sql-vm.ps1>
 vm_db_sql_bootstrap_script | Input | string | Local | sql-bootstrap.ps1
-vm_db_sql_bootstrap_script_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d8001.blob.core.windows.net/scripts/sql-bootstrap.ps1>
+vm_db_sql_bootstrap_script_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d801.blob.core.windows.net/scripts/sql-bootstrap.ps1>
 vm_db_sql_startup_script | Input | string | Local | sql-startup.ps1
-vm_db_sql_startup_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d8001.blob.core.windows.net/scripts/sql-startup.ps1>
+vm_db_sql_startup_script_uri | Input | string | Local | <https://st4f68ad5fe009d4d801.blob.core.windows.net/scripts/sql-startup.ps1>
 
 ## Smoke testing
 
@@ -103,14 +103,14 @@ vm_db_sql_startup_script_uri | Input | string | Local | <https://st4f68ad5fe009d
   * Review the database server virtual machine configuration using both the *Virtual machine* UI and the *SQL virtual machine* UI.
   * Generate a script for mapping drives to the shared file share.
     * Mapping a drive to an Azure Files file share requires automation due to the use of a complex shared key to authenticate.
-    * In the Azure Portal navigate to *storage accounts* > *stxxxxxxxxxxxxxxxx001* > *file service* > *file shares* > *fs-xxxxxxxxxxxxxxxx-001* > *Connect* > *Windows*
+    * In the Azure Portal navigate to *storage accounts* > *stxxxxxxxxxxxxxxxx01* > *file service* > *file shares* > *fs-xxxxxxxxxxxxxxxx-01* > *Connect* > *Windows*
     * Copy the PowerShell script in the right-hand pane for use in the next smoke testing exercise.
 * Connect to the database server virtual machine in the Azure portal using bastion and log in with the value of the *adminuser* secret (e.g. `bootstrapadmin`) and the value of the *adminpassword* secret defined previously.
   * Confirm access to shared file share private endpoint.
     * Run Windows PowerShell ISE, create a new script, and paste in the script generated previously.
-    * Copy the fqdn for the file endpoint from line 4, for example *stxxxxxxxxxxxxxxxx001.file.core.windows.net*
-    * Run `Resolve-DnsName stxxxxxxxxxxxxxxxx001.file.core.windows.net` from the Windows PowerShell ISE console.  
-    * Verify the the *IP4Address* returned is consistent with the address prefix used for the *snet-storage-private-endpoints-001* subnet in the shared services virtual network. This name resolution is accomplished using the shared private DNS zone.
+    * Copy the fqdn for the file endpoint from line 4, for example *stxxxxxxxxxxxxxxxx01.file.core.windows.net*
+    * Run `Resolve-DnsName stxxxxxxxxxxxxxxxx01.file.core.windows.net` from the Windows PowerShell ISE console.  
+    * Verify the the *IP4Address* returned is consistent with the address prefix used for the *snet-storage-private-endpoints-01* subnet in the shared services virtual network. This name resolution is accomplished using the shared private DNS zone.
     * Execute the PowerShell script copied from the Azure Portal to establish a drive mapping to the shared file share using the private endpoint.
     * Create some directories and sample files on the drive mapped to the shared file share to test functionality.
   * Review the log file created during execution of the post-deployment script in C:/Packages/Plugins/Microsoft.Compute.CustomScriptExtension/1.10.X/Downloads/0.
