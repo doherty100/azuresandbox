@@ -8,12 +8,21 @@ usage() {
     exit 1
 }
 
+# Log out of Azure
+printf "Logging out of Azure..."
+az logout
+az account clear
+
+# Log into Azure
+printf "Logging into Azure..."
+az login
+
 # Initialize constants
-adds_subnet_name="snet-adds-001"
+adds_subnet_name="snet-adds-01"
 admin_password_secret="adminpassword"
 admin_username_secret="adminuser"
 bastion_subnet_name="AzureBastionSubnet"
-default_subnet_name="snet-default-001"
+default_subnet_name="snet-default-01"
 storage_container_name="scripts"
 upn=$(az ad signed-in-user show --query userPrincipalName --output tsv)
 
@@ -30,11 +39,11 @@ default_environment="dev"
 default_location="eastus2"
 default_owner_object_id=$(az ad user show --id $upn --query objectId --output tsv)
 default_project="#AzureQuickStarts"
-default_resource_group_name="rg-vdc-nonprod-001"
+default_resource_group_name="rg-vdc-nonprod-01"
 default_subscription_id=$(az account list --query "[? isDefault]|[0].id" --only-show-errors --output tsv)
 default_vm_adds_name="adds1"
 default_vnet_address_space="10.1.0.0/16"
-default_vnet_name="vnet-shared-001"
+default_vnet_name="vnet-shared-01"
 
 # Get user input
 read -e -i $default_aad_tenant_id                 -p "aad tenant id -----------------: " aad_tenant_id

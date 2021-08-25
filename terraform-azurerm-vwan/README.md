@@ -35,25 +35,25 @@ This section provides an index of the 6 resources included in this quick start.
 
 ---
 
-Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) to connect the shared services and dedicated spoke virtual networks to remote users and/or private networks with an automatically generated name following the grep format "vwan-\[a-z0-9\]\{16\}-001". The following arguments are configured by default:
+Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) to connect the shared services and dedicated spoke virtual networks to remote users and/or private networks with an automatically generated name following the grep format "vwan-\[a-z0-9\]\{16\}-01". The following arguments are configured by default:
 
 * [disable_vpn_encryption](https://www.terraform.io/docs/providers/azurerm/r/virtual_wan.html#disable_vpn_encryption) = false
 * [allow_branch_to_branch_traffic](https://www.terraform.io/docs/providers/azurerm/r/virtual_wan.html#allow_branch_to_branch_traffic) = true
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vwan_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualWans/vwan-e2b88962e7284da0-001
-vwan_01_name | Output | string | Local | vwan-e2b88962e7284da0-001
+vwan_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualWans/vwan-e2b88962e7284da0-01
+vwan_01_name | Output | string | Local | vwan-e2b88962e7284da0-01
 
 #### Virtual WAN Hub
 
-Shared [virtual WAN hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) attached to the shared virtual wan with an automatically generated name following the grep format "vhub-\[a-z0-9\]\{16\}-001". Pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) are established with the shared services virtual network and the dedicated spoke virtual network.
+Shared [virtual WAN hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) attached to the shared virtual wan with an automatically generated name following the grep format "vhub-\[a-z0-9\]\{16\}-01". Pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) are established with the shared services virtual network and the dedicated spoke virtual network.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 vwan_hub_address_prefix | Input | string | Local | 10.3.0.0/16
-vwan_01_hub_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-001/providers/Microsoft.Network/virtualHubs/vhub-6c8fe94d3b690bf9-001
-vwan_01_hub_01_name | Output | string | Local | vhub-6c8fe94d3b690bf9-001
+vwan_01_hub_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualHubs/vhub-6c8fe94d3b690bf9-01
+vwan_01_hub_01_name | Output | string | Local | vhub-6c8fe94d3b690bf9-01
 
 ## Smoke testing
 
@@ -76,13 +76,13 @@ This smoke test establishes a Point to Site (P2S) VPN connection to the Virtual 
   * ROOT CERTIFICATE NAME: `MyP2SVPNRootCert` (default)
   * PUBLIC CERTIFICATE DATA: Paste in the content of `MyP2SVPNRootCert_Base64_Encoded.cer`, not including the begin / end certificate lines.
 * Create User (P2S) VPN Gateway. This can take rougly 15 minutes.
-  * In the Azure Portal, navigate to *Home > Virtual WANs > vwan-XXXX-001 > Hubs > vhub-XXXX-001 > User VPN (Point to site)*
+  * In the Azure Portal, navigate to *Home > Virtual WANs > vwan-XXXX-01 > Hubs > vhub-XXXX-01 > User VPN (Point to site)*
   * Gateway scale units: `1 scale unit - 1 Gbps`
   * Point to site configuration: `UserVPNConfig1`
   * Client address pool: `10.4.0.0/16`
   * Custom DNS servers: `168.63.129.16` (See [What is IP address 168.63.129.16?](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16) for more info)
 * Download Virtual Hub User VPN Profile
-  * In the Azure Portal, navigate to *Home > Virtual WANs > vwan-XXXX-001 > Hubs > vhub-XXXX-001 > User VPN (Point to site)*
+  * In the Azure Portal, navigate to *Home > Virtual WANs > vwan-XXXX-01 > Hubs > vhub-XXXX-01 > User VPN (Point to site)*
   * Click *Download virtual Hub User VPN profile*
     * Authentication type: *EAPTLS*
     * Click *Generate and download profile*
@@ -115,15 +115,15 @@ This smoke test establishes a Point to Site (P2S) VPN connection to the Virtual 
     * Manually configure DNS name resolution for File Share that was provisioned in [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
       * Run `terraform output` in `terraform-azurerm-vnet-shared` and make a note of the the following values:
         * `storage_account_01_private_endpoint_file_prvip`, e.g. `10.1.2.4`
-        * `storage_share_01_url`, e.g. `https://st2fb53ab20772e9a5001.file.core.windows.net/fs-95d43e7000c51409-001`. Make a note of the fqdn, e.g. `st2fb53ab20772e9a5001.file.core.windows.net`
+        * `storage_share_01_url`, e.g. `https://st2fb53ab20772e9a501.file.core.windows.net/fs-95d43e7000c51409-01`. Make a note of the fqdn, e.g. `st2fb53ab20772e9a501.file.core.windows.net`
       * Update the local `hosts` file for your Windows 10 client
         * Run notepad as Administrator and open `C:\Windows\System32\drivers\etc\hosts`
-        * Add a line to the end which resolves the fqdn for the File Share to the private ip, e.g. `10.1.2.4 st2fb53ab20772e9a5001.file.core.windows.net`
+        * Add a line to the end which resolves the fqdn for the File Share to the private ip, e.g. `10.1.2.4 st2fb53ab20772e9a501.file.core.windows.net`
         * Save the updated `hosts` file
-      * Test that name resolution to the private ip is working using Powershell, e.g. `Resolve-DnsName st2fb53ab20772e9a5001.file.core.windows.net`.
+      * Test that name resolution to the private ip is working using Powershell, e.g. `Resolve-DnsName st2fb53ab20772e9a501.file.core.windows.net`.
     * Map a drive using the File Share private endpoint
-      * In the Azure Portal, navigate to the storage account provisioned in [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared), e.g. `st2fb53ab20772e9a5001`
-      * Navigate to *File Shares* and click on the File Share provisioned in [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared), e.g. `fs-95d43e7000c51409-001`
+      * In the Azure Portal, navigate to the storage account provisioned in [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared), e.g. `st2fb53ab20772e9a501`
+      * Navigate to *File Shares* and click on the File Share provisioned in [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared), e.g. `fs-95d43e7000c51409-01`
       * Click *Connect* and copy the PowerShell script displayed in the text box.
       * Paste the script into a new script window in PowerShell ISE and save it, then execute the script.
     * Copy some files to the newly mapped drive.
@@ -132,16 +132,16 @@ This smoke test establishes a Point to Site (P2S) VPN connection to the Virtual 
     * Manually configure DNS name resolution for SQL Database that was provisioned in [terraform-azurerm-sql](../terraform-azurerm-sql)
       * Run `terraform output` in `terraform-azurerm-sql` and make a note of the the following values:
         * `sql_server_01_private_endpoint_prvip`, e.g. `10.2.1.100`.
-        * `sql_server_01_fqdn`, e.g. `sql-ddf012de2c97ae5b-001.database.windows.net`.
+        * `sql_server_01_fqdn`, e.g. `sql-ddf012de2c97ae5b-01.database.windows.net`.
       * Update the local `hosts` file for your Windows 10 client
         * Run notepad as Administrator and open `C:\Windows\System32\drivers\etc\hosts`
-        * Add a line to the end which resolves the fqdn for the File Share to the private ip, e.g. `10.2.1.100 sql-ddf012de2c97ae5b-001.database.windows.net`
+        * Add a line to the end which resolves the fqdn for the File Share to the private ip, e.g. `10.2.1.100 sql-ddf012de2c97ae5b-01.database.windows.net`
         * Save the updated `hosts` file
-      * Test that name resolution to the private ip is working using Powershell, e.g. `Resolve-DnsName sql-ddf012de2c97ae5b-001.database.windows.net`.
+      * Test that name resolution to the private ip is working using Powershell, e.g. `Resolve-DnsName sql-ddf012de2c97ae5b-01.database.windows.net`.
     * Connect to SQL Database using SQL Server Management Studio
       * Launch SQL Server Management Studio
       * Connect using SQL Server Authentication
-        * Server name: The fqdn of the SQL Database used earlier, e.g. `sql-ddf012de2c97ae5b-001.database.windows.net`.
+        * Server name: The fqdn of the SQL Database used earlier, e.g. `sql-ddf012de2c97ae5b-01.database.windows.net`.
         * Login: Use the bootstrap credentials from [terraform-azurerm-sql](../terraform-azurerm-sql), e.g. `bootstrapadmin`
     * Create a test database and enter some test data.
 

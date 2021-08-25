@@ -4,7 +4,7 @@ resource "random_id" "random_id_sql_server_01_name" {
 }
 
 resource "azurerm_sql_server" "sql_server_01" {
-  name                         = "sql-${random_id.random_id_sql_server_01_name.hex}-001"
+  name                         = "sql-${random_id.random_id_sql_server_01_name.hex}-01"
   resource_group_name          = var.resource_group_name
   location                     = var.location
   version                      = "12.0"
@@ -31,7 +31,7 @@ resource "random_id" "random_id_sql_server_01_private_endpoint_name" {
 }
 
 resource "azurerm_private_endpoint" "sql_server_01_private_endpoint" {
-  name                = "pend-${random_id.random_id_sql_server_01_private_endpoint_name.hex}-002"
+  name                = "pend-${random_id.random_id_sql_server_01_private_endpoint_name.hex}-02"
   resource_group_name = var.resource_group_name
   location            = var.location
   subnet_id           = var.private_endpoints_subnet_id
@@ -90,7 +90,7 @@ output "private_dns_a_record_2_name" {
 
 # Private DNS zone virtual network link
 resource "azurerm_private_dns_zone_virtual_network_link" "virtual_network_link_vnet_spoke_01" {
-  name                  = "pdnslnk-${var.vnet_name}-002"
+  name                  = "pdnslnk-${var.vnet_name}-02"
   resource_group_name   = var.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.private_dns_zone_2.name
   virtual_network_id    = var.vnet_id

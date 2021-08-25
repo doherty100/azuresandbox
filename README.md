@@ -2,21 +2,21 @@
 
 ## Overview
 
-This repository contains a collection of inter-dependent [cloud computing](https://azure.microsoft.com/en-us/overview/what-is-cloud-computing) quick starts for implementing common [Microsoft Azure](https://azure.microsoft.com/en-us/overview/what-is-azure/) services on a single [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription). Collectively these quick starts implement a basic [hub-spoke networking topology](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke) with shared services using automation implemented using popular open source tools that are supported on Windows, macOS and Linux including:
+This repository contains a collection of inter-dependent [cloud computing](https://azure.microsoft.com/en-us/overview/what-is-cloud-computing) quick starts for implementing common [Microsoft Azure](https://azure.microsoft.com/en-us/overview/what-is-azure/) services on a single [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription). Collectively these quick starts provide a test lab environment useful for experimenting with various Azure services and capabilities. The quick starts are implemented using popular open source automation tools that are supported on Windows, macOS and Linux including:
 
 * [git](https://git-scm.com/) for source control.
 * [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) for scripting.
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/what-is-azure-cli?view=azure-cli-latest) is a command line interface for Azure.
 * [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-5.1) for Windows Server post-deployment scripts.
-* [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) v1.0.2 for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
-  * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v2.67.0
+* [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) v1.0.5 for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
+  * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v2.73.0
   * [Random Provider](https://registry.terraform.io/providers/hashicorp/random/latest/docs) (random) v3.1.0
 
 Miscellaneous quick starts are also provided for other functionality. This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doherty-805635b/).
 
 ## Quick start index
 
-The quick starts feature a modular design and can be deployed as a whole or incrementally depending upon requirements. While not comprehensive, the quick starts are intended to accelerate cloud projects using sound architectural best practices including security and operational efficiency. Each is listed here in suggested order of deployment.
+The quick starts feature a modular design and can be deployed as a whole or incrementally depending upon requirements, and are intended to accelerate cloud projects using best practices where feasible for a test lab environment. Each is listed here in suggested order of deployment.
 
 * [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/)
   * [Resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group)  
@@ -157,12 +157,12 @@ This section documents the default subnet IP address prefixes used in the quick 
 
 Virtual network | Subnet | IP address prefix | First | Last | IP address count
 --- | --- | --- | --- | --- | --:
-Shared services | snet-default-001 | 10.1.0.0/24 | 10.1.0.0 | 10.1.0.255 | 256
+Shared services | snet-default-01 | 10.1.0.0/24 | 10.1.0.0 | 10.1.0.255 | 256
 Shared services | AzureBastionSubnet | 10.1.1.0/27 | 10.1.1.0 | 10.1.1.31 | 32
 Shared services | Reserved for future use | 10.1.1.32/27 | 10.1.1.32 | 10.1.1.63 | 32
 Shared services | Reserved for future use | 10.1.1.64/26 | 10.1.1.64 | 10.1.1.127 | 64
 Shared services | Reserved for future use | 10.1.1.128/25 | 10.1.1.128 | 10.1.1.255 | 128
-Shared services | snet-adds-001 | 10.1.2.0/24 | 10.1.2.0 | 10.1.2.255 | 256
+Shared services | snet-adds-01 | 10.1.2.0/24 | 10.1.2.0 | 10.1.2.255 | 256
 Shared services | Reserved for future use | 10.1.3.0/24 | 10.1.3.0 | 10.1.3.255 | 256
 Shared services | Reserved for future use | 10.1.4.0/22 | 10.1.4.0 | 10.1.7.255 | 1,024
 Shared services | Reserved for future use | 10.1.8.0/21 | 10.1.8.0 | 10.1.15.255 | 2,048
@@ -170,10 +170,10 @@ Shared services | Reserved for future use | 10.1.16.0/20 | 10.1.16.0 | 10.1.31.2
 Shared services | Reserved for future use | 10.1.32.0/19 | 10.1.32.0 | 10.1.63.255 | 8,192
 Shared services | Reserved for future use | 10.1.64.0/18 | 10.1.64.0 | 10.1.127.255 | 16,384
 Shared services | Reserved for future use | 10.1.128.0/17 | 10.1.128.0 | 10.1.255.255 | 32,768
-Spoke | snet-default-002 | 10.2.0.0/24 | 10.2.0.0 | 10.2.0.255 | 256
-Spoke | snet-db-001 | 10.2.1.0/27 | 10.2.1.0 | 10.2.1.31 | 32
-Spoke | snet-app-001 | 10.2.1.32/27 | 10.2.1.32 | 10.2.1.63 | 32
-Spoke | snet-storage-private-endpoints-002 | 10.2.1.64/27 | 10.2.1.64 | 10.2.1.95 | 32
+Spoke | snet-default-02 | 10.2.0.0/24 | 10.2.0.0 | 10.2.0.255 | 256
+Spoke | snet-db-01 | 10.2.1.0/27 | 10.2.1.0 | 10.2.1.31 | 32
+Spoke | snet-app-01 | 10.2.1.32/27 | 10.2.1.32 | 10.2.1.63 | 32
+Spoke | snet-storage-private-endpoints-02 | 10.2.1.64/27 | 10.2.1.64 | 10.2.1.95 | 32
 Spoke | Reserved for future use | 10.2.1.96/27 | 10.2.1.96 | 10.2.1.127 | 32
 Spoke | Reserved for future use | 10.2.1.128/25 | 10.2.1.128 | 10.2.1.255 | 128
 Spoke | Reserved for future use | 10.2.2.0/23 | 10.2.2.0 | 10.2.3.255 | 512
@@ -208,7 +208,7 @@ While a default quick start deployment is fine for testing, it may not work with
 1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
 1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/). Note: backups must be manually deleted first.
 
-Alternatively, for speed, simply run `az group delete -g rg-vdc-nonprod-001`. This will delete everything unless there are backups, in which case you must manually delete the backups first. See [Proper way to delete a vault](https://docs.microsoft.com/en-us/azure/backup/backup-azure-delete-vault#proper-way-to-delete-a-vault) for more information.
+Alternatively, for speed, simply run `az group delete -g rg-vdc-nonprod-01`. This will delete everything unless there are backups, in which case you must manually delete the backups first. See [Proper way to delete a vault](https://docs.microsoft.com/en-us/azure/backup/backup-azure-delete-vault#proper-way-to-delete-a-vault) for more information.
 
 ### Perform custom quick start deployment
 
@@ -260,27 +260,27 @@ Use this section to customize the default subnet IP address prefixes used by the
 
 Virtual network | Subnet | IP address prefix | First | Last | IP address count
 --- | --- | --- | --- | --- | --:
-Shared services | snet-default-001 | 10.73.8.0/25 | 10.73.8.0 | 10.73.8.127 | 128
+Shared services | snet-default-01 | 10.73.8.0/25 | 10.73.8.0 | 10.73.8.127 | 128
 Shared services | AzureBastionSubnet | 10.73.8.128/27 | 10.73.8.128 | 10.73.8.159 | 32
-Shared services | snet-adds-001 | 10.73.8.160/27 | 10.73.8.160 | 10.73.8.191 | 32
+Shared services | snet-adds-01 | 10.73.8.160/27 | 10.73.8.160 | 10.73.8.191 | 32
 Shared services | Reserved for future use | 10.73.8.192/27 | 10.73.8.192 | 10.73.8.223 | 32
 Shared services | Reserved for future use | 10.73.8.224/27 | 10.73.8.224 | 10.73.8.255 | 32
-Spoke | snet-default-002 | 10.73.9.0/25 | 10.73.9.0 | 10.73.9.127 | 128
-Spoke | snet-db-001 | 10.73.9.128/27 | 10.73.9.128 | 10.73.9.159 | 32
-Spoke | snet-app-001 | 10.73.9.160/27 | 10.73.9.160 | 10.73.9.191 | 32
-Spoke | snet-storage-private-endpoints-002 | 10.73.9.192/27 | 10.73.9.192 | 10.73.9.223 | 32
+Spoke | snet-default-02 | 10.73.9.0/25 | 10.73.9.0 | 10.73.9.127 | 128
+Spoke | snet-db-01 | 10.73.9.128/27 | 10.73.9.128 | 10.73.9.159 | 32
+Spoke | snet-app-01 | 10.73.9.160/27 | 10.73.9.160 | 10.73.9.191 | 32
+Spoke | snet-storage-private-endpoints-02 | 10.73.9.192/27 | 10.73.9.192 | 10.73.9.223 | 32
 Spoke | Reserved for future use | 10.73.9.224/27 | 10.73.9.224 | 10.73.9.255 | 32
 
 It is recommended to reserve space for future subnets. A blank table is provided here for convenience. Make a copy of this table and change the *TBD* values to your custom values.
 
 Virtual network | Subnet | IP address prefix | First | Last | IP address count
 --- | --- | --- | --- | --- | --:
-Shared services | snet-default-001 | TBD | TBD | TBD | TBD
+Shared services | snet-default-01 | TBD | TBD | TBD | TBD
 Shared services | AzureBastionSubnet | TBD | TBD | TBD | TBD
-Shared services | snet-storage-private-endpoints-001 | TBD | TBD | TBD | TBD
+Shared services | snet-storage-private-endpoints-01 | TBD | TBD | TBD | TBD
 Shared services | Reserved for future use | TBD | TBD | TBD | TBD
-Spoke | snet-default-002 | TBD | TBD | TBD | TBD
+Spoke | snet-default-02 | TBD | TBD | TBD | TBD
 Spoke | AzureBastionSubnet | TBD | TBD | TBD | TBD
-Spoke | snet-db-001 | TBD | TBD | TBD | TBD
-Spoke | snet-app-001 | TBD | TBD | TBD | TBD
-Spoke | snet-storage-private-endpoints-002 | TBD | TBD | TBD | TBD
+Spoke | snet-db-01 | TBD | TBD | TBD | TBD
+Spoke | snet-app-01 | TBD | TBD | TBD | TBD
+Spoke | snet-storage-private-endpoints-02 | TBD | TBD | TBD | TBD

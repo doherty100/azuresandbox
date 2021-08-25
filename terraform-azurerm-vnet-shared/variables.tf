@@ -89,7 +89,7 @@ variable "subnets" {
   description = "The subnets to be created in the new virtual network. AzureBastionSubnet is required."
   # default = {
   # default = {
-  #   name                                           = "snet-default-001",
+  #   name                                           = "snet-default-01",
   #   address_prefix                                 = "10.1.0.0/24",
   #   enforce_private_link_endpoint_network_policies = false
   # },
@@ -99,12 +99,12 @@ variable "subnets" {
   #   enforce_private_link_endpoint_network_policies = false
   # },
   # PrivateLink = {
-  #   name                                           = "snet-storage-private-endpoints-001",
+  #   name                                           = "snet-storage-private-endpoints-01",
   #   address_prefix                                 = "10.1.2.0/24",
   #   enforce_private_link_endpoint_network_policies = true
   # },
   # adds = {
-  #   name                                           = "snet-adds-001",
+  #   name                                           = "snet-adds-01",
   #   address_prefix                                 = "10.1.3.0/24",
   #   enforce_private_link_endpoint_network_policies = false
   # }

@@ -79,7 +79,7 @@ output "vnet_spoke_01_to_vnet_shared_01_peering_name" {
 
 # Private DNS zone virtual network link
 resource "azurerm_private_dns_zone_virtual_network_link" "virtual_network_link_vnet_spoke_01" {
-  name                  = "pdnslnk-${azurerm_virtual_network.vnet_spoke_01.name}-002"
+  name                  = "pdnslnk-${azurerm_virtual_network.vnet_spoke_01.name}-02"
   resource_group_name   = var.resource_group_name
   private_dns_zone_name = "privatelink.file.core.windows.net"
   virtual_network_id    = azurerm_virtual_network.vnet_spoke_01.id

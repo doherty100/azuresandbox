@@ -4,7 +4,7 @@ resource "random_id" "random_id_log_analytics_workspace_01_name" {
 }
 
 resource "azurerm_log_analytics_workspace" "log_analytics_workspace_01" {
-  name                = "log-${random_id.random_id_log_analytics_workspace_01_name.hex}-001"
+  name                = "log-${random_id.random_id_log_analytics_workspace_01_name.hex}-01"
   location            = var.location
   resource_group_name = var.resource_group_name
   sku                 = "PerGB2018"
