@@ -23,30 +23,30 @@ output "vnet_shared_01_default_subnet_id" {
 }
 
 # Dedicated bastion
-resource "random_id" "random_id_bastion_host_01_name" {
+resource "random_id" "bastion_host_01_name" {
   byte_length = 8
 }
 
 resource "azurerm_bastion_host" "bastion_host_01" {
-  name                = "bst-${random_id.random_id_bastion_host_01_name.hex}-1"
+  name                = "bst-${random_id.bastion_host_01_name.hex}-1"
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = var.tags
 
   ip_configuration {
-    name                 = "ipc-${random_id.random_id_bastion_host_01_name.hex}-1"
+    name                 = "ipc-${random_id.bastion_host_01_name.hex}-1"
     subnet_id            = azurerm_subnet.vnet_shared_01_subnets["AzureBastionSubnet"].id
     public_ip_address_id = azurerm_public_ip.public_ip_bastion_host_01.id
   }
 }
 
 # Dedicated public ip for bastion
-resource "random_id" "random_id_public_ip_bastion_host_01_name" {
+resource "random_id" "public_ip_bastion_host_01_name" {
   byte_length = 8
 }
 
 resource "azurerm_public_ip" "public_ip_bastion_host_01" {
-  name                = "pip-${random_id.random_id_public_ip_bastion_host_01_name.hex}-1"
+  name                = "pip-${random_id.public_ip_bastion_host_01_name.hex}-1"
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
