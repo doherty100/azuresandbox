@@ -26,7 +26,7 @@ resource "azurerm_automation_account" "automation_account_01" {
         AdminUserName = "${nonsensitive(data.azurerm_key_vault_secret.adminuser.value)}"
         AdminPwd = "${nonsensitive(data.azurerm_key_vault_secret.adminpassword.value)}"
         }
-        ${path.root}/bootstrap-automation.ps1 @params 
+        ${path.root}/configure-automation.ps1 @params 
    EOT
     interpreter = ["pwsh", "-Command"]
   }

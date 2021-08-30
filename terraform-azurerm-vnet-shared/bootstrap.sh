@@ -12,6 +12,8 @@ usage() {
 adds_subnet_name="snet-adds-01"
 admin_password_secret="adminpassword"
 admin_username_secret="adminuser"
+arm_client_id=""
+arm_client_secret=""
 bastion_subnet_name="AzureBastionSubnet"
 default_subnet_name="snet-default-01"
 storage_container_name="scripts"
@@ -55,7 +57,10 @@ read -e -i $default_adds_domain_name              -p "adds domain name ---------
 read -e -i $default_vm_adds_name                  -p "adds vm name ------------------: " vm_adds_name
 read -e -i $default_admin_username                -p "admin username value ----------: " admin_username
 read -e -s                                        -p "admin password value ----------: " admin_password
-printf "password length ${#admin_password}\n"
+printf "admin password length ${#admin_password}\n"
+read -e                                           -p "arm client id (appId) ---------: " arm_client_id
+read -e -s                                        -p "arm client secret (secret) ----: " arm_client_secret
+printf "arm client secret length ${#arm_client_secret}\n"
 
 # Validate user input
 aad_tenant_id=${aad_tenant_id:-default_aad_tenant_id}
@@ -77,6 +82,20 @@ subscription_id=${subscription_id:-$default_subscription_id}
 vm_adds_name=${vm_adds_name:-default_vm_adds_name}
 vnet_address_space=${vnet_address_space:-default_vnet_address_space}
 vnet_name=${vnet_name:=$default_vnet_name}
+
+# Validate arm_client_id
+if [ -z "$arm_client_id" ]
+then
+  printf "arm_client_id is required."
+  usage
+fi
+
+# Validate arm_client_secret
+if [ -z "$arm_client_secret" ]
+then
+  printf "arm_client_secret is required."
+  usage
+fi
 
 # Validate password
 if [ -z "$admin_password" ]
@@ -237,6 +256,13 @@ tags="${tags}  project     = \"$project\",\n"
 tags="${tags}  costcenter  = \"$costcenter\",\n"
 tags="${tags}  environment = \"$environment\"\n"
 tags="${tags}}"
+
+# Export environment variables for Terraform Azure Provider authentication
+
+export ARM_CLIENT_ID=$arm_client_id
+export ARM_CLIENT_SECRET=$arm_client_secret
+export ARM_SUBSCRIPTION_ID=$subscription_id
+export ARM_TENANT_ID=$aad_tenant_id
 
 # Generate terraform.tfvars file
 printf "\nGenerating terraform.tfvars file...\n\n"

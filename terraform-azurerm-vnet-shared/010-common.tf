@@ -17,12 +17,11 @@ data "azurerm_key_vault_secret" "adminuser" {
   key_vault_id = var.key_vault_id
 }
 
-data "azurerm_key_vault_secret" "storage_account_key" {
-  name         = var.storage_account_name
-  key_vault_id = var.key_vault_id
+# Output variables
+output "aad_tenant_id" {
+  value = var.aad_tenant_id
 }
 
-# Output variables
 output "key_vault_id" {
   value = var.key_vault_id
 }

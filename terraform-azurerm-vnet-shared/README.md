@@ -2,14 +2,25 @@
 
 ## Overview
 
-This quick start implements a shared services [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet). It is the primary building block upon which all the other quick starts are built.
+This quick start implements shared services used by all the quick starts including:
+
+* A [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group) for provisioning Azure resources
+* A [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview) for storing and retrieving shared secrets
+* A [storage account](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#storage-account) for storing and retrieving data
+* A [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/data-platform#collect-monitoring-data) for storing and querying metrics and logs
+* An [automation account](https://docs.microsoft.com/en-us/azure/automation/automation-intro) for orchestration, configuration management and update management
+* A shared services [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting virtual machines used as domain controllers, DNS servers and jump boxes.
+* A [bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview) for secure RDP and SSH access to virtual machines.
+* A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) running [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) with a pre-configured domain and DNS server.
+
+![vnet-shared-diagram](./vnet-shared-diagram.png)
 
 Activity | Estimated time required
 --- | ---
 Pre-configuration | ~10 minutes
 Provisioning | ~30 minutes
-Smoke testing | ~5 minutes
-De-provisioning | ~15 minutes
+Smoke testing | ~10 minutes
+De-provisioning | ~30 minutes
 
 ## Getting started
 
@@ -20,34 +31,83 @@ This section describes how to provision this quick start using default settings.
 * Run `az account list -o table` and copy the *Subscription Id* to be used for the quick starts.
 * Run `az account set -s 00000000-0000-0000-0000-000000000000` using the *Subscription Id* from the previous step to set the default subscription.
 * Run `./bootstrap.sh` using the default settings or your own custom settings.
+  * When prompted for *adminuser*, avoid using [restricted usernames](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm-).
+  * When prompted for *adminpassword*, generate a strong password but be sure to escape any [linux special characters](https://tldp.org/LDP/abs/html/special-chars.html).
 * Run `terraform init` and note the version of the *azurerm* provider installed.
 * Run `terraform validate` to check the syntax of the configuration.
 * Run `terraform plan` and review the plan output.
 * Run `terraform apply` to apply the plan.
+  * *Important*: Be sure to watch for the output `(local-exec): WARNING: To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code XXXXXXXXX to authenticate.` If you see this warning you must sign in from your web browser using the URL and code provided. Multiple logins are be required.
+
+## Smoke testing
+
+* Explore your newly provisioned resources in the Azure portal.
+* Use bastion to establish an RDP connection to the Windows Server virtual machine.
+* Launch the *Active Directory Domains and Trusts* administration tool and verify the newly configured domain name.
+* Launch the *DNS Manager* administration tool and examine the `Forward Lookup Zones` node to understand the default dns configuration of the newly configured domain.
+* Run `terraform output` to view the output variables from the *terraform.tfstate* file.
 
 ## Resource index
 
-This section provides an index of the 33 resources included in this quick start.
+This section provides an index of the resources included in this quick start.
 
 ### Resource group
 
 ---
 
-[Resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group) used by all quick start configurations. Note there are dependencies on this resource in the following quick starts:  
-
-* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
-* [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows)
-* [terraform-azurerm-vwan](../terraform-azurerm-vwan)
+[Resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group) used by all quick start configurations. Note this resource is provisioned by `bootstrap.sh` not by Terraform.
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-resource_group_name | Input | string | Local | rg-vdc-nonprod-01
-location | Input | string | Local | eastus2
+aad_tenant_id | Input / Output | string | Global | 00000000-0000-0000-0000-000000000000
+subscription_id | Input / Output | string | Global | 00000000-0000-0000-0000-000000000000
+resource_group_name | Input / Output | string | Global | rg-vdc-nonprod-01
+location | Input / Output | string | Global | eastus2
 tags | Input | map | Local | { project = "#AzureQuickStarts", costcenter  = "10177772", environment = "dev" }
-resource_group_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01
-resource_group_01_location | Output | string | Global | eastus2
-resource_group_01_name | Output | string | Global | rg-vdc-nonprod-01
-resource_group_01_tags | Output | map | Global | { project = "#AzureQuickStarts", costcenter = "10177772", environment = "dev" }
+
+### Key vault
+
+---
+
+[Key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview) for shared secrets. Note this resource is provisioned by `bootstrap.sh` not by Terraform. The following options are set configured by default:
+
+* sku: standard
+* [enabled_for_deployment](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_deployment): true  
+* [enabled_for_disk_encryption](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_disk_encryption): true  
+* [enabled_for_template_deployment](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_template_deployment): true
+
+The following shared secrets are created and are used in the other quick starts.
+
+* *adminuser* and *adminpassword*: Used in quick starts that require administrator credentials.
+* *log analytics workspace key*: The name of this secret is the log analytics workspace id. The value is the primary shared key of the log analytics workspace.
+* *Storage account key*: The name of this secret is the storage account name. The value is the primary access key (key1) for the storage account.
+
+Note that the values of these secrets are static and must be updated manually if they are no longer valid.
+
+Variable | In/Out | Type | Scope | Sample
+--- | --- | --- | --- | ---
+subscription_id | Input / Output | string | Global | 00000000-0000-0000-0000-000000000000
+key_vault_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.KeyVault/vaults/kv-xxxxxxxxxxxxxxx
+key_vault_name | Output | string | Global | kv-xxxxxxxxxxxxxxx
+
+#### Key vault access policy
+
+Key vault [access policy](https://docs.microsoft.com/en-us/azure/key-vault/general/secure-your-key-vault#data-plane-and-access-policies) for the security principal associated with *key_vault_admin_object_id* with the following [secret access control permissions](https://docs.microsoft.com/en-us/azure/key-vault/secrets/about-secrets#secret-access-control):
+
+* backup  
+* delete  
+* get
+* list
+* purge
+* recover
+* restore
+* set
+
+Variable | In/Out | Type | Scope | Sample
+--- | --- | --- | --- | ---
+aad_tenant_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
+key_vault_admin_object_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
+key_vault_01_access_policy_secrets_admin_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.KeyVault/vaults/kv-e054bd29698d4fc7-01/objectId/00000000-0000-0000-0000-000000000000
 
 ### Virtual network
 
@@ -178,43 +238,6 @@ Variable | In/Out | Type | Scope | Sample
 virtual_network_link_vnet_shared_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/privateDnsZones/privatelink.file.core.windows.net/virtualNetworkLinks/pdnslnk-vnet-shared-01-01
 virtual_network_link_vnet_shared_01_name | Output | string | Local | pdnslnk-vnet-shared-01-01
 
-### Key vault
-
----
-
-[Key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview) with an automatically generated random name following the grep format "kv-\[a-z0-9\]\{16\}-01". The output variables *key_vault_01_name* and *key_vault_01_id* are used by other configurations to set and retrieve secrets, and the following options are set to *true*:  
-
-* [enabled_for_deployment](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_deployment)  
-* [enabled_for_disk_encryption](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_disk_encryption)  
-* [enabled_for_template_deployment](https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#enabled_for_template_deployment)  
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-aad_tenant_id | Input | string | Local |00000000-0000-0000-0000-000000000000
-key_vault_sku_name | Input | string | Local | standard (default)
-key_vault_01_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.KeyVault/vaults/kv-e054bd29698d4fc7-01
-key_vault_01_name | Output | string | Global | kv-e054bd29698d4fc7-01
-key_vault_01_uri | Output | string | Local | Obfuscated for security
-
-#### Key vault access policy
-
-Key vault [access policy](https://docs.microsoft.com/en-us/azure/key-vault/general/secure-your-key-vault#data-plane-and-access-policies) for the security principal associated with *key_vault_admin_object_id* with the following [secret access control permissions](https://docs.microsoft.com/en-us/azure/key-vault/secrets/about-secrets#secret-access-control):
-
-* backup  
-* delete  
-* get
-* list
-* purge
-* recover
-* restore
-* set
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-aad_tenant_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
-key_vault_admin_object_id | Input | string | Local | 00000000-0000-0000-0000-000000000000
-key_vault_01_access_policy_secrets_admin_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.KeyVault/vaults/kv-e054bd29698d4fc7-01/objectId/00000000-0000-0000-0000-000000000000
-
 ### Log analytics workspace
 
 ---
@@ -229,29 +252,6 @@ log_analytics_workspace_01_name | Output | string | Local | log-1e884cca24cd4f8c
 log_analytics_workspace_01_workspace_id | Output | string | Global | 00000000-0000-0000-0000-000000000000
 log_analytics_workspace_01_primary_shared_key | Output | string | Global | Obfuscated for security
 
-### Recovery services vault
-
----
-
-[Recovery services vault](https://docs.microsoft.com/en-us/azure/backup/backup-azure-recovery-services-vault-overview) with an automatically generated random name following the grep pattern "rsv-\[a-z0-9\]\{16\}-01". This is intended to be used for [Azure VM backup](https://docs.microsoft.com/en-us/azure/backup/backup-azure-vms-introduction). Note that soft delete is disabled by default to enable easy cleanup of this quick start, and should be enabled for production environments. Backups must be manually deleted first before attempting to destroy the recovery services vault. See [Proper way to delete a vault](https://docs.microsoft.com/en-us/azure/backup/backup-azure-delete-vault#proper-way-to-delete-a-vault) for more information.
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-recovery_services_vault_soft_delete_enabled | Input | bool | Local | false
-recovery_services_vault_01_id | Output | string | Local | /subscriptions/f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.RecoveryServices/vaults/rsv-176bda033fa422f5-01
-recovery_services_vault_01_name | Output | string | Global | rsv-176bda033fa422f5-01
-
-## Smoke testing
-
-* Explore your newly provisioned resources in the Azure portal.
-* Run `terraform destroy` to understand how de-provisioning works.
-* Run `terraform apply` to re-apply the configuration.
-* Run `terraform output` to view the output variables from the *terraform.tfstate* file.
-
 ## Next steps
 
 * Move on to the next quick start [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows) and/or [terraform-azurerm-vm-linux](../terraform-azurerm-vm-linux).
-
-## Known issues
-
-* [#12447](https://github.com/terraform-providers/terraform-provider-azurerm/issues/12447)

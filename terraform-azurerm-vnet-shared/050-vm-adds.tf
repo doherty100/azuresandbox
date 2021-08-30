@@ -41,7 +41,7 @@ resource "azurerm_windows_virtual_machine" "vm_adds" {
         AdminUserName = "${nonsensitive(data.azurerm_key_vault_secret.adminuser.value)}"
         AdminPwd = "${nonsensitive(data.azurerm_key_vault_secret.adminpassword.value)}"
         }
-        ${path.root}/configure-adds-vm.ps1 @params 
+        ${path.root}/configure-vm-adds.ps1 @params 
    EOT
     interpreter = ["pwsh", "-Command"]
   }
