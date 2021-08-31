@@ -1,7 +1,5 @@
 #!/bin/bash
 
-start=$(date +%s.%N)
-
 # Bootstraps deployment with pre-requisites for applying Terraform configurations
 # Script is idempotent and can be run multiple times
 
@@ -294,7 +292,4 @@ cat ./terraform.tfvars
 
 printf "\nReview defaults in \"variables.tf\" prior to applying Terraform configurations...\n"
 printf "\nBootstrapping complete...\n"
-duration=$(echo "$(date +%s.%N) - $start" | bc)
-execution_time=`printf "%.2f" $duration`
-printf "\nScript execution time was '$execution_time' seconds...\n"
 exit 0
