@@ -1,5 +1,7 @@
 #!/bin/bash
 
+start=$(date +%s.%N)
+
 # Bootstraps deployment with pre-requisites for applying Terraform configurations
 # Script is idempotent and can be run multiple times
 
@@ -16,7 +18,6 @@ arm_client_id=""
 arm_client_secret=""
 bastion_subnet_name="AzureBastionSubnet"
 default_subnet_name="snet-default-01"
-start=$(date +%s.%N)
 storage_container_name="scripts"
 upn=$(az ad signed-in-user show --query userPrincipalName --output tsv)
 
@@ -294,6 +295,6 @@ cat ./terraform.tfvars
 printf "\nReview defaults in \"variables.tf\" prior to applying Terraform configurations...\n"
 printf "\nBootstrapping complete...\n"
 duration=$(echo "$(date +%s.%N) - $start" | bc)
-execution_time='printf "%.2f seconds" $duration'
-printf "\nScript execution time was '$execution_time'...\n"
+execution_time=`printf "%.2f" $duration`
+printf "\nScript execution time was '$execution_time' seconds...\n"
 exit 0

@@ -2,6 +2,8 @@
 
 ## Overview
 
+![vnet-shared-diagram](./vnet-shared-diagram.png)
+
 This quick start implements shared services used by all the quick starts including:
 
 * A [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group) for provisioning Azure resources
@@ -13,8 +15,6 @@ This quick start implements shared services used by all the quick starts includi
 * A [bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview) for secure RDP and SSH access to virtual machines.
 * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) running [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) with a pre-configured domain and DNS server.
 
-![vnet-shared-diagram](./vnet-shared-diagram.png)
-
 Activity | Estimated time required
 --- | ---
 Pre-configuration | ~10 minutes
@@ -22,24 +22,39 @@ Provisioning | ~30 minutes
 Smoke testing | ~10 minutes
 De-provisioning | ~30 minutes
 
+## Before you start
+
+Before you start, make sure you have completed the following steps:
+
+* All [Prerequisites](../README.md#Prerequisites) must be completed.
+  * The Azure subscription owner must create a service principal with a *Contributor* Azure RBAC role assignment in advance.
+  * The *appId* and *password* of the service principal must be shared with the quick start user in advance.
+  * The quick start user must also have a *Contributor* role assignment on the Azure subscription.
+* Complete the steps in [Configure client environment](../README.md#configure-client-environment) and verify the quick start user can start a new Bash terminal session.
+  * Verify you can start a new Bash terminal session
+  * Verify the Azure CLI is installed by running `az version`
+  * Verify PowerShell is installed by running `pwsh` then `exit`
+  * Verify you have cloned a copy of the GitHub repo with the latest release of code.
+
 ## Getting started
 
-This section describes how to provision this quick start using default settings. In order to proceed, all [prerequisites](../#Prerequisites) must be completed,  the service principal must have been created in advance by the subscription owner, and the *appId* and *password* of the service principle must be known in advance.
+This section describes how to provision this quick start using default settings.
 
-* Run `az logout` and `az account clear` to reset the subscription credentials used by Azure CLI.
-* Run `az login` and sign in using the credentials associated with the subscription you intend to use for the quick starts.
+* Start a new Bash terminal session.
+* Run `az logout` and `az account clear` to reset the user credentials used by Azure CLI.
+* Run `az login` and sign in using the identity you intend to use for the quick starts.
 * Run `az account list -o table` and copy the *Subscription Id* to be used for the quick starts.
 * Run `az account set -s 00000000-0000-0000-0000-000000000000` using the *Subscription Id* from the previous step to set the default subscription.
 * Run `./bootstrap.sh` using the default settings or your own custom settings.
-  * When prompted for *arm_client_id*, use the *appId* for the service principle created by the subscription owner.
+  * When prompted for *arm_client_id*, use the *appId* for the service principal created by the subscription owner.
   * When prompted for *adminuser*, avoid using [restricted usernames](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm-).
   * When prompted for *adminpassword*, generate a strong password but be sure to escape any [linux special characters](https://tldp.org/LDP/abs/html/special-chars.html).
 * Run `terraform init` and note the version of the *azurerm* provider installed.
 * Run `terraform validate` to check the syntax of the configuration.
 * Run `terraform plan` and review the plan output.
-  * When prompted for *arm_client_secret*, use the *password* for the service principle created by the subscription owner.
+  * When prompted for *arm_client_secret*, use the *password* for the service principal created by the subscription owner.
 * Run `terraform apply` to apply the plan.
-  * When prompted for *arm_client_secret*, use the *password* for the service principle created by the subscription owner.
+  * When prompted for *arm_client_secret*, use the *password* for the service principal created by the subscription owner.
 
 ## Smoke testing
 
