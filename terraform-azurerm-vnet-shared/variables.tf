@@ -1,5 +1,5 @@
 variable "aad_tenant_id" {
-  type = string
+  type        = string
   description = "The Azure Active Directory tenant id."
 }
 
@@ -9,9 +9,9 @@ variable "adds_domain_name" {
 }
 
 variable "adds_dsc_config_name" {
-  type = string
+  type        = string
   description = "The name of the DSC configuration for the AD DS virtual machine."
-  default = "LabDomainConfig"
+  default     = "LabDomainConfig"
 }
 
 variable "admin_password_secret" {
@@ -24,6 +24,17 @@ variable "admin_username_secret" {
   type        = string
   description = "The name of the key vault secret containing the admin username"
   default     = "adminuser"
+}
+
+variable "arm_client_id" {
+  type        = string
+  description = "The AppId of the service principal used for authenticating with Azure. Must have a 'Contributor' role assignment."
+}
+
+variable "arm_client_secret" {
+  type        = string
+  description = "The password for the service principal used for authenticating with Azure. Set interactively or using an environment variable 'TF_VAR_arm_client_secret'."
+  sensitive   = true
 }
 
 variable "automation_credential_name" {
@@ -39,9 +50,9 @@ variable "automation_module_ActiveDirectoryDsc_uri" {
 }
 
 variable "automation_module_Az_Automation_uri" {
-  type = string
+  type        = string
   description = "The URI for the Az.Automation package download."
-  default = "https://www.powershellgallery.com/api/v2/package/Az.Automation/1.7.0"
+  default     = "https://www.powershellgallery.com/api/v2/package/Az.Automation/1.7.0"
 }
 variable "dns_server" {
   type        = string
@@ -80,7 +91,7 @@ variable "storage_account_name" {
 }
 
 variable "storage_container_name" {
-  type = string
+  type        = string
   description = "The name of the blob storage container where scripts are stored."
 }
 

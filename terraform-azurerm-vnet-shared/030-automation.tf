@@ -12,7 +12,7 @@ resource "azurerm_automation_account" "automation_account_01" {
   tags                = var.tags
 
   # Bootstrap automation account
-  # Important: Discontinue use of device authentication and remove "nonsensitive()" function for production use
+  # Note: To view provisioner output, use the Terraform nonsensitive() function when referencing key vault secrets or variables marked 'sensitive'
   provisioner "local-exec" {
     command     = <<EOT
         $params = @{
@@ -23,8 +23,10 @@ resource "azurerm_automation_account" "automation_account_01" {
         AutomationAccountName = "${azurerm_automation_account.automation_account_01.name}"
         Domain = "${var.adds_domain_name}"
         VirtualMachineName = "${var.vm_adds_name}"
-        AdminUserName = "${nonsensitive(data.azurerm_key_vault_secret.adminuser.value)}"
-        AdminPwd = "${nonsensitive(data.azurerm_key_vault_secret.adminpassword.value)}"
+        AdminUserName = "${data.azurerm_key_vault_secret.adminuser.value}"
+        AdminPwd = "${data.azurerm_key_vault_secret.adminpassword.value}"
+        AppId = "${var.arm_client_id}"
+        AppSecret = "${var.arm_client_secret}"
         }
         ${path.root}/configure-automation.ps1 @params 
    EOT

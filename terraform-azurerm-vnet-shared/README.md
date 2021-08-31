@@ -24,20 +24,22 @@ De-provisioning | ~30 minutes
 
 ## Getting started
 
-This section describes how to provision this quick start using default settings.
+This section describes how to provision this quick start using default settings. In order to proceed, all [prerequisites](../#Prerequisites) must be completed,  the service principal must have been created in advance by the subscription owner, and the *appId* and *password* of the service principle must be known in advance.
 
 * Run `az logout` and `az account clear` to reset the subscription credentials used by Azure CLI.
 * Run `az login` and sign in using the credentials associated with the subscription you intend to use for the quick starts.
 * Run `az account list -o table` and copy the *Subscription Id* to be used for the quick starts.
 * Run `az account set -s 00000000-0000-0000-0000-000000000000` using the *Subscription Id* from the previous step to set the default subscription.
 * Run `./bootstrap.sh` using the default settings or your own custom settings.
+  * When prompted for *arm_client_id*, use the *appId* for the service principle created by the subscription owner.
   * When prompted for *adminuser*, avoid using [restricted usernames](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm-).
   * When prompted for *adminpassword*, generate a strong password but be sure to escape any [linux special characters](https://tldp.org/LDP/abs/html/special-chars.html).
 * Run `terraform init` and note the version of the *azurerm* provider installed.
 * Run `terraform validate` to check the syntax of the configuration.
 * Run `terraform plan` and review the plan output.
+  * When prompted for *arm_client_secret*, use the *password* for the service principle created by the subscription owner.
 * Run `terraform apply` to apply the plan.
-  * *Important*: Be sure to watch for the output `(local-exec): WARNING: To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code XXXXXXXXX to authenticate.` If you see this warning you must sign in from your web browser using the URL and code provided. Multiple logins are be required.
+  * When prompted for *arm_client_secret*, use the *password* for the service principle created by the subscription owner.
 
 ## Smoke testing
 

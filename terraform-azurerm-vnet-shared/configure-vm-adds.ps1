@@ -21,14 +21,13 @@ param (
     [String]$VirtualMachineName,
 
     [Parameter(Mandatory = $true)]
-    [String]$AdminUsername,
+    [String]$AppId,
 
     [Parameter(Mandatory = $true)]
-    [String]$AdminPwd
+    [string]$AppSecret
 )
 
 #region constants
-$AzureEnvironment = 'AzureCloud'
 $DscConfigurationName = 'LabDomainConfig'
 $DscConfigurationNode = 'localhost'
 #endregion
@@ -51,17 +50,19 @@ function Exit-WithError {
 Write-Log "Running '$PSCommandPath'..."
 
 # Important: Discontinue use of device authentication for production use
-Write-Log "Logging into Azure using AAD tenant id '$TenantId' and Azure subscription id '$SubscriptionId'..."
-Disconnect-AzAccount
+Write-Log "Logging into Azure using service principal id '$AppId'..."
+
+$AppSecretSecure = ConvertTo-SecureString $AppSecret -AsPlainText -Force
+$spCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $AppId, $AppSecretSecure
 
 try {
-    Connect-AzAccount -Environment $AzureEnvironment -Tenant $TenantId -Subscription $SubscriptionId -UseDeviceAuthentication -ErrorAction Stop
+    Connect-AzAccount -Credential $spCredential -Tenant $TenantId -ServicePrincipal -ErrorAction Stop | Out-Null
 }
 catch {
     Exit-WithError $_
 }
 
-# Bootstrap automation account
+# Get automation account
 $automationAccount = Get-AzAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName
 
 if ($null -eq $automationAccount) {

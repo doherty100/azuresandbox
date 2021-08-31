@@ -27,7 +27,7 @@ resource "azurerm_windows_virtual_machine" "vm_adds" {
   }
 
   # Apply domain controller configuration using Azure Automation DSC
-  # Important: Discontinue use of device authentication and remove "nonsensitive()" function for production use
+  # Note: To view provisioner output, use the Terraform nonsensitive() function when referencing key vault secrets or variables marked 'sensitive'
   provisioner "local-exec" {
     command     = <<EOT
         $params = @{
@@ -38,8 +38,8 @@ resource "azurerm_windows_virtual_machine" "vm_adds" {
         AutomationAccountName = "${azurerm_automation_account.automation_account_01.name}"
         Domain = "${var.adds_domain_name}"
         VirtualMachineName = "${var.vm_adds_name}"
-        AdminUserName = "${nonsensitive(data.azurerm_key_vault_secret.adminuser.value)}"
-        AdminPwd = "${nonsensitive(data.azurerm_key_vault_secret.adminpassword.value)}"
+        AppId = "${var.arm_client_id}"
+        AppSecret = "${var.arm_client_secret}"
         }
         ${path.root}/configure-vm-adds.ps1 @params 
    EOT
