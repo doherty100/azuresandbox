@@ -79,7 +79,7 @@
                     <mxGeometry x="400" y="560" width="40" height="20" as="geometry"/>
                 </mxCell>
                 <mxCell id="59" value="&lt;div style=&quot;text-align: left&quot;&gt;&lt;span&gt;&lt;u&gt;&lt;b&gt;* vnet-shared-01:&lt;/b&gt;&lt;/u&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span&gt;- dns_servers:&amp;nbsp;&lt;/span&gt;&lt;span&gt;10.1.2.4,&amp;nbsp;&lt;/span&gt;&lt;span&gt;68.63.129.16&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span&gt;&lt;u&gt;&lt;b&gt;** adds1:&lt;/b&gt;&lt;/u&gt;&lt;/span&gt;&lt;/div&gt;- Features:&amp;nbsp;AD-Domain-Services, InstallDNS&lt;br&gt;&lt;div style=&quot;text-align: left&quot;&gt;&lt;span&gt;- Domain: mytestlab.local&lt;/span&gt;&lt;/div&gt;" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];rounded=0;fontColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry y="658" width="250" height="90" as="geometry"/>
+                    <mxGeometry x="700" y="50" width="250" height="90" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
