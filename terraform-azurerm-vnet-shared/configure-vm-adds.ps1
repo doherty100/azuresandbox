@@ -49,7 +49,6 @@ function Exit-WithError {
 #region main
 Write-Log "Running '$PSCommandPath'..."
 
-# Important: Discontinue use of device authentication for production use
 Write-Log "Logging into Azure using service principal id '$AppId'..."
 
 $AppSecretSecure = ConvertTo-SecureString $AppSecret -AsPlainText -Force

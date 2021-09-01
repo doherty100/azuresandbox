@@ -101,7 +101,7 @@ azurerm_subnet.vnet_shared_01_subnets["AzureBastionSubnet"] | N/A | Dedicated su
 azurerm_subnet.vnet_shared_01_subnets["adds"] | N/A | Dedicated subnet for AD Domain Services
 azurerm_subnet.vnet_shared_01_subnets["default"] | N/A | Default subnet for use by jumpbox VMs in other quick starts.
 azurerm_virtual_network.vnet_shared_01 | vnet-shared-01 | Virtual network
-azurerm_windows_virtual_machine.vm_adds | adds1 | Windows Server VM used for AD Domain Services. Uses a Terraform [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) for configuration via [configure-vm-adds.ps1](./configure-vm-adds.ps1).
+azurerm_windows_virtual_machine.vm_adds | adds1 | Windows Server VM used for AD Domain Services. Uses a Terraform [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) for configuration via [configure-vm-adds.ps1](./configure-vm-adds.ps1) which applies the DSC configuration [LabDomainColnfig.ps1](./LabDomainConfig.ps1).
 random_id.automation_account_01_name | N/A | Used to generate a random name for the automation account.
 random_id.bastion_host_01_name | N/A | Used to generate a random name for the bastion.
 random_id.log_analytics_workspace_01_name | N/A | Used to generate a random name for the log analytics workspace.
