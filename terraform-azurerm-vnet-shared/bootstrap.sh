@@ -99,7 +99,6 @@ else
   usage
 fi
 
-
 # Validate password
 if [ -z "$admin_password" ]
 then
