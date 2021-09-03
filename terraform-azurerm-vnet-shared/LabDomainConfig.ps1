@@ -1,8 +1,9 @@
 configuration LabDomainConfig {
     Import-DscResource -ModuleName PSDesiredStateConfiguration
     Import-DscResource -ModuleName ActiveDirectoryDsc
-    $AdminCredential = Get-AutomationPSCredential 'bootstrapadmin'
-    $Domain = Get-AutomationVariable -Name 'adds_domain_name'
+
+    $adminCredential = Get-AutomationPSCredential 'bootstrapadmin'
+    $domain = Get-AutomationVariable -Name 'adds_domain_name'
 
     node 'localhost' {
         WindowsFeature 'AD-Domain-Services' {
@@ -10,20 +11,10 @@ configuration LabDomainConfig {
             Ensure = 'Present'
         }
 
-        WindowsFeature 'RSAT-AD-PowerShell' {
-            Name = 'RSAT-AD-PowerShell'
-            Ensure = 'Present'
-        }
-
-        WindowsFeature 'RSAT-ADDS' {
-            Name = 'RSAT-ADDS'
-            Ensure = 'Present'
-        }
-
-        ADDomain 'LABDOMAIN' {
-            DomainName = $Domain
-            Credential = $AdminCredential
-            SafemodeAdministratorPassword = $AdminCredential
+        ADDomain 'LabDomain' {
+            DomainName = $domain
+            Credential = $adminCredential
+            SafemodeAdministratorPassword = $adminCredential
             ForestMode = 'WinThreshold'
             DependsOn = '[WindowsFeature]AD-Domain-Services'
         }

@@ -22,11 +22,12 @@ resource "azurerm_automation_account" "automation_account_01" {
         Location = "${var.location}"
         AutomationAccountName = "${azurerm_automation_account.automation_account_01.name}"
         Domain = "${var.adds_domain_name}"
-        VirtualMachineName = "${var.vm_adds_name}"
-        AdminUserName = "${data.azurerm_key_vault_secret.adminuser.value}"
-        AdminPwd = "${data.azurerm_key_vault_secret.adminpassword.value}"
+        VmAddsName = "${var.vm_adds_name}"
+        VmJumpboxName = "${var.vm_jumpbox_win_name}"
+        AdminUserName = "${nonsensitive(data.azurerm_key_vault_secret.adminuser.value)}"
+        AdminPwd = "${nonsensitive(data.azurerm_key_vault_secret.adminpassword.value)}"
         AppId = "${var.arm_client_id}"
-        AppSecret = "${var.arm_client_secret}"
+        AppSecret = "${nonsensitive(var.arm_client_secret)}"
         }
         ${path.root}/configure-automation.ps1 @params 
    EOT

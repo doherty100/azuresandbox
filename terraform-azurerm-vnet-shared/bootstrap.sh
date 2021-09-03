@@ -35,11 +35,12 @@ default_project="#AzureQuickStarts"
 default_resource_group_name="rg-vdc-nonprod-01"
 default_subscription_id=$(az account list --query "[? isDefault]|[0].id" --only-show-errors --output tsv)
 default_vm_adds_name="adds1"
+default_vm_jumpbox_win_name="jumpwin1"
 default_vnet_address_space="10.1.0.0/16"
 default_vnet_name="vnet-shared-01"
 
 # Get user input
-read -e                                           -p "Service principal application id (arm_client_id) ----------------------: " arm_client_id
+read -e                                           -p "Service principal AppId (arm_client_id) -------------------------------: " arm_client_id
 read -e -i $default_aad_tenant_id                 -p "Azure AD tenant id (aad_tenant_id) ------------------------------------: " aad_tenant_id
 read -e -i $default_owner_object_id               -p "Object id for Azure CLI signed in user (owner_object_id) --------------: " owner_object_id
 read -e -i $default_subscription_id               -p "Azure subscription id (subscription_id) -------------------------------: " subscription_id
@@ -56,6 +57,7 @@ read -e -i $default_adds_subnet_address_prefix    -p "AD Domain Services subnet 
 read -e -i $default_dns_server                    -p "DNS server ip address (dns_server) ------------------------------------: " dns_server
 read -e -i $default_adds_domain_name              -p "AD Domain Services domain name (adds_domain_name) ---------------------: " adds_domain_name
 read -e -i $default_vm_adds_name                  -p "AD Domain Services virtual machine name (vm_adds_name) ----------------: " vm_adds_name
+read -e -i $default_vm_jumpbox_win_name           -p "Windows jumpbox virtual machine name (vm_jumpbox_win_name) ------------: " vm_jumpbox_win_name
 read -e -i $default_admin_username                -p "'adminuser' key vault secret value (admin_username) -------------------: " admin_username
 read -e -s                                        -p "'adminpassword' key vault secret value (admin_password)  --------------: " admin_password
 printf "admin password length ${#admin_password}\n"
@@ -78,6 +80,7 @@ project=${project:-$default_project}
 resource_group_name=${resource_group_name:-$default_resource_group_name}
 subscription_id=${subscription_id:-$default_subscription_id}
 vm_adds_name=${vm_adds_name:-default_vm_adds_name}
+vm_jumpbox_win_name=${vm_jumpbox_win_name:-default_vm_jumpbox_win_name}
 vnet_address_space=${vnet_address_space:-default_vnet_address_space}
 vnet_name=${vnet_name:=$default_vnet_name}
 
@@ -284,6 +287,7 @@ printf "subnets =                $subnets\n"                    >> ./terraform.t
 printf "subscription_id =        \"$subscription_id\"\n"        >> ./terraform.tfvars
 printf "tags =                   $tags\n"                       >> ./terraform.tfvars
 printf "vm_adds_name =           \"$vm_adds_name\"\n"           >> ./terraform.tfvars
+printf "vm_jumpbox_win_name =    \"$vm_jumpbox_win_name\"\n"    >> ./terraform.tfvars
 printf "vnet_address_space =     \"$vnet_address_space\"\n"     >> ./terraform.tfvars
 printf "vnet_name =              \"$vnet_name\"\n"              >> ./terraform.tfvars
 

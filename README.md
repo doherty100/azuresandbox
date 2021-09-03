@@ -10,8 +10,8 @@ This repository contains a collection of inter-dependent [cloud computing](https
 * [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.1)
   * [PowerShell Core](https://docs.microsoft.com/en-us/powershell/scripting/whats-new/what-s-new-in-powershell-71?view=powershell-7.1) for use with [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-intro#azure-automation-state-configuration)
   * [PowerShell 5.1](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-5.1) for Windows Server configuration.
-* [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) v1.0.5 for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
-  * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v2.74.0
+* [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) v1.0.6 for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
+  * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v2.75.0
   * [Random Provider](https://registry.terraform.io/providers/hashicorp/random/latest/docs) (random) v3.1.0
 
 This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doherty-805635b/).
@@ -28,7 +28,8 @@ This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doher
   * An [automation account](https://docs.microsoft.com/en-us/azure/automation/automation-intro) for [Azure automation state configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview)
   * A [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting virtual machines used as domain controllers, DNS servers and jump boxes.
   * A [bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview) for secure RDP and SSH access to virtual machines.
-  * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) running [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) with a pre-configured domain and DNS server.
+  * A Windows Server Core [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) running [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) with a pre-configured domain and DNS server.
+  * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
 * [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
   * [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Windows virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/) offering
 * [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/)

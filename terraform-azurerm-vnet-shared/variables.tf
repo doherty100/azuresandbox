@@ -8,12 +8,6 @@ variable "adds_domain_name" {
   description = "The AD DS domain name."
 }
 
-variable "adds_dsc_config_name" {
-  type        = string
-  description = "The name of the DSC configuration for the AD DS virtual machine."
-  default     = "LabDomainConfig"
-}
-
 variable "admin_password_secret" {
   type        = string
   description = "The name of the key vault secret containing the admin password"
@@ -149,7 +143,7 @@ variable "vm_adds_image_publisher" {
 variable "vm_adds_image_sku" {
   type        = string
   description = "The sku of the virtual machine image used to create the VM"
-  default     = "2019-Datacenter"
+  default     = "2019-Datacenter-Core"
 }
 
 variable "vm_adds_image_version" {
@@ -170,6 +164,46 @@ variable "vm_adds_size" {
 }
 
 variable "vm_adds_storage_account_type" {
+  type        = string
+  description = "The storage replication type to be used for the VMs OS and data disks."
+  default     = "Standard_LRS"
+}
+variable "vm_jumpbox_win_image_offer" {
+  type        = string
+  description = "The offer type of the virtual machine image used to create the VM"
+  default     = "WindowsServer"
+}
+
+variable "vm_jumpbox_win_image_publisher" {
+  type        = string
+  description = "The publisher for the virtual machine image used to create the VM"
+  default     = "MicrosoftWindowsServer"
+}
+
+variable "vm_jumpbox_win_image_sku" {
+  type        = string
+  description = "The sku of the virtual machine image used to create the VM"
+  default     = "2019-Datacenter"
+}
+
+variable "vm_jumpbox_win_image_version" {
+  type        = string
+  description = "The version of the virtual machine image used to create the VM"
+  default     = "Latest"
+}
+
+variable "vm_jumpbox_win_name" {
+  type        = string
+  description = "The name of the VM"
+}
+
+variable "vm_jumpbox_win_size" {
+  type        = string
+  description = "The size of the virtual machine."
+  default     = "Standard_B2s"
+}
+
+variable "vm_jumpbox_win_storage_account_type" {
   type        = string
   description = "The storage replication type to be used for the VMs OS and data disks."
   default     = "Standard_LRS"
