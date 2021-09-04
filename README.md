@@ -23,15 +23,13 @@ This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doher
 * [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/)
   * A [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group) for provisioning Azure resources
   * A [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview) for storing and retrieving shared secrets
-  * A [storage account](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#storage-account) for storing and retrieving data
-  * A [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/data-platform#collect-monitoring-data) for storing and querying metrics and logs
   * An [automation account](https://docs.microsoft.com/en-us/azure/automation/automation-intro) for [Azure automation state configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview)
   * A [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting virtual machines used as domain controllers, DNS servers and jump boxes.
   * A [bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview) for secure RDP and SSH access to virtual machines.
-  * A Windows Server Core [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) running [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) with a pre-configured domain and DNS server.
+  * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) running [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) with a pre-configured domain and DNS server.
   * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
-* [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
-  * [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Windows virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/) offering
+  * A [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/data-platform#collect-monitoring-data) for storing and querying metrics and logs
+  * A [storage account](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#storage-account) for storing and retrieving data
 * [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/)
   * [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Linux virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/) offering
 * [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
@@ -214,7 +212,6 @@ Spoke | Reserved for future use | 10.2.128.0/17 | 10.2.128.0 | 10.2.255.255 | 32
 Apply the quick starts in the following order:
 
 1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) implements a virtual network with shared services used by all the quick starts.
-1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/) implements a dedicated Windows Server virtual machine connected to the shared services virtual network.
 1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/) implements a dedicated Linux virtual machine connected to the shared services virtual network.
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/) establishes a dedicated spoke virtual network.
 1. [terraform-azurerm-vm-sql](./terraform-azurerm-vm-sql/) implements a pre-configured environment for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications using an [IaaS](https://azure.microsoft.com/en-us/overview/what-is-azure/iaas/) approach.
@@ -230,7 +227,6 @@ While a default quick start deployment is fine for testing, it may not work with
 1. [terraform-azurerm-vm-sql](./terraform-azurerm-vm-sql/)
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
 1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/)
-1. [terraform-azurerm-vm-windows](./terraform-azurerm-vm-windows/)
 1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/). Note: Resources provisioned by `bootstrap.sh` must be deleted manually.
 
 Alternatively, for speed, simply run `az group delete -g rg-vdc-nonprod-01`.
