@@ -31,23 +31,6 @@ variable "arm_client_secret" {
   sensitive   = true
 }
 
-variable "automation_credential_name" {
-  type        = string
-  description = "The name of the Azure automation credential for boostrap admin account."
-  default     = "bootstrapadmin"
-}
-
-variable "automation_module_ActiveDirectoryDsc_uri" {
-  type        = string
-  description = "The URI for the ActiveDirectoryDsc package download."
-  default     = "https://www.powershellgallery.com/api/v2/package/ActiveDirectoryDsc/6.0.1"
-}
-
-variable "automation_module_Az_Automation_uri" {
-  type        = string
-  description = "The URI for the Az.Automation package download."
-  default     = "https://www.powershellgallery.com/api/v2/package/Az.Automation/1.7.0"
-}
 variable "dns_server" {
   type        = string
   description = "The IP address of the DNS server. This should be the first non-reserved IP address in the subnet where the AD DS domain controller is hosted."
@@ -77,6 +60,11 @@ variable "log_analytics_workspace_retention_days" {
 variable "resource_group_name" {
   type        = string
   description = "The name of the new resource group to be provisioned."
+}
+
+variable "ssh_public_key" {
+  type = string
+  description = "The SSH public key used for the admin account"
 }
 
 variable "storage_account_name" {
@@ -166,6 +154,47 @@ variable "vm_adds_size" {
 variable "vm_adds_storage_account_type" {
   type        = string
   description = "The storage replication type to be used for the VMs OS and data disks."
+  default     = "Standard_LRS"
+}
+
+variable "vm_jumpbox_linux_image_offer" {
+  type        = string
+  description = "The offer type of the virtual machine image used to create the VM"
+  default = "0001-com-ubuntu-server-focal"
+}
+
+variable "vm_jumpbox_linux_image_publisher" {
+  type        = string
+  description = "The publisher for the virtual machine image used to create the VM"
+  default = "Canonical"
+}
+
+variable "vm_jumpbox_linux_image_sku" {
+  type        = string
+  description = "The sku of the virtual machine image used to create the VM"
+  default = "20_04-lts"
+}
+
+variable "vm_jumpbox_linux_image_version" {
+  type        = string
+  description = "The version of the virtual machine image used to create the VM"
+  default     = "Latest"
+}
+
+variable "vm_jumpbox_linux_name" {
+  type        = string
+  description = "The name of the VM"
+}
+
+variable "vm_jumpbox_linux_size" {
+  type        = string
+  description = "The size of the virtual machine"
+  default = "Standard_B2s"
+}
+
+variable "vm_jumpbox_linux_storage_account_type" {
+  type        = string
+  description = "The storage replication type to be used for the VMs OS and data disks"
   default     = "Standard_LRS"
 }
 variable "vm_jumpbox_win_image_offer" {

@@ -10,6 +10,7 @@ usage() {
 
 # Initialize constants
 adds_subnet_name="snet-adds-01"
+admin_certificate_name="admincert"
 admin_password_secret="adminpassword"
 admin_username_secret="adminuser"
 arm_client_id=""
@@ -35,6 +36,7 @@ default_project="#AzureQuickStarts"
 default_resource_group_name="rg-vdc-nonprod-01"
 default_subscription_id=$(az account list --query "[? isDefault]|[0].id" --only-show-errors --output tsv)
 default_vm_adds_name="adds1"
+default_vm_jumpbox_linux_name="jumplinux1"
 default_vm_jumpbox_win_name="jumpwin1"
 default_vnet_address_space="10.1.0.0/16"
 default_vnet_name="vnet-shared-01"
@@ -57,6 +59,7 @@ read -e -i $default_adds_subnet_address_prefix    -p "AD Domain Services subnet 
 read -e -i $default_dns_server                    -p "DNS server ip address (dns_server) ------------------------------------: " dns_server
 read -e -i $default_adds_domain_name              -p "AD Domain Services domain name (adds_domain_name) ---------------------: " adds_domain_name
 read -e -i $default_vm_adds_name                  -p "AD Domain Services virtual machine name (vm_adds_name) ----------------: " vm_adds_name
+read -e -i $default_vm_jumpbox_linux_name         -p "Linux jumpbox virtual machine name (vm_jumpbox_linux_name) ------------: " vm_jumpbox_linux_name
 read -e -i $default_vm_jumpbox_win_name           -p "Windows jumpbox virtual machine name (vm_jumpbox_win_name) ------------: " vm_jumpbox_win_name
 read -e -i $default_admin_username                -p "'adminuser' key vault secret value (admin_username) -------------------: " admin_username
 read -e -s                                        -p "'adminpassword' key vault secret value (admin_password)  --------------: " admin_password
@@ -80,6 +83,7 @@ project=${project:-$default_project}
 resource_group_name=${resource_group_name:-$default_resource_group_name}
 subscription_id=${subscription_id:-$default_subscription_id}
 vm_adds_name=${vm_adds_name:-default_vm_adds_name}
+vm_jumpbox_linux_name=${vm_jumpbox_linux_name:-default_vm_jumpbox_linux_name}
 vm_jumpbox_win_name=${vm_jumpbox_win_name:-default_vm_jumpbox_win_name}
 vnet_address_space=${vnet_address_space:-default_vnet_address_space}
 vnet_name=${vnet_name:=$default_vnet_name}
@@ -165,7 +169,7 @@ fi
 
 key_vault_id=$(az keyvault show --subscription $subscription_id --name $key_vault_name --query id --output tsv)
 
-printf "Creating key vault access policy for Azure CLI logged in user id '$owner_object_id'...\n"
+printf "Creating key vault secret access policy for Azure CLI logged in user id '$owner_object_id'...\n"
 az keyvault set-policy \
   --subscription $subscription_id \
   --name $key_vault_name \
@@ -173,7 +177,7 @@ az keyvault set-policy \
   --secret-permissions get list 'set' \
   --object-id $owner_object_id
 
-printf "Creating key vault access policy for service principal id '$arm_client_id'...\n"
+printf "Creating key vault secret access policy for service principal AppId '$arm_client_id'...\n"
 az keyvault set-policy \
   --subscription $subscription_id \
   --name $key_vault_name \
@@ -195,6 +199,27 @@ az keyvault secret set \
   --name $admin_password_secret \
   --value "$admin_password" \
   --output none
+
+# Generate SSH keys
+printf "Gnerating SSH keys...\n"
+echo -e 'y' | ssh-keygen -m PEM -t rsa -b 4096 -C "$admin_username" -f sshkeytemp -N "$admin_password" 
+ssh_public_key_secret_name="$admin_username-ssh-key-public"
+ssh_public_key_secret_value=$(cat sshkeytemp.pub)
+ssh_private_key_secret_name="$admin_username-ssh-key-private"
+ssh_private_key_secret_value=$(cat sshkeytemp)
+
+printf "Setting secret '$ssh_public_key_secret_name' with value length \"${#ssh_public_key_secret_value}\" in keyvault '$key_vault_name'...\n"
+az keyvault secret set \
+    --vault-name $key_vault_name \
+    --name $ssh_public_key_secret_name \
+    --value "$ssh_public_key_secret_value"
+
+printf "Setting secret '$ssh_private_key_secret_name' with value length \"${#ssh_private_key_secret_value}\" in keyvault '$key_vault_name'...\n"
+az keyvault secret set \
+    --vault-name $key_vault_name \
+    --name $ssh_private_key_secret_name \
+    --value "$ssh_private_key_secret_value" \
+    --output none
 
 # Boostrap storage account
 storage_account_name=$(az storage account list --subscription $subscription_id --resource-group $resource_group_name --query "[?tags.provisioner == 'bootstrap.sh'] | [0].name" --output tsv)
@@ -273,23 +298,25 @@ tags="${tags}}"
 # Generate terraform.tfvars file
 printf "\nGenerating terraform.tfvars file...\n\n"
 
-printf "aad_tenant_id =          \"$aad_tenant_id\"\n"          > ./terraform.tfvars
-printf "adds_domain_name =       \"$adds_domain_name\"\n"       >> ./terraform.tfvars
-printf "arm_client_id =          \"$arm_client_id\"\n"          >> ./terraform.tfvars
-printf "dns_server =             \"$dns_server\"\n"             >> ./terraform.tfvars
-printf "key_vault_id =           \"$key_vault_id\"\n"           >> ./terraform.tfvars
-printf "key_vault_name =         \"$key_vault_name\"\n"         >> ./terraform.tfvars
-printf "location =               \"$location\"\n"               >> ./terraform.tfvars
-printf "resource_group_name =    \"$resource_group_name\"\n"    >> ./terraform.tfvars
-printf "storage_account_name =   \"$storage_account_name\"\n"   >> ./terraform.tfvars
-printf "storage_container_name = \"$storage_container_name\"\n" >> ./terraform.tfvars
-printf "subnets =                $subnets\n"                    >> ./terraform.tfvars
-printf "subscription_id =        \"$subscription_id\"\n"        >> ./terraform.tfvars
-printf "tags =                   $tags\n"                       >> ./terraform.tfvars
-printf "vm_adds_name =           \"$vm_adds_name\"\n"           >> ./terraform.tfvars
-printf "vm_jumpbox_win_name =    \"$vm_jumpbox_win_name\"\n"    >> ./terraform.tfvars
-printf "vnet_address_space =     \"$vnet_address_space\"\n"     >> ./terraform.tfvars
-printf "vnet_name =              \"$vnet_name\"\n"              >> ./terraform.tfvars
+printf "aad_tenant_id =          \"$aad_tenant_id\"\n"                > ./terraform.tfvars
+printf "adds_domain_name =       \"$adds_domain_name\"\n"             >> ./terraform.tfvars
+printf "arm_client_id =          \"$arm_client_id\"\n"                >> ./terraform.tfvars
+printf "dns_server =             \"$dns_server\"\n"                   >> ./terraform.tfvars
+printf "key_vault_id =           \"$key_vault_id\"\n"                 >> ./terraform.tfvars
+printf "key_vault_name =         \"$key_vault_name\"\n"               >> ./terraform.tfvars
+printf "location =               \"$location\"\n"                     >> ./terraform.tfvars
+printf "resource_group_name =    \"$resource_group_name\"\n"          >> ./terraform.tfvars
+printf "ssh_public_key =         \"$ssh_public_key_secret_value\"\n"  >> ./terraform.tfvars
+printf "storage_account_name =   \"$storage_account_name\"\n"         >> ./terraform.tfvars
+printf "storage_container_name = \"$storage_container_name\"\n"       >> ./terraform.tfvars
+printf "subnets =                $subnets\n"                          >> ./terraform.tfvars
+printf "subscription_id =        \"$subscription_id\"\n"              >> ./terraform.tfvars
+printf "tags =                   $tags\n"                             >> ./terraform.tfvars
+printf "vm_adds_name =           \"$vm_adds_name\"\n"                 >> ./terraform.tfvars
+printf "vm_jumpbox_linux_name =  \"$vm_jumpbox_linux_name\"\n"        >> ./terraform.tfvars
+printf "vm_jumpbox_win_name =    \"$vm_jumpbox_win_name\"\n"          >> ./terraform.tfvars
+printf "vnet_address_space =     \"$vnet_address_space\"\n"           >> ./terraform.tfvars
+printf "vnet_name =              \"$vnet_name\"\n"                    >> ./terraform.tfvars
 
 cat ./terraform.tfvars
 

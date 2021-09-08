@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains a collection of inter-dependent [cloud computing](https://azure.microsoft.com/en-us/overview/what-is-cloud-computing) quick starts for implementing common [Microsoft Azure](https://azure.microsoft.com/en-us/overview/what-is-azure/) services on a single [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription). Collectively these quick starts provide a flexible lab environment useful for experimenting with various Azure services and capabilities. The quick starts are implemented using popular open source automation tools that are supported on Windows, macOS and Linux including:
+This repository contains a collection of inter-dependent [cloud computing](https://azure.microsoft.com/en-us/overview/what-is-cloud-computing) quick starts for implementing common [Microsoft Azure](https://azure.microsoft.com/en-us/overview/what-is-azure/) services on a single [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription). Collectively these quick starts provide a flexible lab environment useful for experimenting with various Azure services and capabilities. \#AzureQuickStarts is implemented using popular open source automation tools that are supported on Windows, macOS and Linux including:
 
 * [git](https://git-scm.com/) for source control.
 * [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) for scripting.
@@ -28,10 +28,9 @@ This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doher
   * A [bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview) for secure RDP and SSH access to virtual machines.
   * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) running [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) with a pre-configured domain and DNS server.
   * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
+  * A Linux [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
   * A [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/data-platform#collect-monitoring-data) for storing and querying metrics and logs
   * A [storage account](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#storage-account) for storing and retrieving data
-* [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/)
-  * [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) jump box [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [Linux virtual machines in Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/) offering
 * [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
   * Dedicated spoke virtual network  
   * Pre-configured bidirectional [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/)  
@@ -56,8 +55,8 @@ The following prerequisites are required in order to get started. Note that once
 * Identify a single Azure [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription) or create a new Azure subscription. See [Azure Offer Details](https://azure.microsoft.com/en-us/support/legal/offer-details/) and [Associate or add an Azure subscription to your Azure Active Directory tenant](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory) for more information.
 * Identify the owner of the Azure subscription to be used for \#AzureQuickStarts. This user should have an [Owner](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner) Azure RBAC role assignment on the subscription. See [Steps to assign an Azure role](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps) for more information.
 * Ask the subscription owner to create a [Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) Azure RBAC role assignment for each quick start user. See [Steps to assign an Azure role](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps) for more information.
-* Verify the subscription owner has privileges to create a Service Principle name on the AAD tenant. See [Check Azure AD permissions](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#check-azure-ad-permissions) for more information.
-* Ask the subscription owner to [Create a service principle](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli) (SPN) for quick start users using the Azure CLI command `az ad sp create-for-rbac -n AzureQuickStartsSPN --role Contributor` using the [Quickstart for Bash in Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart). Securely share the output with quick start users, including *appId* and *password*.
+* Verify the subscription owner has privileges to create a Service principal name on the AAD tenant. See [Check Azure AD permissions](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#check-azure-ad-permissions) for more information.
+* Ask the subscription owner to [Create a service principal](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli) (SPN) for quick start users using the Azure CLI command `az ad sp create-for-rbac -n AzureQuickStartsSPN --role Contributor` using the [Quickstart for Bash in Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart). Securely share the output with quick start users, including *appId* and *password*.
 * Aks the subscription owner to enable automatic guest VM patching. See [Requirements for enabling automatic VM guest patching](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/automatic-vm-guest-patching) for more information.
 * Some organizations may institute [Azure policy](https://docs.microsoft.com/en-us/azure/governance/policy/overview) which may cause some quick start deployments to fail. This can be addressed by using custom settings which pass the policy checks, or by disabling the policies on the Azure subscription being used for the quick starts.
 * Some Azure subscriptions may have low quota limits for specific Azure resources which may cause quick start deployments to fail. See [Resolve errors for resource quotas](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-resource-quota) for more information. Consult the following table to determine if quota increases are required to deploy the quick starts using default settings:
@@ -212,7 +211,6 @@ Spoke | Reserved for future use | 10.2.128.0/17 | 10.2.128.0 | 10.2.255.255 | 32
 Apply the quick starts in the following order:
 
 1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) implements a virtual network with shared services used by all the quick starts.
-1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/) implements a dedicated Linux virtual machine connected to the shared services virtual network.
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/) establishes a dedicated spoke virtual network.
 1. [terraform-azurerm-vm-sql](./terraform-azurerm-vm-sql/) implements a pre-configured environment for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications using an [IaaS](https://azure.microsoft.com/en-us/overview/what-is-azure/iaas/) approach.
 1. [terraform-azurerm-sql](./terraform-azurerm-sql/) implements an Azure SQL Database for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications using a [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) approach.
@@ -226,7 +224,6 @@ While a default quick start deployment is fine for testing, it may not work with
 1. [terraform-azurerm-sql](./terraform-azurerm-sql/)
 1. [terraform-azurerm-vm-sql](./terraform-azurerm-vm-sql/)
 1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
-1. [terraform-azurerm-vm-linux](./terraform-azurerm-vm-linux/)
 1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/). Note: Resources provisioned by `bootstrap.sh` must be deleted manually.
 
 Alternatively, for speed, simply run `az group delete -g rg-vdc-nonprod-01`.
