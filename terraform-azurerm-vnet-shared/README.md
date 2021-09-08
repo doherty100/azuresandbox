@@ -154,8 +154,9 @@ Resource name (ARM) | Notes
 azurerm_windows_virtual_machine.vm_adds (adds1) | See below.
 azurerm_network_interface.vm_adds_nic_01 (nic&#x2011;adds1&#x2011;1) | The configured subnet is *azurerm_subnet.vnet_shared_01_subnets["adds"]*.
 
-This Windows Server Core VM is used as an AD DS Domain Controller and DNS Server.
+This Windows Server VM is used as an AD DS Domain Controller and DNS Server.
 
+* Guest OS: Windows Server 2019 Core
 * By default the [Patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByPlatform`.
 * *admin_username* and *admin_password* are configured using key vault secrets *data.azurerm_key_vault_secret.adminpassword* and *data.azurerm_key_vault_secret.adminuser* which are set in advance by [bootstrap.sh](./bootstrap.sh).
 * This resource has a dependency on *azurerm_automation_account.automation_account_01*.
@@ -170,8 +171,9 @@ Resource name (ARM) | Notes
 azurerm_windows_virtual_machine.vm_jumpbox_win (jumpboxwin1) | See below.
 azurerm_network_interface.vm_jumpbox_win_nic_01 (nic&#x2011;jumpwin1&#x2011;1) | The configured subnet is *azurerm_subnet.vnet_shared_01_subnets["default"]*.
 
-This Windows Server VM is used as a jumpbox for remote server administration.
+This Windows Server VM is used as a jumpbox for development and remote server administration.
 
+* Guest OS: Windows Server 2019 Datacenter.
 * By default the [patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByPlatform`.
 * *admin_username* and *admin_password* are configured using key vault secrets *data.azurerm_key_vault_secret.adminpassword* and *data.azurerm_key_vault_secret.adminuser* which are set in advance by [bootstrap.sh](./bootstrap.sh).
 * This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [configure-vm-jumpbox.ps1](./configure-vm-jumpbox.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [JumpBoxConfig](./JumpBoxConfig.ps1).
@@ -185,10 +187,13 @@ Resource name (ARM) | Notes
 azurerm_linux_virtual_machine.vm_jumpbox_linux | See below.
 azurerm_network_interface.vm_jumbox_linux_nic_01 | The configured subnet is *azurerm_subnet.vnet_shared_01_subnets["default"]*.
 
-* [configure-vm-jumpbox-win.ps1](./configure-vm-jumpbox-win.ps1): Configures *azurerm_windows_virtual_machine.vm_jumpbox_win* using a provisioner that registers the VM with Azure Automation State Configuration (DSC) and applying the [LabDomainConfig.ps1](./LabDomainConfig.ps1) configuration.
-* This resource is configured using [cloud-init](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/using-cloud-init#:~:text=%20There%20are%20two%20stages%20to%20making%20cloud-init,is%20already%20configured%20to%20use%20cloud-init.%20More%20) and the configuration is defined in [cloud-init.yaml](./cloud-init.yaml) and installs the following the latest version of the following packages:
-  * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/what-is-azure-cli?view=azure-cli-latest) is installed.
-  * [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) is installed.
+This Linux VM is used as a jumpbox for development and remote administration.
+
+* Guest OS: Ubuntu 20.04 LTS (Focal Fossa)
+* This resource is configured using [cloud-init](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/using-cloud-init#:~:text=%20There%20are%20two%20stages%20to%20making%20cloud-init,is%20already%20configured%20to%20use%20cloud-init.%20More%20) and the configuration is defined in [cloud-init.yaml](./cloud-init.yaml) which installs the following packages:
+  * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/what-is-azure-cli?view=azure-cli-latest)
+  * [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-)
+  * [PowerShell Core](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.1)
 
 #### Log Analytics Workspace ID
 
