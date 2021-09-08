@@ -1,6 +1,7 @@
 #cloud-config
 #
 # Installs azure-cli and terraform
+# Adapted from: https://github.com/azurecitadel/arc-onprem-servers/blob/main/linux/cloud_init/azure_cli.yaml 
 
 merge_how:
  - name: list
@@ -19,6 +20,7 @@ apt:
       key: |
         -----BEGIN PGP PUBLIC KEY BLOCK-----
         Version: GnuPG v1.4.7 (GNU/Linux)
+
         mQENBFYxWIwBCADAKoZhZlJxGNGWzqV+1OG1xiQeoowKhssGAKvd+buXCGISZJwT
         LXZqIcIiLP7pqdcZWtE9bSc7yBY2MalDp9Liu0KekywQ6VVX1T72NPf5Ev6x6DLV
         7aVWsCzUAF+eb7DC9fPuFLEdxmOEYoPjzrQ7cCnSV4JQxAqhU4T6OjbvRazGl3ag
@@ -40,6 +42,7 @@ apt:
       source: 'deb https://apt.releases.hashicorp.com $RELEASE main'
       key: |
         -----BEGIN PGP PUBLIC KEY BLOCK-----
+
         mQINBF60TuYBEADLS1MP7XrMlRkn1Y54cb2UclUMH8HkIRfBrhk5Leo9kNZc/2QD
         LmdQbi3UbZkz0uVkHqbFDgV5lAnukCnxgr9BqnL0GJpO78le7gCCbM5bR4rTJ6Ar
         OOtIKf25smGTIpbSwNdj8BOLqiExGFj/9L5X9S5kfq3vtuYt+lmxKkIrEPjSYnFR
