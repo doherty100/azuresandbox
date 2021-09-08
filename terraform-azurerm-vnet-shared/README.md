@@ -74,12 +74,12 @@ This section describes how to provision this quick start using default settings.
   * Configure Visual Studio Code to connect to the Linux jumpbox using Remote-SSH. See [Improving your security with a dedicated key](https://code.visualstudio.com/docs/remote/troubleshooting#_improving-your-security-with-a-dedicated-key) for more info.
     * The SSH keys can be found in the key vault secrets *bootstrapadmin-ssh-key-private* and *bootstrapadmin-ssh-key-public*. Here is a sample SSH configuration file to get you started:
 
-  ```yaml
-  Host 10.1.0.4
-    HostName 10.1.0.4
-    User bootstrapadmin
-    IdentityFile C:\\Users\\bootstrapadmin\\.ssh\\bootstrap-admin-ssh-key-private
-  ```
+    ```yaml
+    Host 10.1.0.4
+      HostName 10.1.0.4
+      User bootstrapadmin
+      IdentityFile C:\\Users\\bootstrapadmin\\.ssh\\bootstrap-admin-ssh-key-private
+    ```
 
     * In VS Code, open the folder `/home/bootstrapadmin/` on the Linux Jumpbox.
     * In VS Code, open a Bash terminal and verify the Linux distribution and version by running the command `cat \etc\*-release`.
