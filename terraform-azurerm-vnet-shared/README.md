@@ -81,8 +81,8 @@ This section describes how to provision this quick start using default settings.
     IdentityFile C:\\Users\\bootstrapadmin\\.ssh\\bootstrap-admin-ssh-key-private
   ```
 
-  * In VS Code, open the folder `/home/bootstrapadmin/` on the Linux Jumpbox.
-  * In VS Code, open a Bash terminal and verify the Linux distribution and version by running the command `cat \etc\*-release`.
+    * In VS Code, open the folder `/home/bootstrapadmin/` on the Linux Jumpbox.
+    * In VS Code, open a Bash terminal and verify the Linux distribution and version by running the command `cat \etc\*-release`.
 
 ## Documentation
 
