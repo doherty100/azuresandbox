@@ -190,6 +190,7 @@ azurerm_network_interface.vm_jumbox_linux_nic_01 | The configured subnet is *azu
 This Linux VM is used as a jumpbox for development and remote administration.
 
 * Guest OS: Ubuntu 20.04 LTS (Focal Fossa)
+* A system assigned [managed identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) is configured by default for use in DevOps related identity and access management scenarios.
 * This resource is configured using [cloud-init](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/using-cloud-init#:~:text=%20There%20are%20two%20stages%20to%20making%20cloud-init,is%20already%20configured%20to%20use%20cloud-init.%20More%20) and the configuration is defined in [cloud-init.yaml](./cloud-init.yaml) which installs the following packages:
   * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/what-is-azure-cli?view=azure-cli-latest)
   * [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-)
