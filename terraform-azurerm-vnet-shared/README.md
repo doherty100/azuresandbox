@@ -137,7 +137,7 @@ The configuration for these resources can be found in [040-network.tf](./040-net
 Resource name (ARM) | Notes
 --- | ---
 azurerm_virtual_network.vnet_shared_01 (vnet&#x2011;shared&#x2011;01) | By default this virtual network is configured with an address space of 10.1.0.0/16 and DNS server  DNS server addresses of 10.1.2.4 (the private ip for *azurerm_windows_virtual_machine.vm_adds*) and [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16).)
-azurerm_subnet.vnet_shared_01_subnets["default"] | The default address prefix for this subnet is 10.1.0.0/24 and includes the private ip address for *azurerm_windows_virtual_machine.vm_jumpbox_win*.
+azurerm_subnet.vnet_shared_01_subnets["default"] | The default address prefix for this subnet is 10.1.0.0/24 and includes the private ip address for *azurerm_windows_virtual_machine.vm_jumpbox_win* and *azurerm_linux_virtual_machine.vm_jumpbox_linux*.
 azurerm_subnet.vnet_shared_01_subnets["AzureBastionSubnet"] | The default address prefix for this subnet is 10.1.1.0/27 and includes the private ip addresses for *azurerm_bastion_host.bastion_host_01*.
 azurerm_subnet.vnet_shared_01_subnets["adds"] | The default address prefix for this subnet is 10.1.2.0/24 and includes the private ip address for *azurerm_windows_virtual_machine.vm_adds*.
 azurerm_bastion_host.bastion_host_01 (bst&#x2011;d629fdbde51aca2a&#x2011;1) | Used for secure RDP and SSH access to VMs.
