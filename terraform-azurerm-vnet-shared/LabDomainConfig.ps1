@@ -1,5 +1,5 @@
 configuration LabDomainConfig {
-    Import-DscResource -ModuleName PSDesiredStateConfiguration
+    Import-DscResource -ModuleName PSDscResources
     Import-DscResource -ModuleName ActiveDirectoryDsc
 
     $adminCredential = Get-AutomationPSCredential 'bootstrapadmin'

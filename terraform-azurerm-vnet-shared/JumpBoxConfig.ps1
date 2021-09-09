@@ -1,5 +1,5 @@
 configuration JumpBoxConfig {
-    Import-DscResource -ModuleName 'PSDesiredStateConfiguration'
+    Import-DscResource -ModuleName 'PSDscResources'
     Import-DscResource -ModuleName 'xDSCDomainjoin'
     
     $domain = Get-AutomationVariable -Name 'adds_domain_name'
