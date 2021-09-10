@@ -1,6 +1,7 @@
 configuration JumpBoxConfig {
     Import-DscResource -ModuleName 'PSDscResources'
     Import-DscResource -ModuleName 'xDSCDomainjoin'
+    Import-DscResource -ModuleName 'cChoco'
     
     $domain = Get-AutomationVariable -Name 'adds_domain_name'
     $domainAdminCredential = Get-AutomationPSCredential 'domainadmin'
@@ -27,6 +28,41 @@ configuration JumpBoxConfig {
             Name = 'RSAT-DNS-Server'
             Ensure = 'Present'
             DependsOn = '[xDSCDomainjoin]JoinDomain' 
+        }
+
+        cChocoInstaller installChoco {
+            InstallDir = "c:\choco"
+            DependsOn = '[xDSCDomainjoin]JoinDomain'
+        }
+
+        cChocoPackageInstaller installEdge {
+            Name = "microsoft-edge"
+            DependsOn   = "[cChocoInstaller]installChoco"
+            AutoUpgrade = $true
+        }
+
+        cChocoPackageInstaller installAzPowerShell {
+            Name = "az.powershell"
+            DependsOn   = "[cChocoInstaller]installChoco"
+            AutoUpgrade = $true
+        }
+
+        cChocoPackageInstaller installVsCode {
+            Name = "vscode"
+            DependsOn   = "[cChocoInstaller]installChoco"
+            AutoUpgrade = $true
+        }
+
+        cChocoPackageInstaller installStorageExplorer {
+            Name = "microsoftazurestorageexplorer"
+            DependsOn   = "[cChocoInstaller]installChoco"
+            AutoUpgrade = $true
+        }
+
+        cChocoPackageInstaller installSSMS {
+            Name = "sql-server-management-studio"
+            DependsOn   = "[cChocoInstaller]installChoco"
+            AutoUpgrade = $true
         }
     }
 }

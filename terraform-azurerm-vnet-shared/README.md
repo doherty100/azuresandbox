@@ -70,7 +70,7 @@ This section describes how to provision this quick start using default settings.
   * Ping the domain controller to verify connectivity.
   * Inspect the configuration of the domain using the *Active Directory Domains and Trusts*, *Active Directory Sites and Services* and *Active Directory Users and Computers* remote server administration tools.
   * Inspect the configuration of the DNS server using the *DNS* remote server administration tool.
-  * Install [Visual Studio Code](https://aka.ms/vscode) and the [Remote-SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) extension.
+  * Launch [Visual Studio Code](https://aka.ms/vscode) and install the [Remote-SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) extension.
   * Configure Visual Studio Code to connect to the Linux jumpbox using Remote-SSH. See [Improving your security with a dedicated key](https://code.visualstudio.com/docs/remote/troubleshooting#_improving-your-security-with-a-dedicated-key) for more info.
     * The SSH keys can be found in the key vault secrets *bootstrapadmin-ssh-key-private* and *bootstrapadmin-ssh-key-public*. Here is a sample SSH configuration file to get you started:
 
@@ -81,8 +81,8 @@ This section describes how to provision this quick start using default settings.
       IdentityFile C:\\Users\\bootstrapadmin\\.ssh\\bootstrap-admin-ssh-key-private
     ```
 
-    * In VS Code, open the folder `/home/bootstrapadmin/` on the Linux Jumpbox.
-    * In VS Code, open a Bash terminal and verify the Linux distribution and version by running the command `cat \etc\*-release`.
+    * Open the folder `/home/bootstrapadmin/` on the Linux Jumpbox.
+    * Open a Bash terminal and verify the Linux distribution and version by running the command `cat \etc\*-release`.
 
 ## Documentation
 
@@ -177,6 +177,15 @@ This Windows Server VM is used as a jumpbox for development and remote server ad
 * By default the [patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByPlatform`.
 * *admin_username* and *admin_password* are configured using key vault secrets *data.azurerm_key_vault_secret.adminpassword* and *data.azurerm_key_vault_secret.adminuser* which are set in advance by [bootstrap.sh](./bootstrap.sh).
 * This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [configure-vm-jumpbox.ps1](./configure-vm-jumpbox.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [JumpBoxConfig](./JumpBoxConfig.ps1).
+  * The following Windows Server features are enabled:
+    * [Windows Server Remote Server Administration Tools (RSAT)](https://docs.microsoft.com/en-us/windows-server/remote/remote-server-administration-tools)
+      * []
+  * The following software packages are pre-installed using [Choclatey](https://chocolatey.org/why-chocolatey):
+    * [Microsoft Edge](https://www.microsoft.com/en-us/edge?r=1)
+    * [Azure Az PowerShell Module](https://docs.microsoft.com/en-us/powershell/azure/new-azureps-module-az?view=azps-6.4.0)
+    * [Visual Studio Code](https://aka.ms/vscode)
+    * [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/sql-server-management-studio-ssms?view=sql-server-ver15)
+    * [Azure Storage Explorer](https://docs.microsoft.com/en-us/azure/vs-azure-tools-storage-manage-with-storage-explorer?tabs=windows)
 
 #### Linux Jumpbox VM
 

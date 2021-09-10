@@ -505,6 +505,12 @@ Import-Module `
     -ModuleName 'ActiveDirectoryDsc' `
     -ModuleUri 'https://www.powershellgallery.com/api/v2/package/ActiveDirectoryDsc'
 
+Import-Module `
+    -ResourceGroupName $ResourceGroupName `
+    -AutomationAccountName $automationAccount.AutomationAccountName `
+    -ModuleName 'cChoco' `
+    -ModuleUri 'https://www.powershellgallery.com/api/v2/package/cChoco'
+
 # Bootstrap automation variables
 Set-Variable `
     -ResourceGroupName $ResourceGroupName `
