@@ -158,7 +158,7 @@ Write-Log "Located automation account '$AutomationAccountName' in resource group
 # Register DSC Node
 Register-DscNode `
     -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.Name `
+    -AutomationAccountName $AutomationAccountName `
     -VirtualMachineName $VirtualMachineName `
     -Location $Location `
     -DscConfigurationName $DscConfigurationName `
