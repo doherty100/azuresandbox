@@ -53,14 +53,20 @@ configuration JumpBoxConfig {
             AutoUpgrade = $true
         }
 
+        cChocoPackageInstaller installSSMS {
+            Name = "sql-server-management-studio"
+            DependsOn   = "[cChocoInstaller]installChoco"
+            AutoUpgrade = $true
+        }
+
         cChocoPackageInstaller installStorageExplorer {
             Name = "microsoftazurestorageexplorer"
             DependsOn   = "[cChocoInstaller]installChoco"
             AutoUpgrade = $true
         }
 
-        cChocoPackageInstaller installSSMS {
-            Name = "sql-server-management-studio"
+        cChocoPackageInstaller installAdminCenter {
+            Name = "windows-admin-center"
             DependsOn   = "[cChocoInstaller]installChoco"
             AutoUpgrade = $true
         }

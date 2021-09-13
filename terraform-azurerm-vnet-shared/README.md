@@ -64,7 +64,18 @@ This section describes how to provision this quick start using default settings.
 
 * Explore your newly provisioned resources in the Azure portal.
   * Navigate to *Automation Accounts* > [My Automation Account] > *State configuration (DSC)*. Refresh the data on the *Nodes* tab and verify that all nodes are compliant. Review the data in the *Configurations* and *Compiled configurations* tabs as well.
-* Use bastion to establish an RDP connection to the Windows Server jumpbox virtual machine.
+* Use bastion to establish an SSH connection to the Linux Jumpbox VM.
+  * For *Authentication Type*, select *SSH Private Key from Azure Key Vault* using the *bootstrapadmin-ssh-key-private* secret from key vault.
+  * Expand *Advanced* and set the value of *SSH Passphrase* to the value of the *adminpassword* key vault secret.
+  * Once connected run the following commands at the Bash command prompt:
+    * `cat /etc/*-release` to see the guest OS distro and version.
+    * `az --version` to see the version of the Azure CLI installed.
+    * `terraform --version` to see the version of Terraform installed.
+    * `pwsh` to start a PowerShell session.
+      * `$PSVersionTable` to see the version of PowerShell Core installed.
+      * `exit` to quit PowerShell
+    * `exit` to terminate the SSH session.
+* Use bastion to establish an RDP connection to the Windows Server jumpbox VM.
   * Verify the machine is domain joined
   * Review the network configuration by running `ipconfig /all` from the command prompt.
   * Ping the domain controller to verify connectivity.
@@ -177,15 +188,18 @@ This Windows Server VM is used as a jumpbox for development and remote server ad
 * By default the [patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByPlatform`.
 * *admin_username* and *admin_password* are configured using key vault secrets *data.azurerm_key_vault_secret.adminpassword* and *data.azurerm_key_vault_secret.adminuser* which are set in advance by [bootstrap.sh](./bootstrap.sh).
 * This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [configure-vm-jumpbox.ps1](./configure-vm-jumpbox.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [JumpBoxConfig](./JumpBoxConfig.ps1).
-  * The following Windows Server features are enabled:
-    * [Windows Server Remote Server Administration Tools (RSAT)](https://docs.microsoft.com/en-us/windows-server/remote/remote-server-administration-tools)
-      * []
-  * The following software packages are pre-installed using [Choclatey](https://chocolatey.org/why-chocolatey):
-    * [Microsoft Edge](https://www.microsoft.com/en-us/edge?r=1)
-    * [Azure Az PowerShell Module](https://docs.microsoft.com/en-us/powershell/azure/new-azureps-module-az?view=azps-6.4.0)
-    * [Visual Studio Code](https://aka.ms/vscode)
-    * [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/sql-server-management-studio-ssms?view=sql-server-ver15)
-    * [Azure Storage Explorer](https://docs.microsoft.com/en-us/azure/vs-azure-tools-storage-manage-with-storage-explorer?tabs=windows)
+  * The following [Remote Server Administration Tools (RSAT)](https://docs.microsoft.com/en-us/windows-server/remote/remote-server-administration-tools) are installed:
+    * Active Directory module for Windows PowerShell (RSAT-AD-PowerShell)
+    * Active Directory Administrative Center (RSAT-AD-AdminCenter)
+    * AD DS Snap-Ins and Command-Line Tools (RSAT-ADDS-Tools)
+    * DNS Server Tools (RSAT-DNS-Server)
+  * The following software packages are pre-installed using [Chocolatey](https://chocolatey.org/why-chocolatey):
+    * [microsoft-edge](https://community.chocolatey.org/packages/microsoft-edge)
+    * [az.powershell](https://community.chocolatey.org/packages/az.powershell)
+    * [vscode](https://community.chocolatey.org/packages/vscode)
+    * [sql-server-management-studio](https://community.chocolatey.org/packages/sql-server-management-studio)
+    * [microsoftazurestorageexplorer](https://community.chocolatey.org/packages/microsoftazurestorageexplorer)
+    * [windows-admin-center](https://community.chocolatey.org/packages/windows-admin-center)
 
 #### Linux Jumpbox VM
 
@@ -211,7 +225,9 @@ The configuration for these resources can be found in [020-loganalytics.tf](./02
 
 Resource name (ARM) | Notes
 --- | ---
-azurerm_log_analytics_workspace.log_analytics_workspace_01 (log&#x2011;9d8828d28e2c73b7&#x2011;01) | General purpose log analytics workspace for use with services like [Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/overview) and [Azure Security Center](https://docs.microsoft.com/en-us/azure/security-center/security-center-introduction).
+azurerm_log_analytics_workspace.log_analytics_workspace_01 (log&#x2011;9d8828d28e2c73b7&#x2011;01) | See below.
+
+The general purpose log analytics workspace for use with services like [Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/overview) and [Azure Security Center](https://docs.microsoft.com/en-us/azure/security-center/security-center-introduction).
 random_id.log_analytics_workspace_01_name | Used to generate a random unique name for *azurerm_log_analytics_workspace.log_analytics_workspace_01*.
 azurerm_key_vault_secret.log_analytics_workspace_01_primary_shared_key | Secret used to access *azurerm_log_analytics_workspace.log_analytics_workspace_01*.
 
