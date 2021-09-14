@@ -30,6 +30,7 @@ param (
 #region constants
 $DscConfigurationName = 'JumpBoxConfig'
 $DscConfigurationNode = 'localhost'
+$MaxDscAttempts = 180
 #endregion
 
 #region functions
@@ -71,24 +72,19 @@ function Register-DscNode {
     Write-Log "Registering DSC node '$VirtualMachineName' with node configuration '$nodeConfigName'..."
     Write-Log "Warning, this process can take several minutes and the VM will be rebooted..."
     
-    try {
-        Register-AzAutomationDscNode `
-            -ResourceGroupName $ResourceGroupName `
-            -AutomationAccountName $AutomationAccountName `
-            -AzureVMName $VirtualMachineName `
-            -AzureVMResourceGroup $ResourceGroupName `
-            -AzureVMLocation $Location `
-            -NodeConfigurationName $nodeConfigName `
-            -ConfigurationModeFrequencyMins 15 `
-            -ConfigurationMode 'ApplyOnly' `
-            -AllowModuleOverwrite $false `
-            -RebootNodeIfNeeded $true `
-            -ActionAfterReboot 'ContinueConfiguration' `
-            -ErrorAction Stop
-    }
-    catch {
-        Exit-WithError $_
-    }
+    # Note: VM Extension may initially report errors but service will continue to attempt to apply configuration
+    Register-AzAutomationDscNode `
+        -ResourceGroupName $ResourceGroupName `
+        -AutomationAccountName $AutomationAccountName `
+        -AzureVMName $VirtualMachineName `
+        -AzureVMResourceGroup $ResourceGroupName `
+        -AzureVMLocation $Location `
+        -NodeConfigurationName $nodeConfigName `
+        -ConfigurationModeFrequencyMins 15 `
+        -ConfigurationMode 'ApplyOnly' `
+        -AllowModuleOverwrite $false `
+        -RebootNodeIfNeeded $true `
+        -ActionAfterReboot 'ContinueConfiguration'
 
     try {
         $dscNode = Get-AzAutomationDscNode `
@@ -123,7 +119,7 @@ function Register-DscNode {
         $jobStatus = $dscNode.Status
         Write-Log "DSC registration status for virtual machine '$VirtualMachineName' is '$jobStatus'..."
 
-    } while (($jobStatus -ne "Compliant") -or $i -gt 20)
+    } while (($jobStatus -ne "Compliant") -or ($i -gt $MaxDscAttempts))
 
     if ($jobStatus -ne 'Compliant') {
         Exit-WithError "DSC node '$VirtualMachineName' is not compliant..."

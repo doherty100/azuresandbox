@@ -127,8 +127,12 @@ This quick start makes extensive use of [Azure Automation State Configuration (D
 
 * [configure-automation.ps1](./configure-automation.ps1): This script is run by a provisioner in the *azurerm_automation_account.automation_account_01* resource and does the following:
   * Updates [Azure Automation shared resources](https://docs.microsoft.com/en-us/azure/automation/automation-intro#shared-resources) including:
-    * Updates [Modules](https://docs.microsoft.com/en-us/azure/automation/shared-resources/modules) to the latest versions.
-    * Imports the [ActiveDirectoryDsc](https://github.com/dsccommunity/ActiveDirectoryDsc) module.
+    * Updates existing [Modules](https://docs.microsoft.com/en-us/azure/automation/shared-resources/modules) to the latest versions.
+    * Imports new modules including the following:
+      * [Az.Accounts](https://docs.microsoft.com/en-us/powershell/module/az.accounts)
+      * [Az.Automation](https://docs.microsoft.com/en-us/powershell/module/az.automation)
+      * [ActiveDirectoryDsc](https://github.com/dsccommunity/ActiveDirectoryDsc) module.
+      * Imports the [cChoco](https://github.com/chocolatey/cChoco) module.
     * Bootstraps [Variables](https://docs.microsoft.com/en-us/azure/automation/shared-resources/variables)
     * Bootstraps [Credentials](https://docs.microsoft.com/en-us/azure/automation/shared-resources/credentials)
   * Configures [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview)

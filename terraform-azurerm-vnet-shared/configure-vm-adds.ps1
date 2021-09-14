@@ -30,6 +30,7 @@ param (
 #region constants
 $DscConfigurationName = 'LabDomainConfig'
 $DscConfigurationNode = 'localhost'
+$MaxDscAttempts = 180
 #endregion
 
 #region functions
@@ -43,6 +44,86 @@ function Exit-WithError {
     Write-Log "There was an exception during the process, please review..."
     Write-Log $msg
     Exit 2
+}
+
+function Register-DscNode {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $ResourceGroupName,
+
+        [Parameter(Mandatory = $true)]
+        [string] $AutomationAccountName,
+
+        [Parameter(Mandatory = $true)]
+        [string] $VirtualMachineName,
+
+        [Parameter(Mandatory = $true)]
+        [string] $Location,
+
+        [Parameter(Mandatory = $true)]
+        [string] $DscConfigurationName,
+
+        [Parameter(Mandatory = $true)]
+        [string] $DscConfigurationNode
+    )
+
+    $nodeConfigName = $DscConfigurationName + '.' + $DscConfigurationNode
+
+    Write-Log "Registering DSC node '$VirtualMachineName' with node configuration '$nodeConfigName'..."
+    Write-Log "Warning, this process can take several minutes and the VM will be rebooted..."
+    
+    # Note: VM Extension may initially report errors but service will continue to attempt to apply configuration
+    Register-AzAutomationDscNode `
+        -ResourceGroupName $ResourceGroupName `
+        -AutomationAccountName $AutomationAccountName `
+        -AzureVMName $VirtualMachineName `
+        -AzureVMResourceGroup $ResourceGroupName `
+        -AzureVMLocation $Location `
+        -NodeConfigurationName $nodeConfigName `
+        -ConfigurationModeFrequencyMins 15 `
+        -ConfigurationMode 'ApplyOnly' `
+        -AllowModuleOverwrite $false `
+        -RebootNodeIfNeeded $true `
+        -ActionAfterReboot 'ContinueConfiguration'
+
+    try {
+        $dscNode = Get-AzAutomationDscNode `
+            -ResourceGroupName $ResourceGroupName `
+            -AutomationAccountName $AutomationAccountName `
+            -Name $VirtualMachineName `
+            -ErrorAction Stop
+    }
+    catch {
+        Exit-WithError $_
+    }
+
+    $jobStatus = $dscNode.Status
+    Write-Log "DSC registration status for virtual machine '$VirtualMachineName' is '$jobStatus'..."
+
+    $i = 0
+    do {
+        $i++        
+
+        Start-Sleep 10
+        try {
+            $dscNode = Get-AzAutomationDscNode `
+                -ResourceGroupName $ResourceGroupName `
+                -AutomationAccountName $AutomationAccountName `
+                -Name $VirtualMachineName `
+                -ErrorAction Stop
+        }
+        catch {
+            Exit-WithError $_
+        }
+
+        $jobStatus = $dscNode.Status
+        Write-Log "DSC registration status for virtual machine '$VirtualMachineName' is '$jobStatus'..."
+
+    } while (($jobStatus -ne "Compliant") -or ($i -gt $MaxDscAttempts))
+
+    if ($jobStatus -ne 'Compliant') {
+        Exit-WithError "DSC node '$VirtualMachineName' is not compliant..."
+    }    
 }
 #endregion
 
@@ -71,47 +152,13 @@ if ($null -eq $automationAccount) {
 Write-Log "Located automation account '$AutomationAccountName' in resource group '$ResourceGroupName'"
 
 # Register DSC Node
-$nodeConfigName = $DscConfigurationName + '.' + $DscConfigurationNode
-Write-Log "Registering DSC node '$VirtualMachineName' with node configuration '$nodeConfigName'..."
-Write-Log "Warning, this process can take several minutes and the VM will be rebooted..."
-
-try {
-    Register-AzAutomationDscNode `
-        -ResourceGroupName $ResourceGroupName `
-        -AutomationAccountName $AutomationAccountName `
-        -AzureVMName $VirtualMachineName `
-        -AzureVMResourceGroup $ResourceGroupName `
-        -AzureVMLocation $Location `
-        -NodeConfigurationName $nodeConfigName `
-        -ConfigurationModeFrequencyMins 15 `
-        -ConfigurationMode 'ApplyOnly' `
-        -AllowModuleOverwrite $false `
-        -RebootNodeIfNeeded $true `
-        -ActionAfterReboot 'ContinueConfiguration' `
-        -ErrorAction Stop 
-}
-catch {
-    Exit-WithError $_
-}
-
-Write-Log "Checking status of DSC node '$VirtualMachineName'..."
-
-try {
-    $dscNode = Get-AzAutomationDscNode `
-        -ResourceGroupName $ResourceGroupName `
-        -AutomationAccountName $automationAccount.AutomationAccountName `
-        -Name $VirtualMachineName `
-        -ErrorAction Stop
-}
-catch {
-    Exit-WithError $_
-}
-
-Write-Log "Status for DSC node '$VirtualMachineName' is '$($dscNode.Status)'..."
-
-if ($dscNode.Status -ne 'Compliant') {
-    Exit-WithError "DSC node '$VirtualMachineName' is not compliant..."
-}
+Register-DscNode `
+    -ResourceGroupName $ResourceGroupName `
+    -AutomationAccountName $AutomationAccountName `
+    -VirtualMachineName $VirtualMachineName `
+    -Location $Location `
+    -DscConfigurationName $DscConfigurationName `
+    -DscConfigurationNode $DscConfigurationNode
 
 Exit 0
 #endregion
