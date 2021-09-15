@@ -117,8 +117,7 @@ function Register-DscNode {
         }
 
         $jobStatus = $dscNode.Status
-        Write-Log "DSC registration status for virtual machine '$VirtualMachineName' is '$jobStatus'..."
-
+        Write-Log "DSC registration status for virtual machine '$VirtualMachineName' is '$jobStatus' (attempt $i of $MaxDscAttempts)..."
     } while (($jobStatus -ne "Compliant") -or ($i -gt $MaxDscAttempts))
 
     if ($jobStatus -ne 'Compliant') {

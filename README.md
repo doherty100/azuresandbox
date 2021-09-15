@@ -21,16 +21,16 @@ This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doher
 \#AzureQuickStarts features a modular design and can be deployed as a whole or incrementally depending upon your requirements. It is  intended to accelerate cloud projects using best practices where feasible in a test lab environment. Each is listed here in suggested order of deployment.
 
 * [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/)
-  * A [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group) for provisioning Azure resources
-  * A [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview) for storing and retrieving shared secrets
-  * An [automation account](https://docs.microsoft.com/en-us/azure/automation/automation-intro) for [Azure automation state configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview)
+  * A [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group)
+  * A [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview)
+  * A [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/data-platform#collect-monitoring-data)
+  * A [storage account](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#storage-account)
+  * An [automation account](https://docs.microsoft.com/en-us/azure/automation/automation-intro)
   * A [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting virtual machines used as domain controllers, DNS servers and jump boxes.
   * A [bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview) for secure RDP and SSH access to virtual machines.
   * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) running [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) with a pre-configured domain and DNS server.
   * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
   * A Linux [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
-  * A [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/data-platform#collect-monitoring-data) for storing and querying metrics and logs
-  * A [storage account](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#storage-account) for storing and retrieving data
 * [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
   * Dedicated spoke virtual network  
   * Pre-configured bidirectional [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/)  
