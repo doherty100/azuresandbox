@@ -1,10 +1,11 @@
-# Azure quick start configuration: terraform-azurerm-vnet-spoke  
+# \#AzureQuickStarts - terraform-azurerm-vnet-app
 
 ## Overview
 
-This quick start implements the spoke portion of a basic hub-spoke networking topology and establishes bi-directional virtual network peering with the shared services virtual network. The spoke virtual network can be used for hosting solution infrastructure. The following quick starts must be deployed first before starting:
+This quick start implements a virtual network for applications including:
 
-* [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
+* A virtual network for hosting application infrastructure and services
+  * [Virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) is enabled with the shared services virtual network
 
 Activity | Estimated time required
 --- | ---
@@ -12,6 +13,12 @@ Pre-configuration | ~5 minutes
 Provisioning | ~5 minutes
 Smoke testing | ~ 5 minutes
 De-provisioning | ~10 minutes
+
+## Before you start
+
+The following quick starts must be deployed first before starting:
+
+* [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
 
 ## Getting started
 

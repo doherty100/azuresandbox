@@ -9,7 +9,7 @@ usage() {
 }
 
 # Set these defaults prior to running the script.
-default_vnet_name="vnet-spoke-01"
+default_vnet_name="vnet-app-01"
 default_vnet_address_space="10.2.0.0/16"
 default_default_subnet_name="snet-default-02"
 default_default_subnet_address_prefix="10.2.0.0/24"
@@ -17,7 +17,7 @@ default_database_subnet_name="snet-db-01"
 default_database_subnet_address_prefix="10.2.1.0/27"
 default_application_subnet_name="snet-app-01"
 default_application_subnet_address_prefix="10.2.1.32/27"
-default_privatelink_subnet_name="snet-storage-private-endpoints-02"
+default_privatelink_subnet_name="snet-private-endpoints-01"
 default_privatelink_subnet_address_prefix="10.2.1.64/27"
 
 # Intialize runtime defaults
@@ -29,12 +29,14 @@ then
     usage
 fi
 
-default_subscription_id=$(terraform output -state=$state_file subscription_id)
-default_resource_group_name=$(terraform output -state=$state_file resource_group_01_name)
-default_location=$(terraform output -state=$state_file resource_group_01_location)
-default_tags=$(terraform output -json -state=$state_file resource_group_01_tags)
-default_remote_virtual_network_id=$(terraform output -state=$state_file vnet_shared_01_id)
-default_remote_virtual_network_name=$(terraform output -state=$state_file vnet_shared_01_name)
+aad_tenant_id=$(terraform output -state=$state_file aad_tenant_id)
+arm_client_id=$(terraform output -state=$state_file arm_client_id)
+subscription_id=$(terraform output -state=$state_file subscription_id)
+resource_group_name=$(terraform output -state=$state_file resource_group_name)
+location=$(terraform output -state=$state_file location)
+tags=$(terraform output -json -state=$state_file tags)
+remote_virtual_network_id=$(terraform output -state=$state_file vnet_shared_01_id)
+remote_virtual_network_name=$(terraform output -state=$state_file vnet_shared_01_name)
 
 # User input
 read -e -i $default_vnet_name                         -p "vnet name -------------------------: " vnet_name
@@ -87,15 +89,17 @@ subnets="${subnets}}"
 # Generate terraform.tfvars file
 printf "\nGenerating terraform.tfvars file...\n\n"
 
-printf "location                    = $default_location\n"                    > ./terraform.tfvars
-printf "remote_virtual_network_id   = $default_remote_virtual_network_id\n"   >> ./terraform.tfvars
-printf "remote_virtual_network_name = $default_remote_virtual_network_name\n" >> ./terraform.tfvars
-printf "resource_group_name         = $default_resource_group_name\n"         >> ./terraform.tfvars
-printf "subnets                     = $subnets\n"                             >> ./terraform.tfvars
-printf "subscription_id             = $default_subscription_id\n"         >> ./terraform.tfvars
-printf "tags                        = $default_tags\n"                        >> ./terraform.tfvars
-printf "vnet_address_space          = \"$vnet_address_space\"\n"              >> ./terraform.tfvars
-printf "vnet_name                   = \"$vnet_name\"\n"                       >> ./terraform.tfvars
+printf "aad_tenant_id               = $aad_tenant_id\n"                 > ./terraform.tfvars
+printf "arm_client_id               = $arm_client_id\n"                 >> ./terraform.tfvars
+printf "location                    = $location\n"                      >> ./terraform.tfvars
+printf "remote_virtual_network_id   = $remote_virtual_network_id\n"     >> ./terraform.tfvars
+printf "remote_virtual_network_name = $remote_virtual_network_name\n"   >> ./terraform.tfvars
+printf "resource_group_name         = $resource_group_name\n"           >> ./terraform.tfvars
+printf "subnets                     = $subnets\n"                       >> ./terraform.tfvars
+printf "subscription_id             = $subscription_id\n"               >> ./terraform.tfvars
+printf "tags                        = $tags\n"                          >> ./terraform.tfvars
+printf "vnet_address_space          = \"$vnet_address_space\"\n"        >> ./terraform.tfvars
+printf "vnet_name                   = \"$vnet_name\"\n"                 >> ./terraform.tfvars
 
 cat ./terraform.tfvars
 

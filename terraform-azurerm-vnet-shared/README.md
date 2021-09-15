@@ -241,6 +241,7 @@ This section lists the output variables defined in the Terraform configurations 
 Variable name | Example value
 --- | ---
 aad_tenant_id | "00000000-0000-0000-0000-000000000000"
+arm_client_id | "00000000-0000-0000-0000-000000000000"
 automation_account_01_name | "auto-9a633c2bba9351cc-01"
 key_vault_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.KeyVault/vaults/kv-XXXXXXXXXXXXXXX"
 key_vault_name | "kv-XXXXXXXXXXXXXXX"
@@ -250,7 +251,9 @@ log_analytics_workspace_01_workspace_id | "00000000-0000-0000-0000-000000000000"
 resource_group_name | "rg-vdc-nonprod-01"
 storage_account_name | "stXXXXXXXXXXXXXXX"
 subscription_id | "00000000-0000-0000-0000-000000000000"
-vnet_shared_01_default_subnet_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-shared-01/subnets/snet-default-01"
+tags | tomap( { "costcenter" = "10177772" "environment" = "dev" "project" = "#AzureQuickStarts" } )
+vnet_shared_01_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-shared-01""
+vnet_shared_01_name | "vnet-shared-01"
 
 ## Known issues
 
@@ -265,6 +268,7 @@ This section documents known issues with this quick start.
 * *configure-automation.ps1*: The performance of this script could be improved by using multi-threading to run Azure Automation operations in parallel.
 * *azurerm_linux_virtual_machine.vm_jumpbox_linux*
   * The Terraform azurerm provider has not yet added support for Automatic VM guest patching attributes. See [Support for enable_automatic_updates and patch_mode in azurerm_linux_virtual_machine #13257](https://github.com/hashicorp/terraform-provider-azurerm/issues/13257).
+* [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) is in maintenance mode and will be replaced by [Azure Policy guest configuration](https://azure.microsoft.com/en-in/updates/public-preview-apply-settings-inside-machines-using-azure-policys-guest-configuration/)] which is currently in public preview. This quick start will be updated to the new implementation when it is generally available.
 
 ## Next steps
 

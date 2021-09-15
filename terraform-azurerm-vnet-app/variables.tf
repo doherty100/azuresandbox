@@ -1,3 +1,19 @@
+variable "aad_tenant_id" {
+  type        = string
+  description = "The Azure Active Directory tenant id."
+}
+
+variable "arm_client_id" {
+  type        = string
+  description = "The AppId of the service principal used for authenticating with Azure. Must have a 'Contributor' role assignment."
+}
+
+variable "arm_client_secret" {
+  type        = string
+  description = "The password for the service principal used for authenticating with Azure. Set interactively or using an environment variable 'TF_VAR_arm_client_secret'."
+  sensitive   = true
+}
+
 variable "location" {
   type        = string
   description = "The name of the Azure Region where resources will be provisioned."

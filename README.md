@@ -31,8 +31,8 @@ This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doher
   * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) running [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) with a pre-configured domain and DNS server.
   * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
   * A Linux [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
-* [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
-  * Dedicated spoke virtual network  
+* [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/)
+  * A [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting application infrastructure and services.  
   * Pre-configured bidirectional [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/)  
 * [terraform-azurerm-vm-sql](./terraform-azurerm-vm-sql/)
   * [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering
@@ -40,7 +40,7 @@ This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doher
   * [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database using [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview).
 * [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
   * Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources)
-  * Shared [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) and [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
+  * Shared [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) and [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/)
 * Miscellaneous quick starts
   * [az-graph](./az-graph/)
     * Common [Azure Resource Graph](https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview) queries used for real world cloud estate discovery projects
@@ -167,7 +167,7 @@ Address range | CIDR | First | Last | IP address count | Suggested minimum range
 Reserved for private network | 10.0.0.0/16 | 10.0.0.0 | 10.0.255.255 | 65,536 | N/A
 Default quick start aggregate | 10.1.0.0/13 | 10.1.0.0 | 10.7.255.255 | 524,288 | /22 (1024 IP addresses)
 Shared services virtual network | 10.1.0.0/16 | 10.1.0.0 | 10.1.255.255 | 65,536 | /24 (256 IP addresses)
-Spoke virtual network | 10.2.0.0/16 | 10.2.0.0 | 10.2.255.255 | 65,536 | /24 (256 IP addresses)
+Application virtual network | 10.2.0.0/16 | 10.2.0.0 | 10.2.255.255 | 65,536 | /24 (256 IP addresses)
 Virtual wan hub | 10.3.0.0/16 | 10.3.0.0 | 10.3.255.255 | 65,536 | /24 (256 IP addresses)
 P2S client VPN connections | 10.4.0.0/16 | 10.4.0.0 | 10.4.255.255 | 65,536 | /24 (256 IP addresses)
 Reserved for future use | 10.5.0.0/16 | 10.5.0.0 | 10.5.255.255 | 65,536 | N/A
@@ -192,29 +192,29 @@ Shared services | Reserved for future use | 10.1.16.0/20 | 10.1.16.0 | 10.1.31.2
 Shared services | Reserved for future use | 10.1.32.0/19 | 10.1.32.0 | 10.1.63.255 | 8,192
 Shared services | Reserved for future use | 10.1.64.0/18 | 10.1.64.0 | 10.1.127.255 | 16,384
 Shared services | Reserved for future use | 10.1.128.0/17 | 10.1.128.0 | 10.1.255.255 | 32,768
-Spoke | snet-default-02 | 10.2.0.0/24 | 10.2.0.0 | 10.2.0.255 | 256
-Spoke | snet-db-01 | 10.2.1.0/27 | 10.2.1.0 | 10.2.1.31 | 32
-Spoke | snet-app-01 | 10.2.1.32/27 | 10.2.1.32 | 10.2.1.63 | 32
-Spoke | snet-storage-private-endpoints-02 | 10.2.1.64/27 | 10.2.1.64 | 10.2.1.95 | 32
-Spoke | Reserved for future use | 10.2.1.96/27 | 10.2.1.96 | 10.2.1.127 | 32
-Spoke | Reserved for future use | 10.2.1.128/25 | 10.2.1.128 | 10.2.1.255 | 128
-Spoke | Reserved for future use | 10.2.2.0/23 | 10.2.2.0 | 10.2.3.255 | 512
-Spoke | Reserved for future use | 10.2.4.0/22 | 10.2.4.0 | 10.2.7.255 | 1,024
-Spoke | Reserved for future use | 10.2.8.0/21 | 10.2.8.0 | 10.2.15.255 | 2,048
-Spoke | Reserved for future use | 10.2.16.0/20 | 10.2.16.0 | 10.2.31.255 | 4,096
-Spoke | Reserved for future use | 10.2.32.0/19 | 10.2.32.0 | 10.2.63.255 | 8,192
-Spoke | Reserved for future use | 10.2.64.0/18 | 10.2.64.0 | 10.2.127.255 | 16,384
-Spoke | Reserved for future use | 10.2.128.0/17 | 10.2.128.0 | 10.2.255.255 | 32,768
+Application | snet-default-02 | 10.2.0.0/24 | 10.2.0.0 | 10.2.0.255 | 256
+Application | snet-db-01 | 10.2.1.0/27 | 10.2.1.0 | 10.2.1.31 | 32
+Application | snet-app-01 | 10.2.1.32/27 | 10.2.1.32 | 10.2.1.63 | 32
+Application | snet-private-endpoints-01 | 10.2.1.64/27 | 10.2.1.64 | 10.2.1.95 | 32
+Application | Reserved for future use | 10.2.1.96/27 | 10.2.1.96 | 10.2.1.127 | 32
+Application | Reserved for future use | 10.2.1.128/25 | 10.2.1.128 | 10.2.1.255 | 128
+Application | Reserved for future use | 10.2.2.0/23 | 10.2.2.0 | 10.2.3.255 | 512
+Application | Reserved for future use | 10.2.4.0/22 | 10.2.4.0 | 10.2.7.255 | 1,024
+Application | Reserved for future use | 10.2.8.0/21 | 10.2.8.0 | 10.2.15.255 | 2,048
+Application | Reserved for future use | 10.2.16.0/20 | 10.2.16.0 | 10.2.31.255 | 4,096
+Application | Reserved for future use | 10.2.32.0/19 | 10.2.32.0 | 10.2.63.255 | 8,192
+Application | Reserved for future use | 10.2.64.0/18 | 10.2.64.0 | 10.2.127.255 | 16,384
+Application | Reserved for future use | 10.2.128.0/17 | 10.2.128.0 | 10.2.255.255 | 32,768
 
 #### Apply quick start configurations
 
 Apply the quick starts in the following order:
 
 1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) implements a virtual network with shared services used by all the quick starts.
-1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/) establishes a dedicated spoke virtual network.
+1. [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/) implements an application virtual network.
 1. [terraform-azurerm-vm-sql](./terraform-azurerm-vm-sql/) implements a pre-configured environment for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications using an [IaaS](https://azure.microsoft.com/en-us/overview/what-is-azure/iaas/) approach.
 1. [terraform-azurerm-sql](./terraform-azurerm-sql/) implements an Azure SQL Database for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications using a [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) approach.
-1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared services virtual network and the dedicated spoke virtual network to remote users or a private network.
+1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared services virtual network and the application virtual network to remote users or a private network.
 
 #### Destroy quick start configurations
 
@@ -223,7 +223,7 @@ While a default quick start deployment is fine for testing, it may not work with
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
 1. [terraform-azurerm-sql](./terraform-azurerm-sql/)
 1. [terraform-azurerm-vm-sql](./terraform-azurerm-vm-sql/)
-1. [terraform-azurerm-vnet-spoke](./terraform-azurerm-vnet-spoke/)
+1. [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/)
 1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/). Note: Resources provisioned by `bootstrap.sh` must be deleted manually.
 
 Alternatively, for speed, simply run `az group delete -g rg-vdc-nonprod-01`.
@@ -258,7 +258,7 @@ IP address range | CIDR | First | Last | IP address count
 --- | --- | --- | --- | --:
 Aggregate range | 10.73.8.0/22 | 10.73.8.0 | 10.73.11.255 | 1,024
 Shared services virtual network | 10.73.8.0/24  | 10.73.8.0 | 10.73.8.255 | 256
-Spoke virtual network | 10.73.9.0/24 | 10.73.9.0 | 10.73.9.255 | 256
+Application virtual network | 10.73.9.0/24 | 10.73.9.0 | 10.73.9.255 | 256
 Virtual wan hub | 10.73.10.0/24 | 10.73.10.0 | 10.73.10.255 | 256
 P2S client VPN connections | 10.73.11.0/24 | 10.73.11.0 | 10.73.11.255 | 256
 
@@ -268,7 +268,7 @@ IP address range | CIDR | First | Last | IP address count
 --- | --- | --- | --- | --:
 Aggregate range | TBD | TBD | TBD | TBD
 Shared services virtual network | TBD  | TBD | TBD | TBD
-Spoke virtual network | TBD | TBD | TBD | TBD
+Application virtual network | TBD | TBD | TBD | TBD
 Virtual wan hub | TBD | TBD | TBD | TBD
 P2S client VPN connections | TBD | TBD | TBD | TBD
 
@@ -283,11 +283,11 @@ Shared services | AzureBastionSubnet | 10.73.8.128/27 | 10.73.8.128 | 10.73.8.15
 Shared services | snet-adds-01 | 10.73.8.160/27 | 10.73.8.160 | 10.73.8.191 | 32
 Shared services | Reserved for future use | 10.73.8.192/27 | 10.73.8.192 | 10.73.8.223 | 32
 Shared services | Reserved for future use | 10.73.8.224/27 | 10.73.8.224 | 10.73.8.255 | 32
-Spoke | snet-default-02 | 10.73.9.0/25 | 10.73.9.0 | 10.73.9.127 | 128
-Spoke | snet-db-01 | 10.73.9.128/27 | 10.73.9.128 | 10.73.9.159 | 32
-Spoke | snet-app-01 | 10.73.9.160/27 | 10.73.9.160 | 10.73.9.191 | 32
-Spoke | snet-storage-private-endpoints-02 | 10.73.9.192/27 | 10.73.9.192 | 10.73.9.223 | 32
-Spoke | Reserved for future use | 10.73.9.224/27 | 10.73.9.224 | 10.73.9.255 | 32
+Application | snet-default-02 | 10.73.9.0/25 | 10.73.9.0 | 10.73.9.127 | 128
+Application | snet-db-01 | 10.73.9.128/27 | 10.73.9.128 | 10.73.9.159 | 32
+Application | snet-app-01 | 10.73.9.160/27 | 10.73.9.160 | 10.73.9.191 | 32
+Application | snet-private-endpoints-01 | 10.73.9.192/27 | 10.73.9.192 | 10.73.9.223 | 32
+Application | Reserved for future use | 10.73.9.224/27 | 10.73.9.224 | 10.73.9.255 | 32
 
 It is recommended to reserve space for future subnets. A blank table is provided here for convenience. Make a copy of this table and change the *TBD* values to your custom values.
 
@@ -297,8 +297,8 @@ Shared services | snet-default-01 | TBD | TBD | TBD | TBD
 Shared services | AzureBastionSubnet | TBD | TBD | TBD | TBD
 Shared services | snet-storage-private-endpoints-01 | TBD | TBD | TBD | TBD
 Shared services | Reserved for future use | TBD | TBD | TBD | TBD
-Spoke | snet-default-02 | TBD | TBD | TBD | TBD
-Spoke | AzureBastionSubnet | TBD | TBD | TBD | TBD
-Spoke | snet-db-01 | TBD | TBD | TBD | TBD
-Spoke | snet-app-01 | TBD | TBD | TBD | TBD
-Spoke | snet-storage-private-endpoints-02 | TBD | TBD | TBD | TBD
+Application | snet-default-02 | TBD | TBD | TBD | TBD
+Application | AzureBastionSubnet | TBD | TBD | TBD | TBD
+Application | snet-db-01 | TBD | TBD | TBD | TBD
+Application | snet-app-01 | TBD | TBD | TBD | TBD
+Application | snet-private-endpoints-01 | TBD | TBD | TBD | TBD

@@ -39,6 +39,10 @@ output "aad_tenant_id" {
   value = var.aad_tenant_id
 }
 
+output "arm_client_id" {
+  value = var.arm_client_id
+}
+
 output "key_vault_id" {
   value = var.key_vault_id
 }
@@ -61,4 +65,8 @@ output "storage_account_name" {
 
 output "subscription_id" {
   value = var.subscription_id
+}
+
+output "tags" {
+  value = var.tags
 }

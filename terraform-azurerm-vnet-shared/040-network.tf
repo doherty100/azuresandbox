@@ -8,6 +8,14 @@ resource "azurerm_virtual_network" "vnet_shared_01" {
   tags                = var.tags
 }
 
+output "vnet_shared_01_id" {
+  value = azurerm_virtual_network.vnet_shared_01.id
+}
+
+output "vnet_shared_01_name" {
+  value = azurerm_virtual_network.vnet_shared_01.name
+}
+
 resource "azurerm_subnet" "vnet_shared_01_subnets" {
   for_each = var.subnets
 
@@ -16,10 +24,6 @@ resource "azurerm_subnet" "vnet_shared_01_subnets" {
   virtual_network_name                           = azurerm_virtual_network.vnet_shared_01.name
   address_prefixes                               = [each.value.address_prefix]
   enforce_private_link_endpoint_network_policies = each.value.enforce_private_link_endpoint_network_policies
-}
-
-output "vnet_shared_01_default_subnet_id" {
-  value = azurerm_subnet.vnet_shared_01_subnets["default"].id
 }
 
 # Dedicated bastion
