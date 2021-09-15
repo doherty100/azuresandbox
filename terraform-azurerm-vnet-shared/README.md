@@ -55,7 +55,7 @@ This section describes how to provision this quick start using default settings.
 * Run `terraform validate` to check the syntax of the configuration.
 * Run `terraform plan` and review the plan output.
   * When prompted for *arm_client_secret*, use the *password* for the service principal created by the subscription owner.
-* Run `terraform apply` to apply the plan.
+* Run `terraform apply` to apply the plan. Monitor the output as resources are provisioned.
   * When prompted for *arm_client_secret*, use the *password* for the service principal created by the subscription owner.
 * Run `terraform state list` to list the resources managed in the configuration.
 * Run `terraform output` to view the output variables from the *terraform.tfstate* file.
