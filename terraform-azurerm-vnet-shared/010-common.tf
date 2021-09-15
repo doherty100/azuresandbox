@@ -39,6 +39,14 @@ output "aad_tenant_id" {
   value = var.aad_tenant_id
 }
 
+output "admin_password_secret" {
+  value = var.admin_password_secret
+}
+
+output "admin_username_secret" {
+  value = var.admin_username_secret
+}
+
 output "arm_client_id" {
   value = var.arm_client_id
 }
@@ -61,6 +69,10 @@ output "resource_group_name" {
 
 output "storage_account_name" {
   value = var.storage_account_name
+}
+
+output "storage_container_name" {
+  value = var.storage_container_name
 }
 
 output "subscription_id" {

@@ -241,6 +241,8 @@ This section lists the output variables defined in the Terraform configurations 
 Variable name | Example value
 --- | ---
 aad_tenant_id | "00000000-0000-0000-0000-000000000000"
+admin_password_secret | "adminpassword"
+admin_username_secret | "adminuser"
 arm_client_id | "00000000-0000-0000-0000-000000000000"
 automation_account_01_name | "auto-9a633c2bba9351cc-01"
 key_vault_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.KeyVault/vaults/kv-XXXXXXXXXXXXXXX"
@@ -250,6 +252,7 @@ log_analytics_workspace_01_name | "log-XXXXXXXXXXXXXXXX-01"
 log_analytics_workspace_01_workspace_id | "00000000-0000-0000-0000-000000000000"
 resource_group_name | "rg-vdc-nonprod-01"
 storage_account_name | "stXXXXXXXXXXXXXXX"
+storage_container_name | "scripts"
 subscription_id | "00000000-0000-0000-0000-000000000000"
 tags | tomap( { "costcenter" = "10177772" "environment" = "dev" "project" = "#AzureQuickStarts" } )
 vnet_shared_01_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-shared-01""
