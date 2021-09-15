@@ -33,9 +33,8 @@ This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doher
   * A Linux [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
 * [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/)
   * A [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting application infrastructure and services.  
-  * Pre-configured bidirectional [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/)  
-* [terraform-azurerm-vm-sql](./terraform-azurerm-vm-sql/)
-  * [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering
+    * Pre-configured [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/)  
+  * An [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering
 * [terraform-azurerm-sql](./terraform-azurerm-sql/)
   * [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database using [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview).
 * [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
@@ -212,7 +211,6 @@ Apply the quick starts in the following order:
 
 1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) implements a virtual network with shared services used by all the quick starts.
 1. [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/) implements an application virtual network.
-1. [terraform-azurerm-vm-sql](./terraform-azurerm-vm-sql/) implements a pre-configured environment for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications using an [IaaS](https://azure.microsoft.com/en-us/overview/what-is-azure/iaas/) approach.
 1. [terraform-azurerm-sql](./terraform-azurerm-sql/) implements an Azure SQL Database for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications using a [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) approach.
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared services virtual network and the application virtual network to remote users or a private network.
 
@@ -222,7 +220,6 @@ While a default quick start deployment is fine for testing, it may not work with
 
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
 1. [terraform-azurerm-sql](./terraform-azurerm-sql/)
-1. [terraform-azurerm-vm-sql](./terraform-azurerm-vm-sql/)
 1. [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/)
 1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/). Note: Resources provisioned by `bootstrap.sh` must be deleted manually.
 
