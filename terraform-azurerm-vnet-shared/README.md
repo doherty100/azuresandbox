@@ -164,7 +164,7 @@ This quick start makes extensive use of [Azure Automation State Configuration (D
     * Bootstraps [Variables](https://docs.microsoft.com/en-us/azure/automation/shared-resources/variables)
     * Bootstraps [Credentials](https://docs.microsoft.com/en-us/azure/automation/shared-resources/credentials)
   * Configures [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview). Note that AADSC is only used for Windows Server virtual machine configuration management in the quick starts.
-    * Imports [DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started#create-a-dsc-configuration)
+    * Imports [DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started#create-a-dsc-configuration) used in this and other quick starts.
       * [LabDomainConfig.ps1](./LabDomainConfig.ps1): configure as Windows Server virtual machine as an [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) [Domain Controller](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2003/cc786438(v=ws.10)).
       * [JumpBoxConfig.ps1](./JumpBoxConfig.ps1): domain joins a Windows Server virtual machine and configures it as jumpbox.
       * [MssqlVmConfig.ps1](./MssqlVmConfig.ps1): domain joins a Windows Server virtual machine creating using the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering.
@@ -281,8 +281,8 @@ vnet_shared_01_name | "vnet-shared-01"
 
 This section documents known issues with this quick start.
 
-* Authentication: This quick start uses a service principal to authenticate with Azure which requires a client secret to be shared. This was due to the requirement that the quick start users be limited to a Contributor Azure RBAC role assignment which cannot do Azure RBAC role assignments. Real world projects should consider using [managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) instead of service principals which eliminates the need to share client secrets.
-* Credentials: For simplicity, the quick starts use a single set of credentials when administrator accounts are required to provision or configure resources. In real world scenarios these credentials would be different for better security.
+* *Authentication*: This quick start uses a service principal to authenticate with Azure which requires a client secret to be shared. This was due to the requirement that the quick start users be limited to a *Contributor* Azure RBAC role assignment which cannot do Azure RBAC role assignments. Real world projects should consider using [managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) instead of service principals which eliminates the need to share client secrets.
+* *Credentials*: For simplicity, the quick starts use a single set of credentials when an administrator account is required to provision or configure resources. In real world scenarios these credentials would be different for better security.
 * *azurerm_subnet.vnet_shared_01_subnets["adds"]*: Should be protected by an NSG as per best practices described in [Deploy AD DS in an Azure virtual network]
 * *azurerm_windows_virtual_machine.vm_adds*
   * High availability: The current design uses a single VM for AD DS which is counter to best practices as described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain) which recommends a pair of VMs in an Availability Set.
@@ -294,4 +294,4 @@ This section documents known issues with this quick start.
 
 ## Next steps
 
-* Move on to the next quick start [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke).
+* Move on to the next quick start [terraform-azurerm-vnet-app](../terraform-azurerm-vnet-app).
