@@ -256,9 +256,10 @@ This Linux VM is used as a jumpbox for development and remote administration.
 
 This section lists the output variables defined in the Terraform configurations in this quick start. Some of these may be used for automation in other quick starts.
 
-Variable name | Example value
+Variable name | Example / default value
 --- | ---
 aad_tenant_id | "00000000-0000-0000-0000-000000000000"
+adds_domain_name | "mytestlab.local"
 admin_password_secret | "adminpassword"
 admin_username_secret | "adminuser"
 arm_client_id | "00000000-0000-0000-0000-000000000000"
