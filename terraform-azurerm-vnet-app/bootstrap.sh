@@ -11,14 +11,12 @@ usage() {
 # Set these defaults prior to running the script.
 default_vnet_name="vnet-app-01"
 default_vnet_address_space="10.2.0.0/16"
-default_default_subnet_name="snet-default-02"
-default_default_subnet_address_prefix="10.2.0.0/24"
 default_database_subnet_name="snet-db-01"
-default_database_subnet_address_prefix="10.2.1.0/27"
+default_database_subnet_address_prefix="10.2.0.0/27"
 default_application_subnet_name="snet-app-01"
-default_application_subnet_address_prefix="10.2.1.32/27"
+default_application_subnet_address_prefix="10.2.0.32/27"
 default_privatelink_subnet_name="snet-private-endpoints-01"
-default_privatelink_subnet_address_prefix="10.2.1.64/27"
+default_privatelink_subnet_address_prefix="10.2.0.64/27"
 default_vm_mssql_win_name="mssqlwin1"
 vm_mssql_win_post_deploy_script="vm-mssql-win-post-deploy.ps1"
 vm_mssql_win_sql_bootstrap_script="sql-bootstrap.ps1"
@@ -37,9 +35,12 @@ then
 fi
 
 aad_tenant_id=$(terraform output -state=$state_file aad_tenant_id)
+adds_domain_name=$(terraform output -state=$state_file adds_domain_name)
 admin_password_secret=$(terraform output -state=$state_file admin_password_secret)
 admin_username_secret=$(terraform output -state=$state_file admin_username_secret)
+automation_account_name=$(terraform output -state=$state_file automation_account_name)
 arm_client_id=$(terraform output -state=$state_file arm_client_id)
+dns_server=$(terraform output -state=$state_file dns_server)
 key_vault_id=$(terraform output -state=$state_file key_vault_id)
 key_vault_name=$(terraform output -state=$state_file key_vault_name)
 location=$(terraform output -state=$state_file location)
@@ -54,8 +55,6 @@ tags=$(terraform output -json -state=$state_file tags)
 # User input
 read -e -i $default_vnet_name                         -p "Virtual network name (vnet_name) --------------------------------------: " vnet_name
 read -e -i $default_vnet_address_space                -p "Virtual network address space (vnet_address_space) --------------------: " vnet_address_space
-read -e -i $default_default_subnet_name               -p "Default subnet name (default_subnet_name) -----------------------------: " default_subnet_name
-read -e -i $default_default_subnet_address_prefix     -p "Default subnet address prefix (default_subnet_address_prefix) ---------: " default_subnet_address_prefix
 read -e -i $default_database_subnet_name              -p "Database subnet name (database_subnet_name) ---------------------------: " database_subnet_name
 read -e -i $default_database_subnet_address_prefix    -p "Database subnet address prefix (database_subnet_address_prefix) -------: " database_subnet_address_prefix
 read -e -i $default_application_subnet_name           -p "Application subnet name (application_subnet_name) ---------------------: " application_subnet_name
@@ -68,8 +67,6 @@ application_subnet_name=${application_subnet_name:-default_application_subnet_na
 application_subnet_address_prefix=${application_subnet_address_prefix:-default_application_subnet_address_prefix}
 database_subnet_name=${database_subnet_name:-default_database_subnet_name}
 database_subnet_address_prefix=${database_subnet_address_prefix:-default_database_subnet_address_prefix}
-default_subnet_name=${default_subnet_name:-default_default_subnet_name}
-default_subnet_address_prefix=${default_subnet_address_prefix:-default_default_subnet_address_prefix}
 privatelink_subnet_name=${privatelink_subnet_name:-default_privatelink_subnet_name}
 privatelink_subnet_address_prefix=${privatelink_subnet_address_prefix:-default_privatelink_subnet_address_prefix}
 vm_mssql_win_name=${vm_mssql_win_name:-default_vm_mssql_win_name}
@@ -95,11 +92,6 @@ az storage blob upload-batch \
 # Build subnet map
 subnets=""
 subnets="${subnets}{\n"
-subnets="${subnets}  default = {\n"
-subnets="${subnets}    name                                           = \"$default_subnet_name\",\n"
-subnets="${subnets}    address_prefix                                 = \"$default_subnet_address_prefix\",\n"
-subnets="${subnets}    enforce_private_link_endpoint_network_policies = false\n"
-subnets="${subnets}  },\n"
 subnets="${subnets}  database = {\n"
 subnets="${subnets}    name                                           = \"$database_subnet_name\",\n"
 subnets="${subnets}    address_prefix                                 = \"$database_subnet_address_prefix\",\n"
@@ -121,9 +113,12 @@ subnets="${subnets}}"
 printf "\nGenerating terraform.tfvars file...\n\n"
 
 printf "aad_tenant_id =                         $aad_tenant_id\n"                               > ./terraform.tfvars
+printf "adds_domain_name =                      $adds_domain_name\n"                            >> ./terraform.tfvars
 printf "admin_password_secret =                 $admin_password_secret\n"                       >> ./terraform.tfvars
 printf "admin_username_secret =                 $admin_username_secret\n"                       >> ./terraform.tfvars
 printf "arm_client_id =                         $arm_client_id\n"                               >> ./terraform.tfvars
+printf "automation_account_name =               $automation_account_name\n"                     >> ./terraform.tfvars
+printf "dns_server =                            $dns_server\n"                                  >> ./terraform.tfvars
 printf "key_vault_id =                          $key_vault_id\n"                                >> ./terraform.tfvars
 printf "location =                              $location\n"                                    >> ./terraform.tfvars
 printf "remote_virtual_network_id =             $remote_virtual_network_id\n"                   >> ./terraform.tfvars
@@ -133,8 +128,6 @@ printf "storage_account_name =                  $storage_account_name\n"        
 printf "subnets =                               $subnets\n"                                     >> ./terraform.tfvars
 printf "subscription_id =                       $subscription_id\n"                             >> ./terraform.tfvars
 printf "tags =                                  $tags\n"                                        >> ./terraform.tfvars
-printf "vnet_address_space =                    \"$vnet_address_space\"\n"                      >> ./terraform.tfvars
-printf "vnet_name =                             \"$vnet_name\"\n"                               >> ./terraform.tfvars
 printf "vm_mssql_win_name =                     \"$vm_mssql_win_name\"\n"                       >> ./terraform.tfvars
 printf "vm_mssql_win_post_deploy_script =       \"$vm_mssql_win_post_deploy_script\"\n"         >> ./terraform.tfvars
 printf "vm_mssql_win_post_deploy_script_uri =   \"$vm_mssql_win_post_deploy_script_uri\"\n"     >> ./terraform.tfvars
@@ -142,6 +135,8 @@ printf "vm_mssql_win_sql_bootstrap_script =     \"$vm_mssql_win_sql_bootstrap_sc
 printf "vm_mssql_win_sql_bootstrap_script_uri = \"$vm_mssql_win_sql_bootstrap_script_uri\"\n"   >> ./terraform.tfvars
 printf "vm_mssql_win_sql_startup_script =       \"$vm_mssql_win_sql_startup_script\"\n"         >> ./terraform.tfvars
 printf "vm_mssql_win_sql_startup_script_uri =   \"$vm_mssql_win_sql_startup_script_uri\"\n"     >> ./terraform.tfvars
+printf "vnet_address_space =                    \"$vnet_address_space\"\n"                      >> ./terraform.tfvars
+printf "vnet_name =                             \"$vnet_name\"\n"                               >> ./terraform.tfvars
 
 cat ./terraform.tfvars
 

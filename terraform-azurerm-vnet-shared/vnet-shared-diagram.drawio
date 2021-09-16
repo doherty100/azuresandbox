@@ -10,7 +10,7 @@
                 <mxCell id="48" value="single azure subscription" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=#000000;strokeWidth=2;fillColor=none;align=left;strokeColor=#000000;labelPosition=center;verticalLabelPosition=top;verticalAlign=bottom;" parent="1" vertex="1">
                     <mxGeometry x="130" y="50" width="640" height="660" as="geometry"/>
                 </mxCell>
-                <mxCell id="14" value="&lt;span&gt;vnet-shared-01 (10.1.0.0/16) *&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fontColor=#000000;fillColor=none;align=left;strokeColor=#0000FF;labelPosition=center;verticalLabelPosition=top;verticalAlign=bottom;" parent="1" vertex="1">
+                <mxCell id="14" value="&lt;span&gt;vnet-shared-01 (10.1.0.0/16)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fontColor=#000000;fillColor=none;align=left;strokeColor=#0000FF;labelPosition=center;verticalLabelPosition=top;verticalAlign=bottom;" parent="1" vertex="1">
                     <mxGeometry x="210" y="130" width="360" height="500" as="geometry"/>
                 </mxCell>
                 <mxCell id="16" value="snet-adds-01 (10.1.2.0/24)" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;fontColor=#000000;fillColor=none;align=left;strokeColor=#999999;labelPosition=center;verticalLabelPosition=top;verticalAlign=bottom;" parent="1" vertex="1">

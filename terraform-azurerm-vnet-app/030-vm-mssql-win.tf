@@ -22,6 +22,26 @@ resource "azurerm_windows_virtual_machine" "vm_mssql_win" {
     sku       = var.vm_mssql_win_image_sku
     version   = var.vm_mssql_win_image_version
   }
+
+  # Apply jumpbox configuration using Azure Automation DSC
+  # Note: To view provisioner output, use the Terraform nonsensitive() function when referencing key vault secrets or variables marked 'sensitive'
+  provisioner "local-exec" {
+    command     = <<EOT
+        $params = @{
+        TenantId = "${var.aad_tenant_id}"
+        SubscriptionId = "${var.subscription_id}"
+        ResourceGroupName = "${var.resource_group_name}"
+        Location = "${var.location}"
+        AutomationAccountName = "${var.automation_account_name}"
+        Domain = "${var.adds_domain_name}"
+        VirtualMachineName = "${var.vm_mssql_win_name}"
+        AppId = "${var.arm_client_id}"
+        AppSecret = "${nonsensitive(var.arm_client_secret)}"
+        }
+        ${path.root}/configure-vm-mssql-win.ps1 @params 
+   EOT
+    interpreter = ["pwsh", "-Command"]
+  }
 }
 
 # Nics

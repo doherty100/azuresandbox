@@ -3,6 +3,11 @@ variable "aad_tenant_id" {
   description = "The Azure Active Directory tenant id."
 }
 
+variable "adds_domain_name" {
+  type        = string
+  description = "The AD DS domain name."
+}
+
 variable "admin_password_secret" {
   type        = string
   description = "The name of the key vault secret containing the admin password"
@@ -22,6 +27,16 @@ variable "arm_client_secret" {
   type        = string
   description = "The password for the service principal used for authenticating with Azure. Set interactively or using an environment variable 'TF_VAR_arm_client_secret'."
   sensitive   = true
+}
+
+variable "automation_account_name" {
+  type = string
+  description = "The name of the Azure Automation Account use for state configuration (DSC)."
+}
+
+variable "dns_server" {
+  type        = string
+  description = "The IP address of the DNS server. This should be the first non-reserved IP address in the subnet where the AD DS domain controller is hosted."
 }
 
 variable "key_vault_id" {

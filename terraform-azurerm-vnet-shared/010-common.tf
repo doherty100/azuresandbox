@@ -39,6 +39,10 @@ output "aad_tenant_id" {
   value = var.aad_tenant_id
 }
 
+output "adds_domain_name" {
+  value = var.adds_domain_name
+}
+
 output "admin_password_secret" {
   value = var.admin_password_secret
 }
@@ -49,6 +53,10 @@ output "admin_username_secret" {
 
 output "arm_client_id" {
   value = var.arm_client_id
+}
+
+output "dns_server" {
+  value = var.dns_server
 }
 
 output "key_vault_id" {

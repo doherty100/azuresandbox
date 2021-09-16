@@ -35,6 +35,6 @@ resource "azurerm_automation_account" "automation_account_01" {
   }
 }
 
-output "automation_account_01_name" {
+output "automation_account_name" {
   value = azurerm_automation_account.automation_account_01.name
 }

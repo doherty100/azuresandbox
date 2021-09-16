@@ -4,6 +4,7 @@ resource "azurerm_virtual_network" "vnet_spoke_01" {
   location            = var.location
   resource_group_name = var.resource_group_name
   address_space       = [var.vnet_address_space]
+  dns_servers         = [var.dns_server, "168.63.129.16"]
   tags                = var.tags
 }
 
@@ -13,7 +14,7 @@ resource "azurerm_subnet" "vnet_spoke_01_subnets" {
   name                                           = each.value.name
   resource_group_name                            = azurerm_virtual_network.vnet_spoke_01.resource_group_name
   virtual_network_name                           = azurerm_virtual_network.vnet_spoke_01.name
-  address_prefixes                               = [ each.value.address_prefix ]
+  address_prefixes                               = [each.value.address_prefix]
   enforce_private_link_endpoint_network_policies = each.value.enforce_private_link_endpoint_network_policies
 }
 
