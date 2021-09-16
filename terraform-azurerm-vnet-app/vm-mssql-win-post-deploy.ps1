@@ -20,10 +20,21 @@ $scriptPath = "$PSScriptRoot\sql-bootstrap.ps1"
 Write-Log "Starting '$scriptPath'..."
 
 try {
-    Start-Process -FilePath "PowerShell.exe" -ArgumentList "-ExecutionPolicy Unrestricted -File $scriptPath" -WorkingDirectory $PSScriptRoot -Verb RunAs -Wait
+    $process = Start-Process `
+        -FilePath "PowerShell.exe" `
+        -ArgumentList "-ExecutionPolicy Unrestricted -File $scriptPath" `
+        -WorkingDirectory $PSScriptRoot `
+        -Verb RunAs `
+        -Wait `
+        -ErrorAction Stop
 }
 catch {
     Exit-WithError $_
+}
+
+if ($process.ExitCode -ne 0)
+{
+    Exit-WithError "Script '$scriptPath' returned exit code '$($process.ExitCode)'..."
 }
 
 Write-Log "Exiting normally..."

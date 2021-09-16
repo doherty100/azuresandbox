@@ -40,8 +40,9 @@ resource "azurerm_windows_virtual_machine" "vm_adds" {
         VirtualMachineName = "${var.vm_adds_name}"
         AppId = "${var.arm_client_id}"
         AppSecret = "${nonsensitive(var.arm_client_secret)}"
+        DscConfigurationName = "LabDomainConfig"
         }
-        ${path.root}/configure-vm-adds.ps1 @params 
+        ${path.root}/aadsc-register-node.ps1 @params 
    EOT
     interpreter = ["pwsh", "-Command"]
   }

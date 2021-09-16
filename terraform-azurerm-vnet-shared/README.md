@@ -48,6 +48,7 @@ This section describes how to provision this quick start using default settings.
 * Run `az account list -o table` and copy the *Subscription Id* to be used for the quick starts.
 * Run `az account set -s 00000000-0000-0000-0000-000000000000` using the *Subscription Id* from the previous step to set the default subscription.
 * Run `./bootstrap.sh` using the default settings or your own custom settings.
+  * When prompted for *resource_group_name* use a custom value if there are other quick start users using the same subscription.
   * When prompted for *arm_client_id*, use the *appId* for the service principal created by the subscription owner.
   * When prompted for *adminuser*, avoid using [restricted usernames](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm-).
   * When prompted for *adminpassword*, generate a strong password but be sure to escape any [linux special characters](https://tldp.org/LDP/abs/html/special-chars.html).
@@ -105,9 +106,21 @@ This section provides additional information on various aspects of this quick st
 
 In most real world projects, Terraform configurations will need to reference resources that are not being managed by Terraform because they already exist. It is also sometimes necessary to provision resources in advance to avoid circular dependencies in your Terraform configurations. For this reason, this quick start provisions several resources in advance using [bootstrap.sh](./bootstrap.sh) which does the following:
 
-* Creates a new resource group used by all the quick starts.
-* Creates a key vault, shared secrets and access policies.
-* Creates a storage account and container.
+* Creates a new resource group with the default name *rg-vdc-nonprod-01* used by all the quick starts.
+* Creates a storage account with a randomly generated name like *stxxxxxxxxxxxxxxx*.
+  * A new *scripts* container is created for quick starts that leverage the Custom Script Extension for [Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) or [Linux](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-linux).
+* Creates a key vault with a randomly generated name like *kv-xxxxxxxxxxxxxxx*.
+  * The permission model is set to *Vault access policy*. *Azure role-based access control* is not used to ensure that quick start users only require a *Contributor* Azure RBAC role assignment in order to complete the quick starts.
+  * Secrets are created that are used by all quick starts. Note these secrets are static and will need to be manually updated if the values change.
+    * *Log analytics workspace primary shared key*: The name of this secret is the same as the id of the log analytics workspace, e.g. *00000000-0000-0000-0000-000000000000*, and the value is the primary shared key which can be used to connect agents to the log analytics workspace.
+    * *Storage account access key1*: The name of this secret is the same as the storage account, e.g. *stxxxxxxxxxxxxxxx*, and the value is access key1.
+    * *adminpassword*: The password used for default administrator credentials when new quick start resources are provisioned.
+    * *adminuser*: The user name used for default administrator credentials when new quick start resources are configured. The default value is *bootstrapadmin*.
+    * *bootstrapadmin-ssh-key-private*: The private SSH key used to secure SSH access to Linux VMs created in the quick starts. The value of the *adminpassword* secret is used as the pass phrase.
+    * *bootstrapadmin-ssh-key-public*: The public SSH key used to secure SSH access to Linux VMs created in the quick starts.
+  * Access policies are created to enable the administration and retrieval of secrets.
+    * *AzureQuickStartsSPN* is granted *Get* and *Set* secrets permissions.
+    * The quick start user is granted *Get*, *List* and *Set* secrets permissions.
 * Creates a *terraform.tfvars* file for generating and applying Terraform plans.
 
 The script is idempotent and can be run multiple times even after the Terraform configuration has been applied.
@@ -122,11 +135,11 @@ The configuration for these resources can be found in [020-loganalytics.tf](./02
 
 Resource name (ARM) | Notes
 --- | ---
-azurerm_log_analytics_workspace.log_analytics_workspace_01 (log&#x2011;9d8828d28e2c73b7&#x2011;01) | See below.
-
-The general purpose log analytics workspace for use with services like [Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/overview) and [Azure Security Center](https://docs.microsoft.com/en-us/azure/security-center/security-center-introduction).
+azurerm_log_analytics_workspace.log_analytics_workspace_01 (log&#x2011;xxxxxxxxxxxxxxxx&#x2011;01) | See below.
 random_id.log_analytics_workspace_01_name | Used to generate a random unique name for *azurerm_log_analytics_workspace.log_analytics_workspace_01*.
 azurerm_key_vault_secret.log_analytics_workspace_01_primary_shared_key | Secret used to access *azurerm_log_analytics_workspace.log_analytics_workspace_01*.
+
+The log analytics workspace is for use with services like [Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/overview) and [Azure Security Center](https://docs.microsoft.com/en-us/azure/security-center/security-center-introduction).
 
 #### Azure Automation Account
 
@@ -150,10 +163,11 @@ This quick start makes extensive use of [Azure Automation State Configuration (D
         * [cChoco](https://github.com/chocolatey/cChoco)
     * Bootstraps [Variables](https://docs.microsoft.com/en-us/azure/automation/shared-resources/variables)
     * Bootstraps [Credentials](https://docs.microsoft.com/en-us/azure/automation/shared-resources/credentials)
-  * Configures [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview)
+  * Configures [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview). Note that AADSC is only used for Windows Server virtual machine configuration management in the quick starts.
     * Imports [DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started#create-a-dsc-configuration)
       * [LabDomainConfig.ps1](./LabDomainConfig.ps1): configure as Windows Server virtual machine as an [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) [Domain Controller](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2003/cc786438(v=ws.10)).
-      * [JumpBoxConfig.ps1](./JumpBoxConfig.ps1): configures a Windows Server virtual machine as jumpbox.
+      * [JumpBoxConfig.ps1](./JumpBoxConfig.ps1): domain joins a Windows Server virtual machine and configures it as jumpbox.
+      * [MssqlVmConfig.ps1](./MssqlVmConfig.ps1): domain joins a Windows Server virtual machine creating using the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering.
     * [Compiles DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-compile) so they can be used later to [Register a VM to be managed by State Configuration](https://docs.microsoft.com/en-us/azure/automation/tutorial-configure-servers-desired-state#register-a-vm-to-be-managed-by-state-configuration).
 
 #### Network resources
@@ -186,7 +200,11 @@ This Windows Server VM is used as an AD DS Domain Controller and DNS Server.
 * By default the [Patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByPlatform`.
 * *admin_username* and *admin_password* are configured using key vault secrets *data.azurerm_key_vault_secret.adminpassword* and *data.azurerm_key_vault_secret.adminuser* which are set in advance by [bootstrap.sh](./bootstrap.sh).
 * This resource has a dependency on *azurerm_automation_account.automation_account_01*.
-* This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [configure-vm-adds.ps1](./configure-vm-adds.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [LabDomainConfig](./LabDomainConfig.ps1).
+* This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [aadsc-register-node.ps1](./aadsc-register-node.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [LabDomainConfig](./LabDomainConfig.ps1).
+  * The `AD-Domain-Services` feature (which includes DNS) is installed.
+  * A new *mytestlab.local* domain is configured
+    * The domain admin credentials are configured using the *adminusername* and *adminpassword* key vault secrets.
+    * The forest functional level is set to `WinThreshhold`
 
 #### Windows Server Jumpbox VM
 
@@ -202,7 +220,7 @@ This Windows Server VM is used as a jumpbox for development and remote server ad
 * Guest OS: Windows Server 2019 Datacenter.
 * By default the [patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByPlatform`.
 * *admin_username* and *admin_password* are configured using key vault secrets *data.azurerm_key_vault_secret.adminpassword* and *data.azurerm_key_vault_secret.adminuser* which are set in advance by [bootstrap.sh](./bootstrap.sh).
-* This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [configure-vm-jumpbox.ps1](./configure-vm-jumpbox.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [JumpBoxConfig](./JumpBoxConfig.ps1).
+* This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [aadsc-register-node.ps1](./aadsc-register-node.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [JumpBoxConfig](./JumpBoxConfig.ps1).
   * The following [Remote Server Administration Tools (RSAT)](https://docs.microsoft.com/en-us/windows-server/remote/remote-server-administration-tools) are installed:
     * Active Directory module for Windows PowerShell (RSAT-AD-PowerShell)
     * Active Directory Administrative Center (RSAT-AD-AdminCenter)

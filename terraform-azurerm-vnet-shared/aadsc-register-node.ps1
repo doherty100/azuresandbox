@@ -24,11 +24,13 @@ param (
     [String]$AppId,
 
     [Parameter(Mandatory = $true)]
-    [string]$AppSecret
+    [string]$AppSecret,
+
+    [Parameter(Mandatory = $true)]
+    [string]$DscConfigurationName
 )
 
 #region constants
-$DscConfigurationName = 'MssqlVmConfig'
 $DscConfigurationNode = 'localhost'
 $MaxDscAttempts = 180
 #endregion
@@ -96,9 +98,6 @@ function Register-DscNode {
     catch {
         Exit-WithError $_
     }
-
-    $jobStatus = $dscNode.Status
-    Write-Log "DSC registration status for virtual machine '$VirtualMachineName' is '$jobStatus'..."
 
     $i = 0
     do {

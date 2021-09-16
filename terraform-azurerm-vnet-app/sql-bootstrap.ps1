@@ -15,8 +15,8 @@ function Exit-WithError {
 }
 
 function Get-DataDisks {
-    $sleepSeconds = 30
-    $maxAttempts = 6
+    $sleepSeconds = 10
+    $maxAttempts = 180
     $dataDiskCount = 0
 
     for ($currentAttempt = 1; $currentAttempt -lt $maxAttempts; $currentAttempt++) {

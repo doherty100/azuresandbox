@@ -39,8 +39,9 @@ resource "azurerm_windows_virtual_machine" "vm_jumpbox_win" {
         VirtualMachineName = "${var.vm_jumpbox_win_name}"
         AppId = "${var.arm_client_id}"
         AppSecret = "${nonsensitive(var.arm_client_secret)}"
+        DscConfigurationName = "JumpBoxConfig"
         }
-        ${path.root}/configure-vm-jumpbox-win.ps1 @params 
+        ${path.root}/aadsc-register-node.ps1 @params 
    EOT
     interpreter = ["pwsh", "-Command"]
   }
