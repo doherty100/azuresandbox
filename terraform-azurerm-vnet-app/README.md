@@ -2,6 +2,9 @@
 
 ## Overview
 
+![vnet-app-diagram](./vnet-app-diagram.png)
+
+
 This quick start implements a virtual network for applications including:
 
 * A virtual network for hosting application infrastructure and services
