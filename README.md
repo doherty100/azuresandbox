@@ -8,7 +8,7 @@ This repository contains a collection of inter-dependent [cloud computing](https
 * [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) for scripting.
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/what-is-azure-cli?view=azure-cli-latest) is a command line interface for Azure.
 * [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.1)
-  * [PowerShell Core](https://docs.microsoft.com/en-us/powershell/scripting/whats-new/what-s-new-in-powershell-71?view=powershell-7.1) for use with [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-intro#azure-automation-state-configuration)
+  * [PowerShell Core](https://docs.microsoft.com/en-us/powershell/scripting/whats-new/what-s-new-in-powershell-71?view=powershell-7.1)
   * [PowerShell 5.1](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-5.1) for Windows Server configuration.
 * [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) v1.0.7 for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
   * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v2.77.0
