@@ -8,6 +8,14 @@ usage() {
     exit 1
 }
 
+# Get runtime defaults
+printf "Retrieving runtime defaults ...\n"
+
+upn=$(az ad signed-in-user show --query userPrincipalName --output tsv)
+default_aad_tenant_id=$(az account list --query "[? isDefault]|[0].tenantId" --only-show-errors --output tsv)
+default_owner_object_id=$(az ad user show --id $upn --query objectId --output tsv)
+default_subscription_id=$(az account list --query "[? isDefault]|[0].id" --only-show-errors --output tsv)
+
 # Initialize constants
 adds_subnet_name="snet-adds-01"
 admin_certificate_name="admincert"
@@ -18,10 +26,8 @@ arm_client_secret=""
 bastion_subnet_name="AzureBastionSubnet"
 default_subnet_name="snet-default-01"
 storage_container_name="scripts"
-upn=$(az ad signed-in-user show --query userPrincipalName --output tsv)
 
-# Initialize defaults
-default_aad_tenant_id=$(az account list --query "[? isDefault]|[0].tenantId" --only-show-errors --output tsv)
+# Initialize user defaults
 default_adds_domain_name="mytestlab.local"
 default_adds_subnet_address_prefix="10.1.2.0/24"
 default_admin_username="bootstrapadmin"
@@ -31,15 +37,15 @@ default_default_subnet_address_prefix="10.1.0.0/24"
 default_dns_server="10.1.2.4"
 default_environment="dev"
 default_location="eastus2"
-default_owner_object_id=$(az ad user show --id $upn --query objectId --output tsv)
 default_project="#AzureQuickStarts"
 default_resource_group_name="rg-vdc-nonprod-01"
-default_subscription_id=$(az account list --query "[? isDefault]|[0].id" --only-show-errors --output tsv)
 default_vm_adds_name="adds1"
 default_vm_jumpbox_linux_name="jumplinux1"
 default_vm_jumpbox_win_name="jumpwin1"
 default_vnet_address_space="10.1.0.0/16"
 default_vnet_name="vnet-shared-01"
+
+
 
 # Get user input
 read -e                                           -p "Service principal AppId (arm_client_id) -------------------------------: " arm_client_id
