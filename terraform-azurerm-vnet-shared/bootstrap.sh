@@ -45,8 +45,6 @@ default_vm_jumpbox_win_name="jumpwin1"
 default_vnet_address_space="10.1.0.0/16"
 default_vnet_name="vnet-shared-01"
 
-
-
 # Get user input
 read -e                                           -p "Service principal AppId (arm_client_id) -------------------------------: " arm_client_id
 read -e -i $default_aad_tenant_id                 -p "Azure AD tenant id (aad_tenant_id) ------------------------------------: " aad_tenant_id
