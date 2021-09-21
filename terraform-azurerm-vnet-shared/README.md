@@ -127,9 +127,9 @@ The script is idempotent and can be run multiple times even after the Terraform 
 
 ### Terraform Resources
 
-The section lists the resources included in the Terraform configurations in this quick start.
+This section lists the resources included in the Terraform configurations in this quick start.
 
-#### Log Analytics Workspace ID
+#### Log Analytics Workspace
 
 The configuration for these resources can be found in [020-loganalytics.tf](./020-loganalytics.tf).
 
@@ -256,7 +256,7 @@ This Linux VM is used as a jumpbox for development and remote administration.
 
 This section lists the output variables defined in the Terraform configurations in this quick start. Some of these may be used for automation in other quick starts.
 
-Variable name | Example / default value
+Output variable | Sample value
 --- | ---
 aad_tenant_id | "00000000-0000-0000-0000-000000000000"
 adds_domain_name | "mytestlab.local"

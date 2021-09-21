@@ -46,7 +46,7 @@ default_vnet_address_space="10.1.0.0/16"
 default_vnet_name="vnet-shared-01"
 
 # Get user input
-read -e                                           -p "Service principal AppId (arm_client_id) -------------------------------: " arm_client_id
+read -e                                           -p "Service principal appId (arm_client_id) -------------------------------: " arm_client_id
 read -e -i $default_aad_tenant_id                 -p "Azure AD tenant id (aad_tenant_id) ------------------------------------: " aad_tenant_id
 read -e -i $default_owner_object_id               -p "Object id for Azure CLI signed in user (owner_object_id) --------------: " owner_object_id
 read -e -i $default_subscription_id               -p "Azure subscription id (subscription_id) -------------------------------: " subscription_id
@@ -212,13 +212,13 @@ ssh_public_key_secret_value=$(cat sshkeytemp.pub)
 ssh_private_key_secret_name="$admin_username-ssh-key-private"
 ssh_private_key_secret_value=$(cat sshkeytemp)
 
-printf "Setting secret '$ssh_public_key_secret_name' with value length \"${#ssh_public_key_secret_value}\" in keyvault '$key_vault_name'...\n"
+printf "Setting secret '$ssh_public_key_secret_name' with value length '${#ssh_public_key_secret_value}' in keyvault '$key_vault_name'...\n"
 az keyvault secret set \
     --vault-name $key_vault_name \
     --name $ssh_public_key_secret_name \
     --value "$ssh_public_key_secret_value"
 
-printf "Setting secret '$ssh_private_key_secret_name' with value length \"${#ssh_private_key_secret_value}\" in keyvault '$key_vault_name'...\n"
+printf "Setting secret '$ssh_private_key_secret_name' with value length '${#ssh_private_key_secret_value}' in keyvault '$key_vault_name'...\n"
 az keyvault secret set \
     --vault-name $key_vault_name \
     --name $ssh_private_key_secret_name \
