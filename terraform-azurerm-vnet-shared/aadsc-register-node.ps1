@@ -146,9 +146,10 @@ function Register-DscNode {
             Exit-WithError "'$($dscNodes.Count)' DSC node registrations for virtual machine '$VirtualMachineName' detected..."
         }
 
-        Write-Log "DSC registration status for virtual machine '$VirtualMachineName' is '$($dscNodes.Status)' (attempt $i of $MaxDscAttempts)..."
+        $jobStatus = $dscNodes.Status
+        Write-Log "DSC registration status for virtual machine '$VirtualMachineName' is '$jobStatus' (attempt $i of $MaxDscAttempts)..."
 
-        if ($dscNodes.Status -eq "Compliant" ) {
+        if ($jobStatus -eq "Compliant" ) {
             break
         }
     } while ($i -lt $MaxDscAttempts)
