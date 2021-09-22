@@ -30,48 +30,48 @@ configuration JumpBoxConfig {
             DependsOn = '[xDSCDomainjoin]JoinDomain' 
         }
 
-        cChocoInstaller 'install_Choco' {
+        cChocoInstaller installChoco {
             InstallDir = "c:\choco"
             DependsOn = '[xDSCDomainjoin]JoinDomain'
         }
 
-        cChocoPackageInstaller 'install_Edge' {
+        cChocoPackageInstaller installEdge {
             Name = "microsoft-edge"
             DependsOn   = "[cChocoInstaller]installChoco"
             AutoUpgrade = $true
         }
 
-        cChocoPackageInstaller 'install_Az_PowerShell' {
+        cChocoPackageInstaller installAzPowerShell {
             Name = "az.powershell"
             DependsOn   = "[cChocoInstaller]installChoco"
             AutoUpgrade = $true
         }
 
-        cChocoPackageInstaller 'install_VSCode' {
+        cChocoPackageInstaller installVSCode {
             Name = "vscode"
             DependsOn   = "[cChocoInstaller]installChoco"
             AutoUpgrade = $true
         }
 
-        cChocoPackageInstaller 'install_SSMS' {
+        cChocoPackageInstaller installSSMS {
             Name = "sql-server-management-studio"
             DependsOn   = "[cChocoInstaller]installChoco"
             AutoUpgrade = $true
         }
 
-        cChocoPackageInstaller 'install_AzureStorageExplorer' {
+        cChocoPackageInstaller installAzureStorageExplorer {
             Name = "microsoftazurestorageexplorer"
             DependsOn   = "[cChocoInstaller]installChoco"
             AutoUpgrade = $true
         }
 
-        cChocoPackageInstaller 'install_AzCopy10' {
+        cChocoPackageInstaller installAzCopy10 {
             Name = "azcopy10"
             DependsOn   = "[cChocoInstaller]installChoco"
             AutoUpgrade = $true
         }
 
-        cChocoPackageInstaller 'install_AdminCenter' {
+        cChocoPackageInstaller installAdminCenter {
             Name = "windows-admin-center"
             DependsOn   = "[cChocoInstaller]installChoco"
             AutoUpgrade = $true
