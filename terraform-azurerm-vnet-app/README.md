@@ -4,7 +4,6 @@
 
 ![vnet-app-diagram](./vnet-app-diagram.png)
 
-
 This quick start implements a virtual network for applications including:
 
 * A virtual network for hosting application infrastructure and services
@@ -34,86 +33,49 @@ This section describes how to provision this quick start using default settings.
 * Run `terraform plan` and review the plan output.
 * Run `terraform apply` to apply the configuration.
 
-## Resource index
-
-This section provides an index of the 13 resources included in this quick start.
-
-### Virtual network
-
----
-
-Spoke [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting solution infrastructure. Note the following quick starts have dependencies on this quick start:  
-
-* [terraform-azurerm-vm-sql](../terraform-azurerm-vm-sql)
-* [terraform-azurerm-sql](../terraform-azurerm-sql)
-* [terraform-azurerm-vwan](../terraform-azurerm-vwan)
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-vnet_name | Input | string | Local | vnet-spoke-01
-vnet_address_space | Input | string | Local | 10.2.0.0/16
-vnet_spoke_01_id | output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-spoke-01
-vnet_spoke_01_name | output | string | Global | vnet-spoke-01
-
-#### Subnets
-
-The spoke virtual network is divided into [subnets](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-vnet-plan-design-arm#subnets). Note there are dependencies on the following subnets:
-
-* An *application* subnet is required for deploying application server virtual machines in other quick starts.
-* A *database* subnet is required for deploying database server virtual machines in other quick starts.
-* An *AzureBastionSubnet* subnet is required for the bastion resource.
-* A *PrivateLink* subnet is required for private endpoints created in other quick starts.
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-subnets | Input | map | Local | { default = { name = "snet-default-02", address_prefix = "10.2.0.0/24", enforce_private_link_endpoint_network_policies = false }, AzureBastionSubnet = { name = "AzureBastionSubnet", address_prefix = "10.2.1.0/27", enforce_private_link_endpoint_network_policies = false }, PrivateLink = { name = "snet-storage-private-endpoints-02", address_prefix = "10.2.1.96/27", enforce_private_link_endpoint_network_policies = true }, database = { name = "snet-db-01", address_prefix = "10.2.1.32/27", enforce_private_link_endpoint_network_policies = false }, application = { name = "snet-app-01",address_prefix = "10.2.1.64/27", enforce_private_link_endpoint_network_policies = false } }
-vnet_spoke_01_app_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-spoke-01/subnets/snet-app-01
-vnet_spoke_01_db_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-spoke-01/subnets/snet-db-01
-vnet_spoke_01_default_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-spoke-01/subnets/snet-default-02
-vnet_spoke_01_private_endpoints_subnet_id | Output | string | Global | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-spoke-01/subnets/snet-storage-private-endpoints-02
-
-#### Private DNS zone virtual network link
-
-A link to the dedicated spoke virtual network is established with the shared private DNS zone *privatelink.file.core.windows.net* for use with the shared private endpoint resource in [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared).
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-virtual_network_link_vnet_spoke_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/privateDnsZones/privatelink.file.core.windows.net/virtualNetworkLinks/pdnslnk-vnet-spoke-01-02
-virtual_network_link_vnet_spoke_01_name | Output | string | Local | pdnslnk-vnet-spoke-01-02
-
-#### Virtual network peering
-
-Bi-directional [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) is established between this virtual network and the shared services virtual network.
-
-##### Shared services to spoke virtual network peering
-
-This peering is between the shared services virtual network and the dedicated spoke virtual network. The following arguments are enabled by default:
-
-* [allow_virtual_network_access](https://www.terraform.io/docs/providers/azurerm/r/virtual_network_peering.html#allow_virtual_network_access)
-* [allow_forwarded_traffic](https://www.terraform.io/docs/providers/azurerm/r/virtual_network_peering.html#allow_forwarded_traffic)
-* [allow_gateway_transit](https://www.terraform.io/docs/providers/azurerm/r/virtual_network_peering.html#allow_gateway_transit)
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-vnet_shared_01_to_vnet_spoke_01_peering_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-shared-01/virtualNetworkPeerings/vnet_shared_01_to_vnet_spoke_01_peering
-vnet_shared_01_to_vnet_spoke_01_peering_name | Output | string | Local | vnet_shared_01_to_vnet_spoke_01_peering
-
-##### Spoke to shared services virtual network peering
-
-This peering is between the dedicated spoke virtual network and the shared services virtual network. The following arguments are enabled by default:
-
-* [allow_virtual_network_access](https://www.terraform.io/docs/providers/azurerm/r/virtual_network_peering.html#allow_virtual_network_access)
-* [allow_forwarded_traffic](https://www.terraform.io/docs/providers/azurerm/r/virtual_network_peering.html#allow_forwarded_traffic)
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-vnet_spoke_01_to_vnet_shared_01_peering_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-spoke-01/virtualNetworkPeerings/vnet_spoke_01_to_vnet_shared_01_peering
-vnet_spoke_01_to_vnet_shared_01_peering_name | Output | string | Local | vnet_spoke_01_to_vnet_shared_01_peering
-
 ## Smoke testing
 
 Explore newly provisioned resources in the Azure portal.
 
+## Documentation
+
+This section provides additional information on various aspects of this quick start.
+
+### Bootstrap script
+
+This quick start uses the script [./bootstrap.sh] to create a *terraform.tfvars* file for generating and applying Terraform plans. For simplified deployment, several runtime defaults are initialized using output variables stored the *terraform.tfstate* associated with the [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared) quick start, including:
+
+Output variable | Sample value
+--- | ---
+aad_tenant_id | "00000000-0000-0000-0000-000000000000"
+adds_domain_name | "mytestlab.local"
+admin_password_secret | "adminpassword"
+admin_username_secret | "adminuser"
+arm_client_id | "00000000-0000-0000-0000-000000000000"
+automation_account_name | "auto-9a633c2bba9351cc-01"
+dns_server | "10.1.2.4"
+key_vault_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.KeyVault/vaults/kv-XXXXXXXXXXXXXXX"
+key_vault_name | "kv-XXXXXXXXXXXXXXX"
+location | "eastus2"
+resource_group_name | "rg-vdc-nonprod-01"
+storage_account_name | "stXXXXXXXXXXXXXXX"
+storage_container_name | "scripts"
+subscription_id | "00000000-0000-0000-0000-000000000000"
+tags | tomap( { "costcenter" = "10177772" "environment" = "dev" "project" = "#AzureQuickStarts" } )
+vnet_shared_01_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-shared-01""
+vnet_shared_01_name | "vnet-shared-01"
+
+### Terraform Resources
+
+This section lists the resources included in the Terraform configurations in this quick start.
+
+#### Network resources
+
+The configuration for these resources can be found in [020-network.tf](./020-network.tf).
+
+Resource name (ARM) | Notes
+--- | ---
+
 ## Next steps
 
-Move on to the next quick start [terraform-azurerm-vm-sql](../terraform-azurerm-vm-sql).
+Move on to the next quick start [terraform-azurerm-sql](../terraform-azurerm-sql).

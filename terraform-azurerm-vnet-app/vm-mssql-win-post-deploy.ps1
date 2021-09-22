@@ -1,7 +1,19 @@
-# Launches sql-bootstrap.ps1 with elevated privileges
+param(
+    [Parameter(Mandatory = $true)]
+    [string]$Domain,
 
+    [Parameter(Mandatory = $true)]
+    [string]$Username,
+    
+    [Parameter(Mandatory = $true)]
+    [string]$UsernameSecret
+)
+#region contants
 $logpath = $PSCommandPath + '.log'
+$scriptName = 'sql-bootstrap.ps1'
+#endregion
 
+#region fucntions
 function Write-Log {
     param( [string] $msg)
     "$(Get-Date -Format FileDateTimeUniversal) : $msg" | Out-File -FilePath $logpath -Append -Force
@@ -13,16 +25,26 @@ function Exit-WithError {
     Write-Log $msg
     Exit 2
 }
+#endregion
 
-# Start main
+#region main
 Write-Log "Running '$PSCommandPath'..."
-$scriptPath = "$PSScriptRoot\sql-bootstrap.ps1"
-Write-Log "Starting '$scriptPath'..."
+$currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+Write-Log "Current user '$currentUser'..."
+
+
+# Launch sql-bootstrap.ps1 with elevated privileges
+$domainUsername = $Domain.Split('.')[0] + '\' + $Username
+$usernameSecretSecure = ConvertTo-SecureString $UsernameSecret -AsPlainText -Force
+$credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $domainUsername, $usernameSecretSecure
+$scriptPath = "$PSScriptRoot\$scriptName"
+Write-Log "Starting script '$scriptName' as '$($credential.UserName)'..."
 
 try {
-    $process = Start-Process `
+    Start-Process `
         -FilePath "PowerShell.exe" `
         -ArgumentList "-ExecutionPolicy Unrestricted -File $scriptPath" `
+        -Credential $domainUsername
         -WorkingDirectory $PSScriptRoot `
         -Verb RunAs `
         -Wait `
@@ -32,10 +54,6 @@ catch {
     Exit-WithError $_
 }
 
-if ($process.ExitCode -ne 0)
-{
-    Exit-WithError "Script '$scriptPath' returned exit code '$($process.ExitCode)'..."
-}
-
 Write-Log "Exiting normally..."
-Exit
+Exit 0
+#endregion

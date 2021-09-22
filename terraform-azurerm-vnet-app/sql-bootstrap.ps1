@@ -1,7 +1,8 @@
-# Bootstraps a SQL Server instance on a newly provisioned Azure Virtual Machine from image publisher "MicrosoftSQLServer"
-
+#region constants
 $logpath = $PSCommandPath + '.log'
+#endregion
 
+#region functions
 function Write-Log {
     param( [string] $msg)
     "$(Get-Date -Format FileDateTimeUniversal) : $msg" | Out-File -FilePath $logpath -Append -Force
@@ -16,10 +17,9 @@ function Exit-WithError {
 
 function Get-DataDisks {
     $sleepSeconds = 10
-    $maxAttempts = 180
-    $dataDiskCount = 0
+    $maxAttempts = 30
 
-    for ($currentAttempt = 1; $currentAttempt -lt $maxAttempts; $currentAttempt++) {
+    for ($currentAttempt = 1; $currentAttempt -le $maxAttempts; $currentAttempt++) {
         Write-Log "Querying Azure instance metadata service for virtual machine storageProfile, attempt '$currentAttempt' of '$maxAttempts'..."
 
         try {
@@ -33,22 +33,12 @@ function Get-DataDisks {
             Exit-WithError "Azure instance metadata service did not return a storage profile..."
         }
 
-        if ($null -eq $azureDataDisks.Count) {
-            $dataDiskCount = 1
-        }
-        else {
-            $dataDiskCount = $azureDataDisks.Count
-        }
-        
-        Write-Log "Storage profile data disk count is '$dataDiskCount'..."
-
-        if (($dataDiskCount -eq 0) -and ($currentAttempt -lt $maxAttempts)) {
-            Write-Log "Waiting for Azure instance metadata service to refresh for '$sleepSeconds' seconds..."
-            Start-Sleep -Seconds $sleepSeconds
+        if ($storageProfile.dataDisks.Count -ge 2) {
+            Write-Log "At least 2 Azure data disks were discovered..."
+            break
         }
 
-        if (($dataDiskCount -gt 0) -and ($currentAttempt -lt $maxAttempts)) {
-            $currentAttempt = 5
+        if (($storageProfile.dataDisks.Count -lt 2) -and ($currentAttempt -lt $maxAttempts)) {
             Write-Log "Waiting for Azure instance metadata service to refresh for '$sleepSeconds' seconds..."
             Start-Sleep -Seconds $sleepSeconds
         }
@@ -101,6 +91,7 @@ function Invoke-Sql {
     $cxnstring = New-Object System.Data.SqlClient.SqlConnectionStringBuilder
     $cxnstring."Data Source" = '.'
     $cxnstring."Initial Catalog" = 'master'
+    $cxnstring."Integrated Security" = 'SSPI'
     $cxn = New-Object System.Data.SqlClient.SqlConnection($cxnstring)
 
     try {
@@ -132,7 +123,8 @@ function Move-SqlDatabase {
         [string]$LogDeviceName,
         [string]$LogFileName,
         [string]$SqlDataPath,
-        [string]$SqlLogPath )
+        [string]$SqlLogPath 
+    )
     
     Write-Log "Move-SqlDatabase: Checking if database '$Name' needs to be moved..."
     
@@ -240,9 +232,12 @@ function Grant-SqlFullContol {
         Exit-WithError $_
     }
 }
+#endregion
 
 # Start main
 Write-Log "Running '$PSCommandPath'..."
+$currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+Write-Log "Current user '$currentUser'..."
 
 # Initialize data disks
 $localRawDisks = Get-Disk | Where-Object PartitionStyle -eq 'RAW'
@@ -475,6 +470,7 @@ foreach ( $volume in $volumes) {
     continue
 }
 
+#region main
 Write-Log "$('=' * 80)"
 
 # Move databases 
@@ -581,3 +577,4 @@ Restart-SqlServer
 
 Write-Log "Exiting normally..."
 Exit
+#endregion

@@ -28,16 +28,16 @@ resource "azurerm_windows_virtual_machine" "vm_mssql_win" {
   provisioner "local-exec" {
     command     = <<EOT
         $params = @{
-        TenantId = "${var.aad_tenant_id}"
-        SubscriptionId = "${var.subscription_id}"
-        ResourceGroupName = "${var.resource_group_name}"
-        Location = "${var.location}"
-        AutomationAccountName = "${var.automation_account_name}"
-        Domain = "${var.adds_domain_name}"
-        VirtualMachineName = "${var.vm_mssql_win_name}"
-        AppId = "${var.arm_client_id}"
-        AppSecret = "${nonsensitive(var.arm_client_secret)}"
-        DscConfigurationName = "MssqlVmConfig"
+          TenantId                = "${var.aad_tenant_id}"
+          SubscriptionId          = "${var.subscription_id}"
+          ResourceGroupName       = "${var.resource_group_name}"
+          Location                = "${var.location}"
+          AutomationAccountName   = "${var.automation_account_name}"
+          Domain                  = "${var.adds_domain_name}"
+          VirtualMachineName      = "${var.vm_mssql_win_name}"
+          AppId                   = "${var.arm_client_id}"
+          AppSecret               = "${nonsensitive(var.arm_client_secret)}"
+          DscConfigurationName    = "MssqlVmConfig"
         }
         ${path.root}/aadsc-register-node.ps1 @params 
    EOT
@@ -95,8 +95,13 @@ resource "azurerm_virtual_machine_extension" "vm_mssql_win_postdeploy_script" {
 
   settings = <<SETTINGS
     {
-      "fileUris": [ "${var.vm_mssql_win_post_deploy_script_uri}", "${var.vm_mssql_win_sql_bootstrap_script_uri}", "${var.vm_mssql_win_sql_startup_script_uri}" ],
-      "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File \"./${var.vm_mssql_win_post_deploy_script}\""
+      "fileUris": [ 
+        "${var.vm_mssql_win_post_deploy_script_uri}", 
+        "${var.vm_mssql_win_sql_bootstrap_script_uri}", 
+        "${var.vm_mssql_win_sql_startup_script_uri}" 
+      ],
+      "commandToExecute": 
+        "powershell.exe -ExecutionPolicy Unrestricted -File \"./${var.vm_mssql_win_post_deploy_script}\" -Domain \"${var.adds_domain_name}\" -Username \"${data.azurerm_key_vault_secret.adminuser.value}\" -UsernameSecret \"${data.azurerm_key_vault_secret.adminpassword.value}\""
     }    
   SETTINGS
 

@@ -71,6 +71,40 @@ function Register-DscNode {
 
     $nodeConfigName = $DscConfigurationName + '.' + $DscConfigurationNode
 
+    Write-Log "Checking for existing DSC node registrations for '$VirtualMachineName' with node configuration '$nodeConfigName'..."
+
+    try {
+        $dscNodes = Get-AzAutomationDscNode `
+            -ResourceGroupName $ResourceGroupName `
+            -AutomationAccountName $AutomationAccountName `
+            -Name $VirtualMachineName `
+            -ErrorAction Stop
+    }
+    catch {
+        Exit-WithError $_
+    }
+
+    if ($null -eq $dscNodes) {
+        Write-Log "No existing DSC node registrations for '$VirtualMachineName' with node configuration '$nodeConfigName' found..."
+    }
+    else {
+        foreach ($dscNode in $dscNodes) {
+            $dscNodeId = $dscNode.Id
+            Write-Log "Unregistering DSC node registration '$dscNodeId'..."
+
+            try {
+                Unregister-AzAutomationDscNode `
+                    -Id $dscNodeId `
+                    -Force `
+                    -ResourceGroupName $ResourceGroupName `
+                    -AutomationAccountName $AutomationAccountName
+            }
+            catch {
+                Exit-WithError $_
+            }
+        }
+    }
+
     Write-Log "Registering DSC node '$VirtualMachineName' with node configuration '$nodeConfigName'..."
     Write-Log "Warning, this process can take several minutes and the VM will be rebooted..."
     
@@ -88,24 +122,13 @@ function Register-DscNode {
         -RebootNodeIfNeeded $true `
         -ActionAfterReboot 'ContinueConfiguration'
 
-    try {
-        $dscNode = Get-AzAutomationDscNode `
-            -ResourceGroupName $ResourceGroupName `
-            -AutomationAccountName $AutomationAccountName `
-            -Name $VirtualMachineName `
-            -ErrorAction Stop
-    }
-    catch {
-        Exit-WithError $_
-    }
-
     $i = 0
     do {
         $i++        
 
         Start-Sleep 10
         try {
-            $dscNode = Get-AzAutomationDscNode `
+            $dscNodes = Get-AzAutomationDscNode `
                 -ResourceGroupName $ResourceGroupName `
                 -AutomationAccountName $AutomationAccountName `
                 -Name $VirtualMachineName `
@@ -115,9 +138,21 @@ function Register-DscNode {
             Exit-WithError $_
         }
 
-        $jobStatus = $dscNode.Status
+        if ($null -eq $dscNodes) {
+            Exit-WithError "Unable to find DSC node registration for virtual machine '$VirtualMachineName'..."
+        }
+
+        if ($dscNodes.Count -gt 1) {
+            Exit-WithError "'$($dscNodes.Count)' DSC node registrations for virtual machine '$VirtualMachineName' detected..."
+        }
+
+        $jobStatus = $dscNodes.Status
         Write-Log "DSC registration status for virtual machine '$VirtualMachineName' is '$jobStatus' (attempt $i of $MaxDscAttempts)..."
-    } while (($jobStatus -ne "Compliant") -or ($i -gt $MaxDscAttempts))
+
+        if ($jobStatus -eq "Compliant" ) {
+            break
+        }
+    } while ($i -lt $MaxDscAttempts)
 
     if ($jobStatus -ne 'Compliant') {
         Exit-WithError "DSC node '$VirtualMachineName' is not compliant..."

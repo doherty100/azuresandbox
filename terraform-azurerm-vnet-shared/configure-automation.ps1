@@ -508,6 +508,18 @@ Import-Module `
 Import-Module `
     -ResourceGroupName $ResourceGroupName `
     -AutomationAccountName $automationAccount.AutomationAccountName `
+    -ModuleName 'NetworkingDsc' `
+    -ModuleUri 'https://www.powershellgallery.com/api/v2/package/NetworkingDsc'
+
+Import-Module `
+    -ResourceGroupName $ResourceGroupName `
+    -AutomationAccountName $automationAccount.AutomationAccountName `
+    -ModuleName 'SqlServerDsc' `
+    -ModuleUri 'https://www.powershellgallery.com/api/v2/package/SqlServerDsc'
+
+Import-Module `
+    -ResourceGroupName $ResourceGroupName `
+    -AutomationAccountName $automationAccount.AutomationAccountName `
     -ModuleName 'cChoco' `
     -ModuleUri 'https://www.powershellgallery.com/api/v2/package/cChoco'
 
@@ -559,6 +571,14 @@ Set-Credential `
     -UserName $($Domain + '\' + $AdminUsername) `
     -UserSecret $AdminPwd 
 
+Set-Credential `
+    -ResourceGroupName $ResourceGroupName `
+    -AutomationAccountName $automationAccount.AutomationAccountName `
+    -Name 'domainadminshort' `
+    -Description 'Domain admin account credential with short domain name' `
+    -UserName $($Domain.Split('.')[0] + '\' + $AdminUsername) `
+    -UserSecret $AdminPwd 
+
 # Import DSC Configurations
 Import-DscConfiguration `
     -ResourceGroupName $ResourceGroupName `
@@ -572,11 +592,11 @@ Import-DscConfiguration `
     -DscConfigurationName 'JumpBoxConfig' `
     -DscConfigurationScript 'JumpBoxConfig.ps1'
 
-Import-DscConfiguration `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -DscConfigurationName 'MssqlVmConfig' `
-    -DscConfigurationScript 'MssqlVmConfig.ps1'
+# Import-DscConfiguration `
+#     -ResourceGroupName $ResourceGroupName `
+#     -AutomationAccountName $automationAccount.AutomationAccountName `
+#     -DscConfigurationName 'MssqlVmConfig' `
+#     -DscConfigurationScript 'MssqlVmConfig.ps1'
 
 # Compile DSC Configurations
 Start-DscCompliationJob `
@@ -591,11 +611,11 @@ Start-DscCompliationJob `
     -DscConfigurationName 'JumpBoxConfig' `
     -DscConfigurationScript 'JumpBoxConfig.ps1'
 
-Start-DscCompliationJob `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -DscConfigurationName 'MssqlVmConfig' `
-    -DscConfigurationScript 'MssqlVmConfig.ps1'
+# Start-DscCompliationJob `
+#     -ResourceGroupName $ResourceGroupName `
+#     -AutomationAccountName $automationAccount.AutomationAccountName `
+#     -DscConfigurationName 'MssqlVmConfig' `
+#     -DscConfigurationScript 'MssqlVmConfig.ps1'
 
 Exit 0
 #endregion
