@@ -44,7 +44,7 @@ try {
     Start-Process `
         -FilePath "PowerShell.exe" `
         -ArgumentList "-ExecutionPolicy Unrestricted -File $scriptPath" `
-        -Credential $domainUsername
+        -Credential $credential `
         -WorkingDirectory $PSScriptRoot `
         -Verb RunAs `
         -Wait `
