@@ -592,11 +592,11 @@ Import-DscConfiguration `
     -DscConfigurationName 'JumpBoxConfig' `
     -DscConfigurationScript 'JumpBoxConfig.ps1'
 
-# Import-DscConfiguration `
-#     -ResourceGroupName $ResourceGroupName `
-#     -AutomationAccountName $automationAccount.AutomationAccountName `
-#     -DscConfigurationName 'MssqlVmConfig' `
-#     -DscConfigurationScript 'MssqlVmConfig.ps1'
+Import-DscConfiguration `
+    -ResourceGroupName $ResourceGroupName `
+    -AutomationAccountName $automationAccount.AutomationAccountName `
+    -DscConfigurationName 'MssqlVmConfig' `
+    -DscConfigurationScript 'MssqlVmConfig.ps1'
 
 # Compile DSC Configurations
 Start-DscCompliationJob `
@@ -611,11 +611,11 @@ Start-DscCompliationJob `
     -DscConfigurationName 'JumpBoxConfig' `
     -DscConfigurationScript 'JumpBoxConfig.ps1'
 
-# Start-DscCompliationJob `
-#     -ResourceGroupName $ResourceGroupName `
-#     -AutomationAccountName $automationAccount.AutomationAccountName `
-#     -DscConfigurationName 'MssqlVmConfig' `
-#     -DscConfigurationScript 'MssqlVmConfig.ps1'
+Start-DscCompliationJob `
+    -ResourceGroupName $ResourceGroupName `
+    -AutomationAccountName $automationAccount.AutomationAccountName `
+    -DscConfigurationName 'MssqlVmConfig' `
+    -DscConfigurationScript 'MssqlVmConfig.ps1'
 
 Exit 0
 #endregion

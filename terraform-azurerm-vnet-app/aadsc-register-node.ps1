@@ -70,7 +70,20 @@ function Register-DscNode {
     )
 
     $nodeConfigName = $DscConfigurationName + '.' + $DscConfigurationNode
+    Write-Log "Checking for node configuration '$nodeConfigName'..."
 
+    try {
+        $nodeConfig = Get-AzAutomationDscNodeConfiguration `
+            -ResourceGroupName $ResourceGroupName `
+            -AutomationAccountName $AutomationAccountName `
+            -Name $nodeConfigName `
+            -ErrorAction Stop
+    }
+    catch {
+        Exit-WithError $_
+    }
+
+    Write-Log "Status for DSC node configuration '$nodeConfigName' is '$($nodeConfig.Status)'..."
     Write-Log "Checking for existing DSC node registrations for '$VirtualMachineName' with node configuration '$nodeConfigName'..."
 
     try {

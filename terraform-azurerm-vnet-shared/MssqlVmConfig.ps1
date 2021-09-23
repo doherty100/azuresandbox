@@ -36,7 +36,7 @@ configuration MssqlVmConfig {
             PSDscRunAsCredential    = $localAdminCredential
         }
 
-        SqlRole 'Include_DomainAdmin_In_sysadmin' {
+        SqlRole 'sysadmin' {
             ServerRoleName          = 'sysadmin'
             MembersToInclude        = $domainAdminShortCredential.UserName
             InstanceName            = 'MSSQLSERVER'
