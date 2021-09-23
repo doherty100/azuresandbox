@@ -18,23 +18,5 @@ configuration LabDomainConfig {
             ForestMode = 'WinThreshold'
             DependsOn = '[WindowsFeature]AD-Domain-Services'
         }
-
-        WindowsFeature 'RSAT-AD-PowerShell' {
-            Name = 'RSAT-AD-PowerShell'
-            Ensure = 'Present'
-            DependsOn = '[ADDomain]LabDomain'            
-        }
-
-        WindowsFeature 'RSAT-ADDS' {
-            Name = 'RSAT-ADDS'
-            Ensure = 'Present'
-            DependsOn = '[ADDomain]LabDomain'            
-        }
-
-        WindowsFeature 'RSAT-DNS-Server' {
-            Name = 'RSAT-DNS-Server'
-            Ensure = 'Present'
-            DependsOn = '[ADDomain]LabDomain'            
-        }
     }
 }          
