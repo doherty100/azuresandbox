@@ -97,7 +97,6 @@ resource "azurerm_virtual_machine_extension" "vm_mssql_win_postdeploy_script" {
     {
       "fileUris": [ 
         "${var.vm_mssql_win_post_deploy_script_uri}", 
-        "${var.vm_mssql_win_sql_bootstrap_script_uri}", 
         "${var.vm_mssql_win_sql_startup_script_uri}" 
       ],
       "commandToExecute": 

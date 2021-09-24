@@ -10,9 +10,47 @@ configuration MssqlVmConfig {
     $domainAdminShortCredential = Get-AutomationPSCredential 'domainadminshort'
 
     node 'localhost' {
+        SqlScriptQuery 'EnableSa' {
+            InstanceName    = 'MSSQLSERVER'
+            GetQuery        = @'
+SELECT [is_disabled] FROM [master].[sys].[sql_logins] WHERE ([name] = 'sa') FOR JSON AUTO;
+GO
+'@
+            TestQuery       = @'
+IF (SELECT [is_disabled] FROM [master].[sys].[sql_logins] WHERE ([name] = 'sa')) = 1 
+BEGIN
+    RAISERROR ('sa login is disabled.', 16, 1 ) ;
+END
+ELSE
+BEGIN
+    PRINT 'sa login is enabled' ;
+END ;
+GO
+'@
+            SetQuery        = @'
+ALTER LOGIN sa ENABLE ;
+GO
+ALTER LOGIN sa WITH PASSWORD = '$(UsernameSecret)' ;
+GO
+USE [master]
+GO
+EXEC xp_instance_regwrite N'HKEY_LOCAL_MACHINE', 
+     N'Software\Microsoft\MSSQLServer\MSSQLServer',
+     N'LoginMode', REG_DWORD, 2 ;
+GO
+'@
+            Variable        = @(
+                ('UsernameSecret={0}' -f $localAdminCredential.GetNetworkCredential().Password)
+            )
+
+            QueryTimeout    = 30
+            PSDscRunAsCredential    = $localAdminCredential
+        }
+
         xDSCDomainjoin 'JoinDomain' {
             Domain      = $domain
             Credential  = $domainAdminCredential
+            DependsOn   = '[SqlScriptQuery]EnableSa'
         }
 
         Firewall 'MssqlFirewallRule' {

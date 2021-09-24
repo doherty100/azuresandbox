@@ -1,5 +1,18 @@
+param(
+    [Parameter(Mandatory = $true)]
+    [string]$Domain,
+    
+    [Parameter(Mandatory = $true)]
+    [string]$Username,
+    
+    [Parameter(Mandatory = $true)]
+    [string]$UsernameSecret
+)
+
 #region constants
 $logpath = $PSCommandPath + '.log'
+$usernameSecretSecure = ConvertTo-SecureString -String $UsernameSecret -AsPlainText -Force
+$usernameSecretSecure.MakeReadOnly()
 #endregion
 
 #region functions
@@ -85,14 +98,21 @@ function Restart-SqlServer {
 
 function Invoke-Sql {
     param (
-        [string]$SqlCommand
+        [Parameter(Mandatory = $true)]
+        [string]$SqlCommand,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Username,
+
+        [Parameter(Mandatory = $true)]
+        [SecureString]$UsernameSecret
     )
 
+    $cred = New-Object System.Data.SqlClient.SqlCredential($Username, $UsernameSecret)
     $cxnstring = New-Object System.Data.SqlClient.SqlConnectionStringBuilder
     $cxnstring."Data Source" = '.'
     $cxnstring."Initial Catalog" = 'master'
-    $cxnstring."Integrated Security" = 'SSPI'
-    $cxn = New-Object System.Data.SqlClient.SqlConnection($cxnstring)
+    $cxn = New-Object System.Data.SqlClient.SqlConnection($cxnstring, $cred)
 
     try {
         $cxn.Open()
@@ -180,11 +200,11 @@ function Move-SqlDatabase {
     elseif ( ( $Name -eq 'model' ) -or ( $Name -eq 'msdb' ) ) {
         Write-Log "Move-SqlDatabase: Altering '$Name' and setting database file location to '$newDataFilePath'..."
         $sqlCommand = "ALTER DATABASE $Name MODIFY FILE ( NAME = $DataDeviceName, FILENAME = N'$newDataFilePath' );"
-        Invoke-Sql $sqlCommand
+        Invoke-Sql $sqlCommand 'sa' $usernameSecretSecure
 
         Write-Log "Move-SqlDatabase: Altering '$Name' and setting log file location to '$newLogFilePath'..."
         $sqlCommand = "ALTER DATABASE $Name MODIFY FILE ( NAME = $LogDeviceName, FILENAME = N'$newLogFilePath' ) "
-        Invoke-Sql $sqlCommand
+        Invoke-Sql $sqlCommand 'sa' $usernameSecretSecure
     }
 
     Stop-SqlServer
@@ -234,10 +254,8 @@ function Grant-SqlFullContol {
 }
 #endregion
 
-# Start main
+#region main
 Write-Log "Running '$PSCommandPath'..."
-$currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
-Write-Log "Current user '$currentUser'..."
 
 # Initialize data disks
 $localRawDisks = Get-Disk | Where-Object PartitionStyle -eq 'RAW'
@@ -355,7 +373,7 @@ catch {
     Exit-WithError $_
 }
 
-Write-Log "Default SQL Server instance '$defaultSqlInstance' located..."    
+Write-Log "Default SQL Server instance '$defaultSqlInstance' located..."
 
 # Configure data disks
 Write-Log "$('=' * 80)"
@@ -401,17 +419,17 @@ foreach ( $volume in $volumes) {
         $filePath = "$path\tempdb.mdf"
         $sqlCommand = "ALTER DATABASE tempdb MODIFY FILE ( NAME = tempdev, FILENAME = N'$filePath' );"
         Write-Log "Altering tempdb and setting primary database file location to '$filePath'..."
-        Invoke-Sql $sqlCommand
+        Invoke-Sql $sqlCommand 'sa' $usernameSecretSecure
 
         $filePath = "$path\tempdb_mssql_2.ndf"
         $sqlCommand = "ALTER DATABASE tempdb MODIFY FILE ( NAME = temp2, FILENAME = N'$filePath' ) "
         Write-Log "Altering tempdb and setting secondary database file location to '$filePath'..."
-        Invoke-Sql $sqlCommand
+        Invoke-Sql $sqlCommand 'sa' $usernameSecretSecure
 
         $filePath = "$path\templog.ldf"
         $sqlCommand = "ALTER DATABASE tempdb MODIFY FILE ( NAME = templog, FILENAME = N'$filePath' ) "
         Write-Log "Altering tempdb and setting log file location to '$filePath'..."
-        Invoke-Sql $sqlCommand
+        Invoke-Sql $sqlCommand 'sa' $usernameSecretSecure
 
         Restart-SqlServer                            
         
@@ -470,7 +488,6 @@ foreach ( $volume in $volumes) {
     continue
 }
 
-#region main
 Write-Log "$('=' * 80)"
 
 # Move databases 
@@ -548,13 +565,22 @@ if ( -not (Test-Path $sqlStartupScriptPath) ) {
     Exit-WithError "Unable to locate '$sqlStartupScriptPath'..."
 }
 
+$domainUsername = $Domain.Split('.')[0].ToUpper() + "\" + $Username
 $taskAction = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-ExecutionPolicy Unrestricted -File `"$sqlStartupScriptPath`"" 
 $taskTrigger = New-ScheduledTaskTrigger -AtStartup
 
-Write-Log "Registering scheduled task to execute '$sqlStartupScriptPath'..."
+Write-Log "Registering scheduled task to execute '$sqlStartupScriptPath' under user '$domainUserName'..."
 
 try {
-    Register-ScheduledTask -TaskName $taskName -Action $taskAction -Trigger $taskTrigger -Force -User 'System' -RunLevel 'Highest' -Description "Prepare ephemeral drive folders for tempdb and start SQL Server."
+    Register-ScheduledTask `
+        -Force `
+        -Password $UsernameSecret `
+        -User $domainUsername `
+        -TaskName $taskName `
+        -Action $taskAction `
+        -Trigger $taskTrigger `
+        -RunLevel 'Highest' `
+        -Description "Prepare temp drive folders for tempdb and start SQL Server."
 }
 catch {
     Exit-WithError $_
@@ -566,13 +592,13 @@ Write-Log "$totalMemoryMb MB of physical memory detected..."
 $sqlMaxMemory = [int]($totalMemoryMb * 0.9)
 Write-Log "Setting SQL Server max server memory to $sqlMaxMemory MB..."
 $sqlCommand = "sp_configure N'show advanced options', 1"
-Invoke-Sql $sqlCommand
+Invoke-Sql $sqlCommand 'sa' $usernameSecretSecure
 $sqlCommand = "RECONFIGURE"
-Invoke-Sql $sqlCommand
+Invoke-Sql $sqlCommand 'sa' $usernameSecretSecure
 $sqlCommand = "sp_configure N'max server memory', $sqlMaxMemory"
-Invoke-Sql $sqlCommand
+Invoke-Sql $sqlCommand 'sa' $usernameSecretSecure
 $sqlCommand = "RECONFIGURE"
-Invoke-Sql $sqlCommand
+Invoke-Sql $sqlCommand 'sa' $usernameSecretSecure
 Restart-SqlServer
 
 Write-Log "Exiting normally..."

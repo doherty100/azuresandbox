@@ -155,16 +155,6 @@ variable "vm_mssql_win_storage_account_type" {
   default     = "StandardSSD_LRS"
 }
 
-variable "vm_mssql_win_sql_bootstrap_script" {
-  type        = string
-  description = "The name of the SQL bootstrap Powershell script."
-}
-
-variable "vm_mssql_win_sql_bootstrap_script_uri" {
-  type        = string
-  description = "The URI for the SQL bootstrap Powershell script."
-}
-
 variable "vm_mssql_win_sql_startup_script" {
   type        = string
   description = "The name of the SQL Startup Powershell script."

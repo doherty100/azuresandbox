@@ -18,8 +18,7 @@ default_application_subnet_address_prefix="10.2.0.32/27"
 default_privatelink_subnet_name="snet-private-endpoints-01"
 default_privatelink_subnet_address_prefix="10.2.0.64/27"
 default_vm_mssql_win_name="mssqlwin1"
-vm_mssql_win_post_deploy_script="vm-mssql-win-post-deploy.ps1"
-vm_mssql_win_sql_bootstrap_script="sql-bootstrap.ps1"
+vm_mssql_win_post_deploy_script="configure-mssql.ps1"
 vm_mssql_win_sql_startup_script="sql-startup.ps1"
 
 # Intialize runtime defaults
@@ -76,7 +75,6 @@ vnet_address_space=${vnet_address_space:-default_vnet_address_space}
 
 # Upload post-deployment scripts
 vm_mssql_win_post_deploy_script_uri="https://${storage_account_name:1:-1}.blob.core.windows.net/${storage_container_name:1:-1}/$vm_mssql_win_post_deploy_script"
-vm_mssql_win_sql_bootstrap_script_uri="https://${storage_account_name:1:-1}.blob.core.windows.net/${storage_container_name:1:-1}/$vm_mssql_win_sql_bootstrap_script"
 vm_mssql_win_sql_startup_script_uri="https://${storage_account_name:1:-1}.blob.core.windows.net/${storage_container_name:1:-1}/$vm_mssql_win_sql_startup_script"
 
 printf "Getting storage account key for storage account '${storage_account_name:1:-1}' from key vault '${key_vault_name:1:-1}'...\n"
@@ -132,8 +130,6 @@ printf "tags                                    = $tags\n"                      
 printf "vm_mssql_win_name                       = \"$vm_mssql_win_name\"\n"                       >> ./terraform.tfvars
 printf "vm_mssql_win_post_deploy_script         = \"$vm_mssql_win_post_deploy_script\"\n"         >> ./terraform.tfvars
 printf "vm_mssql_win_post_deploy_script_uri     = \"$vm_mssql_win_post_deploy_script_uri\"\n"     >> ./terraform.tfvars
-printf "vm_mssql_win_sql_bootstrap_script       = \"$vm_mssql_win_sql_bootstrap_script\"\n"       >> ./terraform.tfvars
-printf "vm_mssql_win_sql_bootstrap_script_uri   = \"$vm_mssql_win_sql_bootstrap_script_uri\"\n"   >> ./terraform.tfvars
 printf "vm_mssql_win_sql_startup_script         = \"$vm_mssql_win_sql_startup_script\"\n"         >> ./terraform.tfvars
 printf "vm_mssql_win_sql_startup_script_uri     = \"$vm_mssql_win_sql_startup_script_uri\"\n"     >> ./terraform.tfvars
 printf "vnet_address_space                      = \"$vnet_address_space\"\n"                      >> ./terraform.tfvars
