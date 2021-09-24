@@ -42,7 +42,7 @@ Before you start, make sure you have completed the following steps:
 This section describes how to provision this quick start using default settings.
 
 * Start a new Bash terminal session.
-* Change the working directory to `~/azurequickstarts`.
+* Change the working directory to `~/azurequickstarts/terraform-azurerm-vnet-shared`.
 * Run `az logout` and `az account clear` to reset the user credentials used by Azure CLI.
 * Run `az login` and sign in using the identity you intend to use for the quick starts.
 * Run `az account list -o table` and copy the *Subscription Id* to be used for the quick starts.
@@ -63,6 +63,7 @@ This section describes how to provision this quick start using default settings.
 
 ## Smoke testing
 
+* Navigate to *Settings* > *Apps* > *Default Apps* and set the default browser to *Microsoft Edge*.
 * Explore your newly provisioned resources in the Azure portal.
   * Navigate to *Automation Accounts* > [My Automation Account] > *State configuration (DSC)*.
     * Refresh the data on the *Nodes* tab and verify that all nodes are compliant.
@@ -78,7 +79,7 @@ This section describes how to provision this quick start using default settings.
       * `$PSVersionTable` to see the version of PowerShell Core installed.
       * `exit` to quit PowerShell
     * `exit` to terminate the SSH session.
-* Use bastion to establish an RDP connection to the Windows Server jumpbox VM. For *username* be sure to use the UPN of the domain admin, which by default is *bootstrapadmin@mytestlab.local*.
+* Use bastion to establish an RDP connection to the Windows Server Jumpbox VM. For *username* be sure to use the UPN of the domain admin, which by default is *bootstrapadmin@mytestlab.local*.
   * Verify the machine is domain joined
   * Review the network configuration by running `ipconfig /all` from the command prompt.
   * Ping the domain controller to verify connectivity.
@@ -178,7 +179,7 @@ The configuration for these resources can be found in [040-network.tf](./040-net
 
 Resource name (ARM) | Notes
 --- | ---
-azurerm_virtual_network.vnet_shared_01 (vnet&#x2011;shared&#x2011;01) | By default this virtual network is configured with an address space of 10.1.0.0/16 and is configured with DNS server addresses of 10.1.2.4 (the private ip for *azurerm_windows_virtual_machine.vm_adds*) and [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16).
+azurerm_virtual_network.vnet_shared_01 (vnet&#x2011;shared&#x2011;01) | By default this virtual network is configured with an address space of `10.1.0.0/16` and is configured with DNS server addresses of 10.1.2.4 (the private ip for *azurerm_windows_virtual_machine.vm_adds*) and [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16).
 azurerm_subnet.vnet_shared_01_subnets["default"] | The default address prefix for this subnet is 10.1.0.0/24 which includes the private ip address for *azurerm_windows_virtual_machine.vm_jumpbox_win* and *azurerm_linux_virtual_machine.vm_jumpbox_linux*.
 azurerm_subnet.vnet_shared_01_subnets["AzureBastionSubnet"] | The default address prefix for this subnet is 10.1.1.0/27 which includes the private ip addresses for *azurerm_bastion_host.bastion_host_01*.
 azurerm_subnet.vnet_shared_01_subnets["adds"] | The default address prefix for this subnet is 10.1.2.0/24 which includes the private ip address for *azurerm_windows_virtual_machine.vm_adds*.
@@ -193,7 +194,7 @@ The configuration for these resources can be found in [050-vm-adds.tf](./050-vm-
 
 Resource name (ARM) | Notes
 --- | ---
-azurerm_windows_virtual_machine.vm_adds (adds1) | See below.
+azurerm_windows_virtual_machine.vm_adds (adds1) | By default, provisions a [Standard_B2s](https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-b-series-burstable) virtual machine for use as a domain controller and dns server. See below for more information.
 azurerm_network_interface.vm_adds_nic_01 (nic&#x2011;adds1&#x2011;1) | The configured subnet is *azurerm_subnet.vnet_shared_01_subnets["adds"]*.
 
 This Windows Server VM is used as an AD DS Domain Controller and DNS Server.
@@ -214,7 +215,7 @@ The configuration for these resources can be found in [060-vm-jumpbox-win.tf](./
 
 Resource name (ARM) | Notes
 --- | ---
-azurerm_windows_virtual_machine.vm_jumpbox_win (jumpboxwin1) | See below.
+azurerm_windows_virtual_machine.vm_jumpbox_win (jumpboxwin1) | By default, provisions a [Standard_B2s](https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-b-series-burstable) virtual machine for use as a jumpbox. See below for more information.
 azurerm_network_interface.vm_jumpbox_win_nic_01 (nic&#x2011;jumpwin1&#x2011;1) | The configured subnet is *azurerm_subnet.vnet_shared_01_subnets["default"]*.
 
 This Windows Server VM is used as a jumpbox for development and remote server administration.
@@ -223,6 +224,7 @@ This Windows Server VM is used as a jumpbox for development and remote server ad
 * By default the [patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByPlatform`.
 * *admin_username* and *admin_password* are configured using key vault secrets *data.azurerm_key_vault_secret.adminpassword* and *data.azurerm_key_vault_secret.adminuser* which are set in advance by [bootstrap.sh](./bootstrap.sh).
 * This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [aadsc-register-node.ps1](./aadsc-register-node.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [JumpBoxConfig](./JumpBoxConfig.ps1).
+  * The virtual machine is domain joined.
   * The following [Remote Server Administration Tools (RSAT)](https://docs.microsoft.com/en-us/windows-server/remote/remote-server-administration-tools) are installed:
     * Active Directory module for Windows PowerShell (RSAT-AD-PowerShell)
     * Active Directory Administrative Center (RSAT-AD-AdminCenter)

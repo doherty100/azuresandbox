@@ -47,13 +47,13 @@ resource "azurerm_windows_virtual_machine" "vm_mssql_win" {
 
 # Nics
 resource "azurerm_network_interface" "vm_mssql_win_nic_01" {
-  name                = "nic-${var.vm_mssql_win_name}-01"
+  name                = "nic-${var.vm_mssql_win_name}-1"
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = var.tags
 
   ip_configuration {
-    name                          = "ipc-${var.vm_mssql_win_name}-01"
+    name                          = "ipc-${var.vm_mssql_win_name}-1"
     subnet_id                     = azurerm_subnet.vnet_spoke_01_subnets["database"].id
     private_ip_address_allocation = "Dynamic"
   }

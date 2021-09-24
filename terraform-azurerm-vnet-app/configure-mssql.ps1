@@ -349,11 +349,12 @@ foreach ($disk in $localRawDisks) {
     }
 
     $fileSystem = "NTFS"
-    
-    Write-Log "Formatting volume '$($driveLetter):' using file system '$fileSystem' and label '$fileSystemLabel'..."
+    $allocationUnitSize = 65536
+
+    Write-Log "Formatting volume '$($driveLetter):' using file system '$fileSystem', label '$fileSystemLabel' and allocation unit size '$allocationUnitSize'..."
 
     try {
-        Format-Volume -DriveLetter $driveLetter -FileSystem $fileSystem -NewFileSystemLabel $fileSystemLabel -Confirm:$false -Force | Out-Null
+        Format-Volume -DriveLetter $driveLetter -FileSystem $fileSystem -NewFileSystemLabel $fileSystemLabel -AllocationUnitSize $allocationUnitSize -Confirm:$false -Force | Out-Null
     }
     catch {
         Exit-WithError $_

@@ -8,12 +8,12 @@ This quick start implements a virtual network for applications including:
 
 * A virtual network for hosting application infrastructure and services
   * [Virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) is enabled with the shared services virtual network
-* An [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering
+* An [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering.
 
 Activity | Estimated time required
 --- | ---
 Pre-configuration | ~5 minutes
-Provisioning | ~5 minutes
+Provisioning | ~30 minutes
 Smoke testing | ~ 5 minutes
 De-provisioning | ~10 minutes
 
@@ -27,15 +27,35 @@ The following quick starts must be deployed first before starting:
 
 This section describes how to provision this quick start using default settings.
 
+* Change the working directory to `~/azurequickstarts/terraform-azurerm-vnet-app`.
 * Run `./bootstrap.sh` using the default settings or your own custom settings.
 * Run `terraform init` and note the version of the *azurerm* provider installed.
 * Run `terraform validate` to check the syntax of the configuration.
 * Run `terraform plan` and review the plan output.
 * Run `terraform apply` to apply the configuration.
+* Run `terraform state list` to list the resources managed in the configuration.
 
 ## Smoke testing
 
-Explore newly provisioned resources in the Azure portal.
+* Explore your newly provisioned resources in the Azure portal.
+  * Navigate to *Automation Accounts* > [My Automation Account] > *State configuration (DSC)*.
+    * Refresh the data on the *Nodes* tab and verify that all nodes are compliant.
+    * Review the data in the *Configurations* and *Compiled configurations* tabs as well.
+* Use bastion to establish an SSH connection to the Windows Server Jumpbox VM. For *username* be sure to use the UPN of the domain admin, which by default is *bootstrapadmin@mytestlab.local*.
+  * Launch *Microsoft SQL Server Management Studio* (SSMS)
+    * Connect to the default instance of SQL Server installed on the Database Server Virtual Machine using the following default values:
+      * Server name: *mssqlwin1*
+      * Authentication: *Windows Authentication* (this will default to *MYTESTLAB\bootstrapadmin*)
+      * Using SSMS create a new database named *testdb*.
+        * Verify that by default the data files were stored on the *M:* drive
+        * Verify that by default the log file was stored on the *L:* drive
+  * Launch [Visual Studio Code](https://aka.ms/vscode) and install the [SQL Server (mssql)](https://marketplace.visualstudio.com/items?itemName=ms-mssql.mssql) extension.
+    * Connect to the default instance of SQL Server installed on the Database Server Virtual Machine using the following default values:
+      * Server name: *mssqlwin1*
+      * Database name: *testdb*
+      * Authentication type: *Integrated*
+      * Profile Name: *testdb*
+    * Write and run some test queries, e.g. *CREATE TABLE* and *INSERT*.
 
 ## Documentation
 
@@ -62,8 +82,13 @@ storage_account_name | "stXXXXXXXXXXXXXXX"
 storage_container_name | "scripts"
 subscription_id | "00000000-0000-0000-0000-000000000000"
 tags | tomap( { "costcenter" = "10177772" "environment" = "dev" "project" = "#AzureQuickStarts" } )
-vnet_shared_01_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-shared-01""
+vnet_shared_01_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-shared-01"
 vnet_shared_01_name | "vnet-shared-01"
+
+The following PowerShell scripts are uploaded to the *scripts* container in the storage account so they can be referenced by virtual machine extensions:
+
+* [configure-mssql.ps1](./configure-mssql.ps1)
+* [sql-startup.ps1](./sql-startup.ps1)
 
 ### Terraform Resources
 
@@ -75,7 +100,51 @@ The configuration for these resources can be found in [020-network.tf](./020-net
 
 Resource name (ARM) | Notes
 --- | ---
+azurerm_virtual_network.vnet_spoke_01 (vnet&#x2011;app&#x2011;01) | By default this virtual network is configured with an address space of `10.2.0.0/16` and is configured with DNS server addresses of 10.1.2.4 (the private ip for *azurerm_windows_virtual_machine.vm_adds*) and [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16).
+azurerm_subnet.vnet_spoke_01_subnets["database"] | The default address prefix for this subnet is `10.2.0.0/27` which includes the private ip address for *azurerm_windows_virtual_machine.vm_mssql_win*.
+azurerm_subnet.vnet_spoke_01_subnets["PrivateLink"] | The default address prefix for this subnet is `10.2.0.64/27`. *enforce_private_link_endpoint_network_policies* is enabled by default for use with [PrivateLink](https://docs.microsoft.com/en-us/azure/private-link/private-link-overview).
+azurerm_subnet.vnet_spoke_01_subnets["application"] | The default address prefix for this subnet is `10.2.0.32/27` and is reserved for web and application servers.
+azurerm_virtual_network_peering.vnet_shared_01_to_vnet_spoke_01_peering | Establishes the [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) relationship from *azurerm_virtual_network.vnet_shared_01* to *azurerm_virtual_network.vnet_spoke_01*.
+azurerm_virtual_network_peering.vnet_spoke_01_to_vnet_shared_01_peering | Establishes the [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) relationship from *azurerm_virtual_network.vnet_spoke_01* to *azurerm_virtual_network.vnet_shared_01*.
 
+#### Database server virtual machine
+
+The configuration for these resources can be found in [030-vm-mssql-win.tf](./030-vm-mssql-win.tf).
+
+Resource name (ARM) | Notes
+--- | ---
+azurerm_windows_virtual_machine.vm_mssql_win (mssqlwin1) | By default, provisions a [Standard_B4ms](https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-b-series-burstable) virtual machine for use as a database server. See below for more information.
+azurerm_network_interface.vm_mssql_win_nic_01 (nic&#x2011;mssqlwin1&#x2011;1) | The configured subnet is *azurerm_subnet.vnet_spoke_01_subnets["database"]*.
+azurerm_managed_disk.vm_mssql_win_data_disks["sqldata"] (disk&#x2011;mssqlwin1&#x2011;vol_sqldata_M) | By default, provisions an E10 [Standard SSD](https://docs.microsoft.com/en-us/azure/virtual-machines/disks-types#standard-ssd) [managed disk](https://docs.microsoft.com/en-us/azure/virtual-machines/managed-disks-overview) for storing SQL Server data files. Caching is set to *ReadOnly* by default.
+azurerm_managed_disk.vm_mssql_win_data_disks["sqllog"] (disk&#x2011;mssqlwin1&#x2011;vol_sqllog_L) | By default, provisions an E4 [Standard SSD](https://docs.microsoft.com/en-us/azure/virtual-machines/disks-types#standard-ssd) [managed disk](https://docs.microsoft.com/en-us/azure/virtual-machines/managed-disks-overview) for storing SQL Server log files. Caching is set to *None* by default.
+azurerm_virtual_machine_data_disk_attachment.vm_mssql_win_data_disk_attachments["sqldata"] | Attaches *azurerm_managed_disk.vm_mssql_win_data_disks["sqldata"]* to *azurerm_windows_virtual_machine.vm_mssql_win*.
+azurerm_virtual_machine_data_disk_attachment.vm_mssql_win_data_disk_attachments["sqllog"] | Attaches *azurerm_managed_disk.vm_mssql_win_data_disks["sqllog"]* to *azurerm_windows_virtual_machine.vm_mssql_win*
+azurerm_virtual_machine_extension.vm_mssql_win_postdeploy_script (vmext&#x2011;mssqlwin1&#x2011;postdeploy&#x2011;script) | Uploads [configure-mssql.ps1](./configure-mssql.ps1) and [sql-startup.ps1](./sql-startup.ps1) to *azurerm_windows_virtual_machine.vm_mssql_win* and executes [configure-mssql.ps1](./configure-mssql.ps1) using the [Custom Script Extension for Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows).
+
+* Guest OS: Windows Server 2019 Datacenter.
+* By default the [patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByOS` rather than `AutomaticByPlatform`. This is intentional in case the user wishes to use the [SQL Server IaaS Agent extension](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management?tabs=azure-powershell) for patching.
+* *admin_username* and *admin_password* are configured using key vault secrets *data.azurerm_key_vault_secret.adminpassword* and *data.azurerm_key_vault_secret.adminuser* which are set in advance by [bootstrap.sh](./bootstrap.sh).
+* This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [aadsc-register-node.ps1](./aadsc-register-node.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [MssqlVmConfig.ps1](./MssqlVmConfig.ps1).
+  * The default SQL Server instance is configured to support [mixed mode authentication](https://docs.microsoft.com/en-us/sql/relational-databases/security/choose-an-authentication-mode). This is to facilitate post-installation configuration of the default instance before the virtual machine is domain joined, and can be reconfigured to Windows Authentication mode if required.
+    * The builtin *sa* account is enabled and the password is configured using *data.azurerm_key_vault_secret.adminpassword*.
+    * The *LoginMode* registry key is modified to support mixed mode authentication.
+  * The virtual machine is domain joined.
+  * The [Windows Firewall is Configured to Allow SQL Server Access](https://docs.microsoft.com/en-us/sql/sql-server/install/configure-the-windows-firewall-to-allow-sql-server-access).
+  * A Windows login is added for the domain administrator and added to the builtin 'sysadmin' role.
+* Post-deployment configuration is then implemented using a custom script extension that runs [configure-mssql.ps1](./configure-mssql.ps1) following guidelines established in [Checklist: Best practices for SQL Server on Azure VMs](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices-checklist).
+  * Data disk metadata is retrieved dynamically using the [Azure Instance Metadata Service (Windows)](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/instance-metadata-service?tabs=windows) including:
+    * Volume label and drive letter, e.g. *vol_sqldata_M*
+    * Size
+    * Lun
+    * Cache settings, e.g. *ReadOnly* or *None*.
+  * The metadata is then used to partition and format the raw data disks using the SQL Server recommended allocation unit size of 64K.
+  * The *tempdb* database is moved from the OS disk to the Azure local temporary disk and special logic is implemented to avoid errors if the Azure virtual machine is stopped, deallocated and restarted on a new host. If this occurs the `D:\SQLTEMP` folder must be recreated with appropriate permissions in order to start the SQL Server.
+    * The SQL Server is configured for manual startup
+    * The scheduled task [sql-startup.ps1](./sql-startup.ps1) is created to recreate the `D:\SQLTEMP` folder and set to run automatically at startup.
+  * The data and log files for the *master*, *model* and *msdb* system databases are moved to the data and log disks respectively.
+  * The SQL Server errorlog is moved to the data disk.
+  * SQL Server `max server memory` is reconfigured
+  
 ## Next steps
 
 Move on to the next quick start [terraform-azurerm-sql](../terraform-azurerm-sql).
