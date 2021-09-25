@@ -21,7 +21,6 @@ Activity | Estimated time required
 --- | ---
 Pre-configuration | ~10 minutes
 Provisioning | ~60 minutes
-Smoke testing | ~20 minutes
 
 ## Before you start
 

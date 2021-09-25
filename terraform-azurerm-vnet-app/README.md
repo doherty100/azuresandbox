@@ -15,7 +15,6 @@ Activity | Estimated time required
 Pre-configuration | ~5 minutes
 Provisioning | ~30 minutes
 Smoke testing | ~ 5 minutes
-De-provisioning | ~10 minutes
 
 ## Before you start
 
@@ -43,14 +42,14 @@ This section describes how to provision this quick start using default settings.
     * Review the data in the *Configurations* and *Compiled configurations* tabs as well.
 * Use bastion to establish an SSH connection to the Windows Server Jumpbox VM. For *username* be sure to use the UPN of the domain admin, which by default is *bootstrapadmin@mytestlab.local*.
   * Launch *Microsoft SQL Server Management Studio* (SSMS)
-    * Connect to the default instance of SQL Server installed on the Database Server Virtual Machine using the following default values:
+    * Connect to the default instance of SQL Server installed on the database server virtual machine using the following default values:
       * Server name: *mssqlwin1*
       * Authentication: *Windows Authentication* (this will default to *MYTESTLAB\bootstrapadmin*)
-      * Using SSMS create a new database named *testdb*.
-        * Verify that by default the data files were stored on the *M:* drive
-        * Verify that by default the log file was stored on the *L:* drive
+      * Create a new database named *testdb*.
+        * Verify the data files were stored on the *M:* drive
+        * Verify the log file were stored on the *L:* drive
   * Launch [Visual Studio Code](https://aka.ms/vscode) and install the [SQL Server (mssql)](https://marketplace.visualstudio.com/items?itemName=ms-mssql.mssql) extension.
-    * Connect to the default instance of SQL Server installed on the Database Server Virtual Machine using the following default values:
+    * Connect to the default instance of SQL Server installed on the database server virtual machine using the following default values:
       * Server name: *mssqlwin1*
       * Database name: *testdb*
       * Authentication type: *Integrated*
@@ -63,7 +62,7 @@ This section provides additional information on various aspects of this quick st
 
 ### Bootstrap script
 
-This quick start uses the script [./bootstrap.sh] to create a *terraform.tfvars* file for generating and applying Terraform plans. For simplified deployment, several runtime defaults are initialized using output variables stored the *terraform.tfstate* associated with the [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared) quick start, including:
+This quick start uses the script [bootstrap.sh](./bootstrap.sh) to create a *terraform.tfvars* file for generating and applying Terraform plans. For simplified deployment, several runtime defaults are initialized using output variables stored the *terraform.tfstate* associated with the [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared) quick start, including:
 
 Output variable | Sample value
 --- | ---
@@ -85,7 +84,7 @@ tags | tomap( { "costcenter" = "10177772" "environment" = "dev" "project" = "#Az
 vnet_shared_01_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-shared-01"
 vnet_shared_01_name | "vnet-shared-01"
 
-The following PowerShell scripts are uploaded to the *scripts* container in the storage account so they can be referenced by virtual machine extensions:
+The following PowerShell scripts are uploaded to the *scripts* container in the storage account using the access key stored in the key vault secret *data.azurerm_key_vault_secret.storage_account_key* so they can be referenced by virtual machine extensions:
 
 * [configure-mssql.ps1](./configure-mssql.ps1)
 * [sql-startup.ps1](./sql-startup.ps1)
@@ -119,31 +118,30 @@ azurerm_managed_disk.vm_mssql_win_data_disks["sqldata"] (disk&#x2011;mssqlwin1&#
 azurerm_managed_disk.vm_mssql_win_data_disks["sqllog"] (disk&#x2011;mssqlwin1&#x2011;vol_sqllog_L) | By default, provisions an E4 [Standard SSD](https://docs.microsoft.com/en-us/azure/virtual-machines/disks-types#standard-ssd) [managed disk](https://docs.microsoft.com/en-us/azure/virtual-machines/managed-disks-overview) for storing SQL Server log files. Caching is set to *None* by default.
 azurerm_virtual_machine_data_disk_attachment.vm_mssql_win_data_disk_attachments["sqldata"] | Attaches *azurerm_managed_disk.vm_mssql_win_data_disks["sqldata"]* to *azurerm_windows_virtual_machine.vm_mssql_win*.
 azurerm_virtual_machine_data_disk_attachment.vm_mssql_win_data_disk_attachments["sqllog"] | Attaches *azurerm_managed_disk.vm_mssql_win_data_disks["sqllog"]* to *azurerm_windows_virtual_machine.vm_mssql_win*
-azurerm_virtual_machine_extension.vm_mssql_win_postdeploy_script (vmext&#x2011;mssqlwin1&#x2011;postdeploy&#x2011;script) | Uploads [configure-mssql.ps1](./configure-mssql.ps1) and [sql-startup.ps1](./sql-startup.ps1) to *azurerm_windows_virtual_machine.vm_mssql_win* and executes [configure-mssql.ps1](./configure-mssql.ps1) using the [Custom Script Extension for Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows).
+azurerm_virtual_machine_extension.vm_mssql_win_postdeploy_script (vmext&#x2011;mssqlwin1&#x2011;postdeploy&#x2011;script) | Uploads [configure&#x2011;mssql.ps1](./configure-mssql.ps1) and [sql&#x2011;startup.ps1](./sql-startup.ps1) to *azurerm_windows_virtual_machine.vm_mssql_win* and executes [configure&#x2011;mssql.ps1](./configure-mssql.ps1) using the [Custom Script Extension for Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows).
 
 * Guest OS: Windows Server 2019 Datacenter.
-* By default the [patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByOS` rather than `AutomaticByPlatform`. This is intentional in case the user wishes to use the [SQL Server IaaS Agent extension](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management?tabs=azure-powershell) for patching.
-* *admin_username* and *admin_password* are configured using key vault secrets *data.azurerm_key_vault_secret.adminpassword* and *data.azurerm_key_vault_secret.adminuser* which are set in advance by [bootstrap.sh](./bootstrap.sh).
+* By default the [patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByOS` rather than `AutomaticByPlatform`. This is intentional in case the user wishes to use the [SQL Server IaaS Agent extension](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management?tabs=azure-powershell) for patching Windows Server and SQL Server.
+* *admin_username* and *admin_password* are configured using key vault secrets *data.azurerm_key_vault_secret.adminpassword* and *data.azurerm_key_vault_secret.adminuser*.
 * This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [aadsc-register-node.ps1](./aadsc-register-node.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [MssqlVmConfig.ps1](./MssqlVmConfig.ps1).
-  * The default SQL Server instance is configured to support [mixed mode authentication](https://docs.microsoft.com/en-us/sql/relational-databases/security/choose-an-authentication-mode). This is to facilitate post-installation configuration of the default instance before the virtual machine is domain joined, and can be reconfigured to Windows Authentication mode if required.
+  * The default SQL Server instance is configured to support [mixed mode authentication](https://docs.microsoft.com/en-us/sql/relational-databases/security/choose-an-authentication-mode). This is to facilitate post-installation configuration of the default instance before the virtual machine is domain joined, and can be reconfigured to Windows authentication mode if required.
     * The builtin *sa* account is enabled and the password is configured using *data.azurerm_key_vault_secret.adminpassword*.
     * The *LoginMode* registry key is modified to support mixed mode authentication.
   * The virtual machine is domain joined.
-  * The [Windows Firewall is Configured to Allow SQL Server Access](https://docs.microsoft.com/en-us/sql/sql-server/install/configure-the-windows-firewall-to-allow-sql-server-access).
-  * A Windows login is added for the domain administrator and added to the builtin 'sysadmin' role.
+  * The [Windows Firewall](https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-firewall/windows-firewall-with-advanced-security#overview-of-windows-defender-firewall-with-advanced-security) is [Configured to Allow SQL Server Access](https://docs.microsoft.com/en-us/sql/sql-server/install/configure-the-windows-firewall-to-allow-sql-server-access). A new firewall rule is created that allows inbound traffic over port 1433.
+  * A SQL Server Windows login is added for the domain administrator and added to the SQL Server builtin 'sysadmin' role.
 * Post-deployment configuration is then implemented using a custom script extension that runs [configure-mssql.ps1](./configure-mssql.ps1) following guidelines established in [Checklist: Best practices for SQL Server on Azure VMs](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices-checklist).
   * Data disk metadata is retrieved dynamically using the [Azure Instance Metadata Service (Windows)](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/instance-metadata-service?tabs=windows) including:
     * Volume label and drive letter, e.g. *vol_sqldata_M*
     * Size
     * Lun
-    * Cache settings, e.g. *ReadOnly* or *None*.
   * The metadata is then used to partition and format the raw data disks using the SQL Server recommended allocation unit size of 64K.
-  * The *tempdb* database is moved from the OS disk to the Azure local temporary disk and special logic is implemented to avoid errors if the Azure virtual machine is stopped, deallocated and restarted on a new host. If this occurs the `D:\SQLTEMP` folder must be recreated with appropriate permissions in order to start the SQL Server.
+  * The *tempdb* database is moved from the OS disk to the Azure local temporary disk (D:) and special logic is implemented to avoid errors if the Azure virtual machine is stopped, deallocated and restarted on a different host. If this occurs the `D:\SQLTEMP` folder must be recreated with appropriate permissions in order to start the SQL Server.
     * The SQL Server is configured for manual startup
-    * The scheduled task [sql-startup.ps1](./sql-startup.ps1) is created to recreate the `D:\SQLTEMP` folder and set to run automatically at startup.
+    * The scheduled task [sql-startup.ps1](./sql-startup.ps1) is created to recreate the `D:\SQLTEMP` folder then start SQL Server. The scheduled task is set to run automatically at startup using domain administrator credentials.
   * The data and log files for the *master*, *model* and *msdb* system databases are moved to the data and log disks respectively.
   * The SQL Server errorlog is moved to the data disk.
-  * SQL Server `max server memory` is reconfigured
+  * SQL Server `max server memory` is reconfigured to use 90% of available memory.
   
 ## Next steps
 
