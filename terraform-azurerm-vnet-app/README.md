@@ -9,6 +9,7 @@ This quick start implements a virtual network for applications including:
 * A virtual network for hosting application infrastructure and services
   * [Virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) is enabled with the shared services virtual network
 * An [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering.
+* A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database hosted in [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview) with a private endpoint implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
 
 Activity | Estimated time required
 --- | ---
@@ -55,6 +56,7 @@ This section describes how to provision this quick start using default settings.
       * Authentication type: *Integrated*
       * Profile Name: *testdb*
     * Write and run some test queries, e.g. *CREATE TABLE* and *INSERT*.
+  * Verify the private DNS zone is resolving DNS queries for the Azure SQL Database private endpoint.
 
 ## Documentation
 
@@ -99,12 +101,12 @@ The configuration for these resources can be found in [020-network.tf](./020-net
 
 Resource name (ARM) | Notes
 --- | ---
-azurerm_virtual_network.vnet_spoke_01 (vnet&#x2011;app&#x2011;01) | By default this virtual network is configured with an address space of `10.2.0.0/16` and is configured with DNS server addresses of 10.1.2.4 (the private ip for *azurerm_windows_virtual_machine.vm_adds*) and [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16).
-azurerm_subnet.vnet_spoke_01_subnets["database"] | The default address prefix for this subnet is `10.2.0.0/27` which includes the private ip address for *azurerm_windows_virtual_machine.vm_mssql_win*.
-azurerm_subnet.vnet_spoke_01_subnets["PrivateLink"] | The default address prefix for this subnet is `10.2.0.64/27`. *enforce_private_link_endpoint_network_policies* is enabled by default for use with [PrivateLink](https://docs.microsoft.com/en-us/azure/private-link/private-link-overview).
-azurerm_subnet.vnet_spoke_01_subnets["application"] | The default address prefix for this subnet is `10.2.0.32/27` and is reserved for web and application servers.
-azurerm_virtual_network_peering.vnet_shared_01_to_vnet_spoke_01_peering | Establishes the [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) relationship from *azurerm_virtual_network.vnet_shared_01* to *azurerm_virtual_network.vnet_spoke_01*.
-azurerm_virtual_network_peering.vnet_spoke_01_to_vnet_shared_01_peering | Establishes the [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) relationship from *azurerm_virtual_network.vnet_spoke_01* to *azurerm_virtual_network.vnet_shared_01*.
+azurerm_virtual_network.vnet_app_01 (vnet&#x2011;app&#x2011;01) | By default this virtual network is configured with an address space of `10.2.0.0/16` and is configured with DNS server addresses of 10.1.2.4 (the private ip for *azurerm_windows_virtual_machine.vm_adds*) and [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16).
+azurerm_subnet.vnet_app_01_subnets["database"] | The default address prefix for this subnet is `10.2.0.0/27` which includes the private ip address for *azurerm_windows_virtual_machine.vm_mssql_win*.
+azurerm_subnet.vnet_app_01_subnets["PrivateLink"] | The default address prefix for this subnet is `10.2.0.64/27`. *enforce_private_link_endpoint_network_policies* is enabled by default for use with [PrivateLink](https://docs.microsoft.com/en-us/azure/private-link/private-link-overview).
+azurerm_subnet.vnet_app_01_subnets["application"] | The default address prefix for this subnet is `10.2.0.32/27` and is reserved for web and application servers.
+azurerm_virtual_network_peering.vnet_shared_01_to_vnet_app_01_peering | Establishes the [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) relationship from *azurerm_virtual_network.vnet_shared_01* to *azurerm_virtual_network.vnet_app_01*.
+azurerm_virtual_network_peering.vnet_app_01_to_vnet_shared_01_peering | Establishes the [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) relationship from *azurerm_virtual_network.vnet_app_01* to *azurerm_virtual_network.vnet_shared_01*.
 
 #### Database server virtual machine
 
@@ -113,7 +115,7 @@ The configuration for these resources can be found in [030-vm-mssql-win.tf](./03
 Resource name (ARM) | Notes
 --- | ---
 azurerm_windows_virtual_machine.vm_mssql_win (mssqlwin1) | By default, provisions a [Standard_B4ms](https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-b-series-burstable) virtual machine for use as a database server. See below for more information.
-azurerm_network_interface.vm_mssql_win_nic_01 (nic&#x2011;mssqlwin1&#x2011;1) | The configured subnet is *azurerm_subnet.vnet_spoke_01_subnets["database"]*.
+azurerm_network_interface.vm_mssql_win_nic_01 (nic&#x2011;mssqlwin1&#x2011;1) | The configured subnet is *azurerm_subnet.vnet_app_01_subnets["database"]*.
 azurerm_managed_disk.vm_mssql_win_data_disks["sqldata"] (disk&#x2011;mssqlwin1&#x2011;vol_sqldata_M) | By default, provisions an E10 [Standard SSD](https://docs.microsoft.com/en-us/azure/virtual-machines/disks-types#standard-ssd) [managed disk](https://docs.microsoft.com/en-us/azure/virtual-machines/managed-disks-overview) for storing SQL Server data files. Caching is set to *ReadOnly* by default.
 azurerm_managed_disk.vm_mssql_win_data_disks["sqllog"] (disk&#x2011;mssqlwin1&#x2011;vol_sqllog_L) | By default, provisions an E4 [Standard SSD](https://docs.microsoft.com/en-us/azure/virtual-machines/disks-types#standard-ssd) [managed disk](https://docs.microsoft.com/en-us/azure/virtual-machines/managed-disks-overview) for storing SQL Server log files. Caching is set to *None* by default.
 azurerm_virtual_machine_data_disk_attachment.vm_mssql_win_data_disk_attachments["sqldata"] | Attaches *azurerm_managed_disk.vm_mssql_win_data_disks["sqldata"]* to *azurerm_windows_virtual_machine.vm_mssql_win*.
@@ -145,4 +147,4 @@ azurerm_virtual_machine_extension.vm_mssql_win_postdeploy_script (vmext&#x2011;m
   
 ## Next steps
 
-Move on to the next quick start [terraform-azurerm-sql](../terraform-azurerm-sql).
+Move on to the next quick start [terraform-azurerm-vwan](../terraform-azurerm-vwan).

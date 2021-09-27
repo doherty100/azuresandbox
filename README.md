@@ -35,8 +35,7 @@ This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doher
   * A [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting application infrastructure and services.  
     * Pre-configured [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/)  
   * An [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering.
-* [terraform-azurerm-sql](./terraform-azurerm-sql/)
-  * [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database using [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview).
+  * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database hosted in [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview) with a private endpoint implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
 * [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
   * Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources)
   * Shared [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) and [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/)
@@ -211,7 +210,6 @@ Apply the quick starts in the following order:
 
 1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) implements a virtual network with shared services used by all the quick starts.
 1. [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/) implements an application virtual network.
-1. [terraform-azurerm-sql](./terraform-azurerm-sql/) implements an Azure SQL Database for running benchmarks like [HammerDB](https://www.hammerdb.com/) and testing web applications using a [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) approach.
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared services virtual network and the application virtual network to remote users or a private network.
 
 #### Destroy quick start configurations
@@ -219,11 +217,10 @@ Apply the quick starts in the following order:
 While a default quick start deployment is fine for testing, it may not work with an organization's private network. The default deployment should be destroyed first before doing a custom deployment. This is accomplished by running `terraform destroy` on each quick start in the reverse order in which it was deployed:
 
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
-1. [terraform-azurerm-sql](./terraform-azurerm-sql/)
 1. [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/)
 1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/). Note: Resources provisioned by `bootstrap.sh` must be deleted manually.
 
-Alternatively, for speed, simply run `az group delete -g rg-vdc-nonprod-01`.
+Alternatively, for speed, simply run `az group delete -g rg-vdc-nonprod-01`. You can run [cleanterraformtemp.sh](./cleanterraformtemp.sh) to clean up temporary files and directories.
 
 ### Perform custom quick start deployment
 

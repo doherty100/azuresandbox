@@ -17,6 +17,7 @@ default_application_subnet_name="snet-app-01"
 default_application_subnet_address_prefix="10.2.0.32/27"
 default_privatelink_subnet_name="snet-private-endpoints-01"
 default_privatelink_subnet_address_prefix="10.2.0.64/27"
+default_sql_database_name="testdb"
 default_vm_mssql_win_name="mssqlwin1"
 vm_mssql_win_post_deploy_script="configure-mssql.ps1"
 vm_mssql_win_sql_startup_script="sql-startup.ps1"
@@ -53,15 +54,16 @@ subscription_id=$(terraform output -state=$state_file subscription_id)
 tags=$(terraform output -json -state=$state_file tags)
 
 # User input
-read -e -i $default_vnet_name                         -p "Virtual network name (vnet_name) --------------------------------------: " vnet_name
-read -e -i $default_vnet_address_space                -p "Virtual network address space (vnet_address_space) --------------------: " vnet_address_space
-read -e -i $default_database_subnet_name              -p "Database subnet name (database_subnet_name) ---------------------------: " database_subnet_name
-read -e -i $default_database_subnet_address_prefix    -p "Database subnet address prefix (database_subnet_address_prefix) -------: " database_subnet_address_prefix
-read -e -i $default_application_subnet_name           -p "Application subnet name (application_subnet_name) ---------------------: " application_subnet_name
-read -e -i $default_application_subnet_address_prefix -p "Application subnet address prefix (application_subnet_address_prefix) -: " application_subnet_address_prefix
-read -e -i $default_privatelink_subnet_name           -p "Privatelink subnet name (privatelink_subnet_name) ---------------------: " privatelink_subnet_name
-read -e -i $default_privatelink_subnet_address_prefix -p "privatelink subnet address prefix (privatelink_subnet_address_prefix) -: " privatelink_subnet_address_prefix
-read -e -i $default_vm_mssql_win_name                 -p "SQL Server virtual machine name (vm_mssql_win_name) -------------------: " vm_mssql_win_name
+read -e -i $default_vnet_name                           -p "Virtual network name (vnet_name) --------------------------------------: " vnet_name
+read -e -i $default_vnet_address_space                  -p "Virtual network address space (vnet_address_space) --------------------: " vnet_address_space
+read -e -i $default_database_subnet_name                -p "Database subnet name (database_subnet_name) ---------------------------: " database_subnet_name
+read -e -i $default_database_subnet_address_prefix      -p "Database subnet address prefix (database_subnet_address_prefix) -------: " database_subnet_address_prefix
+read -e -i $default_application_subnet_name             -p "Application subnet name (application_subnet_name) ---------------------: " application_subnet_name
+read -e -i $default_application_subnet_address_prefix   -p "Application subnet address prefix (application_subnet_address_prefix) -: " application_subnet_address_prefix
+read -e -i $default_privatelink_subnet_name             -p "Privatelink subnet name (privatelink_subnet_name) ---------------------: " privatelink_subnet_name
+read -e -i $default_privatelink_subnet_address_prefix   -p "privatelink subnet address prefix (privatelink_subnet_address_prefix) -: " privatelink_subnet_address_prefix
+read -e -i $default_vm_mssql_win_name                   -p "SQL Server virtual machine name (vm_mssql_win_name) -------------------: " vm_mssql_win_name
+read -e -i $default_sql_database_name                   -p "Azure SQL Database name (sql_database_name) ---------------------------: " sql_database_name
 
 application_subnet_name=${application_subnet_name:-default_application_subnet_name}
 application_subnet_address_prefix=${application_subnet_address_prefix:-default_application_subnet_address_prefix}
@@ -69,6 +71,7 @@ database_subnet_name=${database_subnet_name:-default_database_subnet_name}
 database_subnet_address_prefix=${database_subnet_address_prefix:-default_database_subnet_address_prefix}
 privatelink_subnet_name=${privatelink_subnet_name:-default_privatelink_subnet_name}
 privatelink_subnet_address_prefix=${privatelink_subnet_address_prefix:-default_privatelink_subnet_address_prefix}
+sql_database_name=${sql_database_name:-default_sql_database_name}
 vm_mssql_win_name=${vm_mssql_win_name:-default_vm_mssql_win_name}
 vnet_name=${vnet_name:=$default_vnet_name}
 vnet_address_space=${vnet_address_space:-default_vnet_address_space}
@@ -123,6 +126,7 @@ printf "location                                = $location\n"                  
 printf "remote_virtual_network_id               = $remote_virtual_network_id\n"                   >> ./terraform.tfvars
 printf "remote_virtual_network_name             = $remote_virtual_network_name\n"                 >> ./terraform.tfvars
 printf "resource_group_name                     = $resource_group_name\n"                         >> ./terraform.tfvars
+printf "sql_database_name                       = \"$sql_database_name\"\n"                       >> ./terraform.tfvars
 printf "storage_account_name                    = $storage_account_name\n"                        >> ./terraform.tfvars
 printf "subnets                                 = $subnets\n"                                     >> ./terraform.tfvars
 printf "subscription_id                         = $subscription_id\n"                             >> ./terraform.tfvars

@@ -64,6 +64,11 @@ variable "resource_group_name" {
   description = "The name of the existing resource group for provisioning resources."
 }
 
+variable "sql_database_name" {
+  type        = string
+  description = "The name of the Azure SQL Database to be provisioned"
+}
+
 variable "storage_account_name" {
   type        = string
   description = "The name of the shared storage account."
@@ -71,7 +76,7 @@ variable "storage_account_name" {
 
 variable "subnets" {
   type        = map
-  description = "The list of subnets to be created in the new spoke virtual network."
+  description = "The list of subnets to be created in the new application virtual network."
 }
 
 variable "subscription_id" {
@@ -167,10 +172,10 @@ variable "vm_mssql_win_sql_startup_script_uri" {
 
 variable "vnet_address_space" {
   type        = string
-  description = "The address space in CIDR notation for the new spoke virtual network."
+  description = "The address space in CIDR notation for the new application virtual network."
 }
 
 variable "vnet_name" {
   type        = string
-  description = "The name of the spoke virtual network."
+  description = "The name of the application virtual network."
 }

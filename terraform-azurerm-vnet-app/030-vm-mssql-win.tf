@@ -54,7 +54,7 @@ resource "azurerm_network_interface" "vm_mssql_win_nic_01" {
 
   ip_configuration {
     name                          = "ipc-${var.vm_mssql_win_name}-1"
-    subnet_id                     = azurerm_subnet.vnet_spoke_01_subnets["database"].id
+    subnet_id                     = azurerm_subnet.vnet_app_01_subnets["database"].id
     private_ip_address_allocation = "Dynamic"
   }
 }
