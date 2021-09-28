@@ -38,26 +38,10 @@ resource "azurerm_private_endpoint" "mssql_server_01" {
   }
 }
 
-# Azure SQL Database private DNS zone
-resource "azurerm_private_dns_zone" "database_windows_net" {
-  name                = "privatelink.database.windows.net"
-  resource_group_name = var.resource_group_name
-  tags                = var.tags
-}
-
 resource "azurerm_private_dns_a_record" "sql_server_01" {
   name                = azurerm_mssql_server.mssql_server_01.name
-  zone_name           = azurerm_private_dns_zone.database_windows_net.name
+  zone_name           = "privatelink.database.windows.net"
   resource_group_name = var.resource_group_name
   ttl                 = 300
   records             = [azurerm_private_endpoint.mssql_server_01.private_service_connection[0].private_ip_address]
-}
-
-resource "azurerm_private_dns_zone_virtual_network_link" "database_windows_net_to_vnet_shared_01" {
-  name                  = "pdnslnk-${var.remote_virtual_network_name}"
-  resource_group_name   = var.resource_group_name
-  private_dns_zone_name = azurerm_private_dns_zone.database_windows_net.name
-  virtual_network_id    = var.remote_virtual_network_id
-  registration_enabled  = false
-  tags                  = var.tags
 }

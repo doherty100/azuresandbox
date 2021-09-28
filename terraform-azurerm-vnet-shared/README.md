@@ -186,6 +186,10 @@ azurerm_bastion_host.bastion_host_01 (bst&#x2011;d629fdbde51aca2a&#x2011;1) | Us
 random_id.bastion_host_01_name | Used to generate a random name for *azurerm_bastion_host.bastion_host_01*.
 azurerm_public_ip.bastion_host_01 (pip&#x2011;fc0b6ba367b0c212&#x2011;1) | Public ip used by *azurerm_bastion_host.bastion_host_01*.
 random_id.public_ip_bastion_host_01_name | Used to generate a random name for *azurerm_public_ip.bastion_host_01*.
+azurerm_private_dns_zone.database_windows_net | Creates a [private Azure DNS zone](https://docs.microsoft.com/en-us/azure/dns/private-dns-privatednszone) for using [Azure Private Link for Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
+azurerm_private_dns_zone.file_core_windows_net | Creates a [private Azure DNS zone](https://docs.microsoft.com/en-us/azure/dns/private-dns-privatednszone) for using [Azure Private Link for Azure Files](https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints).
+azurerm_private_dns_zone_virtual_network_link.database_windows_net_to_vnet_shared_01 | Links *azurerm_private_dns_zone.database_windows_net* to *azurerm_virtual_network.vnet_shared_01*
+azurerm_private_dns_zone_virtual_network_link.file_core_windows_net_to_vnet_shared_01 | Links *azurerm_private_dns_zone.file_core_windows_net* to *azurerm_virtual_network.vnet_shared_01*
 
 #### AD DS Domain Controller VM
 

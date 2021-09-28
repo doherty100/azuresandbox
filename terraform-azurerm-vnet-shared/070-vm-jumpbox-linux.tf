@@ -10,6 +10,7 @@ resource "azurerm_linux_virtual_machine" "vm_jumpbox_linux" {
   # patch_mode               = "AutomaticByPlatform"
   # See https://github.com/hashicorp/terraform-provider-azurerm/issues/13257 
   tags                     = var.tags
+  depends_on               = [azurerm_windows_virtual_machine.vm_adds]
 
   admin_ssh_key {
     username   = data.azurerm_key_vault_secret.adminuser.value

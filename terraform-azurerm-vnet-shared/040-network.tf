@@ -57,3 +57,34 @@ resource "azurerm_public_ip" "bastion_host_01" {
   sku                 = "Standard"
   tags                = var.tags
 }
+
+# Private DNS zones
+resource "azurerm_private_dns_zone" "database_windows_net" {
+  name                = "privatelink.database.windows.net"
+  resource_group_name = var.resource_group_name
+  tags                = var.tags
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "database_windows_net_to_vnet_shared_01" {
+  name                  = "pdnslnk-mssql-to-${azurerm_virtual_network.vnet_shared_01.name}"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.database_windows_net.name
+  virtual_network_id    = azurerm_virtual_network.vnet_shared_01.id
+  registration_enabled  = false
+  tags                  = var.tags
+}
+
+resource "azurerm_private_dns_zone" "file_core_windows_net" {
+  name                = "privatelink.file.core.windows.net"
+  resource_group_name = var.resource_group_name
+  tags                = var.tags  
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "file_core_windows_net_to_vnet_shared_01" {
+  name                  = "pdnslnk-afs-to-${azurerm_virtual_network.vnet_shared_01.name}"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.file_core_windows_net.name
+  virtual_network_id    = azurerm_virtual_network.vnet_shared_01.id
+  registration_enabled  = false
+  tags                  = var.tags
+}
