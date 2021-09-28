@@ -1,29 +1,30 @@
-# Azure SQL Database
-resource "azurerm_sql_database" "sql_database_01" {
-  name                = var.sql_database_name
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  server_name         = azurerm_sql_server.sql_server_01.name
-  tags                = var.tags
-}
-
 # Azure SQL Database logical server
-resource "random_id" "random_id_sql_server_01_name" {
+resource "random_id" "random_id_mssql_server_01_name" {
   byte_length = 8
 }
 
-resource "azurerm_sql_server" "sql_server_01" {
-  name                         = "sql-${random_id.random_id_sql_server_01_name.hex}-01"
-  resource_group_name          = var.resource_group_name
-  location                     = var.location
-  version                      = "12.0"
-  administrator_login          = data.azurerm_key_vault_secret.adminuser.value
-  administrator_login_password = data.azurerm_key_vault_secret.adminpassword.value
-  tags                         = var.tags
+resource "azurerm_mssql_server" "mssql_server_01" {
+  name                          = "mssql-${random_id.random_id_mssql_server_01_name.hex}"
+  resource_group_name           = var.resource_group_name
+  location                      = var.location
+  version                       = "12.0"
+  administrator_login           = data.azurerm_key_vault_secret.adminuser.value
+  administrator_login_password  = data.azurerm_key_vault_secret.adminpassword.value
+  minimum_tls_version           = "1.2"
+  public_network_access_enabled = false
+  tags                          = var.tags
 }
 
-resource "azurerm_private_endpoint" "sql_server_01" {
-  name                = "pend-${azurerm_sql_server.sql_server_01.name}"
+# Azure SQL Database test database
+resource "azurerm_mssql_database" "mssql_database_01" {
+  name                = var.mssql_database_name
+  server_id           = azurerm_mssql_server.mssql_server_01.id
+  tags                = var.tags
+}
+
+# Private endpoint for Azure SQL Database logical server
+resource "azurerm_private_endpoint" "mssql_server_01" {
+  name                = "pend-${azurerm_mssql_server.mssql_server_01.name}"
   resource_group_name = var.resource_group_name
   location            = var.location
   subnet_id           = azurerm_subnet.vnet_app_01_subnets["PrivateLink"].id
@@ -31,7 +32,7 @@ resource "azurerm_private_endpoint" "sql_server_01" {
 
   private_service_connection {
     name                           = "azure_sql_database_logical_server"
-    private_connection_resource_id = azurerm_sql_server.sql_server_01.id
+    private_connection_resource_id = azurerm_mssql_server.mssql_server_01.id
     is_manual_connection           = false
     subresource_names              = ["sqlServer"]
   }
@@ -45,19 +46,18 @@ resource "azurerm_private_dns_zone" "database_windows_net" {
 }
 
 resource "azurerm_private_dns_a_record" "sql_server_01" {
-  name                = azurerm_sql_server.sql_server_01.name
+  name                = azurerm_mssql_server.mssql_server_01.name
   zone_name           = azurerm_private_dns_zone.database_windows_net.name
   resource_group_name = var.resource_group_name
   ttl                 = 300
-  records             = [azurerm_private_endpoint.sql_server_01.private_service_connection[0].private_ip_address]
+  records             = [azurerm_private_endpoint.mssql_server_01.private_service_connection[0].private_ip_address]
 }
 
-# Private DNS zone virtual network link
-resource "azurerm_private_dns_zone_virtual_network_link" "database_windows_net_to_vnet_app_01" {
-  name                  = "pdnslnk-${var.vnet_name}-01"
+resource "azurerm_private_dns_zone_virtual_network_link" "database_windows_net_to_vnet_shared_01" {
+  name                  = "pdnslnk-${var.remote_virtual_network_name}"
   resource_group_name   = var.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.database_windows_net.name
-  virtual_network_id    = azurerm_virtual_network.vnet_app_01.id
+  virtual_network_id    = var.remote_virtual_network_id
   registration_enabled  = false
   tags                  = var.tags
 }

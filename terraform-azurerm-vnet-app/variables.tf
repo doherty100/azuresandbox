@@ -49,6 +49,11 @@ variable "location" {
   description = "The name of the Azure Region where resources will be provisioned."
 }
 
+variable "mssql_database_name" {
+  type        = string
+  description = "The name of the Azure SQL Database to be provisioned"
+}
+
 variable "remote_virtual_network_id" {
   type        = string
   description = "The id of the existing shared services virtual network that the new spoke virtual network will be peered with."
@@ -62,11 +67,6 @@ variable "remote_virtual_network_name" {
 variable "resource_group_name" {
   type        = string
   description = "The name of the existing resource group for provisioning resources."
-}
-
-variable "sql_database_name" {
-  type        = string
-  description = "The name of the Azure SQL Database to be provisioned"
 }
 
 variable "storage_account_name" {
