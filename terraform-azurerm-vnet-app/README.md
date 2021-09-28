@@ -32,7 +32,7 @@ This section describes how to provision this quick start using default settings.
 * Run `terraform init` and note the version of the *azurerm* provider installed.
 * Run `terraform validate` to check the syntax of the configuration.
 * Run `terraform plan` and review the plan output.
-* Run `terraform apply` to apply the configuration.
+* Run `terraform apply` to apply the configuration. Monitor the output until you see the message *Apply complete!*.
 * Run `terraform state list` to list the resources managed in the configuration.
 
 ## Smoke testing
@@ -41,6 +41,11 @@ This section describes how to provision this quick start using default settings.
   * Navigate to *Automation Accounts* > [My Automation Account] > *State configuration (DSC)*.
     * Refresh the data on the *Nodes* tab and verify that all nodes are compliant.
     * Review the data in the *Configurations* and *Compiled configurations* tabs as well.
+* Verify that DNS queries for private endpoints are resolving
+  * Test DNS queries for Azure SQL database private endpoint
+    * In the Azure portal, navigate to *SQL Servers* > *mssql-xxxxxxxxxxxxxxxx* > *Properties* > *Server name* and and copy the the FQDN, e.g. *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*.
+    * Open a PowerShell command prompt and run the command `Resolve-DnsName mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net`.
+    * Verify the `IP4Address` returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["PrivateLink"]*, e.g. `10.2.2.4`.
 * Use bastion to establish an SSH connection to the Windows Server Jumpbox VM. For *username* be sure to use the UPN of the domain admin, which by default is *bootstrapadmin@mytestlab.local*.
   * Launch *Microsoft SQL Server Management Studio* (SSMS)
     * Connect to the default instance of SQL Server installed on the database server virtual machine using the following default values:
@@ -49,14 +54,12 @@ This section describes how to provision this quick start using default settings.
       * Create a new database named *testdb*.
         * Verify the data files were stored on the *M:* drive
         * Verify the log file were stored on the *L:* drive
-  * Launch [Visual Studio Code](https://aka.ms/vscode) and install the [SQL Server (mssql)](https://marketplace.visualstudio.com/items?itemName=ms-mssql.mssql) extension.
-    * Connect to the default instance of SQL Server installed on the database server virtual machine using the following default values:
-      * Server name: *mssqlwin1*
-      * Database name: *testdb*
-      * Authentication type: *Integrated*
-      * Profile Name: *testdb*
-    * Write and run some test queries, e.g. *CREATE TABLE* and *INSERT*.
-  * Verify the private DNS zone is resolving DNS queries for the Azure SQL Database private endpoint.
+    * Connect to the Azure SQL Database server *testdb* using PrivateLink
+      * Server name: *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*
+      * Authentication: *SQL Server Authentication*
+      * Login: *bootstrapadmin*
+      * Password: Use the value stored in the *adminpassword* key vault secret
+      * Expand the *Databases* tab and verify you can see *testdb*
 
 ## Documentation
 
@@ -145,6 +148,17 @@ azurerm_virtual_machine_extension.vm_mssql_win_postdeploy_script (vmext&#x2011;m
   * The SQL Server errorlog is moved to the data disk.
   * SQL Server `max server memory` is reconfigured to use 90% of available memory.
   
+#### Azure SQL Database
+
+The configuration for these resources can be found in [040-mssql.tf](./040-mssql.tf).
+
+Resource name (ARM) | Notes
+--- | ---
+azurerm_mssql_server.mssql_server_01 (mssql-xxxxxxxxxxxxxxxx) | An [Azure SQL Database logical server](https://docs.microsoft.com/en-us/azure/azure-sql/database/logical-servers) for hosting databases.
+azurerm_mssql_database.mssql_database_01 | A [single database](https://docs.microsoft.com/en-us/azure/azure-sql/database/single-database-overview) named *testdb* for testing connectivity.
+azurerm_private_endpoint.mssql_server_01 | A private endpoint for connecting to [Azure SQL Database using PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview)
+azurerm_private_dns_a_record.sql_server_01 | A DNS A record for resolving DNS queries to *azurerm_mssql_server.mssql_server_01* using PrivateLink. This resource as a dependency on the *azurerm_private_dns_zone.database_windows_net* resource.
+
 ## Next steps
 
 Move on to the next quick start [terraform-azurerm-vwan](../terraform-azurerm-vwan).
