@@ -101,7 +101,8 @@ Windows 10 users can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/abou
 * Windows 10 prerequisites
   * [Windows Subsystem for Linux Installation Guide for Windows 10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
   * [Ubuntu 20.04 LTS (Focal Fossa)](https://www.microsoft.com/store/productId/9N6SVWS3RX71)
-  * [Visual Studio Code on Windows | Installation](https://code.visualstudio.com/docs/setup/windows))
+  * [Visual Studio Code on Windows](https://code.visualstudio.com/docs/setup/windows))
+  * [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)
 * WSL prerequisites
   * [Install the Azure CLI on Linux | apt (Ubuntu, Debian)](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt)
   * [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli#install-terraform)

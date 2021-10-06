@@ -41,12 +41,16 @@ This section describes how to provision this quick start using default settings.
   * Navigate to *Automation Accounts* > [My Automation Account] > *State configuration (DSC)*.
     * Refresh the data on the *Nodes* tab and verify that all nodes are compliant.
     * Review the data in the *Configurations* and *Compiled configurations* tabs as well.
-* Verify that DNS queries for private endpoints are resolving
+* Use bastion to establish an SSH connection to the Windows Server Jumpbox VM. For *username* be sure to use the UPN of the domain admin, which by default is *bootstrapadmin@mytestlab.local*.
+  * Test DNS queries for SQL Server and Azure SQL Database private endpoint
+    * Using PowerShell, run the command `Resolve-DnsName mssqlwin1`.
+    * Verify the IPAddress returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["database"]*, e.g. *10.2.0.4*. 
+      * Note: This DNS query is resolved by the DNS Server running on *azurerm_windows_virtual_machine.vm_adds*.
   * Test DNS queries for Azure SQL database private endpoint
     * In the Azure portal, navigate to *SQL Servers* > *mssql-xxxxxxxxxxxxxxxx* > *Properties* > *Server name* and and copy the the FQDN, e.g. *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*.
-    * Open a PowerShell command prompt and run the command `Resolve-DnsName mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net`.
-    * Verify the `IP4Address` returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["PrivateLink"]*, e.g. `10.2.2.4`.
-* Use bastion to establish an SSH connection to the Windows Server Jumpbox VM. For *username* be sure to use the UPN of the domain admin, which by default is *bootstrapadmin@mytestlab.local*.
+    * Using PowerShell, run the command `Resolve-DnsName mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net`.
+    * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["PrivateLink"]*, e.g. `10.2.2.4`.
+      * Note: This DNS query is resolved using *azurerm_private_dns_zone_virtual_network_link.database_windows_net_to_vnet_shared_01*.
   * Launch *Microsoft SQL Server Management Studio* (SSMS)
     * Connect to the default instance of SQL Server installed on the database server virtual machine using the following default values:
       * Server name: *mssqlwin1*
@@ -54,12 +58,53 @@ This section describes how to provision this quick start using default settings.
       * Create a new database named *testdb*.
         * Verify the data files were stored on the *M:* drive
         * Verify the log file were stored on the *L:* drive
-    * Connect to the Azure SQL Database server *testdb* using PrivateLink
+    * Connect to the Azure SQL Database server using PrivateLink
       * Server name: *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*
       * Authentication: *SQL Server Authentication*
       * Login: *bootstrapadmin*
       * Password: Use the value stored in the *adminpassword* key vault secret
+    * Expand the *Databases* tab and verify you can see *testdb*
+  * Optional: Deny public access to Azure SQL Database
+    * Perform these steps in your client environment (not on an Azure VM).
+    * Test DNS configuration
+      * Verify that PrivateLink is not already configured on your internal network
+        * Open a command prompt
+        * Run `ipconfig /all`
+        * Scan the results for *privatelink.database.windows.net* in *Connection-specific DNS Suffix Search List*.
+          * If found, PrivateLink is already configured on your private network.
+            * If you are directly connected to your private network, skip this portion of the smoke testing.
+            * If you are connected to your private network using a VPN, disconnect from it and try again.
+              * If the *privatelink.database.windows.net* DNS Suffix is no longer listed, you can continue.
+      * Using PowerShell, run the command `Resolve-DnsName mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net` and make a note of the *IP4Address* returned.
+      * Navigate to [lookip.net](https://www.lookip.net/ip) and lookup the *IP4Address* from the previous step. Examine the *Technical details* and verify that the ISP for the IP Address is *Microsoft Corporation* and the Company is *Microsoft Azure*.
+    * Add Azure SQL Database firewall rule for client IP
+      * From the Azure portal, navigate to *Home* > *SQL Servers* > *mssql&#x2011;xxxxxxxxxxxxxxxx* > *Security* > *Firewalls and virtual networks*
+      * Confirm *Deny public network access* is set to *No*
+      * Click *+ Add client IP*.
+      * Verify a firewall rulle was added to match your client IP address
+      * Click *Save*
+    * Test connectivity to Azure SQL Database using public endpoint
+      * Launch *Microsoft SQL Server Management Studio* (SSMS)
+      * Connect to the Azure SQL Database server using public endpoint
+        * Server name: *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*
+        * Authentication: *SQL Server Authentication*
+        * Login: *bootstrapadmin*
+        * Password: Use the value stored in the *adminpassword* key vault secret
       * Expand the *Databases* tab and verify you can see *testdb*
+      * Disconnect from Azure SQL Database
+    * Deny public network access
+      * In Visual Studio code, navigate to line 14 of [040-mssql.tf](./040-mssql.tf)
+      * Change `public_network_access_enabled` from `true` to `false` and save the changes.
+      * In the bash terminal, run `terraform plan` and verify a single change will be made to the *public_network_access_enabled* property of the *azurerm_mssql_server.mssql_server_01* resource.
+      * Run `terraform apply` to apply the change.
+    * Test connectivity to Azure SQL Database using public endpoint
+      * Launch *Microsoft SQL Server Management Studio* (SSMS)
+      * Connect to the Azure SQL Database server using public endpoint
+        * Server name: *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*
+        * Authentication: *SQL Server Authentication*
+        * Login: *bootstrapadmin*
+        * Password: Use the value stored in the *adminpassword* key vault secret
+      * Verify the connection was denied and examine the error message
 
 ## Documentation
 
