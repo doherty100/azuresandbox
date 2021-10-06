@@ -44,11 +44,11 @@ This section describes how to provision this quick start using default settings.
 * Use bastion to establish an SSH connection to the Windows Server Jumpbox VM. For *username* be sure to use the UPN of the domain admin, which by default is *bootstrapadmin@mytestlab.local*.
   * Test DNS queries for SQL Server and Azure SQL Database private endpoint
     * Using PowerShell, run the command `Resolve-DnsName mssqlwin1`.
-    * Verify the IPAddress returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["database"]*, e.g. *10.2.0.4*. 
+    * Verify the IPAddress returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["database"]*, e.g. *10.2.0.4*.
       * Note: This DNS query is resolved by the DNS Server running on *azurerm_windows_virtual_machine.vm_adds*.
   * Test DNS queries for Azure SQL database private endpoint
     * In the Azure portal, navigate to *SQL Servers* > *mssql-xxxxxxxxxxxxxxxx* > *Properties* > *Server name* and and copy the the FQDN, e.g. *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*.
-    * Using PowerShell, run the command `Resolve-DnsName mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net`.
+    * Using PowerShell, run the command `Resolve-DnsName mssql-xxxxxxxxxxxxxxxx.database.windows.net`.
     * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["PrivateLink"]*, e.g. `10.2.2.4`.
       * Note: This DNS query is resolved using *azurerm_private_dns_zone_virtual_network_link.database_windows_net_to_vnet_shared_01*.
   * Launch *Microsoft SQL Server Management Studio* (SSMS)
@@ -75,7 +75,7 @@ This section describes how to provision this quick start using default settings.
             * If you are directly connected to your private network, skip this portion of the smoke testing.
             * If you are connected to your private network using a VPN, disconnect from it and try again.
               * If the *privatelink.database.windows.net* DNS Suffix is no longer listed, you can continue.
-      * Using PowerShell, run the command `Resolve-DnsName mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net` and make a note of the *IP4Address* returned.
+      * Using PowerShell, run the command `Resolve-DnsName mssql-xxxxxxxxxxxxxxxx.database.windows.net` and make a note of the *IP4Address* returned.
       * Navigate to [lookip.net](https://www.lookip.net/ip) and lookup the *IP4Address* from the previous step. Examine the *Technical details* and verify that the ISP for the IP Address is *Microsoft Corporation* and the Company is *Microsoft Azure*.
     * Add Azure SQL Database firewall rule for client IP
       * From the Azure portal, navigate to *Home* > *SQL Servers* > *mssql&#x2011;xxxxxxxxxxxxxxxx* > *Security* > *Firewalls and virtual networks*

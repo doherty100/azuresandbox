@@ -85,18 +85,16 @@ This section describes how to provision this quick start using default settings.
   * Inspect the configuration of the domain using the *Active Directory Domains and Trusts*, *Active Directory Sites and Services* and *Active Directory Users and Computers* remote server administration tools.
   * Inspect the configuration of the DNS server using the *DNS* remote server administration tool.
   * Launch [Visual Studio Code](https://aka.ms/vscode) and install the [Remote-SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) extension.
-  * Configure Visual Studio Code to connect to the Linux jumpbox virtual machine using Remote-SSH. See [Improving your security with a dedicated key](https://code.visualstudio.com/docs/remote/troubleshooting#_improving-your-security-with-a-dedicated-key) for more info.
-    * The SSH keys can be found in the key vault secrets *bootstrapadmin-ssh-key-private* and *bootstrapadmin-ssh-key-public*. You will need to create a file on the Windows Server Jumpbox VM that contains the content for the private SSH key. Here is a sample SSH configuration file to get you started:
+  * Configure Visual Studio Code to connect to the Linux jumpbox virtual machine using Remote-SSH. See [Connect to a remote host](https://code.visualstudio.com/docs/remote/ssh#_connect-to-a-remote-host) for more info.
+    * Here is a sample SSH configuration file to get you started, note that case is significant since you are using an AD account to login:
 
       ```yaml
-      Host 10.1.0.X
-        HostName 10.1.0.X
-        User bootstrapadmin
-        IdentityFile C:\\Users\\bootstrapadmin\\.ssh\\bootstrap-admin-ssh-key-private
+      Host jumplinux1.mytestlab.local
+        HostName jumplinux1.mytestlab.local
+        User bootstrapadmin@MYTESTLAB.LOCAL
       ```
 
-    * Using the Remote-SSH VS Code extension, open the folder `/home/bootstrapadmin/` on the Linux Jumpbox.
-    * Using the Remote-SSH VS Code extension, open a Bash terminal and verify the Linux distribution and version by running the command `cat /etc/*-release`.
+    * Open a Bash terminal and verify the Linux distribution and version by running the command `cat /etc/*-release`.
 
 ## Documentation
 
@@ -200,7 +198,7 @@ Resource name (ARM) | Notes
 azurerm_windows_virtual_machine.vm_adds (adds1) | By default, provisions a [Standard_B2s](https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-b-series-burstable) virtual machine for use as a domain controller and dns server. See below for more information.
 azurerm_network_interface.vm_adds_nic_01 (nic&#x2011;adds1&#x2011;1) | The configured subnet is *azurerm_subnet.vnet_shared_01_subnets["adds"]*.
 
-This Windows Server VM is used as an AD DS Domain Controller and DNS Server.
+This Windows Server VM is used as an AD DS Domain Controller and AD integrated DNS Server.
 
 * Guest OS: Windows Server 2019 Datacenter Core
 * By default the [Patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByPlatform`.
@@ -211,6 +209,13 @@ This Windows Server VM is used as an AD DS Domain Controller and DNS Server.
   * A new *mytestlab.local* domain is configured
     * The domain admin credentials are configured using the *adminusername* and *adminpassword* key vault secrets.
     * The forest functional level is set to `WinThreshhold`
+    * A DNS Server is automatically configured
+      * Server configuration
+        * Forwarder: [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16).
+          * Note: This ensures that any DNS queries that can't be resolved by the DNS server are forwarded to the Azure recursive resolver as per [Name resolution for resources in Azure virtual networks](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-name-resolution-for-vms-and-role-instances).
+      * *mytestlab.local* DNS forward lookup zone configuration
+        * Zone type: Primary / Active Directory-Integrated
+        * Dynamic updates: Secure only
 
 #### Windows Server Jumpbox VM
 
@@ -259,6 +264,17 @@ This Linux VM is used as a jumpbox for development and remote administration.
   * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/what-is-azure-cli?view=azure-cli-latest)
   * [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-)
   * [PowerShell Core](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.1)
+  * [Kerberos](https://kerberos.org/software/mixenvkerberos.pdf) packages required to AD domain join a Linux host and enable dynamic DNS (DDNS) registration.
+    * [krb5-user](https://packages.ubuntu.com/focal/krb5-user)
+    * [samba](https://packages.ubuntu.com/focal/samba)
+    * [sssd](https://packages.ubuntu.com/focal/sssd)
+    * [sssd-tools](https://packages.ubuntu.com/focal/sssd-tools)
+    * [libnss-sss](https://packages.ubuntu.com/focal/libnss-sss)
+    * [libpam-sss](https://packages.ubuntu.com/focal/libpam-sss)
+    * [ntp](https://packages.ubuntu.com/focal/ntp)
+    * [ntpdate](https://packages.ubuntu.com/focal/ntpdate)
+    * [realmd](https://packages.ubuntu.com/focal/realmd)
+    * [adcli](https://packages.ubuntu.com/focal/adcli)
 
 ### Terraform output variables
 
