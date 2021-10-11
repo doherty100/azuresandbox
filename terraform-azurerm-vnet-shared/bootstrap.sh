@@ -17,15 +17,16 @@ default_owner_object_id=$(az ad user show --id $upn --query objectId --output ts
 default_subscription_id=$(az account list --query "[? isDefault]|[0].id" --only-show-errors --output tsv)
 
 # Initialize constants
-adds_subnet_name="snet-adds-01"
-admin_certificate_name="admincert"
-admin_password_secret="adminpassword"
-admin_username_secret="adminuser"
-arm_client_id=""
-arm_client_secret=""
-bastion_subnet_name="AzureBastionSubnet"
-default_subnet_name="snet-default-01"
-storage_container_name="scripts"
+adds_subnet_name='snet-adds-01'
+admin_certificate_name='admincert'
+admin_password_secret='adminpassword'
+admin_username_secret='adminuser'
+arm_client_id=''
+arm_client_secret=''
+bastion_subnet_name='AzureBastionSubnet'
+default_subnet_name='snet-default-01'
+storage_container_name='scripts'
+vm_jumpbox_linux_userdata_file='vm-jumpbox-linux-userdata.mim'
 
 # Initialize user defaults
 default_adds_domain_name="mytestlab.local"
@@ -225,6 +226,10 @@ az keyvault secret set \
     --value "$ssh_private_key_secret_value" \
     --output none
 
+# Generate cloud-init User-Data for Linux jumpbox virtual machine
+printf "Generating cloud-init User-Data file '$vm_jumpbox_linux_userdata_file'...\n"
+cloud-init devel make-mime -a configure-vm-jumpbox-linux.yaml:cloud-config -a configure-vm-jumpbox-linux.sh:x-shellscript > $vm_jumpbox_linux_userdata_file
+
 # Boostrap storage account
 storage_account_name=$(az storage account list --subscription $subscription_id --resource-group $resource_group_name --query "[?tags.provisioner == 'bootstrap.sh'] | [0].name" --output tsv)
 
@@ -302,25 +307,26 @@ tags="${tags}}"
 # Generate terraform.tfvars file
 printf "\nGenerating terraform.tfvars file...\n\n"
 
-printf "aad_tenant_id =          \"$aad_tenant_id\"\n"                > ./terraform.tfvars
-printf "adds_domain_name =       \"$adds_domain_name\"\n"             >> ./terraform.tfvars
-printf "arm_client_id =          \"$arm_client_id\"\n"                >> ./terraform.tfvars
-printf "dns_server =             \"$dns_server\"\n"                   >> ./terraform.tfvars
-printf "key_vault_id =           \"$key_vault_id\"\n"                 >> ./terraform.tfvars
-printf "key_vault_name =         \"$key_vault_name\"\n"               >> ./terraform.tfvars
-printf "location =               \"$location\"\n"                     >> ./terraform.tfvars
-printf "resource_group_name =    \"$resource_group_name\"\n"          >> ./terraform.tfvars
-printf "ssh_public_key =         \"$ssh_public_key_secret_value\"\n"  >> ./terraform.tfvars
-printf "storage_account_name =   \"$storage_account_name\"\n"         >> ./terraform.tfvars
-printf "storage_container_name = \"$storage_container_name\"\n"       >> ./terraform.tfvars
-printf "subnets =                $subnets\n"                          >> ./terraform.tfvars
-printf "subscription_id =        \"$subscription_id\"\n"              >> ./terraform.tfvars
-printf "tags =                   $tags\n"                             >> ./terraform.tfvars
-printf "vm_adds_name =           \"$vm_adds_name\"\n"                 >> ./terraform.tfvars
-printf "vm_jumpbox_linux_name =  \"$vm_jumpbox_linux_name\"\n"        >> ./terraform.tfvars
-printf "vm_jumpbox_win_name =    \"$vm_jumpbox_win_name\"\n"          >> ./terraform.tfvars
-printf "vnet_address_space =     \"$vnet_address_space\"\n"           >> ./terraform.tfvars
-printf "vnet_name =              \"$vnet_name\"\n"                    >> ./terraform.tfvars
+printf "aad_tenant_id =                   \"$aad_tenant_id\"\n"                   > ./terraform.tfvars
+printf "adds_domain_name =                \"$adds_domain_name\"\n"                >> ./terraform.tfvars
+printf "arm_client_id =                   \"$arm_client_id\"\n"                   >> ./terraform.tfvars
+printf "dns_server =                      \"$dns_server\"\n"                      >> ./terraform.tfvars
+printf "key_vault_id =                    \"$key_vault_id\"\n"                    >> ./terraform.tfvars
+printf "key_vault_name =                  \"$key_vault_name\"\n"                  >> ./terraform.tfvars
+printf "location =                        \"$location\"\n"                        >> ./terraform.tfvars
+printf "resource_group_name =             \"$resource_group_name\"\n"             >> ./terraform.tfvars
+printf "ssh_public_key =                  \"$ssh_public_key_secret_value\"\n"     >> ./terraform.tfvars
+printf "storage_account_name =            \"$storage_account_name\"\n"            >> ./terraform.tfvars
+printf "storage_container_name =          \"$storage_container_name\"\n"          >> ./terraform.tfvars
+printf "subnets =                         $subnets\n"                             >> ./terraform.tfvars
+printf "subscription_id =                 \"$subscription_id\"\n"                 >> ./terraform.tfvars
+printf "tags =                            $tags\n"                                >> ./terraform.tfvars
+printf "vm_adds_name =                    \"$vm_adds_name\"\n"                    >> ./terraform.tfvars
+printf "vm_jumpbox_linux_name =           \"$vm_jumpbox_linux_name\"\n"           >> ./terraform.tfvars
+printf "vm_jumpbox_linux_userdata_file =  \"$vm_jumpbox_linux_userdata_file\"\n"  >> ./terraform.tfvars
+printf "vm_jumpbox_win_name =             \"$vm_jumpbox_win_name\"\n"             >> ./terraform.tfvars
+printf "vnet_address_space =              \"$vnet_address_space\"\n"              >> ./terraform.tfvars
+printf "vnet_name =                       \"$vnet_name\"\n"                       >> ./terraform.tfvars
 
 cat ./terraform.tfvars
 

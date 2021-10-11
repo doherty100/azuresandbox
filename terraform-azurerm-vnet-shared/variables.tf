@@ -197,6 +197,12 @@ variable "vm_jumpbox_linux_storage_account_type" {
   description = "The storage replication type to be used for the VMs OS and data disks"
   default     = "Standard_LRS"
 }
+
+variable "vm_jumpbox_linux_userdata_file" {
+  type = string
+  description = "The name of the cloud-init User-Data file for the virtual machine."
+}
+
 variable "vm_jumpbox_win_image_offer" {
   type        = string
   description = "The offer type of the virtual machine image used to create the VM"
