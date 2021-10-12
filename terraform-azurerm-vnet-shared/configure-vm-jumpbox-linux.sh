@@ -1,15 +1,12 @@
-## template: jinja
 #!/bin/bash
 
-# TBD replace with parameters
-adds_domain_name='mytestlab.local'
-admin_username='bootstrapadmin'
-admin_password=''
+# Note: This code has been tested on Ubuntu 20.04 LTS (Focal Fossa) and will not work on other Linux distros
 
 # Initialize constants
 log_file='/run/cloud-init/tmp/configure-vm-jumpbox-linux.log'
-dhcp_exit_hook_script='/etc/dhcp/dhclient-exit-hooks.d/hook-ddns.sh'
-adds_realm_name=$(echo $adds_domain_name | tr '[:lower:]' '[:upper:]')
+dhcp_exit_hook_script='/etc/dhcp/dhclient-exit-hooks.d/hook-ddns'
+key_vault_tag_name='keyvault'
+domain_name_tag_name='adds_domain_name'
 
 # Startup
 printf  '=%.0s' {1..100} > $log_file
@@ -17,17 +14,37 @@ printf  '\n' >> $log_file
 printf "Timestamp: $(date +"%Y-%m-%d %H:%M:%S.%N %Z")...\n" >> $log_file
 printf "Starting '$0'...\n" >> $log_file
 
-# Get managed identity access token from IMDS
-printf "Getting access token from IMDS...\n" >> $log_file
-response=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fmanagement.azure.com%2F' -H Metadata:true -s)
-access_token=$(echo $response | python3 -c 'import sys, json; print (json.load(sys.stdin)["access_token"])')
-printf "Access token is '$access_token'...\n" >> $log_file
+# Get key vault from tags
+printf "Getting key vault from tags...\n" >> $log_file
+key_vault_name=$(jp -f "/run/cloud-init/instance-data.json" -u "ds.meta_data.imds.compute.tagsList[?name == '$key_vault_tag_name'] | [0].value")
+printf "Key vault name is '$key_vault_name'...\n" >> $log_file
 
-# Get key vault from 
-# bootstrapadmin@jumplinux1:~$ cloud-init query -f "{{ds.meta_data.imds.compute.tagsList}}"
-# [{'name': 'costcenter', 'value': '10177772'}, {'name': 'environment', 'value': 'dev'}, {'name': 'keyvault', 'value': 'kv-lsle4axn3k709pj'}, {'name': 'project', 'value': 
-# '#AzureQuickStarts'}]
-#  cloud-init query -f "{{ds.meta_data.imds.compute.tagsList[2].value}}"
+# Get domain name from tags
+printf "Getting domain name from tags...\n" >> $log_file
+adds_domain_name=$(jp -f "/run/cloud-init/instance-data.json" -u "ds.meta_data.imds.compute.tagsList[?name == '$domain_name_tag_name'] | [0].value")
+printf "Domain name is '$adds_domain_name'...\n" >> $log_file
+adds_realm_name=$(echo $adds_domain_name | tr '[:lower:]' '[:upper:]')
+printf "Realm name is '$adds_realm_name'...\n" >> $log_file
+
+# Get managed identity access token for key vault
+printf "Getting managed identity access token...\n" >> $log_file
+response=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fvault.azure.net' -H Metadata:true -s)
+access_token=$(echo $response |  jp -u 'access_token')
+printf "Access token length is '${#access_token}'...\n" >> $log_file
+
+# Get adminuser secret from key vault
+secret_name="adminuser"
+printf "Getting '$secret_name' secret from key vault...\n" >> $log_file
+secret_uri="https://$key_vault_name.vault.azure.net/secrets/$secret_name?api-version=7.2"
+admin_username=$(curl -X GET -H "Authorization: Bearer $access_token" -H "Content-Type:appplication/json" "$secret_uri" | jp -u 'value')
+printf "Value of '$secret_name' secret is '$admin_username'...\n" >> $log_file
+
+# Get adminpassword secret from key vault
+secret_name="adminpassword"
+printf "Getting '$secret_name' secret from key vault...\n" >> $log_file
+secret_uri="https://$key_vault_name.vault.azure.net/secrets/$secret_name?api-version=7.2"
+admin_password=$(curl -X GET -H "Authorization: Bearer $access_token" -H "Content-Type:appplication/json" "$secret_uri" | jp -u 'value')
+printf "Length of '$secret_name' secret is '${#admin_password}'...\n" >> $log_file
 
 # Update hosts file
 printf "Backing up /etc/hosts...\n" >> $log_file

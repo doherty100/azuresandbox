@@ -490,18 +490,6 @@ Update-ExistingModules `
 Import-Module `
     -ResourceGroupName $ResourceGroupName `
     -AutomationAccountName $automationAccount.AutomationAccountName `
-    -ModuleName 'Az.Accounts' `
-    -ModuleUri 'https://www.powershellgallery.com/api/v2/package/Az.Accounts'
-
-Import-Module `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -ModuleName 'Az.Automation' `
-    -ModuleUri 'https://www.powershellgallery.com/api/v2/package/Az.Automation'
-
-Import-Module `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
     -ModuleName 'ActiveDirectoryDsc' `
     -ModuleUri 'https://www.powershellgallery.com/api/v2/package/ActiveDirectoryDsc'
 

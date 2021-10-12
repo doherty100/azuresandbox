@@ -1,5 +1,7 @@
 #cloud-config
 
+# Note: This code has been tested on Ubuntu 20.04 LTS (Focal Fossa) and will not work on other Linux distros
+
 merge_how:
  - name: list
    settings: [append]
@@ -129,5 +131,7 @@ packages:
   - ntpdate
   - realmd
   - adcli
+  - jp
+
 package_upgrade: true
 package_reboot_if_required: true
