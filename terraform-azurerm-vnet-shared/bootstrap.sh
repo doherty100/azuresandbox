@@ -138,6 +138,18 @@ then
   usage
 fi
 
+# Generate SSH keys
+printf "Gnerating SSH keys...\n"
+echo -e 'y' | ssh-keygen -m PEM -t rsa -b 4096 -C "$admin_username" -f sshkeytemp -N "$admin_password" 
+ssh_public_key_secret_name="$admin_username-ssh-key-public"
+ssh_public_key_secret_value=$(cat sshkeytemp.pub)
+ssh_private_key_secret_name="$admin_username-ssh-key-private"
+ssh_private_key_secret_value=$(cat sshkeytemp)
+
+# Generate cloud-init User-Data for Linux jumpbox virtual machine
+printf "Generating cloud-init User-Data file '$vm_jumpbox_linux_userdata_file'...\n"
+cloud-init devel make-mime -a configure-vm-jumpbox-linux.yaml:cloud-config -a configure-vm-jumpbox-linux.sh:x-shellscript > $vm_jumpbox_linux_userdata_file
+
 # Bootstrap resource group
 resource_group_id=$(az group list --subscription $subscription_id --query "[?name == '$resource_group_name'] | [0].id" --output tsv)
 
@@ -205,14 +217,6 @@ az keyvault secret set \
   --value "$admin_password" \
   --output none
 
-# Generate SSH keys
-printf "Gnerating SSH keys...\n"
-echo -e 'y' | ssh-keygen -m PEM -t rsa -b 4096 -C "$admin_username" -f sshkeytemp -N "$admin_password" 
-ssh_public_key_secret_name="$admin_username-ssh-key-public"
-ssh_public_key_secret_value=$(cat sshkeytemp.pub)
-ssh_private_key_secret_name="$admin_username-ssh-key-private"
-ssh_private_key_secret_value=$(cat sshkeytemp)
-
 printf "Setting secret '$ssh_public_key_secret_name' with value length '${#ssh_public_key_secret_value}' in keyvault '$key_vault_name'...\n"
 az keyvault secret set \
     --vault-name $key_vault_name \
@@ -225,10 +229,6 @@ az keyvault secret set \
     --name $ssh_private_key_secret_name \
     --value "$ssh_private_key_secret_value" \
     --output none
-
-# Generate cloud-init User-Data for Linux jumpbox virtual machine
-printf "Generating cloud-init User-Data file '$vm_jumpbox_linux_userdata_file'...\n"
-cloud-init devel make-mime -a configure-vm-jumpbox-linux.yaml:cloud-config -a configure-vm-jumpbox-linux.sh:x-shellscript > $vm_jumpbox_linux_userdata_file
 
 # Boostrap storage account
 storage_account_name=$(az storage account list --subscription $subscription_id --resource-group $resource_group_name --query "[?tags.provisioner == 'bootstrap.sh'] | [0].name" --output tsv)

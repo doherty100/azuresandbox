@@ -25,4 +25,9 @@ printf "Removing all files matching 'sshkeytemp*'...\n"
 find . -type f -name 'sshkeytemp*' 
 find . -type f -name 'sshkeytemp*' | xargs -r rm
 
+printf "Removing all files matching '*.mim'...\n"
+
+find . -type f -name '*.mim' 
+find . -type f -name '*.mim' | xargs -r rm
+
 exit 0

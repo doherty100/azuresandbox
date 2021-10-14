@@ -97,21 +97,25 @@ Function Get-Dependency {
     return $orderedModules
 }
 
-function Update-ExistingModules {
+function Update-ExistingModule {
     param(
         [Parameter(Mandatory = $true)]
         [string] $ResourceGroupName,
 
         [Parameter(Mandatory = $true)]
-        [string] $AutomationAccountName
+        [string] $AutomationAccountName,
+
+        [Parameter(Mandatory = $true)]
+        [string] $ModuleName
     )
 
-    Write-Log "Getting existing modules in automation account '$AutomatinoAccountName'..."
+    Write-Log "Getting module '$ModuleName' in automation account '$AutomationAccountName'..."
 
     try {
         $automationModules = Get-AzAutomationModule `
             -ResourceGroupName $ResourceGroupName `
             -AutomationAccountName $AutomationAccountName `
+            -Name $ModuleName `
             -ErrorAction Stop
     }
     catch{
@@ -483,9 +487,15 @@ if ($null -eq $automationAccount) {
 Write-Log "Located automation account '$AutomationAccountName' in resource group '$ResourceGroupName'"
 
 # Bootstrap automation modules
-Update-ExistingModules `
+Update-ExistingModule `
     -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName
+    -AutomationAccountName $automationAccount.AutomationAccountName `
+    -ModuleName 'PSDscResources'
+
+Update-ExistingModule `
+    -ResourceGroupName $ResourceGroupName `
+    -AutomationAccountName $automationAccount.AutomationAccountName `
+    -ModuleName 'xDSCDomainjoin'
 
 Import-Module `
     -ResourceGroupName $ResourceGroupName `

@@ -121,6 +121,7 @@ packages:
   - azure-cli
   - terraform
   - powershell
+  - jp
   - krb5-user
   - samba
   - sssd
@@ -131,7 +132,6 @@ packages:
   - ntpdate
   - realmd
   - adcli
-  - jp
 
 package_upgrade: true
 package_reboot_if_required: true
