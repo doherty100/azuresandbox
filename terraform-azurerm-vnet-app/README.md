@@ -14,7 +14,7 @@ This quick start implements a virtual network for applications including:
 Activity | Estimated time required
 --- | ---
 Pre-configuration | ~5 minutes
-Provisioning | ~30 minutes
+Provisioning | ~15 minutes
 Smoke testing | ~ 5 minutes
 
 ## Before you start

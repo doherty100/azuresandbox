@@ -20,7 +20,7 @@ This quick start implements a virtual network with shared services used by all t
 Activity | Estimated time required
 --- | ---
 Pre-configuration | ~10 minutes
-Provisioning | ~60 minutes
+Provisioning | ~30 minutes
 
 ## Before you start
 
@@ -32,66 +32,63 @@ Before you start, make sure you have completed the following steps:
   * The quick start user must also have a *Contributor* Azure RBAC role assignment on the Azure subscription.
 * Complete the steps in [Configure client environment](../README.md#configure-client-environment).
   * Verify you can start a new Bash terminal session
-  * Verify the Azure CLI is installed by running `az version`
-  * Verify PowerShell is installed by running `pwsh` then `exit`
+  * Verify the Azure CLI is installed by running `az --version`
+  * Verify PowerShell Core is installed by running `pwsh --version`
   * Verify you have cloned a copy of the GitHub repo with the latest release of the quick start code.
 
 ## Getting started
 
 This section describes how to provision this quick start using default settings.
 
-* Start a new Bash terminal session.
+* Open a Bash terminal in your client environment.
 * Change the working directory to `~/azurequickstarts/terraform-azurerm-vnet-shared`.
 * Run `az logout` and `az account clear` to reset the user credentials used by Azure CLI.
 * Run `az login` and sign in using the identity you intend to use for the quick starts.
 * Run `az account list -o table` and copy the *Subscription Id* to be used for the quick starts.
 * Run `az account set -s 00000000-0000-0000-0000-000000000000` using the *Subscription Id* from the previous step to set the default subscription.
 * Run `./bootstrap.sh` using the default settings or your own custom settings.
-  * When prompted for *resource_group_name* use a custom value if there are other quick start users using the same subscription.
   * When prompted for *arm_client_id*, use the *appId* for the service principal created by the subscription owner.
-  * When prompted for *adminuser*, avoid using [restricted usernames](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm-).
+  * When prompted for *resource_group_name* use a custom value if there are other quick start users using the same subscription.
+  * When prompted for *adminuser*, the default is *bootstrapadmin*.
+    * If you use a custom value, avoid using [restricted usernames](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm-).
   * When prompted for *adminpassword*, generate a strong password but be sure to escape any [linux special characters](https://tldp.org/LDP/abs/html/special-chars.html).
+* Run `export TF_VAR_arm_client_secret=YourServicePrincipalSecret` replacing *YourServicePrincipalSecret* using the *password* for the service principal created by the subscription owner.
 * Run `terraform init` and note the version of the *azurerm* provider installed.
 * Run `terraform validate` to check the syntax of the configuration.
 * Run `terraform plan` and review the plan output.
-  * When prompted for *arm_client_secret*, use the *password* for the service principal created by the subscription owner.
-* Run `terraform apply` to apply the plan. Monitor the output as resources are provisioned.
-  * When prompted for *arm_client_secret*, use the *password* for the service principal created by the subscription owner.
+* Run `terraform apply` to apply the plan. Monitor the output as resources are provisioned. Note this will take a long time to complete.
 * Run `terraform state list` to list the resources managed in the configuration.
 * Run `terraform output` to view the output variables from the *terraform.tfstate* file.
 
 ## Smoke testing
 
 * Explore your newly provisioned resources in the Azure portal.
-  * Navigate to *Automation Accounts* > [My Automation Account] > *State configuration (DSC)*.
+  * Navigate to *portal.azure.com* > *Automation Accounts* > [My Automation Account] > *Configuration Management* > *State configuration (DSC)*.
     * Refresh the data on the *Nodes* tab and verify that all nodes are compliant.
     * Review the data in the *Configurations* and *Compiled configurations* tabs as well.
-* Use bastion to establish an RDP connection to the Windows Server Jumpbox VM.
-  * Navigate to *portal.azure.com* > *Virtual machines* > *jumpwin1* > *Connect* > *Bastion* > *Use Bastion*
-    * For *username* be sure to use the UPN of the domain admin, which by default is *bootstrapadmin@mytestlab.local*.
+* Connect to the Windows Server Jumpbox VM.
+  * Navigate to *portal.azure.com* > *Virtual machines* > *jumpwin1*
+    * Click *Connect*, select the *Bastion* tab, then click *Use Bastion*
+    * For *username* enter the UPN of the domain admin, which by default is *bootstrapadmin@mytestlab.local*.
     * For *password* use the value of the *adminpassword* secret in key vault.
+    * Click *Connect*
   * Disable Server Manager
     * Navigate to *Server Manager* > *Manage* > *Server Manager Properties* and enable *Do not start Server Manager automatically at logon*
     * Close Server Manager
   * Configure default browser
     * Navigate to *Settings* > *Apps* > *Default Apps* and set the default browser to *Microsoft Edge*.
   * Inspect the *mytestlab.local* Active Directory domain
-    * Navigate to *Start* > *Windows Administrative Tools* > *Active Directory Users and Computers*
-    * Verify that *jumpwin1* and *jumplinux1* are listed under the *mytestlab.local* > *Computers* node.
-    * Verify that *adds1* is listed under the *mytestlab.local* > *Domain Controllers* node.
+    * Navigate to *Start* > *Windows Administrative Tools* > *Active Directory Users and Computers*.
+    * Navigate to *mytestlab.local* > *Computers* and verify that *jumpwin1* and *jumplinux1* are listed.
+    * Navigate to *mytestlab.local* > *Domain Controllers* and verify that *adds1* is listed.
   * Inspect the *mytestlab.local* DNS zone
     * Navigate to *Start* > *Windows Administrative Tools* > *DNS*
-    * Connect to the DNS Server on *adds1*
-    * Right-click on *adds1* and select *Properties*.
-      * Navigate to the *Forwarders* tab and verify that [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16) is listed. This ensures that the DNS server will forward any DNS queries it cannot resolve to the Azure Recursive DNS resolver.
+    * Connect to the DNS Server on *adds1*.
+    * Click on *adds* in the left pane, then double-click on *Forwarders* in the right pane.
+      * Verify that [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16) is listed. This ensures that the DNS server will forward any DNS queries it cannot resolve to the Azure Recursive DNS resolver.
       * Click *Cancel*.
     * Navigate to *adds1* > *Forward Lookup Zones* > *mytestlab.local* and verify that there are *Host (A)* records for *adds1*, *jumpwin1* and *jumplinux1*.
-  * Test network connectivity
-    * Open a new command prompt.
-    * Run `ipconfig /all` review the network configuration.
-    * Ping *adds1* to verify connectivity to the Active Directory domain controller.
-    * Ping *jumplinux1* to the Linux jumpbox.
-  * Configure [Visual Studio Code](https://aka.ms/vscode) for remote development on *linuxjump1*
+  * Configure [Visual Studio Code](https://aka.ms/vscode) to do remote development on *jumplinux1*
     * Navigate to *Start* > *Visual Studio Code* > *Visual Studio Code*.
     * Install the [Remote-SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) extension.
       * Navigate to *View* > *Extensions*
@@ -109,20 +106,20 @@ This section describes how to provision this quick start using default settings.
       * When prompted for *"jumplinux1" has fingerprint...* select *Continue*.
       * When prompted for *Enter password* use the value of the *adminpassword* secret in key vault.
         * This will install Visual Studio code remote development binaries on *jumplinux1*.
-      * Verify that *SSH:jumplinux1* is displayed in the lower left hand corner
+      * Verify that *SSH:jumplinux1* is displayed in the green status section in the lower left hand corner.
       * Connect to remote file system
         * Navigate to *View* > *Explorer*
         * Click *Open Folder*
         * Accept the default folder (home directory) and click *OK*.
         * When prompted for *Enter password* use the value of the *adminpassword* secret in key vault.
         * When prompted with *Do you trust the authors of the files in this folder?* click *Yes, I trust the authors*.
-          * Verify the home directory structure displayed in Explorer.
+        * Review the home directory structure displayed in Explorer.
       * Open a bash terminal
         * Navigate to *View* > *Terminal*. This will open up a new bash shell.
         * Verify the Linux distribution and version by running the command `cat /etc/*-release`.
-        * Verify the Terraform version by running the command `terraform --version`.
         * Verify the Azure CLI version by running the command `az --version`.
         * Verify the PowerShell version by running the command `pwsh --version`.
+        * Verify the Terraform version by running the command `terraform --version`.
 
 ## Documentation
 
@@ -130,10 +127,12 @@ This section provides additional information on various aspects of this quick st
 
 ### Bootstrap script
 
-In most real world projects, Terraform configurations will need to reference resources that are not being managed by Terraform because they already exist. It is also sometimes necessary to provision resources in advance to avoid circular dependencies in your Terraform configurations. For this reason, this quick start provisions several resources in advance using [bootstrap.sh](./bootstrap.sh) which does the following:
+The bootstrap script [bootstrap.sh](./bootstrap.sh) is used to initialize variables and to ensure that all dependencies are in place for the Terraform configuration to be applied. In most real world projects, Terraform configurations will need to reference resources that are not being managed by Terraform because they already exist. It is also sometimes necessary to provision resources in advance to avoid circular dependencies in your Terraform configurations. For this reason, this quick start provisions several resources in advance using [bootstrap.sh](./bootstrap.sh).
+
+[bootstrap.sh](./bootstrap.sh) performs the following operations:
 
 * Generates SSH keys for Linux Jumpbox VM
-* Generates [Mime Multi Part Archive](https://cloudinit.readthedocs.io/en/latest/topics/format.html#mime-multi-part-archive) containing the following files:
+* Generates a [Mime Multi Part Archive](https://cloudinit.readthedocs.io/en/latest/topics/format.html#mime-multi-part-archive) containing the following files:
   * [configure-vm-jumpbox-linux.yaml](./configure-vm-jumpbox-linux.yaml) is [Cloud Config Data](https://cloudinit.readthedocs.io/en/latest/topics/format.html#cloud-config-data) used to configure the Linux Jumpbox VM.
   * [configure-vm-jumpbox-linux.sh](./configure-vm-jumpbox-linux.sh) is a [User-Data Script](https://cloudinit.readthedocs.io/en/latest/topics/format.html#user-data-script) used to configure the Linux Jumpbox VM.
 * Creates a new resource group with the default name *rg-vdc-nonprod-01* used by all the quick starts.
@@ -187,15 +186,13 @@ This quick start makes extensive use of [Azure Automation State Configuration (D
     * [Modules](https://docs.microsoft.com/en-us/azure/automation/shared-resources/modules)
       * Existing modules are updated to the most recent release where possible.
       * Imports new modules including the following:
-        * [Az.Accounts](https://docs.microsoft.com/en-us/powershell/module/az.accounts)
-        * [Az.Automation](https://docs.microsoft.com/en-us/powershell/module/az.automation)
         * [ActiveDirectoryDsc](https://github.com/dsccommunity/ActiveDirectoryDsc)
         * [NetworkingDsc](https://github.com/dsccommunity/NetworkingDsc)
         * [SqlServerDsc](https://github.com/dsccommunity/SqlServerDsc)
         * [cChoco](https://github.com/chocolatey/cChoco)
     * Bootstraps [Variables](https://docs.microsoft.com/en-us/azure/automation/shared-resources/variables)
     * Bootstraps [Credentials](https://docs.microsoft.com/en-us/azure/automation/shared-resources/credentials)
-  * Configures [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview). Note that AADSC is only used for Windows Server virtual machine configuration management in the quick starts.
+  * Configures [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) which is used to configure Windows Server virtual machines used in the quick starts.
     * Imports [DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started#create-a-dsc-configuration) used in this and other quick starts.
       * [LabDomainConfig.ps1](./LabDomainConfig.ps1): configure a Windows Server virtual machine as an [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) [Domain Controller](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2003/cc786438(v=ws.10)).
       * [JumpBoxConfig.ps1](./JumpBoxConfig.ps1): domain joins a Windows Server virtual machine and configures it as jumpbox.
@@ -230,11 +227,11 @@ Resource name (ARM) | Notes
 azurerm_windows_virtual_machine.vm_adds (adds1) | By default, provisions a [Standard_B2s](https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-b-series-burstable) virtual machine for use as a domain controller and dns server. See below for more information.
 azurerm_network_interface.vm_adds_nic_01 (nic&#x2011;adds1&#x2011;1) | The configured subnet is *azurerm_subnet.vnet_shared_01_subnets["adds"]*.
 
-This Windows Server VM is used as an AD DS Domain Controller and AD integrated DNS Server.
+This Windows Server VM is used as an [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) [Domain Controller](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2003/cc786438(v=ws.10)) and a DNS Server running in Active Directory-integrated mode.
 
 * Guest OS: Windows Server 2019 Datacenter Core
 * By default the [Patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByPlatform`.
-* *admin_username* and *admin_password* are configured using key vault secrets *data.azurerm_key_vault_secret.adminpassword* and *data.azurerm_key_vault_secret.adminuser* which are set in advance by [bootstrap.sh](./bootstrap.sh).
+* *admin_username* and *admin_password* are configured using the key vault secrets *adminuser* and *adminpassword*.
 * This resource has a dependency on *azurerm_automation_account.automation_account_01*.
 * This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [aadsc-register-node.ps1](./aadsc-register-node.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [LabDomainConfig](./LabDomainConfig.ps1).
   * The `AD-Domain-Services` feature (which includes DNS) is installed.
@@ -262,7 +259,7 @@ This Windows Server VM is used as a jumpbox for development and remote server ad
 
 * Guest OS: Windows Server 2019 Datacenter.
 * By default the [patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByPlatform`.
-* *admin_username* and *admin_password* are configured using key vault secrets *data.azurerm_key_vault_secret.adminpassword* and *data.azurerm_key_vault_secret.adminuser* which are set in advance by [bootstrap.sh](./bootstrap.sh).
+* *admin_username* and *admin_password* are configured using the key vault secrets *adminuser* and *adminpassword*.
 * This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [aadsc-register-node.ps1](./aadsc-register-node.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [JumpBoxConfig](./JumpBoxConfig.ps1).
   * The virtual machine is domain joined.
   * The following [Remote Server Administration Tools (RSAT)](https://docs.microsoft.com/en-us/windows-server/remote/remote-server-administration-tools) are installed:
@@ -285,7 +282,7 @@ The configuration for these resources can be found in [070-vm-jumpbox-linux.tf](
 
 Resource name (ARM) | Notes
 --- | ---
-azurerm_linux_virtual_machine.vm_jumpbox_linux (jumplinux1) | See below.
+azurerm_linux_virtual_machine.vm_jumpbox_linux (jumplinux1) | By default, provisions a [Standard_B2s](https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-b-series-burstable) virtual machine for use as a Linux jumpbox virtual machine. See below for more details.
 azurerm_network_interface.vm_jumbox_linux_nic_01 | The configured subnet is *azurerm_subnet.vnet_shared_01_subnets["default"]*.
 azurerm_key_vault_access_policy.vm_jumpbox_linux_secrets_get | Allows the VM to get secrets from key vault using a system assigned managed identity.
 
@@ -293,12 +290,15 @@ This Linux VM is used as a jumpbox for development and remote administration.
 
 * Guest OS: Ubuntu 20.04 LTS (Focal Fossa)
 * A system assigned [managed identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) is configured by default for use in DevOps related identity and access management scenarios.
+* Custom tags are added which are used by [cloud-init](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/using-cloud-init#:~:text=%20There%20are%20two%20stages%20to%20making%20cloud-init,is%20already%20configured%20to%20use%20cloud-init.%20More%20) [User-Data Scripts](https://cloudinit.readthedocs.io/en/latest/topics/format.html#user-data-script) to configure the virtual machine.
+  * *keyvault*: Used in cloud-init scripts to determine which key vault to use for secrets.
+  * *adds_domain_name*: Used in cloud-init scripts to join the domain.
 * This VM is configured with [cloud-init](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/using-cloud-init#:~:text=%20There%20are%20two%20stages%20to%20making%20cloud-init,is%20already%20configured%20to%20use%20cloud-init.%20More%20) using a [Mime Multi Part Archive](https://cloudinit.readthedocs.io/en/latest/topics/format.html#mime-multi-part-archive) containing the following files:
   * [configure-vm-jumpbox-linux.yaml](./configure-vm-jumpbox-linux.yaml) is [Cloud Config Data](https://cloudinit.readthedocs.io/en/latest/topics/format.html#cloud-config-data) used to configure the VM.
     * The following packages are installed:
       * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/what-is-azure-cli?view=azure-cli-latest)
-      * [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-)
       * [PowerShell Core](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.1)
+      * [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-)
       * [jp](https://packages.ubuntu.com/focal/jp)
       * [Kerberos](https://kerberos.org/software/mixenvkerberos.pdf) packages required to AD domain join a Linux host and enable dynamic DNS (DDNS) registration.
         * [krb5-user](https://packages.ubuntu.com/focal/krb5-user)
@@ -374,15 +374,15 @@ vnet_shared_01_name | "vnet-shared-01"
 This section documents known issues with this quick start that should be addressed prior to real world usage.
 
 * Identity and Access Management
-  * *Authentication*: This quick start uses a service principal to authenticate with Azure which requires a client secret to be shared. This was due to the requirement that the quick start users be limited to a *Contributor* Azure RBAC role assignment which cannot do Azure RBAC role assignments. Real world projects should consider using [managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) instead of service principals which eliminates the need to share client secrets.
-  * *Credentials*: For simplicity, the quick starts use a single set of credentials when an administrator account is required to provision or configure resources. In real world scenarios these credentials would be different for better security.
+  * *Authentication*: These quick starts use a service principal to authenticate with Azure which requires a client secret to be shared. This was due to the requirement that the quick start users be limited to a *Contributor* Azure RBAC role assignment which cannot do Azure RBAC role assignments. Real world projects should consider using [managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) instead of service principals which eliminates the need to share client secrets.
+  * *Credentials*: For simplicity, the quick starts use a single set of credentials when an administrator account is required to provision or configure resources. In real world scenarios these credentials would be different and follow the principal of least privilege for better security.
   * *Active Directory Domain Services*: A preconfigured AD domain controller *azurerm_windows_virtual_machine.vm_adds* is provisioned.
     * *High availability*: The current design uses a single VM for AD DS which is counter to best practices as described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain) which recommends a pair of VMs in an Availability Set.
     * *Data integrity*: The current design hosts the AD DS domain forest data on the OS Drive which is counter to  best practices as described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain) which recommends hosting them on a separate data drive with different cache settings.
 * Network security controls
   * *azurerm_subnet.vnet_shared_01_subnets["adds"]*: Should be protected by an NSG as per best practices described in described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain).
 * Configuration management
-  * *Windows Server*: This quick start uses [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) for configuring the Windows Server virtual machines, which will be replaced by [Azure Policy guest configuration](https://azure.microsoft.com/en-in/updates/public-preview-apply-settings-inside-machines-using-azure-policys-guest-configuration/)] which is currently in public preview. This quick start will be updated to the new implementation when it is generally available.
+  * *Windows Server*: This quick start uses [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) for configuring the Windows Server virtual machines, which will be replaced by [Azure Policy guest configuration](https://azure.microsoft.com/en-in/updates/public-preview-apply-settings-inside-machines-using-azure-policys-guest-configuration/) which is currently in public preview. This quick start will be updated to the new implementation when it is generally available.
     * *configure-automation.ps1*: The performance of this script could be improved by using multi-threading to run Azure Automation operations in parallel.
   * *Linux*: This quick start uses [cloud-init](https://cloudinit.readthedocs.io/) for configuring [Ubuntu 20.04 LTS (Focal Fossa)](http://www.releases.ubuntu.com/20.04/) virtual machines.
     * *azurerm_linux_virtual_machine.vm_jumpbox_linux*: ARM tags are currently used to pass some configuration data to cloud-init. This dependency on ARM tags could make the configuration more fragile if users manually manipulate ARM tags or they are overwritten by Azure Policy.
