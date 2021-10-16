@@ -140,7 +140,7 @@ tags | tomap( { "costcenter" = "10177772" "environment" = "dev" "project" = "#Az
 vnet_shared_01_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-shared-01"
 vnet_shared_01_name | "vnet-shared-01"
 
-The following PowerShell scripts are uploaded to the *scripts* container in the storage account using the access key stored in the key vault secret *data.azurerm_key_vault_secret.storage_account_key* so they can be referenced by virtual machine extensions:
+The following PowerShell scripts are uploaded to the *scripts* container in the storage account using the access key stored in the key vault secret *storage_account_key* so they can be referenced by virtual machine extensions:
 
 * [configure-mssql.ps1](./configure-mssql.ps1)
 * [sql-startup.ps1](./sql-startup.ps1)
