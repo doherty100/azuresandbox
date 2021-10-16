@@ -56,7 +56,7 @@ This section describes how to provision this quick start using default settings.
 * Run `terraform init` and note the version of the *azurerm* provider installed.
 * Run `terraform validate` to check the syntax of the configuration.
 * Run `terraform plan` and review the plan output.
-* Run `terraform apply` to apply the plan. Monitor the output as resources are provisioned. Note this will take a long time to complete.
+* Run `terraform apply` to apply the plan. Monitor the output until you see the message *Apply complete!*.
 * Run `terraform state list` to list the resources managed in the configuration.
 * Run `terraform output` to view the output variables from the *terraform.tfstate* file.
 

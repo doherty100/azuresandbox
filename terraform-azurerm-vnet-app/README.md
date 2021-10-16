@@ -7,7 +7,7 @@
 This quick start implements a virtual network for applications including:
 
 * A virtual network for hosting application infrastructure and services
-  * [Virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) is enabled with the shared services virtual network
+  * [Virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) is enabled with the shared services virtual network in [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared).
 * An [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering.
 * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database hosted in [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview) with a private endpoint implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
 
@@ -38,20 +38,26 @@ This section describes how to provision this quick start using default settings.
 ## Smoke testing
 
 * Explore your newly provisioned resources in the Azure portal.
-  * Navigate to *Automation Accounts* > [My Automation Account] > *State configuration (DSC)*.
+  * Navigate to *portal.azure.com* > *Automation Accounts* > [My Automation Account] > *Configuration Management* > *State configuration (DSC)*.
     * Refresh the data on the *Nodes* tab and verify that all nodes are compliant.
     * Review the data in the *Configurations* and *Compiled configurations* tabs as well.
-* Use bastion to establish an SSH connection to the Windows Server Jumpbox VM. For *username* be sure to use the UPN of the domain admin, which by default is *bootstrapadmin@mytestlab.local*.
+* Connect to the Windows Server Jumpbox VM.
+  * Navigate to *portal.azure.com* > *Virtual machines* > *jumpwin1*
+    * Click *Connect*, select the *Bastion* tab, then click *Use Bastion*
+    * For *username* enter the UPN of the domain admin, which by default is *bootstrapadmin@mytestlab.local*.
+    * For *password* use the value of the *adminpassword* secret in key vault.
+    * Click *Connect*
   * Test DNS queries for SQL Server and Azure SQL Database private endpoint
     * Using PowerShell, run the command `Resolve-DnsName mssqlwin1`.
     * Verify the IPAddress returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["database"]*, e.g. *10.2.0.4*.
       * Note: This DNS query is resolved by the DNS Server running on *azurerm_windows_virtual_machine.vm_adds*.
   * Test DNS queries for Azure SQL database private endpoint
-    * In the Azure portal, navigate to *SQL Servers* > *mssql-xxxxxxxxxxxxxxxx* > *Properties* > *Server name* and and copy the the FQDN, e.g. *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*.
+    * Navigate to *portal.azure.com* > *SQL Servers* > *mssql-xxxxxxxxxxxxxxxx* > *Properties* > *Server name* and and copy the the FQDN, e.g. *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*.
     * Using PowerShell, run the command `Resolve-DnsName mssql-xxxxxxxxxxxxxxxx.database.windows.net`.
     * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["PrivateLink"]*, e.g. `10.2.2.4`.
       * Note: This DNS query is resolved using *azurerm_private_dns_zone_virtual_network_link.database_windows_net_to_vnet_shared_01*.
-  * Launch *Microsoft SQL Server Management Studio* (SSMS)
+  * Test SQL Server Connectivity with SQL Server Management Studio (SSMS)
+    * Navigate to *Start* > *Microsoft SQL Server Tools 18* > *Microsoft SQL Server Management Studio 18*
     * Connect to the default instance of SQL Server installed on the database server virtual machine using the following default values:
       * Server name: *mssqlwin1*
       * Authentication: *Windows Authentication* (this will default to *MYTESTLAB\bootstrapadmin*)
@@ -112,7 +118,7 @@ This section provides additional information on various aspects of this quick st
 
 ### Bootstrap script
 
-This quick start uses the script [bootstrap.sh](./bootstrap.sh) to create a *terraform.tfvars* file for generating and applying Terraform plans. For simplified deployment, several runtime defaults are initialized using output variables stored the *terraform.tfstate* associated with the [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared) quick start, including:
+This quick start uses the script [bootstrap.sh](./bootstrap.sh) to create a *terraform.tfvars* file for generating and applying Terraform plans. For simplified deployment, several runtime defaults are initialized using output variables stored the *terraform.tfstate* associated with the [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared) quick start, including:
 
 Output variable | Sample value
 --- | ---
@@ -150,9 +156,9 @@ The configuration for these resources can be found in [020-network.tf](./020-net
 Resource name (ARM) | Notes
 --- | ---
 azurerm_virtual_network.vnet_app_01 (vnet&#x2011;app&#x2011;01) | By default this virtual network is configured with an address space of `10.2.0.0/16` and is configured with DNS server addresses of 10.1.2.4 (the private ip for *azurerm_windows_virtual_machine.vm_adds*) and [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16).
-azurerm_subnet.vnet_app_01_subnets["database"] | The default address prefix for this subnet is `10.2.0.0/27` which includes the private ip address for *azurerm_windows_virtual_machine.vm_mssql_win*.
-azurerm_subnet.vnet_app_01_subnets["PrivateLink"] | The default address prefix for this subnet is `10.2.0.64/27`. *enforce_private_link_endpoint_network_policies* is enabled by default for use with [PrivateLink](https://docs.microsoft.com/en-us/azure/private-link/private-link-overview).
-azurerm_subnet.vnet_app_01_subnets["application"] | The default address prefix for this subnet is `10.2.0.32/27` and is reserved for web and application servers.
+azurerm_subnet.vnet_app_01_subnets["database"] | The default address prefix for this subnet is `10.2.0.0/24` which includes the private ip address for *azurerm_windows_virtual_machine.vm_mssql_win*.
+azurerm_subnet.vnet_app_01_subnets["application"] | The default address prefix for this subnet is `10.2.1.0/24` and is reserved for web and application servers.
+azurerm_subnet.vnet_app_01_subnets["PrivateLink"] | The default address prefix for this subnet is `10.2.2.0/24`. *enforce_private_link_endpoint_network_policies* is enabled by default for use with [PrivateLink](https://docs.microsoft.com/en-us/azure/private-link/private-link-overview).
 azurerm_virtual_network_peering.vnet_shared_01_to_vnet_app_01_peering | Establishes the [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) relationship from *azurerm_virtual_network.vnet_shared_01* to *azurerm_virtual_network.vnet_app_01*.
 azurerm_virtual_network_peering.vnet_app_01_to_vnet_shared_01_peering | Establishes the [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) relationship from *azurerm_virtual_network.vnet_app_01* to *azurerm_virtual_network.vnet_shared_01*.
 
@@ -171,11 +177,11 @@ azurerm_virtual_machine_data_disk_attachment.vm_mssql_win_data_disk_attachments[
 azurerm_virtual_machine_extension.vm_mssql_win_postdeploy_script (vmext&#x2011;mssqlwin1&#x2011;postdeploy&#x2011;script) | Uploads [configure&#x2011;mssql.ps1](./configure-mssql.ps1) and [sql&#x2011;startup.ps1](./sql-startup.ps1) to *azurerm_windows_virtual_machine.vm_mssql_win* and executes [configure&#x2011;mssql.ps1](./configure-mssql.ps1) using the [Custom Script Extension for Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows).
 
 * Guest OS: Windows Server 2019 Datacenter.
-* By default the [patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByOS` rather than `AutomaticByPlatform`. This is intentional in case the user wishes to use the [SQL Server IaaS Agent extension](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management?tabs=azure-powershell) for patching Windows Server and SQL Server.
-* *admin_username* and *admin_password* are configured using key vault secrets *data.azurerm_key_vault_secret.adminpassword* and *data.azurerm_key_vault_secret.adminuser*.
-* This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [aadsc-register-node.ps1](./aadsc-register-node.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [MssqlVmConfig.ps1](./MssqlVmConfig.ps1).
+* By default the [patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByOS` rather than `AutomaticByPlatform`. This is intentional in case the user wishes to use the [SQL Server IaaS Agent extension](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management?tabs=azure-powershell) for patching both Windows Server and SQL Server.
+* *admin_username* and *admin_password* are configured using key vault secrets *adminuser* and *adminpassword*.
+* This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [aadsc-register-node.ps1](./aadsc-register-node.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [MssqlVmConfig.ps1](../terraform-azurerm-vnet-shared/MssqlVmConfig.ps1).
   * The default SQL Server instance is configured to support [mixed mode authentication](https://docs.microsoft.com/en-us/sql/relational-databases/security/choose-an-authentication-mode). This is to facilitate post-installation configuration of the default instance before the virtual machine is domain joined, and can be reconfigured to Windows authentication mode if required.
-    * The builtin *sa* account is enabled and the password is configured using *data.azurerm_key_vault_secret.adminpassword*.
+    * The builtin *sa* account is enabled and the password is configured using *adminpassword* key vault secret.
     * The *LoginMode* registry key is modified to support mixed mode authentication.
   * The virtual machine is domain joined.
   * The [Windows Firewall](https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-firewall/windows-firewall-with-advanced-security#overview-of-windows-defender-firewall-with-advanced-security) is [Configured to Allow SQL Server Access](https://docs.microsoft.com/en-us/sql/sql-server/install/configure-the-windows-firewall-to-allow-sql-server-access). A new firewall rule is created that allows inbound traffic over port 1433.
@@ -202,7 +208,7 @@ Resource name (ARM) | Notes
 azurerm_mssql_server.mssql_server_01 (mssql-xxxxxxxxxxxxxxxx) | An [Azure SQL Database logical server](https://docs.microsoft.com/en-us/azure/azure-sql/database/logical-servers) for hosting databases.
 azurerm_mssql_database.mssql_database_01 | A [single database](https://docs.microsoft.com/en-us/azure/azure-sql/database/single-database-overview) named *testdb* for testing connectivity.
 azurerm_private_endpoint.mssql_server_01 | A private endpoint for connecting to [Azure SQL Database using PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview)
-azurerm_private_dns_a_record.sql_server_01 | A DNS A record for resolving DNS queries to *azurerm_mssql_server.mssql_server_01* using PrivateLink. This resource as a dependency on the *azurerm_private_dns_zone.database_windows_net* resource.
+azurerm_private_dns_a_record.sql_server_01 | A DNS A record for resolving DNS queries to *azurerm_mssql_server.mssql_server_01* using PrivateLink. This resource has a dependency on the *azurerm_private_dns_zone.database_windows_net* resource.
 
 ## Next steps
 
