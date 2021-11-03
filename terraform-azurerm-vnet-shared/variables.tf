@@ -63,7 +63,7 @@ variable "resource_group_name" {
 }
 
 variable "ssh_public_key" {
-  type = string
+  type        = string
   description = "The SSH public key used for the admin account"
 }
 
@@ -77,10 +77,14 @@ variable "storage_container_name" {
   description = "The name of the blob storage container where scripts are stored."
 }
 
+variable "storage_account_key_kerb_secret" {
+  type        = string
+  description = "The name of the key vault secret containing the Kerberos key for the storage account."
+}
+
 variable "subnets" {
   type        = map(any)
   description = "The subnets to be created in the new virtual network. AzureBastionSubnet is required."
-  # default = {
   # default = {
   #   name                                           = "snet-default-01",
   #   address_prefix                                 = "10.1.0.0/24",
@@ -160,19 +164,19 @@ variable "vm_adds_storage_account_type" {
 variable "vm_jumpbox_linux_image_offer" {
   type        = string
   description = "The offer type of the virtual machine image used to create the VM"
-  default = "0001-com-ubuntu-server-focal"
+  default     = "0001-com-ubuntu-server-focal"
 }
 
 variable "vm_jumpbox_linux_image_publisher" {
   type        = string
   description = "The publisher for the virtual machine image used to create the VM"
-  default = "Canonical"
+  default     = "Canonical"
 }
 
 variable "vm_jumpbox_linux_image_sku" {
   type        = string
   description = "The sku of the virtual machine image used to create the VM"
-  default = "20_04-lts"
+  default     = "20_04-lts"
 }
 
 variable "vm_jumpbox_linux_image_version" {
@@ -189,7 +193,7 @@ variable "vm_jumpbox_linux_name" {
 variable "vm_jumpbox_linux_size" {
   type        = string
   description = "The size of the virtual machine"
-  default = "Standard_B2s"
+  default     = "Standard_B2s"
 }
 
 variable "vm_jumpbox_linux_storage_account_type" {
@@ -199,7 +203,7 @@ variable "vm_jumpbox_linux_storage_account_type" {
 }
 
 variable "vm_jumpbox_linux_userdata_file" {
-  type = string
+  type        = string
   description = "The name of the cloud-init User-Data file for the virtual machine."
 }
 

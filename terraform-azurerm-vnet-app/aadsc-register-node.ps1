@@ -15,9 +15,6 @@ param (
     [String]$AutomationAccountName,
 
     [Parameter(Mandatory = $true)]
-    [String]$Domain,
-
-    [Parameter(Mandatory = $true)]
     [String]$VirtualMachineName,
 
     [Parameter(Mandatory = $true)]
@@ -188,6 +185,16 @@ $spCredential = New-Object -TypeName System.Management.Automation.PSCredential -
 
 try {
     Connect-AzAccount -Credential $spCredential -Tenant $TenantId -ServicePrincipal -ErrorAction Stop | Out-Null
+}
+catch {
+    Exit-WithError $_
+}
+
+# Set default subscription
+Write-Log "Setting default subscription to '$SubscriptionId'..."
+
+try {
+    Set-AzContext -Subscription $SubscriptionId | Out-Null
 }
 catch {
     Exit-WithError $_

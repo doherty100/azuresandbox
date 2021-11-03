@@ -35,7 +35,6 @@ resource "azurerm_windows_virtual_machine" "vm_jumpbox_win" {
         ResourceGroupName = "${var.resource_group_name}"
         Location = "${var.location}"
         AutomationAccountName = "${azurerm_automation_account.automation_account_01.name}"
-        Domain = "${var.adds_domain_name}"
         VirtualMachineName = "${var.vm_jumpbox_win_name}"
         AppId = "${var.arm_client_id}"
         AppSecret = "${nonsensitive(var.arm_client_secret)}"

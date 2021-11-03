@@ -18,12 +18,6 @@ param (
     [String]$Domain,
 
     [Parameter(Mandatory = $true)]
-    [String]$VmAddsName,
-
-    [Parameter(Mandatory = $true)]
-    [String]$VmJumpboxName,
-
-    [Parameter(Mandatory = $true)]
     [String]$AdminUsername,
 
     [Parameter(Mandatory = $true)]
@@ -33,7 +27,16 @@ param (
     [String]$AppId,
 
     [Parameter(Mandatory = $true)]
-    [string]$AppSecret
+    [string]$AppSecret,
+
+    [Parameter(Mandatory = $true)]
+    [string]$StorageAccountName,
+
+    [Parameter(Mandatory = $true)]
+    [string]$DomainControllerName,
+
+    [Parameter(Mandatory = $true)]
+    [string]$StorageAccountKeyKerberos
 )
 
 #region functions
@@ -310,10 +313,7 @@ function Start-DscCompliationJob {
         [String]$AutomationAccountName,
 
         [Parameter(Mandatory = $true)]
-        [String]$DscConfigurationName,
-
-        [Parameter(Mandatory = $true)]
-        [String]$DscConfigurationScript
+        [String]$DscConfigurationName
     )
 
     Write-Log "Compliling DSC Configuration '$DscConfigurationName'..."
@@ -477,6 +477,16 @@ catch {
     Exit-WithError $_
 }
 
+# Set default subscription
+Write-Log "Setting default subscription to '$SubscriptionId'..."
+
+try {
+    Set-AzContext -Subscription $SubscriptionId | Out-Null
+}
+catch {
+    Exit-WithError $_
+}
+
 # Get automation account
 $automationAccount = Get-AzAutomationAccount -ResourceGroupName $ResourceGroupName -Name $AutomationAccountName
 
@@ -552,6 +562,18 @@ Set-Variable `
     -VariableName 'adds_domain_name' `
     -VariableValue $Domain
 
+Set-Variable `
+    -ResourceGroupName $ResourceGroupName `
+    -AutomationAccountName $automationAccount.AutomationAccountName `
+    -VariableName 'storage_account_name' `
+    -VariableValue $StorageAccountName
+
+Set-Variable `
+    -ResourceGroupName $ResourceGroupName `
+    -AutomationAccountName $automationAccount.AutomationAccountName `
+    -VariableName 'vm_adds_name' `
+    -VariableValue $DomainControllerName
+
 # Bootstrap automation credentials
 Set-Credential `
     -ResourceGroupName $ResourceGroupName `
@@ -577,6 +599,14 @@ Set-Credential `
     -UserName $($Domain.Split('.')[0] + '\' + $AdminUsername) `
     -UserSecret $AdminPwd 
 
+ Set-Credential `
+    -ResourceGroupName $ResourceGroupName `
+    -AutomationAccountName $automationAccount.AutomationAccountName `
+    -Name 'storageaccountkeykerb' `
+    -Description 'Kerberos key for storage account used for domain join.' `
+    -UserName  $StorageAccountName `
+    -UserSecret $StorageAccountKeyKerberos 
+
 # Import DSC Configurations
 Import-DscConfiguration `
     -ResourceGroupName $ResourceGroupName `
@@ -600,20 +630,17 @@ Import-DscConfiguration `
 Start-DscCompliationJob `
     -ResourceGroupName $ResourceGroupName `
     -AutomationAccountName $automationAccount.AutomationAccountName `
-    -DscConfigurationName 'LabDomainConfig' `
-    -DscConfigurationScript 'LabDomainConfig.ps1'
+    -DscConfigurationName 'LabDomainConfig'
 
 Start-DscCompliationJob `
     -ResourceGroupName $ResourceGroupName `
     -AutomationAccountName $automationAccount.AutomationAccountName `
-    -DscConfigurationName 'JumpBoxConfig' `
-    -DscConfigurationScript 'JumpBoxConfig.ps1'
+    -DscConfigurationName 'JumpBoxConfig'
 
 Start-DscCompliationJob `
     -ResourceGroupName $ResourceGroupName `
     -AutomationAccountName $automationAccount.AutomationAccountName `
-    -DscConfigurationName 'MssqlVmConfig' `
-    -DscConfigurationScript 'MssqlVmConfig.ps1'
+    -DscConfigurationName 'MssqlVmConfig'
 
 Exit 0
 #endregion

@@ -40,6 +40,7 @@ default_environment="dev"
 default_location="eastus2"
 default_project="#AzureQuickStarts"
 default_resource_group_name="rg-vdc-nonprod-01"
+default_skip_ssh_key_gen="no"
 default_vm_adds_name="adds1"
 default_vm_jumpbox_linux_name="jumplinux1"
 default_vm_jumpbox_win_name="jumpwin1"
@@ -65,6 +66,7 @@ read -e -i $default_dns_server                    -p "DNS server ip address (dns
 read -e -i $default_adds_domain_name              -p "AD Domain Services domain name (adds_domain_name) ---------------------: " adds_domain_name
 read -e -i $default_vm_adds_name                  -p "AD Domain Services virtual machine name (vm_adds_name) ----------------: " vm_adds_name
 read -e -i $default_vm_jumpbox_linux_name         -p "Linux jumpbox virtual machine name (vm_jumpbox_linux_name) ------------: " vm_jumpbox_linux_name
+read -e -i $default_skip_ssh_key_gen              -p "Skip SSH key generation (skip_ssh_key_gen) yes/no ? -------------------: " skip_ssh_key_gen
 read -e -i $default_vm_jumpbox_win_name           -p "Windows jumpbox virtual machine name (vm_jumpbox_win_name) ------------: " vm_jumpbox_win_name
 read -e -i $default_admin_username                -p "'adminuser' key vault secret value (admin_username) -------------------: " admin_username
 read -e -s                                        -p "'adminpassword' key vault secret value (admin_password)  --------------: " admin_password
@@ -86,6 +88,7 @@ location=${location:-$default_location}
 owner_object_id=${owner_object_id:-$default_owner_object_id}
 project=${project:-$default_project}
 resource_group_name=${resource_group_name:-$default_resource_group_name}
+skip_ssh_key_gen=${skip_ssh_key_gen:-$default_skip_ssh_key_gen}
 subscription_id=${subscription_id:-$default_subscription_id}
 vm_adds_name=${vm_adds_name:-default_vm_adds_name}
 vm_jumpbox_linux_name=${vm_jumpbox_linux_name:-default_vm_jumpbox_linux_name}
@@ -97,6 +100,13 @@ vnet_name=${vnet_name:=$default_vnet_name}
 if [ -z "$arm_client_id" ]
 then
   printf "arm_client_id is required."
+  usage
+fi
+
+# Validate skip_ssh_key_gen input
+if [ "$skip_ssh_key_gen" != 'yes' ] && [ "$skip_ssh_key_gen" != 'no' ]
+then
+  printf "Invalid skip_ssh_key_gen input '$skip_ssh_key_gen'. Valid values are 'yes' or 'no'...\n"
   usage
 fi
 
@@ -139,11 +149,28 @@ then
 fi
 
 # Generate SSH keys
-printf "Gnerating SSH keys...\n"
-echo -e 'y' | ssh-keygen -m PEM -t rsa -b 4096 -C "$admin_username" -f sshkeytemp -N "$admin_password" 
 ssh_public_key_secret_name="$admin_username-ssh-key-public"
-ssh_public_key_secret_value=$(cat sshkeytemp.pub)
 ssh_private_key_secret_name="$admin_username-ssh-key-private"
+
+if [ "$skip_ssh_key_gen" = 'no' ]
+then
+  printf "Gnerating SSH keys...\n"
+  echo -e 'y' | ssh-keygen -m PEM -t rsa -b 4096 -C "$admin_username" -f sshkeytemp -N "$admin_password" 
+fi
+
+if [ ! -f 'sshkeytemp.pub' ] 
+then
+  printf "Unable to locate SSH public key file 'sshktemp.pub'...\n"
+  usage
+fi
+
+if [ ! -f 'sshkeytemp' ] 
+then
+  printf "Unable to locate SSH private key file 'sshktemp.pub'...\n"
+  usage
+fi
+
+ssh_public_key_secret_value=$(cat sshkeytemp.pub)
 ssh_private_key_secret_value=$(cat sshkeytemp)
 
 # Generate cloud-init User-Data for Linux jumpbox virtual machine
@@ -250,7 +277,7 @@ else
 fi
 
 storage_account_id=$(az storage account show --subscription $subscription_id --name $storage_account_name --query id --output tsv)
-storage_account_key=$(az storage account keys list --subscription $subscription_id --account-name $storage_account_name --output tsv --query "[1].value")
+storage_account_key=$(az storage account keys list --subscription $subscription_id --account-name $storage_account_name --output tsv --query "[0].value")
 
 printf "Setting storage account secret '$storage_account_name' with value length '${#storage_account_key}' to keyvault '$key_vault_name'...\n"
 az keyvault secret set \
@@ -258,6 +285,18 @@ az keyvault secret set \
   --vault-name $key_vault_name \
   --name $storage_account_name \
   --value "$storage_account_key" \
+  --output none
+
+# Create Kerberos key
+printf "Creating kerberos key for storage account '$storage_account_name'...\n"
+storage_account_key_kerb1=$(az storage account keys renew --subscription $subscription_id --resource-group $resource_group_name --account-name $storage_account_name --key primary --key-type kerb --query "[?keyName == 'kerb1'].value" --output tsv)
+
+printf "Setting storage account secret '$storage_account_name-kerb1' with value length '${#storage_account_key_kerb1}' to keyvault '$key_vault_name'...\n"
+az keyvault secret set \
+  --subscription $subscription_id \
+  --vault-name $key_vault_name \
+  --name "$storage_account_name-kerb1" \
+  --value "$storage_account_key_kerb1" \
   --output none
 
 # Bootstrap storage account container
@@ -316,6 +355,7 @@ printf "key_vault_name =                  \"$key_vault_name\"\n"                
 printf "location =                        \"$location\"\n"                        >> ./terraform.tfvars
 printf "resource_group_name =             \"$resource_group_name\"\n"             >> ./terraform.tfvars
 printf "ssh_public_key =                  \"$ssh_public_key_secret_value\"\n"     >> ./terraform.tfvars
+printf "storage_account_key_kerb_secret = \"$storage_account_name-kerb1\"\n"      >> ./terraform.tfvars
 printf "storage_account_name =            \"$storage_account_name\"\n"            >> ./terraform.tfvars
 printf "storage_container_name =          \"$storage_container_name\"\n"          >> ./terraform.tfvars
 printf "subnets =                         $subnets\n"                             >> ./terraform.tfvars

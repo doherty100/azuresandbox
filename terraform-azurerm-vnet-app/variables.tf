@@ -30,7 +30,7 @@ variable "arm_client_secret" {
 }
 
 variable "automation_account_name" {
-  type = string
+  type        = string
   description = "The name of the Azure Automation Account use for state configuration (DSC)."
 }
 
@@ -74,8 +74,19 @@ variable "storage_account_name" {
   description = "The name of the shared storage account."
 }
 
+variable "storage_share_name" {
+  type        = string
+  description = "The name of the Azure Files share to be provisioned."
+}
+
+variable "storage_share_quota_gb" {
+  type        = string
+  description = "The storage quota for the Azure Files share to be provisioned in GB."
+  default     = "1024"
+}
+
 variable "subnets" {
-  type        = map
+  type        = map(any)
   description = "The list of subnets to be created in the new application virtual network."
 }
 
@@ -85,7 +96,7 @@ variable "subscription_id" {
 }
 
 variable "tags" {
-  type        = map
+  type        = map(any)
   description = "The tags in map format to be used when creating new resources."
 }
 
