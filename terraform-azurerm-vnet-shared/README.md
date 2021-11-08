@@ -136,7 +136,8 @@ The bootstrap script [bootstrap.sh](./bootstrap.sh) is used to initialize variab
   * [configure-vm-jumpbox-linux.yaml](./configure-vm-jumpbox-linux.yaml) is [Cloud Config Data](https://cloudinit.readthedocs.io/en/latest/topics/format.html#cloud-config-data) used to configure the Linux Jumpbox VM.
   * [configure-vm-jumpbox-linux.sh](./configure-vm-jumpbox-linux.sh) is a [User-Data Script](https://cloudinit.readthedocs.io/en/latest/topics/format.html#user-data-script) used to configure the Linux Jumpbox VM.
 * Creates a new resource group with the default name *rg-vdc-nonprod-01* used by all the quick starts.
-* Creates a storage account with a randomly generated name like *stxxxxxxxxxxxxxxx*.
+* Creates a storage account with a randomly generated 15-character name like *stxxxxxxxxxxxxx*.
+  * The name is limited to 15 characters for compatibility with Active Directory Domain Services.
   * A new *scripts* container is created for quick starts that leverage the Custom Script Extension for [Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) or [Linux](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-linux).
 * Creates a key vault with a randomly generated name like *kv-xxxxxxxxxxxxxxx*.
   * The permission model is set to *Vault access policy*. *Azure role-based access control* is not used to ensure that quick start users only require a *Contributor* Azure RBAC role assignment in order to complete the quick starts.
