@@ -264,7 +264,7 @@ if [ -n "$storage_account_name" ]
 then
   printf "Found storage account '$storage_account_name' in '$resource_group_name'...\n"
 else
-  storage_account_name=st$(tr -dc "[:lower:][:digit:]" < /dev/urandom | head -c 15)
+  storage_account_name=st$(tr -dc "[:lower:][:digit:]" < /dev/urandom | head -c 13)
   printf "Creating storage account '$storage_account_name' in '$resource_group_name'...\n"
   az storage account create \
     --subscription $subscription_id \
