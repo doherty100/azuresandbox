@@ -70,11 +70,5 @@ configuration JumpBoxConfig {
             DependsOn   = "[cChocoInstaller]installChoco"
             AutoUpgrade = $true
         }
-
-        cChocoPackageInstaller installAdminCenter {
-            Name = "windows-admin-center"
-            DependsOn   = "[cChocoInstaller]installChoco"
-            AutoUpgrade = $true
-        }
     }
 }

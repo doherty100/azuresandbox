@@ -275,7 +275,6 @@ This Windows Server VM is used as a jumpbox for development and remote server ad
     * [sql-server-management-studio](https://community.chocolatey.org/packages/sql-server-management-studio)
     * [microsoftazurestorageexplorer](https://community.chocolatey.org/packages/microsoftazurestorageexplorer)
     * [azcopy10](https://community.chocolatey.org/packages/azcopy10)
-    * [windows-admin-center](https://community.chocolatey.org/packages/windows-admin-center)
 
 #### Linux Jumpbox VM
 
