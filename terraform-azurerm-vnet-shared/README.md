@@ -20,7 +20,7 @@ This quick start implements a virtual network with shared services used by all t
 Activity | Estimated time required
 --- | ---
 Pre-configuration | ~10 minutes
-Provisioning | ~30 minutes
+Provisioning | ~40 minutes
 
 ## Before you start
 
