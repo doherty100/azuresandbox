@@ -374,22 +374,21 @@ vnet_shared_01_name | "vnet-shared-01"
 
 This section documents known issues with this quick start that should be addressed prior to real world usage.
 
-* Identity and Access Management
-  * *Authentication*: These quick starts use a service principal to authenticate with Azure which requires a client secret to be shared. This was due to the requirement that the quick start users be limited to a *Contributor* Azure RBAC role assignment which cannot do Azure RBAC role assignments. Real world projects should consider using [managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) instead of service principals which eliminates the need to share client secrets.
-  * *Credentials*: For simplicity, the quick starts use a single set of credentials when an administrator account is required to provision or configure resources. In real world scenarios these credentials would be different and follow the principal of least privilege for better security.
-  * *Active Directory Domain Services*: A preconfigured AD domain controller *azurerm_windows_virtual_machine.vm_adds* is provisioned.
-    * *High availability*: The current design uses a single VM for AD DS which is counter to best practices as described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain) which recommends a pair of VMs in an Availability Set.
-    * *Data integrity*: The current design hosts the AD DS domain forest data on the OS Drive which is counter to  best practices as described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain) which recommends hosting them on a separate data drive with different cache settings.
-* Network security controls
-  * *azurerm_subnet.vnet_shared_01_subnets["adds"]*: Should be protected by an NSG as per best practices described in described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain).
 * Configuration management
   * *Windows Server*: This quick start uses [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) for configuring the Windows Server virtual machines, which will be replaced by [Azure Policy guest configuration](https://azure.microsoft.com/en-in/updates/public-preview-apply-settings-inside-machines-using-azure-policys-guest-configuration/) which is currently in public preview. This quick start will be updated to the new implementation when it is generally available.
     * *configure-automation.ps1*: The performance of this script could be improved by using multi-threading to run Azure Automation operations in parallel.
   * *Linux*: This quick start uses [cloud-init](https://cloudinit.readthedocs.io/) for configuring [Ubuntu 20.04 LTS (Focal Fossa)](http://www.releases.ubuntu.com/20.04/) virtual machines.
     * *azurerm_linux_virtual_machine.vm_jumpbox_linux*: ARM tags are currently used to pass some configuration data to cloud-init. This dependency on ARM tags could make the configuration more fragile if users manually manipulate ARM tags or they are overwritten by Azure Policy.
-* Patching
-  * *azurerm_linux_virtual_machine.vm_jumpbox_linux*
-    * The Terraform azurerm provider has not yet added support for Automatic VM guest patching attributes. See [Support for enable_automatic_updates and patch_mode in azurerm_linux_virtual_machine #13257](https://github.com/hashicorp/terraform-provider-azurerm/issues/13257).
+* Identity and Access Management
+  * *Authentication*: These quick starts use a service principal to authenticate with Azure which requires a client secret to be shared. This was due to the requirement that the quick start users be limited to a *Contributor* Azure RBAC role assignment which cannot do Azure RBAC role assignments. Real world projects should consider using [managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) instead of service principals which eliminates the need to share client secrets.
+  * *Credentials*: For simplicity, the quick starts use a single set of credentials when an administrator account is required to provision or configure resources. In real world scenarios these credentials would be different and follow the principal of least privilege for better security.
+  * *Active Directory Domain Services*: A pre-configured AD domain controller *azurerm_windows_virtual_machine.vm_adds* is provisioned.
+    * *High availability*: The current design uses a single VM for AD DS which is counter to best practices as described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain) which recommends a pair of VMs in an Availability Set.
+    * *Data integrity*: The current design hosts the AD DS domain forest data on the OS Drive which is counter to  best practices as described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain) which recommends hosting them on a separate data drive with different cache settings.
+* Storage
+  * *Azure Files*: See issue [#12447](https://github.com/hashicorp/terraform-provider-azurerm/issues/12447) which causes Terraform plan, apply and destroy operations to fail after private endpoints are used with Azure Files.
+* Networking
+  * *azurerm_subnet.vnet_shared_01_subnets["adds"]*: Should be protected by an NSG as per best practices described in described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain).
 
 ## Next steps
 
