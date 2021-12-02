@@ -6,7 +6,6 @@ resource "azurerm_linux_virtual_machine" "vm_jumpbox_linux" {
   size                     = var.vm_jumpbox_linux_size
   admin_username           = data.azurerm_key_vault_secret.adminuser.value
   network_interface_ids    = [azurerm_network_interface.vm_jumbox_linux_nic_01.id]
-  enable_automatic_updates = true
   patch_mode               = "AutomaticByPlatform"
   tags                     = merge(var.tags, { keyvault = var.key_vault_name }, { adds_domain_name = var.adds_domain_name })
   depends_on               = [azurerm_windows_virtual_machine.vm_adds]
