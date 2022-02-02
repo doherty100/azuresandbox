@@ -562,18 +562,6 @@ Set-Variable `
     -VariableName 'adds_domain_name' `
     -VariableValue $Domain
 
-Set-Variable `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -VariableName 'storage_account_name' `
-    -VariableValue $StorageAccountName
-
-Set-Variable `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -VariableName 'vm_adds_name' `
-    -VariableValue $DomainControllerName
-
 # Bootstrap automation credentials
 Set-Credential `
     -ResourceGroupName $ResourceGroupName `
@@ -598,14 +586,6 @@ Set-Credential `
     -Description 'Domain admin account credential with short domain name' `
     -UserName $($Domain.Split('.')[0] + '\' + $AdminUsername) `
     -UserSecret $AdminPwd 
-
- Set-Credential `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -Name 'storageaccountkeykerb' `
-    -Description 'Kerberos key for storage account used for domain join.' `
-    -UserName  $StorageAccountName `
-    -UserSecret $StorageAccountKeyKerberos 
 
 # Import DSC Configurations
 Import-DscConfiguration `

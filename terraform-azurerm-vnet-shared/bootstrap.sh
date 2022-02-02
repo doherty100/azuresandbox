@@ -26,7 +26,6 @@ arm_client_secret=''
 bastion_subnet_name='AzureBastionSubnet'
 default_subnet_name='snet-default-01'
 storage_container_name='scripts'
-vm_jumpbox_linux_userdata_file='vm-jumpbox-linux-userdata.mim'
 
 # Initialize user defaults
 default_adds_domain_name="mytestlab.local"
@@ -40,10 +39,7 @@ default_environment="dev"
 default_location="eastus"
 default_project="#AzureQuickStarts"
 default_resource_group_name="rg-vdc-nonprod-01"
-default_skip_ssh_key_gen="no"
 default_vm_adds_name="adds1"
-default_vm_jumpbox_linux_name="jumplinux1"
-default_vm_jumpbox_win_name="jumpwin1"
 default_vnet_address_space="10.1.0.0/16"
 default_vnet_name="vnet-shared-01"
 
@@ -65,9 +61,6 @@ read -e -i $default_adds_subnet_address_prefix    -p "AD Domain Services subnet 
 read -e -i $default_dns_server                    -p "DNS server ip address (dns_server) ------------------------------------: " dns_server
 read -e -i $default_adds_domain_name              -p "AD Domain Services domain name (adds_domain_name) ---------------------: " adds_domain_name
 read -e -i $default_vm_adds_name                  -p "AD Domain Services virtual machine name (vm_adds_name) ----------------: " vm_adds_name
-read -e -i $default_vm_jumpbox_linux_name         -p "Linux jumpbox virtual machine name (vm_jumpbox_linux_name) ------------: " vm_jumpbox_linux_name
-read -e -i $default_skip_ssh_key_gen              -p "Skip SSH key generation (skip_ssh_key_gen) yes/no ? -------------------: " skip_ssh_key_gen
-read -e -i $default_vm_jumpbox_win_name           -p "Windows jumpbox virtual machine name (vm_jumpbox_win_name) ------------: " vm_jumpbox_win_name
 read -e -i $default_admin_username                -p "'adminuser' key vault secret value (admin_username) -------------------: " admin_username
 read -e -s                                        -p "'adminpassword' key vault secret value (admin_password)  --------------: " admin_password
 printf "admin password length ${#admin_password}\n"
@@ -88,11 +81,8 @@ location=${location:-$default_location}
 owner_object_id=${owner_object_id:-$default_owner_object_id}
 project=${project:-$default_project}
 resource_group_name=${resource_group_name:-$default_resource_group_name}
-skip_ssh_key_gen=${skip_ssh_key_gen:-$default_skip_ssh_key_gen}
 subscription_id=${subscription_id:-$default_subscription_id}
 vm_adds_name=${vm_adds_name:-default_vm_adds_name}
-vm_jumpbox_linux_name=${vm_jumpbox_linux_name:-default_vm_jumpbox_linux_name}
-vm_jumpbox_win_name=${vm_jumpbox_win_name:-default_vm_jumpbox_win_name}
 vnet_address_space=${vnet_address_space:-default_vnet_address_space}
 vnet_name=${vnet_name:=$default_vnet_name}
 
@@ -100,13 +90,6 @@ vnet_name=${vnet_name:=$default_vnet_name}
 if [ -z "$arm_client_id" ]
 then
   printf "arm_client_id is required."
-  usage
-fi
-
-# Validate skip_ssh_key_gen input
-if [ "$skip_ssh_key_gen" != 'yes' ] && [ "$skip_ssh_key_gen" != 'no' ]
-then
-  printf "Invalid skip_ssh_key_gen input '$skip_ssh_key_gen'. Valid values are 'yes' or 'no'...\n"
   usage
 fi
 
@@ -147,35 +130,6 @@ then
   printf "Invalid location '$location'...\n"
   usage
 fi
-
-# Generate SSH keys
-ssh_public_key_secret_name="$admin_username-ssh-key-public"
-ssh_private_key_secret_name="$admin_username-ssh-key-private"
-
-if [ "$skip_ssh_key_gen" = 'no' ]
-then
-  printf "Gnerating SSH keys...\n"
-  echo -e 'y' | ssh-keygen -m PEM -t rsa -b 4096 -C "$admin_username" -f sshkeytemp -N "$admin_password" 
-fi
-
-if [ ! -f 'sshkeytemp.pub' ] 
-then
-  printf "Unable to locate SSH public key file 'sshktemp.pub'...\n"
-  usage
-fi
-
-if [ ! -f 'sshkeytemp' ] 
-then
-  printf "Unable to locate SSH private key file 'sshktemp.pub'...\n"
-  usage
-fi
-
-ssh_public_key_secret_value=$(cat sshkeytemp.pub)
-ssh_private_key_secret_value=$(cat sshkeytemp)
-
-# Generate cloud-init User-Data for Linux jumpbox virtual machine
-printf "Generating cloud-init User-Data file '$vm_jumpbox_linux_userdata_file'...\n"
-cloud-init devel make-mime -a configure-vm-jumpbox-linux.yaml:cloud-config -a configure-vm-jumpbox-linux.sh:x-shellscript > $vm_jumpbox_linux_userdata_file
 
 # Bootstrap resource group
 resource_group_id=$(az group list --subscription $subscription_id --query "[?name == '$resource_group_name'] | [0].id" --output tsv)
@@ -243,19 +197,6 @@ az keyvault secret set \
   --name $admin_password_secret \
   --value "$admin_password" \
   --output none
-
-printf "Setting secret '$ssh_public_key_secret_name' with value length '${#ssh_public_key_secret_value}' in keyvault '$key_vault_name'...\n"
-az keyvault secret set \
-    --vault-name $key_vault_name \
-    --name $ssh_public_key_secret_name \
-    --value "$ssh_public_key_secret_value"
-
-printf "Setting secret '$ssh_private_key_secret_name' with value length '${#ssh_private_key_secret_value}' in keyvault '$key_vault_name'...\n"
-az keyvault secret set \
-    --vault-name $key_vault_name \
-    --name $ssh_private_key_secret_name \
-    --value "$ssh_private_key_secret_value" \
-    --output none
 
 # Boostrap storage account
 storage_account_name=$(az storage account list --subscription $subscription_id --resource-group $resource_group_name --query "[?tags.provisioner == 'bootstrap.sh'] | [0].name" --output tsv)
@@ -354,7 +295,6 @@ printf "key_vault_id =                    \"$key_vault_id\"\n"                  
 printf "key_vault_name =                  \"$key_vault_name\"\n"                  >> ./terraform.tfvars
 printf "location =                        \"$location\"\n"                        >> ./terraform.tfvars
 printf "resource_group_name =             \"$resource_group_name\"\n"             >> ./terraform.tfvars
-printf "ssh_public_key =                  \"$ssh_public_key_secret_value\"\n"     >> ./terraform.tfvars
 printf "storage_account_key_kerb_secret = \"$storage_account_name-kerb1\"\n"      >> ./terraform.tfvars
 printf "storage_account_name =            \"$storage_account_name\"\n"            >> ./terraform.tfvars
 printf "storage_container_name =          \"$storage_container_name\"\n"          >> ./terraform.tfvars
@@ -362,9 +302,6 @@ printf "subnets =                         $subnets\n"                           
 printf "subscription_id =                 \"$subscription_id\"\n"                 >> ./terraform.tfvars
 printf "tags =                            $tags\n"                                >> ./terraform.tfvars
 printf "vm_adds_name =                    \"$vm_adds_name\"\n"                    >> ./terraform.tfvars
-printf "vm_jumpbox_linux_name =           \"$vm_jumpbox_linux_name\"\n"           >> ./terraform.tfvars
-printf "vm_jumpbox_linux_userdata_file =  \"$vm_jumpbox_linux_userdata_file\"\n"  >> ./terraform.tfvars
-printf "vm_jumpbox_win_name =             \"$vm_jumpbox_win_name\"\n"             >> ./terraform.tfvars
 printf "vnet_address_space =              \"$vnet_address_space\"\n"              >> ./terraform.tfvars
 printf "vnet_name =                       \"$vnet_name\"\n"                       >> ./terraform.tfvars
 

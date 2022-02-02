@@ -8,7 +8,6 @@ resource "azurerm_linux_virtual_machine" "vm_jumpbox_linux" {
   network_interface_ids    = [azurerm_network_interface.vm_jumbox_linux_nic_01.id]
   patch_mode               = "AutomaticByPlatform"
   tags                     = merge(var.tags, { keyvault = var.key_vault_name }, { adds_domain_name = var.adds_domain_name })
-  depends_on               = [azurerm_windows_virtual_machine.vm_adds]
 
   admin_ssh_key {
     username   = data.azurerm_key_vault_secret.adminuser.value
@@ -43,7 +42,7 @@ resource "azurerm_network_interface" "vm_jumbox_linux_nic_01" {
 
   ip_configuration {
     name                          = "ipc-${var.vm_jumpbox_linux_name}"
-    subnet_id                     = azurerm_subnet.vnet_shared_01_subnets["default"].id
+    subnet_id                     = azurerm_subnet.vnet_app_01_subnets["application"].id
     private_ip_address_allocation = "Dynamic"
   }
 }

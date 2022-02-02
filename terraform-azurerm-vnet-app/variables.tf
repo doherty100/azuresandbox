@@ -44,6 +44,11 @@ variable "key_vault_id" {
   description = "The existing key vault where secrets are stored"
 }
 
+variable "key_vault_name" {
+  type        = string
+  description = "The existing key vault where secrets are stored"
+}
+
 variable "location" {
   type        = string
   description = "The name of the Azure Region where resources will be provisioned."
@@ -67,6 +72,11 @@ variable "remote_virtual_network_name" {
 variable "resource_group_name" {
   type        = string
   description = "The name of the existing resource group for provisioning resources."
+}
+
+variable "ssh_public_key" {
+  type        = string
+  description = "The SSH public key used for the admin account"
 }
 
 variable "storage_account_name" {
@@ -98,6 +108,95 @@ variable "subscription_id" {
 variable "tags" {
   type        = map(any)
   description = "The tags in map format to be used when creating new resources."
+}
+
+# Linux Jumpbox VM variables
+variable "vm_jumpbox_linux_image_offer" {
+  type        = string
+  description = "The offer type of the virtual machine image used to create the VM"
+  default     = "0001-com-ubuntu-server-focal"
+}
+
+variable "vm_jumpbox_linux_image_publisher" {
+  type        = string
+  description = "The publisher for the virtual machine image used to create the VM"
+  default     = "Canonical"
+}
+
+variable "vm_jumpbox_linux_image_sku" {
+  type        = string
+  description = "The sku of the virtual machine image used to create the VM"
+  default     = "20_04-lts"
+}
+
+variable "vm_jumpbox_linux_image_version" {
+  type        = string
+  description = "The version of the virtual machine image used to create the VM"
+  default     = "Latest"
+}
+
+variable "vm_jumpbox_linux_name" {
+  type        = string
+  description = "The name of the VM"
+}
+
+variable "vm_jumpbox_linux_size" {
+  type        = string
+  description = "The size of the virtual machine"
+  default     = "Standard_B2s"
+}
+
+variable "vm_jumpbox_linux_storage_account_type" {
+  type        = string
+  description = "The storage replication type to be used for the VMs OS and data disks"
+  default     = "Standard_LRS"
+}
+
+variable "vm_jumpbox_linux_userdata_file" {
+  type        = string
+  description = "The name of the cloud-init User-Data file for the virtual machine."
+}
+
+# Windows jumpbox VM variables
+variable "vm_jumpbox_win_image_offer" {
+  type        = string
+  description = "The offer type of the virtual machine image used to create the VM"
+  default     = "WindowsServer"
+}
+
+variable "vm_jumpbox_win_image_publisher" {
+  type        = string
+  description = "The publisher for the virtual machine image used to create the VM"
+  default     = "MicrosoftWindowsServer"
+}
+
+variable "vm_jumpbox_win_image_sku" {
+  type        = string
+  description = "The sku of the virtual machine image used to create the VM"
+  default     = "2019-Datacenter"
+}
+
+variable "vm_jumpbox_win_image_version" {
+  type        = string
+  description = "The version of the virtual machine image used to create the VM"
+  default     = "Latest"
+}
+
+variable "vm_jumpbox_win_name" {
+  type        = string
+  description = "The name of the VM"
+}
+
+variable "vm_jumpbox_win_size" {
+  type        = string
+  description = "The size of the virtual machine."
+  default     = "Standard_B2s"
+}
+
+variable "vm_jumpbox_win_storage_account_type" {
+  type        = string
+  description = "The storage replication type to be used for the VMs OS and data disks."
+  default     = "Standard_LRS"
 }
 
 # Database VM variables

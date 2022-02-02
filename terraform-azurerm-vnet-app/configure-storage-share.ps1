@@ -1,12 +1,14 @@
-Import-Module -Name ActiveDirectory
+# Import-Module -Name ActiveDirectory
 
+$subscriptionId = 'f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55'
 $ResourceGroupName = 'rg-vdc-nonprod-01'
-$StorageAccountName = 'sti6i0znzbefco4'
+$StorageAccountName = 'str4uyycbe9zl6r'
 $Domain = 'mytestlab.local'
 $path = 'DC=mytestlab,DC=local'
-$kerb1Key = 'cxtqiA6Uf0n2c3lqx4Xb3U6rmA+3Tiet+3kj0vKrYJ6sT+Avy+jtWvn8th1nlij3PckeNhm2kfAhrH6zrwk2VA=='
+$kerb1Key = 'jXVqjgLlpeteFD2QRpY3Hg4RYT1MjIJ6MNDtPLPDOqq/LcuVwGHCxWLQt62ieyLVyWHnMHw3CKMIY3eKjYvUDw=='
 $password = ConvertTo-SecureString $kerb1Key -AsPlainText -Force
 $spnValue = "cifs/$StorageAccountName.file.core.windows.net"
+$defaultPermission = "StorageFileDataSmbShareContributor" 
 
 New-ADComputer `
     -SAMAccountName $StorageAccountName `
@@ -28,10 +30,8 @@ $domainName = $domainInformation.DNSRoot
 $domainSid = $domainInformation.DomainSID.Value
 $forestName = $domainInformation.Forest
 $netBiosDomainName = $domainInformation.DnsRoot
-$subscriptionId = 'f6d69ee2-34d5-4ca8-a143-7a2fc1aeca55'
-$defaultPermission = "StorageFileDataSmbShareContributor" 
 
-Import-Module -Name Az
+#Import-Module -Name Az
 
 Connect-AzAccount -Subscription $subscriptionId
 

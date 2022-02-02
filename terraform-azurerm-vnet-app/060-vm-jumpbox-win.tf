@@ -9,8 +9,7 @@ resource "azurerm_windows_virtual_machine" "vm_jumpbox_win" {
   admin_password           = data.azurerm_key_vault_secret.adminpassword.value
   network_interface_ids    = [azurerm_network_interface.vm_jumpbox_win_nic_01.id]
   patch_mode               = "AutomaticByPlatform"
-  tags                     = var.tags
-  depends_on               = [azurerm_windows_virtual_machine.vm_adds]
+  tags                     = merge(var.tags, { keyvault = var.key_vault_name }, { adds_domain_name = var.adds_domain_name })
 
   os_disk {
     caching              = "ReadWrite"
@@ -33,7 +32,7 @@ resource "azurerm_windows_virtual_machine" "vm_jumpbox_win" {
         SubscriptionId = "${var.subscription_id}"
         ResourceGroupName = "${var.resource_group_name}"
         Location = "${var.location}"
-        AutomationAccountName = "${azurerm_automation_account.automation_account_01.name}"
+        AutomationAccountName = "${var.automation_account_name}"
         VirtualMachineName = "${var.vm_jumpbox_win_name}"
         AppId = "${var.arm_client_id}"
         AppSecret = "${nonsensitive(var.arm_client_secret)}"
@@ -54,7 +53,7 @@ resource "azurerm_network_interface" "vm_jumpbox_win_nic_01" {
 
   ip_configuration {
     name                          = "ipc-${var.vm_jumpbox_win_name}-1"
-    subnet_id                     = azurerm_subnet.vnet_shared_01_subnets["default"].id
+    subnet_id                     = azurerm_subnet.vnet_app_01_subnets["application"].id
     private_ip_address_allocation = "Dynamic"
   }
 }

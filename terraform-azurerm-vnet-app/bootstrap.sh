@@ -8,6 +8,9 @@ usage() {
     exit 1
 }
 
+# Initialize constants
+vm_jumpbox_linux_userdata_file='vm-jumpbox-linux-userdata.mim'
+
 # Set these defaults prior to running the script.
 default_vnet_name="vnet-app-01"
 default_vnet_address_space="10.2.0.0/16"
@@ -18,7 +21,10 @@ default_application_subnet_address_prefix="10.2.1.0/24"
 default_privatelink_subnet_name="snet-privatelink-01"
 default_privatelink_subnet_address_prefix="10.2.2.0/24"
 default_mssql_database_name="testdb"
+default_skip_ssh_key_gen="no"
 default_storage_share_name="myfileshare"
+default_vm_jumpbox_linux_name="jumplinux1"
+default_vm_jumpbox_win_name="jumpwin1"
 default_vm_mssql_win_name="mssqlwin1"
 vm_mssql_win_post_deploy_script="configure-mssql.ps1"
 vm_mssql_win_sql_startup_script="sql-startup.ps1"
@@ -63,6 +69,9 @@ read -e -i $default_application_subnet_name             -p "Application subnet n
 read -e -i $default_application_subnet_address_prefix   -p "Application subnet address prefix (application_subnet_address_prefix) -: " application_subnet_address_prefix
 read -e -i $default_privatelink_subnet_name             -p "Privatelink subnet name (privatelink_subnet_name) ---------------------: " privatelink_subnet_name
 read -e -i $default_privatelink_subnet_address_prefix   -p "privatelink subnet address prefix (privatelink_subnet_address_prefix) -: " privatelink_subnet_address_prefix
+read -e -i $default_vm_jumpbox_linux_name               -p "Linux jumpbox virtual machine name (vm_jumpbox_linux_name) ------------: " vm_jumpbox_linux_name
+read -e -i $default_skip_ssh_key_gen                    -p "Skip SSH key generation (skip_ssh_key_gen) yes/no ? -------------------: " skip_ssh_key_gen
+read -e -i $default_vm_jumpbox_win_name                 -p "Windows jumpbox virtual machine name (vm_jumpbox_win_name) ------------: " vm_jumpbox_win_name
 read -e -i $default_vm_mssql_win_name                   -p "SQL Server virtual machine name (vm_mssql_win_name) -------------------: " vm_mssql_win_name
 read -e -i $default_mssql_database_name                 -p "Azure SQL Database name (sql_database_name) ---------------------------: " mssql_database_name
 read -e -i $default_storage_share_name                  -p "Azure Files share name (storage_share_name) ---------------------------: " storage_share_name
@@ -74,10 +83,76 @@ database_subnet_address_prefix=${database_subnet_address_prefix:-default_databas
 mssql_database_name=${mssql_database_name:-default_msmssql_database_name}
 privatelink_subnet_name=${privatelink_subnet_name:-default_privatelink_subnet_name}
 privatelink_subnet_address_prefix=${privatelink_subnet_address_prefix:-default_privatelink_subnet_address_prefix}
+skip_ssh_key_gen=${skip_ssh_key_gen:-$default_skip_ssh_key_gen}
 storage_share_name=${storage_share_name:-default_storage_share_name}
+vm_jumpbox_linux_name=${vm_jumpbox_linux_name:-default_vm_jumpbox_linux_name}
+vm_jumpbox_win_name=${vm_jumpbox_win_name:-default_vm_jumpbox_win_name}
 vm_mssql_win_name=${vm_mssql_win_name:-default_vm_mssql_win_name}
 vnet_name=${vnet_name:=$default_vnet_name}
 vnet_address_space=${vnet_address_space:-default_vnet_address_space}
+
+# Validate skip_ssh_key_gen input
+if [ "$skip_ssh_key_gen" != 'yes' ] && [ "$skip_ssh_key_gen" != 'no' ]
+then
+  printf "Invalid skip_ssh_key_gen input '$skip_ssh_key_gen'. Valid values are 'yes' or 'no'...\n"
+  usage
+fi
+
+# Generate SSH keys
+if [ "$skip_ssh_key_gen" = 'no' ]
+then
+  printf "Gnerating SSH keys...\n"
+  echo -e 'y' | ssh-keygen -m PEM -t rsa -b 4096 -C "$admin_username" -f sshkeytemp -N "$admin_password" 
+fi
+
+if [ ! -f 'sshkeytemp.pub' ] 
+then
+  printf "Unable to locate SSH public key file 'sshktemp.pub'...\n"
+  usage
+fi
+
+if [ ! -f 'sshkeytemp' ] 
+then
+  printf "Unable to locate SSH private key file 'sshktemp.pub'...\n"
+  usage
+fi
+
+ssh_public_key_secret_value=$(cat sshkeytemp.pub)
+ssh_private_key_secret_value=$(cat sshkeytemp)
+
+# Bootstrap key vault secrets
+admin_username_secret_noquotes=${admin_username_secret:1:-1}
+key_vault_name_noquotes=${key_vault_name:1:-1}
+printf "Getting secret '$admin_username_secret_noquotes' from key vault '$key_vault_name_noquotes'...\n"
+admin_username=$(az keyvault secret show --vault-name $key_vault_name_noquotes --name $admin_username_secret_noquotes --query value --output tsv)
+
+if [ -n "$admin_username" ]
+then 
+  printf "The value of secret '$admin_username_secret_noquotes' is '$admin_username'...\n"
+else
+  printf "Unable to determine the value of secret '$admin_username_secret_noquotes'...\n"
+  usage
+fi
+
+ssh_public_key_secret_name="$admin_username-ssh-key-public"
+ssh_private_key_secret_name="$admin_username-ssh-key-private"
+
+printf "Setting secret '$ssh_public_key_secret_name' with value length '${#ssh_public_key_secret_value}' in keyvault '$key_vault_name_noquotes'...\n"
+az keyvault secret set \
+    --vault-name $key_vault_name_noquotes \
+    --name $ssh_public_key_secret_name \
+    --value "$ssh_public_key_secret_value"
+
+printf "Setting secret '$ssh_private_key_secret_name' with value length '${#ssh_private_key_secret_value}' in keyvault '$key_vault_name_noquotes'...\n"
+az keyvault secret set \
+    --vault-name $key_vault_name_noquotes \
+    --name $ssh_private_key_secret_name \
+    --value "$ssh_private_key_secret_value" \
+    --output none
+
+# Generate cloud-init User-Data for Linux jumpbox virtual machine
+printf "Generating cloud-init User-Data file '$vm_jumpbox_linux_userdata_file'...\n"
+cloud-init devel make-mime -a configure-vm-jumpbox-linux.yaml:cloud-config -a configure-vm-jumpbox-linux.sh:x-shellscript > $vm_jumpbox_linux_userdata_file
 
 # Upload post-deployment scripts
 vm_mssql_win_post_deploy_script_uri="https://${storage_account_name:1:-1}.blob.core.windows.net/${storage_container_name:1:-1}/$vm_mssql_win_post_deploy_script"
@@ -125,16 +200,21 @@ printf "arm_client_id =                         $arm_client_id\n"               
 printf "automation_account_name =               $automation_account_name\n"                 >> ./terraform.tfvars
 printf "dns_server =                            $dns_server\n"                              >> ./terraform.tfvars
 printf "key_vault_id =                          $key_vault_id\n"                            >> ./terraform.tfvars
+printf "key_vault_name =                        $key_vault_name\n"                          >> ./terraform.tfvars
 printf "location =                              $location\n"                                >> ./terraform.tfvars
 printf "mssql_database_name =                   \"$mssql_database_name\"\n"                 >> ./terraform.tfvars
 printf "remote_virtual_network_id =             $remote_virtual_network_id\n"               >> ./terraform.tfvars
 printf "remote_virtual_network_name =           $remote_virtual_network_name\n"             >> ./terraform.tfvars
 printf "resource_group_name =                   $resource_group_name\n"                     >> ./terraform.tfvars
+printf "ssh_public_key =                        \"$ssh_public_key_secret_value\"\n"         >> ./terraform.tfvars
 printf "storage_account_name =                  $storage_account_name\n"                    >> ./terraform.tfvars
 printf "storage_share_name =                    \"$storage_share_name\"\n"                  >> ./terraform.tfvars
 printf "subnets =                               $subnets\n"                                 >> ./terraform.tfvars
 printf "subscription_id =                       $subscription_id\n"                         >> ./terraform.tfvars
 printf "tags =                                  $tags\n"                                    >> ./terraform.tfvars
+printf "vm_jumpbox_linux_name =                 \"$vm_jumpbox_linux_name\"\n"               >> ./terraform.tfvars
+printf "vm_jumpbox_linux_userdata_file =        \"$vm_jumpbox_linux_userdata_file\"\n"      >> ./terraform.tfvars
+printf "vm_jumpbox_win_name =                   \"$vm_jumpbox_win_name\"\n"                 >> ./terraform.tfvars
 printf "vm_mssql_win_name =                     \"$vm_mssql_win_name\"\n"                   >> ./terraform.tfvars
 printf "vm_mssql_win_post_deploy_script =       \"$vm_mssql_win_post_deploy_script\"\n"     >> ./terraform.tfvars
 printf "vm_mssql_win_post_deploy_script_uri =   \"$vm_mssql_win_post_deploy_script_uri\"\n" >> ./terraform.tfvars
