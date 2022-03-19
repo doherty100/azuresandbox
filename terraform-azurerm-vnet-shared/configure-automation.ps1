@@ -15,6 +15,9 @@ param (
     [String]$Domain,
 
     [Parameter(Mandatory = $true)]
+    [String]$VmAddsName,
+
+    [Parameter(Mandatory = $true)]
     [String]$AdminUsername,
 
     [Parameter(Mandatory = $true)]
@@ -301,16 +304,24 @@ function Start-DscCompliationJob {
         [String]$AutomationAccountName,
 
         [Parameter(Mandatory = $true)]
-        [String]$DscConfigurationName
+        [String]$DscConfigurationName,
+
+        [Parameter(Mandatory = $true)]
+        [String]$VirtualMachineName
     )
 
     Write-Log "Compliling DSC Configuration '$DscConfigurationName'..."
+
+    $params = @{
+        ComputerName = $VirtualMachineName
+    }
 
     try {
         $dscCompilationJob = Start-AzAutomationDscCompilationJob `
             -ResourceGroupName $ResourceGroupName `
             -AutomationAccountName $AutomationAccountName `
             -ConfigurationName $DscConfigurationName `
+            -Parameters $params `
             -ErrorAction Stop
     }
     catch {
@@ -568,7 +579,8 @@ Import-DscConfiguration `
 Start-DscCompliationJob `
     -ResourceGroupName $ResourceGroupName `
     -AutomationAccountName $automationAccount.AutomationAccountName `
-    -DscConfigurationName 'LabDomainConfig'
+    -DscConfigurationName 'LabDomainConfig' `
+    -VirtualMachineName $VmAddsName
 
 Exit 0
 #endregion
