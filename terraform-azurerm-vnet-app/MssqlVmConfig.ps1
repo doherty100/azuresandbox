@@ -8,6 +8,7 @@ configuration MssqlVmConfig {
     Import-DscResource -ModuleName 'xDSCDomainjoin'
     Import-DscResource -ModuleName 'NetworkingDsc'
     Import-DscResource -ModuleName 'SqlServerDsc'
+    Import-DscResource -ModuleName 'ActiveDirectoryDsc'
     
     $domain = Get-AutomationVariable -Name 'adds_domain_name'
     $localAdminCredential = Get-AutomationPSCredential 'bootstrapadmin'
