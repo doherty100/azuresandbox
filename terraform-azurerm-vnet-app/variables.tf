@@ -95,9 +95,19 @@ variable "storage_share_quota_gb" {
   default     = "1024"
 }
 
-variable "subnets" {
-  type        = map(any)
-  description = "The list of subnets to be created in the new application virtual network."
+variable "subnet_application_address_prefix" {
+ type = string
+ description = "The address prefix for the application subnet." 
+}
+
+variable "subnet_database_address_prefix" {
+  type = string
+  description = "The address prefix for the database subnet."
+}
+
+variable "subnet_privatelink_address_prefix" {
+  type = string
+  description = "The address prefix for the PrivateLink subnet."
 }
 
 variable "subscription_id" {

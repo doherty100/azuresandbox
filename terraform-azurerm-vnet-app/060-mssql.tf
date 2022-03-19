@@ -27,7 +27,7 @@ resource "azurerm_private_endpoint" "mssql_server_01" {
   name                = "pend-${azurerm_mssql_server.mssql_server_01.name}"
   resource_group_name = var.resource_group_name
   location            = var.location
-  subnet_id           = azurerm_subnet.vnet_app_01_subnets["PrivateLink"].id
+  subnet_id           = azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"].id
   tags                = var.tags
 
   private_service_connection {

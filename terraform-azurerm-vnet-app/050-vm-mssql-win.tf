@@ -23,7 +23,7 @@ resource "azurerm_windows_virtual_machine" "vm_mssql_win" {
     version   = var.vm_mssql_win_image_version
   }
 
-  # Apply jumpbox configuration using Azure Automation DSC
+  # Apply configuration using Azure Automation DSC
   # Note: To view provisioner output, use the Terraform nonsensitive() function when referencing key vault secrets or variables marked 'sensitive'
   provisioner "local-exec" {
     command     = <<EOT
@@ -53,7 +53,7 @@ resource "azurerm_network_interface" "vm_mssql_win_nic_01" {
 
   ip_configuration {
     name                          = "ipc-${var.vm_mssql_win_name}-1"
-    subnet_id                     = azurerm_subnet.vnet_app_01_subnets["database"].id
+    subnet_id                     = azurerm_subnet.vnet_app_01_subnets["snet-db-01"].id
     private_ip_address_allocation = "Dynamic"
   }
 }

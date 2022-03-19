@@ -16,19 +16,15 @@ resource "azurerm_automation_account" "automation_account_01" {
   provisioner "local-exec" {
     command     = <<EOT
         $params = @{
-        TenantId = "${var.aad_tenant_id}"
-        SubscriptionId = "${var.subscription_id}"
-        ResourceGroupName = "${var.resource_group_name}"
-        Location = "${var.location}"
-        AutomationAccountName = "${azurerm_automation_account.automation_account_01.name}"
-        Domain = "${var.adds_domain_name}"
-        AdminUserName = "${nonsensitive(data.azurerm_key_vault_secret.adminuser.value)}"
-        AdminPwd = "${nonsensitive(data.azurerm_key_vault_secret.adminpassword.value)}"
-        AppId = "${var.arm_client_id}"
-        AppSecret = "${nonsensitive(var.arm_client_secret)}"
-        StorageAccountName = "${var.storage_account_name}"
-        DomainControllerName = "${var.vm_adds_name}"
-        StorageAccountKeyKerberos = "${nonsensitive(data.azurerm_key_vault_secret.storageaccountkeykerb.value)}"
+          TenantId =              "${var.aad_tenant_id}"
+          SubscriptionId =        "${var.subscription_id}"
+          ResourceGroupName =     "${var.resource_group_name}"
+          AutomationAccountName = "${azurerm_automation_account.automation_account_01.name}"
+          Domain =                "${var.adds_domain_name}"
+          AdminUserName =         "${nonsensitive(data.azurerm_key_vault_secret.adminuser.value)}"
+          AdminPwd =              "${nonsensitive(data.azurerm_key_vault_secret.adminpassword.value)}"
+          AppId =                 "${var.arm_client_id}"
+          AppSecret =             "${nonsensitive(var.arm_client_secret)}"
         }
         ${path.root}/configure-automation.ps1 @params 
    EOT

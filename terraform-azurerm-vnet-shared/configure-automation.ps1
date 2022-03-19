@@ -9,9 +9,6 @@ param (
     [String]$ResourceGroupName,
 
     [Parameter(Mandatory = $true)]
-    [String]$Location,
-
-    [Parameter(Mandatory = $true)]
     [String]$AutomationAccountName,
 
     [Parameter(Mandatory = $true)]
@@ -27,16 +24,7 @@ param (
     [String]$AppId,
 
     [Parameter(Mandatory = $true)]
-    [string]$AppSecret,
-
-    [Parameter(Mandatory = $true)]
-    [string]$StorageAccountName,
-
-    [Parameter(Mandatory = $true)]
-    [string]$DomainControllerName,
-
-    [Parameter(Mandatory = $true)]
-    [string]$StorageAccountKeyKerberos
+    [string]$AppSecret
 )
 
 #region functions
@@ -513,24 +501,6 @@ Import-Module `
     -ModuleName 'ActiveDirectoryDsc' `
     -ModuleUri 'https://www.powershellgallery.com/api/v2/package/ActiveDirectoryDsc'
 
-Import-Module `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -ModuleName 'NetworkingDsc' `
-    -ModuleUri 'https://www.powershellgallery.com/api/v2/package/NetworkingDsc'
-
-Import-Module `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -ModuleName 'SqlServerDsc' `
-    -ModuleUri 'https://www.powershellgallery.com/api/v2/package/SqlServerDsc'
-
-Import-Module `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -ModuleName 'cChoco' `
-    -ModuleUri 'https://www.powershellgallery.com/api/v2/package/cChoco'
-
 # Bootstrap automation variables
 Set-Variable `
     -ResourceGroupName $ResourceGroupName `
@@ -594,33 +564,11 @@ Import-DscConfiguration `
     -DscConfigurationName 'LabDomainConfig' `
     -DscConfigurationScript 'LabDomainConfig.ps1'
 
-Import-DscConfiguration `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -DscConfigurationName 'JumpBoxConfig' `
-    -DscConfigurationScript 'JumpBoxConfig.ps1'
-
-Import-DscConfiguration `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -DscConfigurationName 'MssqlVmConfig' `
-    -DscConfigurationScript 'MssqlVmConfig.ps1'
-
 # Compile DSC Configurations
 Start-DscCompliationJob `
     -ResourceGroupName $ResourceGroupName `
     -AutomationAccountName $automationAccount.AutomationAccountName `
     -DscConfigurationName 'LabDomainConfig'
-
-Start-DscCompliationJob `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -DscConfigurationName 'JumpBoxConfig'
-
-Start-DscCompliationJob `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -DscConfigurationName 'MssqlVmConfig'
 
 Exit 0
 #endregion

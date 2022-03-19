@@ -2,7 +2,11 @@
 
 ## Overview
 
-This repository contains a collection of inter-dependent [cloud computing](https://azure.microsoft.com/en-us/overview/what-is-cloud-computing) quick starts for implementing common [Microsoft Azure](https://azure.microsoft.com/en-us/overview/what-is-azure/) services on a single [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription). Collectively these quick starts provide a flexible lab environment useful for experimenting with various Azure services and capabilities. \#AzureQuickStarts is implemented using popular open source automation tools that are supported on Windows, macOS and Linux including:
+This repository contains a collection of inter-dependent [cloud computing](https://azure.microsoft.com/en-us/overview/what-is-cloud-computing) quick starts for implementing common [Microsoft Azure](https://azure.microsoft.com/en-us/overview/what-is-azure/) services on a single [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription). Collectively these quick starts provide a flexible and cost effective lab environment useful for experimenting with various Azure services and capabilities.
+
+*Disclaimer:* \#AzureQuickStarts is not intended for production use. \#AzureQuickStarts is intended to accelerate cloud projects by providing a minimal, cost effective lab environment. While some best practices are used, others are intentionally not used in favor of simplicity and cost. See [Known issues](#known-issues) for more information.
+
+\#AzureQuickStarts is implemented using popular open source tools that are supported on Windows, macOS and Linux including:
 
 * [git](https://git-scm.com/) for source control.
 * [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) for scripting.
@@ -10,35 +14,35 @@ This repository contains a collection of inter-dependent [cloud computing](https
 * [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.1)
   * [PowerShell Core](https://docs.microsoft.com/en-us/powershell/scripting/whats-new/what-s-new-in-powershell-71?view=powershell-7.1)
   * [PowerShell 5.1](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-5.1) for Windows Server configuration.
-* [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) v1.1.5 for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
-  * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v2.95.0
+* [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) v1.1.7 for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
+  * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v2.99.0
   * [Random Provider](https://registry.terraform.io/providers/hashicorp/random/latest/docs) (random) v3.1.0
 
 This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doherty-805635b/).
 
 ## Quick start index
 
-\#AzureQuickStarts features a modular design and can be deployed as a whole or incrementally depending upon your requirements. It is  intended to accelerate cloud projects using best practices where feasible in a test lab environment. Each is listed here in suggested order of deployment.
+\#AzureQuickStarts features a modular design and can be deployed as a whole or incrementally depending upon your requirements.
 
-* [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/)
-  * A [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group)
-  * A [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview)
-  * A [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/data-platform#collect-monitoring-data)
-  * A [storage account](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#storage-account)
-  * An [automation account](https://docs.microsoft.com/en-us/azure/automation/automation-intro)
-  * A [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting virtual machines used as domain controllers, DNS servers and jump boxes.
+* [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) includes the following:
+  * A [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group) which contains all the quick start resources.
+  * A [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview) for managing secrets.
+  * A [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/data-platform#collect-monitoring-data) for log data and metrics.
+  * A [storage account](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#storage-account) for blob storage.
+  * An [automation account](https://docs.microsoft.com/en-us/azure/automation/automation-intro) for configuration management.
+  * A [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting [virtual machines](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm).
   * A [bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview) for secure RDP and SSH access to virtual machines.
   * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) running [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) with a pre-configured domain and DNS server.
-* [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/)
-  * A [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting application infrastructure and services.  
-    * Pre-configured [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/)  
-  * An [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering.
-  * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database hosted in [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview) with a private endpoint implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
+* [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/) includes the following:
+  * A [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting for hosting [virtual machines](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) and private endpoints implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview). [Virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) is automatically configured.
   * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
   * A Linux [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
-* [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
-  * Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources)
-  * Shared [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) and [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/)
+  * An [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering.
+  * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database hosted in [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview) with a private endpoint implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
+  * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) SMB file share hosted in [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction) with a private endpoint implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
+* [terraform-azurerm-vwan](./terraform-azurerm-vwan/) includes the following:
+  * A [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources)
+  * A [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) and [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/) which can be used to set up VPN connectivity to quick start resources.
 * Miscellaneous quick starts
   * [az-graph](./az-graph/)
     * Common [Azure Resource Graph](https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview) queries used for real world cloud estate discovery projects
@@ -174,16 +178,16 @@ Reserved for future use | 10.6.0.0/15 | 10.6.0.0 | 10.7.255.255 | 131,072 | N/A
 
 ##### Default subnet IP address prefixes
 
-This section documents the default subnet IP address prefixes used in the quick starts. Subnets enable you to segment the virtual network into one or more sub-networks and allocate a portion of the virtual network's address space to each subnet. You can then connect network resources to a specific subnet, and secure them using [network security qroups](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
+This section documents the default subnet IP address prefixes used in the quick starts. Subnets enable you to segment the virtual network into one or more sub-networks and allocate a portion of the virtual network's address space to each subnet. You can then connect network resources to a specific subnet, and control ingress and egress using [network security qroups](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
 
 Virtual network | Subnet | IP address prefix | First | Last | IP address count
 --- | --- | --- | --- | --- | --:
-Shared services | snet-default-01 | 10.1.0.0/24 | 10.1.0.0 | 10.1.0.255 | 256
-Shared services | AzureBastionSubnet | 10.1.1.0/27 | 10.1.1.0 | 10.1.1.31 | 32
-Shared services | Reserved for future use | 10.1.1.32/27 | 10.1.1.32 | 10.1.1.63 | 32
-Shared services | Reserved for future use | 10.1.1.64/26 | 10.1.1.64 | 10.1.1.127 | 64
-Shared services | Reserved for future use | 10.1.1.128/25 | 10.1.1.128 | 10.1.1.255 | 128
-Shared services | snet-adds-01 | 10.1.2.0/24 | 10.1.2.0 | 10.1.2.255 | 256
+Shared services | AzureBastionSubnet | 10.1.0.0/27 | 10.1.0.0 | 10.1.0.31 | 32
+Shared services | Reserved for future use | 10.1.0.32/27 | 10.1.0.32 | 10.1.0.63 | 32
+Shared services | Reserved for future use | 10.1.0.64/26 | 10.1.0.64 | 10.1.0.127 | 64
+Shared services | Reserved for future use | 10.1.0.128/25 | 10.1.0.128 | 10.1.0.255 | 128
+Shared services | snet-adds-01 | 10.1.1.0/24 | 10.1.1.0 | 10.1.1.255 | 256
+Shared services | Reserved for future use | 10.1.2.0/24 | 10.1.2.0 | 10.1.2.255 | 256
 Shared services | Reserved for future use | 10.1.3.0/24 | 10.1.3.0 | 10.1.3.255 | 256
 Shared services | Reserved for future use | 10.1.4.0/22 | 10.1.4.0 | 10.1.7.255 | 1,024
 Shared services | Reserved for future use | 10.1.8.0/21 | 10.1.8.0 | 10.1.15.255 | 2,048
@@ -191,8 +195,8 @@ Shared services | Reserved for future use | 10.1.16.0/20 | 10.1.16.0 | 10.1.31.2
 Shared services | Reserved for future use | 10.1.32.0/19 | 10.1.32.0 | 10.1.63.255 | 8,192
 Shared services | Reserved for future use | 10.1.64.0/18 | 10.1.64.0 | 10.1.127.255 | 16,384
 Shared services | Reserved for future use | 10.1.128.0/17 | 10.1.128.0 | 10.1.255.255 | 32,768
-Application | snet-db-01 | 10.2.0.0/24 | 10.2.0.0 | 10.2.0.255 | 256
-Application | snet-app-01 | 10.2.1.0/24 | 10.2.1.0 | 10.2.1.255 | 256
+Application | snet-app-01 | 10.2.0.0/24 | 10.2.0.0 | 10.2.0.255 | 256
+Application | snet-db-01 | 10.2.1.0/24 | 10.2.1.0 | 10.2.1.255 | 256
 Application | snet-privatelink-01 | 10.2.2.0/24 | 10.2.2.0 | 10.2.2.255 | 256
 Application | Reserved for future use | 10.2.3.0/24 | 10.2.3.0 | 10.2.3.255 | 256
 Application | Reserved for future use | 10.2.4.0/22 | 10.2.4.0 | 10.2.7.255 | 1,024
@@ -270,13 +274,12 @@ Use this section to customize the default subnet IP address prefixes used by the
 
 Virtual network | Subnet | IP address prefix | First | Last | IP address count
 --- | --- | --- | --- | --- | --:
-Shared services | snet-default-01 | 10.73.8.0/25 | 10.73.8.0 | 10.73.8.127 | 128
-Shared services | AzureBastionSubnet | 10.73.8.128/27 | 10.73.8.128 | 10.73.8.159 | 32
-Shared services | snet-adds-01 | 10.73.8.160/27 | 10.73.8.160 | 10.73.8.191 | 32
-Shared services | Reserved for future use | 10.73.8.192/27 | 10.73.8.192 | 10.73.8.223 | 32
-Shared services | Reserved for future use | 10.73.8.224/27 | 10.73.8.224 | 10.73.8.255 | 32
-Application | snet-db-01 | 10.73.9.0/27 | 10.73.9.0 | 10.73.9.31 | 32
-Application | snet-app-01 | 10.73.9.32/27 | 10.73.9.32 | 10.73.9.63 | 32
+Shared services | AzureBastionSubnet | 10.73.8.0/27 | 10.73.8.0 | 10.73.8.31 | 32
+Shared services | snet-adds-01 | 10.73.8.32/27 | 10.73.8.32 | 10.73.8.63 | 32
+Shared services | Reserved for future use | 10.73.8.64/26 | 10.73.8.64 | 10.73.8.127 | 64
+Shared services | Reserved for future use | 10.73.8.128/25 | 10.73.8.128 | 10.73.8.255 | 128
+Application | snet-app-01 | 10.73.9.0/27 | 10.73.9.0 | 10.73.9.31 | 32
+Application | snet-db-01 | 10.73.9.32/27 | 10.73.9.32 | 10.73.9.63 | 32
 Application | snet-privatelink-01 | 10.73.9.64/27 | 10.73.9.64 | 10.73.9.95 | 32
 Application | Reserved for future use | 10.73.9.96/27 | 10.73.9.96 | 10.73.9.127 | 32
 Application | Reserved for future use | 10.73.9.128/25 | 10.73.9.128 | 10.73.9.255 | 128
@@ -295,7 +298,7 @@ Application | snet-db-01 | TBD | TBD | TBD | TBD
 Application | snet-app-01 | TBD | TBD | TBD | TBD
 Application | snet-private-endpoints-01 | TBD | TBD | TBD | TBD
 
-## Known issues
+## Known issues<
 
 This section documents known issues with these quick starts that should be addressed prior to real world usage.
 
@@ -313,4 +316,4 @@ This section documents known issues with these quick starts that should be addre
 * Storage
   * *Azure Files*: See issue [#12447](https://github.com/hashicorp/terraform-provider-azurerm/issues/12447) which causes Terraform plan, apply and destroy operations to fail after private endpoints are used with Azure Files.
 * Networking
-  * *azurerm_subnet.vnet_shared_01_subnets["adds"]*: Should be protected by an NSG as per best practices described in described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain).
+  * *azurerm_subnet.vnet_shared_01_subnets["snet-adds-01"]*: This subnet is protected by an NSG as per best practices described in described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain), however the network security rules permit ingress and egress from the Virtual Network on all ports to allow for flexibility in the quick starts. Production implementations of this subnet should follow the guidance in [How to configure a firewall for Active Directory domains and trusts](https://docs.microsoft.com/en-us/troubleshoot/windows-server/identity/config-firewall-for-ad-domains-and-trusts).

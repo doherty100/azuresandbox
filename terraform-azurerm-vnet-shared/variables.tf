@@ -36,6 +36,11 @@ variable "dns_server" {
   description = "The IP address of the DNS server. This should be the first non-reserved IP address in the subnet where the AD DS domain controller is hosted."
 }
 
+variable "jumpbox_security_group_name" {
+  type = string
+  description = "The name of the adds security group used for jump box servers."
+}
+
 variable "key_vault_id" {
   type        = string
   description = "The existing key vault where secrets are stored"
@@ -77,30 +82,14 @@ variable "storage_account_key_kerb_secret" {
   description = "The name of the key vault secret containing the Kerberos key for the storage account."
 }
 
-variable "subnets" {
-  type        = map(any)
-  description = "The subnets to be created in the new virtual network. AzureBastionSubnet is required."
-  # default = {
-  #   name                                           = "snet-default-01",
-  #   address_prefix                                 = "10.1.0.0/24",
-  #   enforce_private_link_endpoint_network_policies = false
-  # },
-  # AzureBastionSubnet = {
-  #   name                                           = "AzureBastionSubnet",
-  #   address_prefix                                 = "10.1.1.0/27",
-  #   enforce_private_link_endpoint_network_policies = false
-  # },
-  # PrivateLink = {
-  #   name                                           = "snet-storage-private-endpoints-01",
-  #   address_prefix                                 = "10.1.2.0/24",
-  #   enforce_private_link_endpoint_network_policies = true
-  # },
-  # adds = {
-  #   name                                           = "snet-adds-01",
-  #   address_prefix                                 = "10.1.3.0/24",
-  #   enforce_private_link_endpoint_network_policies = false
-  # }
-  # }
+variable "subnet_adds_address_prefix" {
+  type        = string
+  description = "The address prefix for the AD Domain Services subnet."
+}
+
+variable "subnet_AzureBastionSubnet_address_prefix" {
+  type        = string
+  description = "The address prefix for the AzureBastionSubnet subnet."
 }
 
 variable "subscription_id" {

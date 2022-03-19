@@ -28,7 +28,6 @@ param (
 )
 
 #region constants
-$DscConfigurationNode = 'localhost'
 $MaxDscAttempts = 180
 #endregion
 
@@ -60,13 +59,10 @@ function Register-DscNode {
         [string] $Location,
 
         [Parameter(Mandatory = $true)]
-        [string] $DscConfigurationName,
-
-        [Parameter(Mandatory = $true)]
-        [string] $DscConfigurationNode
+        [string] $DscConfigurationName
     )
 
-    $nodeConfigName = $DscConfigurationName + '.' + $DscConfigurationNode
+    $nodeConfigName = $DscConfigurationName + '.' + $VirtualMachineName
 
     try {
         $dscNodes = Get-AzAutomationDscNode `
@@ -122,7 +118,7 @@ function Register-DscNode {
 
     Write-Log "Registering DSC node '$VirtualMachineName' with node configuration '$nodeConfigName'..."
     Write-Log "Warning, this process can take several minutes and the VM will be rebooted..."
-    
+
     # Note: VM Extension may initially report errors but service will continue to attempt to apply configuration
     Register-AzAutomationDscNode `
         -ResourceGroupName $ResourceGroupName `
@@ -215,8 +211,7 @@ Register-DscNode `
     -AutomationAccountName $AutomationAccountName `
     -VirtualMachineName $VirtualMachineName `
     -Location $Location `
-    -DscConfigurationName $DscConfigurationName `
-    -DscConfigurationNode $DscConfigurationNode
+    -DscConfigurationName $DscConfigurationName
 
-Exit 0
+Exit
 #endregion

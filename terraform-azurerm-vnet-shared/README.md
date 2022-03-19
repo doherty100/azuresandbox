@@ -6,19 +6,19 @@
 
 This quick start implements a virtual network with shared services used by all the quick starts including:
 
-* A [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group)
-* A [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview)
-* A [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/data-platform#collect-monitoring-data)
-* A [storage account](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#storage-account)
-* An [automation account](https://docs.microsoft.com/en-us/azure/automation/automation-intro)
-* A [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting virtual machines used as domain controllers, DNS servers and jump boxes.
+* A [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group) which contains all the quick start resources.
+* A [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview) for managing secrets.
+* A [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/data-platform#collect-monitoring-data) for log data and metrics.
+* A [storage account](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#storage-account) for blob storage.
+* An [automation account](https://docs.microsoft.com/en-us/azure/automation/automation-intro) for configuration management.
+* A [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting [virtual machines](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm).
 * A [bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview) for secure RDP and SSH access to virtual machines.
 * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) running [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) with a pre-configured domain and DNS server.
 
 Activity | Estimated time required
 --- | ---
 Pre-configuration | ~10 minutes
-Provisioning | ~40 minutes
+Provisioning | ~20 minutes
 Smoke testing | ~5 minutes
 
 ## Before you start
@@ -133,16 +133,11 @@ This quick start makes extensive use of [Azure Automation State Configuration (D
       * Existing modules are updated to the most recent release where possible.
       * Imports new modules including the following:
         * [ActiveDirectoryDsc](https://github.com/dsccommunity/ActiveDirectoryDsc)
-        * [NetworkingDsc](https://github.com/dsccommunity/NetworkingDsc)
-        * [SqlServerDsc](https://github.com/dsccommunity/SqlServerDsc)
-        * [cChoco](https://github.com/chocolatey/cChoco)
     * Bootstraps [Variables](https://docs.microsoft.com/en-us/azure/automation/shared-resources/variables)
     * Bootstraps [Credentials](https://docs.microsoft.com/en-us/azure/automation/shared-resources/credentials)
   * Configures [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) which is used to configure Windows Server virtual machines used in the quick starts.
     * Imports [DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started#create-a-dsc-configuration) used in this and other quick starts.
       * [LabDomainConfig.ps1](./LabDomainConfig.ps1): configure a Windows Server virtual machine as an [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) [Domain Controller](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2003/cc786438(v=ws.10)).
-      * [JumpBoxConfig.ps1](./JumpBoxConfig.ps1): domain joins a Windows Server virtual machine and configures it as jumpbox.
-      * [MssqlVmConfig.ps1](./MssqlVmConfig.ps1): domain joins a Windows Server virtual machine creating using the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering, configures Windows Firewall rules and configures SQL Server logins.
     * [Compiles DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-compile) so they can be used later to [Register a VM to be managed by State Configuration](https://docs.microsoft.com/en-us/azure/automation/tutorial-configure-servers-desired-state#register-a-vm-to-be-managed-by-state-configuration).
 
 #### Network resources
@@ -151,10 +146,9 @@ The configuration for these resources can be found in [040-network.tf](./040-net
 
 Resource name (ARM) | Notes
 --- | ---
-azurerm_virtual_network.vnet_shared_01 (vnet&#x2011;shared&#x2011;01) | By default this virtual network is configured with an address space of `10.1.0.0/16` and is configured with DNS server addresses of 10.1.2.4 (the private ip for *azurerm_windows_virtual_machine.vm_adds*) and [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16).
-azurerm_subnet.vnet_shared_01_subnets["default"] | The default address prefix for this subnet is 10.1.0.0/24 which includes the private ip address for *azurerm_windows_virtual_machine.vm_jumpbox_win* and *azurerm_linux_virtual_machine.vm_jumpbox_linux*.
-azurerm_subnet.vnet_shared_01_subnets["AzureBastionSubnet"] | The default address prefix for this subnet is 10.1.1.0/27 which includes the private ip addresses for *azurerm_bastion_host.bastion_host_01*.
-azurerm_subnet.vnet_shared_01_subnets["adds"] | The default address prefix for this subnet is 10.1.2.0/24 which includes the private ip address for *azurerm_windows_virtual_machine.vm_adds*.
+azurerm_virtual_network.vnet_shared_01 (vnet&#x2011;shared&#x2011;01) | By default this virtual network is configured with an address space of `10.1.0.0/16` and is configured with DNS server addresses of `10.1.1.4` (the private ip for *azurerm_windows_virtual_machine.vm_adds*) and [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16).
+azurerm_subnet.vnet_shared_01_subnets["AzureBastionSubnet"] | The default address prefix for this subnet is 10.1.1.0/27 which includes the private ip addresses for *azurerm_bastion_host.bastion_host_01*. A network security group is associated with this subnet and is configured according to [Working with NSG access and Azure Bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-nsg).
+azurerm_subnet.vnet_shared_01_subnets["snet-adds-01"] | The default address prefix for this subnet is 10.1.2.0/24 which includes the private ip address for *azurerm_windows_virtual_machine.vm_adds*. A network security group is associated with this subnet that permits ingress and egress from virtual networks, and egress to the Internet.
 azurerm_bastion_host.bastion_host_01 (bst&#x2011;d629fdbde51aca2a&#x2011;1) | Used for secure RDP and SSH access to VMs.
 random_id.bastion_host_01_name | Used to generate a random name for *azurerm_bastion_host.bastion_host_01*.
 azurerm_public_ip.bastion_host_01 (pip&#x2011;fc0b6ba367b0c212&#x2011;1) | Public ip used by *azurerm_bastion_host.bastion_host_01*.

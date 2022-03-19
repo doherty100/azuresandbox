@@ -17,70 +17,63 @@ default_owner_object_id=$(az ad user show --id $upn --query objectId --output ts
 default_subscription_id=$(az account list --query "[? isDefault]|[0].id" --only-show-errors --output tsv)
 
 # Initialize constants
-adds_subnet_name='snet-adds-01'
 admin_certificate_name='admincert'
 admin_password_secret='adminpassword'
 admin_username_secret='adminuser'
 arm_client_id=''
 arm_client_secret=''
-bastion_subnet_name='AzureBastionSubnet'
-default_subnet_name='snet-default-01'
 storage_container_name='scripts'
 
 # Initialize user defaults
 default_adds_domain_name="mytestlab.local"
-default_adds_subnet_address_prefix="10.1.2.0/24"
 default_admin_username="bootstrapadmin"
-default_bastion_subnet_address_prefix="10.1.1.0/27"
 default_costcenter="10177772"
-default_default_subnet_address_prefix="10.1.0.0/24"
-default_dns_server="10.1.2.4"
+default_dns_server="10.1.1.4"
 default_environment="dev"
 default_location="eastus"
 default_project="#AzureQuickStarts"
 default_resource_group_name="rg-vdc-nonprod-01"
+default_subnet_adds_address_prefix="10.1.1.0/24"
+default_subnet_AzureBastionSubnet_address_prefix="10.1.0.0/27"
 default_vm_adds_name="adds1"
 default_vnet_address_space="10.1.0.0/16"
 default_vnet_name="vnet-shared-01"
 
 # Get user input
-read -e                                           -p "Service principal appId (arm_client_id) -------------------------------: " arm_client_id
-read -e -i $default_aad_tenant_id                 -p "Azure AD tenant id (aad_tenant_id) ------------------------------------: " aad_tenant_id
-read -e -i $default_owner_object_id               -p "Object id for Azure CLI signed in user (owner_object_id) --------------: " owner_object_id
-read -e -i $default_subscription_id               -p "Azure subscription id (subscription_id) -------------------------------: " subscription_id
-read -e -i $default_resource_group_name           -p "Azure resource group name (resource_group_name) -----------------------: " resource_group_name
-read -e -i $default_location                      -p "Azure location (location) ---------------------------------------------: " location
-read -e -i $default_environment                   -p "Environment tag value (environment) -----------------------------------: " environment
-read -e -i $default_costcenter                    -p "Cost center tag value (costcenter) ------------------------------------: " costcenter
-read -e -i $default_project                       -p "Project tag value (project) -------------------------------------------: " project
-read -e -i $default_vnet_name                     -p "Virtual network name (vnet_name) --------------------------------------: " vnet_name
-read -e -i $default_vnet_address_space            -p "Virtual network address space (vnet_address_space) --------------------: " vnet_address_space
-read -e -i $default_default_subnet_address_prefix -p "Default subnet address prefix (default_subnet_address_prefix) ---------: " default_subnet_address_prefix
-read -e -i $default_bastion_subnet_address_prefix -p "Bastion subnet address prefix (bastion_subnet_address_prefix) ---------: " bastion_subnet_address_prefix
-read -e -i $default_adds_subnet_address_prefix    -p "AD Domain Services subnet address prefix (adds_subnet_address_prefix) -: " adds_subnet_address_prefix
-read -e -i $default_dns_server                    -p "DNS server ip address (dns_server) ------------------------------------: " dns_server
-read -e -i $default_adds_domain_name              -p "AD Domain Services domain name (adds_domain_name) ---------------------: " adds_domain_name
-read -e -i $default_vm_adds_name                  -p "AD Domain Services virtual machine name (vm_adds_name) ----------------: " vm_adds_name
-read -e -i $default_admin_username                -p "'adminuser' key vault secret value (admin_username) -------------------: " admin_username
-read -e -s                                        -p "'adminpassword' key vault secret value (admin_password)  --------------: " admin_password
+read -e                                                       -p "Service principal appId (arm_client_id) ----------------------------------: " arm_client_id
+read -e -i $default_aad_tenant_id                             -p "Azure AD tenant id (aad_tenant_id) ---------------------------------------: " aad_tenant_id
+read -e -i $default_owner_object_id                           -p "Object id for Azure CLI signed in user (owner_object_id) -----------------: " owner_object_id
+read -e -i $default_subscription_id                           -p "Azure subscription id (subscription_id) ----------------------------------: " subscription_id
+read -e -i $default_resource_group_name                       -p "Azure resource group name (resource_group_name) --------------------------: " resource_group_name
+read -e -i $default_location                                  -p "Azure location (location) ------------------------------------------------: " location
+read -e -i $default_environment                               -p "Environment tag value (environment) --------------------------------------: " environment
+read -e -i $default_costcenter                                -p "Cost center tag value (costcenter) ---------------------------------------: " costcenter
+read -e -i $default_project                                   -p "Project tag value (project) ----------------------------------------------: " project
+read -e -i $default_vnet_address_space                        -p "Virtual network address space (vnet_address_space) -----------------------: " vnet_address_space
+read -e -i $default_subnet_AzureBastionSubnet_address_prefix  -p "Bastion subnet address prefix (subnet_AzureBastionSubnet_address_prefix) -: " subnet_AzureBastionSubnet_address_prefix
+read -e -i $default_subnet_adds_address_prefix                -p "AD Domain Services subnet address prefix (subnet_adds_address_prefix) ----: " subnet_adds_address_prefix
+read -e -i $default_dns_server                                -p "DNS server ip address (dns_server) ---------------------------------------: " dns_server
+read -e -i $default_adds_domain_name                          -p "AD Domain Services domain name (adds_domain_name) ------------------------: " adds_domain_name
+read -e -i $default_vm_adds_name                              -p "AD Domain Services virtual machine name (vm_adds_name) -------------------: " vm_adds_name
+read -e -i $default_admin_username                            -p "'adminuser' key vault secret value (admin_username) ----------------------: " admin_username
+read -e -s                                                    -p "'adminpassword' key vault secret value (admin_password)  -----------------: " admin_password
 printf "admin password length ${#admin_password}\n"
 
 # Validate user input
 aad_tenant_id=${aad_tenant_id:-default_aad_tenant_id}
 adds_domain_name=${adds_domain_name:-default_adds_domain_name}
-adds_subnet_address_prefix=${adds_subnet_address_prefix:-default_adds_subnet_address_prefix}
 admin_password_secret=${admin_password_secret:-$default_admin_password_secret}
 admin_username=${admin_username:-$default_admin_username}
 admin_username_secret=${admin_username_secret:-$default_admin_username_secret}
-bastion_subnet_address_prefix=${bastion_subnet_address_prefix:-default_bastion_subnet_address_prefix}
 costcenter=${costcenter:-$default_costcenter}
-default_subnet_address_prefix=${default_subnet_address_prefix:-default_default_subnet_address_prefix}
 dns_server=${dns_server:-default_dns_server}
 environment=${environment:-$default_environment}
 location=${location:-$default_location}
 owner_object_id=${owner_object_id:-$default_owner_object_id}
 project=${project:-$default_project}
 resource_group_name=${resource_group_name:-$default_resource_group_name}
+subnet_adds_address_prefix=${subnet_adds_address_prefix:-default_subnet_adds_address_prefix}
+subnet_AzureBastionSubnet_address_prefix=${subnet_AzureBastionSubnet_address_prefix:-default_subnet_AzureBastionSubnet_address_prefix}
 subscription_id=${subscription_id:-$default_subscription_id}
 vm_adds_name=${vm_adds_name:-default_vm_adds_name}
 vnet_address_space=${vnet_address_space:-default_vnet_address_space}
@@ -89,7 +82,14 @@ vnet_name=${vnet_name:=$default_vnet_name}
 # Validate arm_client_id
 if [ -z "$arm_client_id" ]
 then
-  printf "arm_client_id is required."
+  printf "arm_client_id is required.\n"
+  usage
+fi
+
+# Validate TF_VAR_arm_client_secret
+if [ -z "$TF_VAR_arm_client_secret" ]
+then
+  printf "Environment variable 'TF_VAR_arm_client_secret' must be set.\n"
   usage
 fi
 
@@ -256,26 +256,6 @@ else
   --account-key $storage_account_key
 fi
 
-# Build subnet map
-subnets=""
-subnets="${subnets}{\n"
-subnets="${subnets}  default = {\n"
-subnets="${subnets}    name                                           = \"$default_subnet_name\",\n"
-subnets="${subnets}    address_prefix                                 = \"$default_subnet_address_prefix\",\n"
-subnets="${subnets}    enforce_private_link_endpoint_network_policies = false\n"
-subnets="${subnets}  },\n"
-subnets="${subnets}  AzureBastionSubnet = {\n"
-subnets="${subnets}    name                                           = \"$bastion_subnet_name\",\n"
-subnets="${subnets}    address_prefix                                 = \"$bastion_subnet_address_prefix\",\n"
-subnets="${subnets}    enforce_private_link_endpoint_network_policies = false\n"
-subnets="${subnets}  },\n"
-subnets="${subnets}  adds = {\n"
-subnets="${subnets}    name                                           = \"$adds_subnet_name\",\n"
-subnets="${subnets}    address_prefix                                 = \"$adds_subnet_address_prefix\",\n"
-subnets="${subnets}    enforce_private_link_endpoint_network_policies = false\n"
-subnets="${subnets}  }\n"
-subnets="${subnets}}"
-
 # Build tags map
 tags=""
 tags="${tags}{\n"
@@ -287,23 +267,25 @@ tags="${tags}}"
 # Generate terraform.tfvars file
 printf "\nGenerating terraform.tfvars file...\n\n"
 
-printf "aad_tenant_id =                   \"$aad_tenant_id\"\n"                   > ./terraform.tfvars
-printf "adds_domain_name =                \"$adds_domain_name\"\n"                >> ./terraform.tfvars
-printf "arm_client_id =                   \"$arm_client_id\"\n"                   >> ./terraform.tfvars
-printf "dns_server =                      \"$dns_server\"\n"                      >> ./terraform.tfvars
-printf "key_vault_id =                    \"$key_vault_id\"\n"                    >> ./terraform.tfvars
-printf "key_vault_name =                  \"$key_vault_name\"\n"                  >> ./terraform.tfvars
-printf "location =                        \"$location\"\n"                        >> ./terraform.tfvars
-printf "resource_group_name =             \"$resource_group_name\"\n"             >> ./terraform.tfvars
-printf "storage_account_key_kerb_secret = \"$storage_account_name-kerb1\"\n"      >> ./terraform.tfvars
-printf "storage_account_name =            \"$storage_account_name\"\n"            >> ./terraform.tfvars
-printf "storage_container_name =          \"$storage_container_name\"\n"          >> ./terraform.tfvars
-printf "subnets =                         $subnets\n"                             >> ./terraform.tfvars
-printf "subscription_id =                 \"$subscription_id\"\n"                 >> ./terraform.tfvars
-printf "tags =                            $tags\n"                                >> ./terraform.tfvars
-printf "vm_adds_name =                    \"$vm_adds_name\"\n"                    >> ./terraform.tfvars
-printf "vnet_address_space =              \"$vnet_address_space\"\n"              >> ./terraform.tfvars
-printf "vnet_name =                       \"$vnet_name\"\n"                       >> ./terraform.tfvars
+printf "aad_tenant_id =                             \"$aad_tenant_id\"\n"                             > ./terraform.tfvars
+printf "adds_domain_name =                          \"$adds_domain_name\"\n"                          >> ./terraform.tfvars
+printf "arm_client_id =                             \"$arm_client_id\"\n"                             >> ./terraform.tfvars
+printf "dns_server =                                \"$dns_server\"\n"                                >> ./terraform.tfvars
+printf "jumpbox_security_group_name =               \"$jumpbox_security_group_name\"\n"               >> ./terraform.tfvars
+printf "key_vault_id =                              \"$key_vault_id\"\n"                              >> ./terraform.tfvars
+printf "key_vault_name =                            \"$key_vault_name\"\n"                            >> ./terraform.tfvars
+printf "location =                                  \"$location\"\n"                                  >> ./terraform.tfvars
+printf "resource_group_name =                       \"$resource_group_name\"\n"                       >> ./terraform.tfvars
+printf "storage_account_key_kerb_secret =           \"$storage_account_name-kerb1\"\n"                >> ./terraform.tfvars
+printf "storage_account_name =                      \"$storage_account_name\"\n"                      >> ./terraform.tfvars
+printf "storage_container_name =                    \"$storage_container_name\"\n"                    >> ./terraform.tfvars
+printf "subnet_adds_address_prefix =                \"$subnet_adds_address_prefix\"\n"                >> ./terraform.tfvars
+printf "subnet_AzureBastionSubnet_address_prefix =  \"$subnet_AzureBastionSubnet_address_prefix\"\n"  >> ./terraform.tfvars
+printf "subscription_id =                           \"$subscription_id\"\n"                           >> ./terraform.tfvars
+printf "tags =                                      $tags\n"                                          >> ./terraform.tfvars
+printf "vm_adds_name =                              \"$vm_adds_name\"\n"                              >> ./terraform.tfvars
+printf "vnet_address_space =                        \"$vnet_address_space\"\n"                        >> ./terraform.tfvars
+printf "vnet_name =                                 \"$vnet_name\"\n"                                 >> ./terraform.tfvars
 
 cat ./terraform.tfvars
 

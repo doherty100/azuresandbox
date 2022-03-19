@@ -10,7 +10,7 @@ resource "azurerm_private_endpoint" "storage_account_01_file" {
   name                = "pend-${var.storage_account_name}-file"
   resource_group_name = var.resource_group_name
   location            = var.location
-  subnet_id           = azurerm_subnet.vnet_app_01_subnets["PrivateLink"].id
+  subnet_id           = azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"].id
   tags                = var.tags
 
   private_service_connection {

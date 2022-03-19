@@ -1,0 +1,10 @@
+AzureDiagnostics
+| where OperationName  == "AzureFirewallIDSLog"
+| parse msg_s with * ". Action: " pAction ". Signature:" pSignatureid ". IDS:" pMessage ". Priority:" pPriority ". Classification:" pClassification
+| project 
+    Signature = strcat(pMessage, " (", trim(" ",pSignatureid), ")")
+| summarize 
+    signatureCount=count() by Signature
+| order by 
+    signatureCount desc
+ 

@@ -42,7 +42,7 @@ resource "azurerm_network_interface" "vm_jumbox_linux_nic_01" {
 
   ip_configuration {
     name                          = "ipc-${var.vm_jumpbox_linux_name}"
-    subnet_id                     = azurerm_subnet.vnet_app_01_subnets["application"].id
+    subnet_id                     = azurerm_subnet.vnet_app_01_subnets["snet-app-01"].id
     private_ip_address_allocation = "Dynamic"
   }
 }

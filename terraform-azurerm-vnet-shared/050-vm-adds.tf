@@ -56,7 +56,7 @@ resource "azurerm_network_interface" "vm_adds_nic_01" {
 
   ip_configuration {
     name                          = "ipc-${var.vm_adds_name}-1"
-    subnet_id                     = azurerm_subnet.vnet_shared_01_subnets["adds"].id
+    subnet_id                     = azurerm_subnet.vnet_shared_01_subnets["snet-adds-01"].id
     private_ip_address_allocation = "Dynamic"
   }
 }
