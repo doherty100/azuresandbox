@@ -168,6 +168,16 @@ variable "vm_jumpbox_linux_userdata_file" {
 }
 
 # Windows jumpbox VM variables
+variable "vm_jumpbox_win_configure_storage_script" {
+  type        = string
+  description = "The name of the PowerShell script used to configure Azure Storage for kerberos authentication."
+}
+
+variable "vm_jumpbox_win_configure_storage_script_uri" {
+  type        = string
+  description = "The uri oof the PowerShell script used to configure Azure Storage for kerberos authentication."
+}
+
 variable "vm_jumpbox_win_image_offer" {
   type        = string
   description = "The offer type of the virtual machine image used to create the VM"
@@ -195,6 +205,16 @@ variable "vm_jumpbox_win_image_version" {
 variable "vm_jumpbox_win_name" {
   type        = string
   description = "The name of the VM"
+}
+
+variable "vm_jumpbox_win_post_deploy_script" {
+  type        = string
+  description = "The name of the PowerShell script to be run post-deployment."
+}
+
+variable "vm_jumpbox_win_post_deploy_script_uri" {
+  type        = string
+  description = "The uri of the PowerShell script of the PowerShell script to be run post-deployment."
 }
 
 variable "vm_jumpbox_win_size" {

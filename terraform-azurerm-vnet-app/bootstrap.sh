@@ -23,7 +23,9 @@ default_subnet_privatelink_address_prefix="10.2.2.0/24"
 default_vm_jumpbox_linux_name="jumplinux1"
 default_vm_jumpbox_win_name="jumpwin1"
 default_vm_mssql_win_name="mssqlwin1"
-vm_mssql_win_post_deploy_script="configure-mssql.ps1"
+vm_jumpbox_win_post_deploy_script="configure-vm-jumpbox-win.ps1"
+vm_jumpbox_win_configure_storage_script="configure-storage-kerberos.ps1"
+vm_mssql_win_post_deploy_script="configure-vm-mssql.ps1"
 vm_mssql_win_sql_startup_script="sql-startup.ps1"
 
 # Intialize runtime defaults
@@ -156,6 +158,8 @@ printf "Generating cloud-init User-Data file '$vm_jumpbox_linux_userdata_file'..
 cloud-init devel make-mime -a configure-vm-jumpbox-linux.yaml:cloud-config -a configure-vm-jumpbox-linux.sh:x-shellscript > $vm_jumpbox_linux_userdata_file
 
 # Upload post-deployment scripts
+vm_jumpbox_win_post_deploy_script_uri="https://${storage_account_name:1:-1}.blob.core.windows.net/${storage_container_name:1:-1}/$vm_jumpbox_win_post_deploy_script"
+vm_jumpbox_win_configure_storage_script_uri="https://${storage_account_name:1:-1}.blob.core.windows.net/${storage_container_name:1:-1}/$vm_jumpbox_win_configure_storage_script"
 vm_mssql_win_post_deploy_script_uri="https://${storage_account_name:1:-1}.blob.core.windows.net/${storage_container_name:1:-1}/$vm_mssql_win_post_deploy_script"
 vm_mssql_win_sql_startup_script_uri="https://${storage_account_name:1:-1}.blob.core.windows.net/${storage_container_name:1:-1}/$vm_mssql_win_sql_startup_script"
 
@@ -187,38 +191,42 @@ printf "Configuring automation account '${automation_account_name:1:-1}'...\n"
 # Generate terraform.tfvars file
 printf "\nGenerating terraform.tfvars file...\n\n"
 
-printf "aad_tenant_id =                       $aad_tenant_id\n"                           > ./terraform.tfvars
-printf "adds_domain_name =                    $adds_domain_name\n"                        >> ./terraform.tfvars
-printf "admin_password_secret =               $admin_password_secret\n"                   >> ./terraform.tfvars
-printf "admin_username_secret =               $admin_username_secret\n"                   >> ./terraform.tfvars
-printf "arm_client_id =                       $arm_client_id\n"                           >> ./terraform.tfvars
-printf "automation_account_name =             $automation_account_name\n"                 >> ./terraform.tfvars
-printf "dns_server =                          $dns_server\n"                              >> ./terraform.tfvars
-printf "key_vault_id =                        $key_vault_id\n"                            >> ./terraform.tfvars
-printf "key_vault_name =                      $key_vault_name\n"                          >> ./terraform.tfvars
-printf "location =                            $location\n"                                >> ./terraform.tfvars
-printf "mssql_database_name =                 \"$mssql_database_name\"\n"                 >> ./terraform.tfvars
-printf "remote_virtual_network_id =           $remote_virtual_network_id\n"               >> ./terraform.tfvars
-printf "remote_virtual_network_name =         $remote_virtual_network_name\n"             >> ./terraform.tfvars
-printf "resource_group_name =                 $resource_group_name\n"                     >> ./terraform.tfvars
-printf "ssh_public_key =                      \"$ssh_public_key_secret_value\"\n"         >> ./terraform.tfvars
-printf "storage_account_name =                $storage_account_name\n"                    >> ./terraform.tfvars
-printf "storage_share_name =                  \"$storage_share_name\"\n"                  >> ./terraform.tfvars
-printf "subnet_application_address_prefix =   \"$subnet_application_address_prefix\"\n"   >> ./terraform.tfvars
-printf "subnet_database_address_prefix =      \"$subnet_database_address_prefix\"\n"      >> ./terraform.tfvars
-printf "subnet_privatelink_address_prefix =   \"$subnet_privatelink_address_prefix\"\n"   >> ./terraform.tfvars
-printf "subscription_id =                     $subscription_id\n"                         >> ./terraform.tfvars
-printf "tags =                                $tags\n"                                    >> ./terraform.tfvars
-printf "vm_jumpbox_linux_name =               \"$vm_jumpbox_linux_name\"\n"               >> ./terraform.tfvars
-printf "vm_jumpbox_linux_userdata_file =      \"$vm_jumpbox_linux_userdata_file\"\n"      >> ./terraform.tfvars
-printf "vm_jumpbox_win_name =                 \"$vm_jumpbox_win_name\"\n"                 >> ./terraform.tfvars
-printf "vm_mssql_win_name =                   \"$vm_mssql_win_name\"\n"                   >> ./terraform.tfvars
-printf "vm_mssql_win_post_deploy_script =     \"$vm_mssql_win_post_deploy_script\"\n"     >> ./terraform.tfvars
-printf "vm_mssql_win_post_deploy_script_uri = \"$vm_mssql_win_post_deploy_script_uri\"\n" >> ./terraform.tfvars
-printf "vm_mssql_win_sql_startup_script =     \"$vm_mssql_win_sql_startup_script\"\n"     >> ./terraform.tfvars
-printf "vm_mssql_win_sql_startup_script_uri = \"$vm_mssql_win_sql_startup_script_uri\"\n" >> ./terraform.tfvars
-printf "vnet_address_space =                  \"$vnet_address_space\"\n"                  >> ./terraform.tfvars
-printf "vnet_name =                           \"$vnet_name\"\n"                           >> ./terraform.tfvars
+printf "aad_tenant_id                               = $aad_tenant_id\n"                                   > ./terraform.tfvars
+printf "adds_domain_name                            = $adds_domain_name\n"                                >> ./terraform.tfvars
+printf "admin_password_secret                       = $admin_password_secret\n"                           >> ./terraform.tfvars
+printf "admin_username_secret                       = $admin_username_secret\n"                           >> ./terraform.tfvars
+printf "arm_client_id                               = $arm_client_id\n"                                   >> ./terraform.tfvars
+printf "automation_account_name                     = $automation_account_name\n"                         >> ./terraform.tfvars
+printf "dns_server                                  = $dns_server\n"                                      >> ./terraform.tfvars
+printf "key_vault_id                                = $key_vault_id\n"                                    >> ./terraform.tfvars
+printf "key_vault_name                              = $key_vault_name\n"                                  >> ./terraform.tfvars
+printf "location                                    = $location\n"                                        >> ./terraform.tfvars
+printf "mssql_database_name                         = \"$mssql_database_name\"\n"                         >> ./terraform.tfvars
+printf "remote_virtual_network_id                   = $remote_virtual_network_id\n"                       >> ./terraform.tfvars
+printf "remote_virtual_network_name                 = $remote_virtual_network_name\n"                     >> ./terraform.tfvars
+printf "resource_group_name                         = $resource_group_name\n"                             >> ./terraform.tfvars
+printf "ssh_public_key                              = \"$ssh_public_key_secret_value\"\n"                 >> ./terraform.tfvars
+printf "storage_account_name                        = $storage_account_name\n"                            >> ./terraform.tfvars
+printf "storage_share_name                          = \"$storage_share_name\"\n"                          >> ./terraform.tfvars
+printf "subnet_application_address_prefix           = \"$subnet_application_address_prefix\"\n"           >> ./terraform.tfvars
+printf "subnet_database_address_prefix              = \"$subnet_database_address_prefix\"\n"              >> ./terraform.tfvars
+printf "subnet_privatelink_address_prefix           = \"$subnet_privatelink_address_prefix\"\n"           >> ./terraform.tfvars
+printf "subscription_id                             = $subscription_id\n"                                 >> ./terraform.tfvars
+printf "tags                                        = $tags\n"                                            >> ./terraform.tfvars
+printf "vm_jumpbox_linux_name                       = \"$vm_jumpbox_linux_name\"\n"                       >> ./terraform.tfvars
+printf "vm_jumpbox_linux_userdata_file              = \"$vm_jumpbox_linux_userdata_file\"\n"              >> ./terraform.tfvars
+printf "vm_jumpbox_win_name                         = \"$vm_jumpbox_win_name\"\n"                         >> ./terraform.tfvars
+printf "vm_mssql_win_name                           = \"$vm_mssql_win_name\"\n"                           >> ./terraform.tfvars
+printf "vm_jumpbox_win_post_deploy_script           = \"$vm_jumpbox_win_post_deploy_script\"\n"           >> ./terraform.tfvars
+printf "vm_jumpbox_win_post_deploy_script_uri       = \"$vm_jumpbox_win_post_deploy_script_uri\"\n"       >> ./terraform.tfvars
+printf "vm_jumpbox_win_configure_storage_script     = \"$vm_jumpbox_win_configure_storage_script\"\n"      >> ./terraform.tfvars
+printf "vm_jumpbox_win_configure_storage_script_uri = \"$vm_jumpbox_win_configure_storage_script_uri\"\n"  >> ./terraform.tfvars
+printf "vm_mssql_win_post_deploy_script             = \"$vm_mssql_win_post_deploy_script\"\n"             >> ./terraform.tfvars
+printf "vm_mssql_win_post_deploy_script_uri         = \"$vm_mssql_win_post_deploy_script_uri\"\n"         >> ./terraform.tfvars
+printf "vm_mssql_win_sql_startup_script             = \"$vm_mssql_win_sql_startup_script\"\n"             >> ./terraform.tfvars
+printf "vm_mssql_win_sql_startup_script_uri         = \"$vm_mssql_win_sql_startup_script_uri\"\n"         >> ./terraform.tfvars
+printf "vnet_address_space                          = \"$vnet_address_space\"\n"                          >> ./terraform.tfvars
+printf "vnet_name                                   = \"$vnet_name\"\n"                                   >> ./terraform.tfvars
 
 cat ./terraform.tfvars
 

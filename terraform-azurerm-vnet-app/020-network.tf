@@ -78,7 +78,7 @@ locals {
   ])
 }
 
-# Application virtual network, subnets and network security gruops
+# Application virtual network, subnets and network security groups
 resource "azurerm_virtual_network" "vnet_app_01" {
   name                = var.vnet_name
   location            = var.location
@@ -99,12 +99,19 @@ resource "azurerm_subnet" "vnet_app_01_subnets" {
 }
 
 resource "azurerm_network_security_group" "network_security_groups" {
-  for_each = local.subnets
+  for_each = azurerm_subnet.vnet_app_01_subnets
 
   name                = "nsg-${var.vnet_name}.${each.key}"
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = var.tags
+}
+
+resource "azurerm_subnet_network_security_group_association" "nsg_subnet_associations" {
+  for_each = azurerm_subnet.vnet_app_01_subnets
+
+  subnet_id = azurerm_subnet.vnet_app_01_subnets[each.key].id
+  network_security_group_id = azurerm_network_security_group.network_security_groups[each.key].id
 }
 
 resource "azurerm_network_security_rule" "network_security_rules" {

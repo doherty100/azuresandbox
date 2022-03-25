@@ -31,7 +31,7 @@ locals {
       destination_address_prefix = "AzureCloud"
       destination_port_ranges    = ["443"]
       direction                  = "Outbound"
-      protocol                   = "TCP"
+      protocol                   = "Tcp"
       source_address_prefix      = "*"
       source_port_ranges         = ["*"]
     }
@@ -184,12 +184,26 @@ resource "azurerm_subnet" "vnet_shared_01_subnets" {
 }
 
 resource "azurerm_network_security_group" "network_security_groups" {
-  for_each = local.subnets
+  for_each = azurerm_subnet.vnet_shared_01_subnets
 
   name                = "nsg-${var.vnet_name}.${each.key}"
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = var.tags
+}
+
+resource "azurerm_subnet_network_security_group_association" "nsg_subnet_associations" {
+  for_each = azurerm_subnet.vnet_shared_01_subnets
+
+  subnet_id = azurerm_subnet.vnet_shared_01_subnets[each.key].id
+  network_security_group_id = azurerm_network_security_group.network_security_groups[each.key].id
+
+  # Note: This depedency is a workaround for an issue that arises when existing NSG rules do not exactly match what Azure Bastion wants, even if the rules are correct.
+  # The NSG rules in this configuration functionally match what is reccomended, however the name and priority of the rules are different.
+  # See https://docs.microsoft.com/en-us/azure/bastion/bastion-nsg?msclkid=b12f8b18ac6e11ecb11e8f00c2bce23d for more information.
+  depends_on = [
+    azurerm_bastion_host.bastion_host_01
+  ]
 }
 
 resource "azurerm_network_security_rule" "network_security_rules" {

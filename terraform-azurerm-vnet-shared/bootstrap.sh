@@ -267,25 +267,25 @@ tags="${tags}}"
 # Generate terraform.tfvars file
 printf "\nGenerating terraform.tfvars file...\n\n"
 
-printf "aad_tenant_id =                             \"$aad_tenant_id\"\n"                             > ./terraform.tfvars
-printf "adds_domain_name =                          \"$adds_domain_name\"\n"                          >> ./terraform.tfvars
-printf "arm_client_id =                             \"$arm_client_id\"\n"                             >> ./terraform.tfvars
-printf "dns_server =                                \"$dns_server\"\n"                                >> ./terraform.tfvars
-printf "jumpbox_security_group_name =               \"$jumpbox_security_group_name\"\n"               >> ./terraform.tfvars
-printf "key_vault_id =                              \"$key_vault_id\"\n"                              >> ./terraform.tfvars
-printf "key_vault_name =                            \"$key_vault_name\"\n"                            >> ./terraform.tfvars
-printf "location =                                  \"$location\"\n"                                  >> ./terraform.tfvars
-printf "resource_group_name =                       \"$resource_group_name\"\n"                       >> ./terraform.tfvars
-printf "storage_account_key_kerb_secret =           \"$storage_account_name-kerb1\"\n"                >> ./terraform.tfvars
-printf "storage_account_name =                      \"$storage_account_name\"\n"                      >> ./terraform.tfvars
-printf "storage_container_name =                    \"$storage_container_name\"\n"                    >> ./terraform.tfvars
-printf "subnet_adds_address_prefix =                \"$subnet_adds_address_prefix\"\n"                >> ./terraform.tfvars
-printf "subnet_AzureBastionSubnet_address_prefix =  \"$subnet_AzureBastionSubnet_address_prefix\"\n"  >> ./terraform.tfvars
-printf "subscription_id =                           \"$subscription_id\"\n"                           >> ./terraform.tfvars
-printf "tags =                                      $tags\n"                                          >> ./terraform.tfvars
-printf "vm_adds_name =                              \"$vm_adds_name\"\n"                              >> ./terraform.tfvars
-printf "vnet_address_space =                        \"$vnet_address_space\"\n"                        >> ./terraform.tfvars
-printf "vnet_name =                                 \"$vnet_name\"\n"                                 >> ./terraform.tfvars
+printf "aad_tenant_id                             = \"$aad_tenant_id\"\n"                             > ./terraform.tfvars
+printf "adds_domain_name                          = \"$adds_domain_name\"\n"                          >> ./terraform.tfvars
+printf "arm_client_id                             = \"$arm_client_id\"\n"                             >> ./terraform.tfvars
+printf "dns_server                                = \"$dns_server\"\n"                                >> ./terraform.tfvars
+printf "jumpbox_security_group_name               = \"$jumpbox_security_group_name\"\n"               >> ./terraform.tfvars
+printf "key_vault_id                              = \"$key_vault_id\"\n"                              >> ./terraform.tfvars
+printf "key_vault_name                            = \"$key_vault_name\"\n"                            >> ./terraform.tfvars
+printf "location                                  = \"$location\"\n"                                  >> ./terraform.tfvars
+printf "resource_group_name                       = \"$resource_group_name\"\n"                       >> ./terraform.tfvars
+printf "storage_account_key_kerb_secret           = \"$storage_account_name-kerb1\"\n"                >> ./terraform.tfvars
+printf "storage_account_name                      = \"$storage_account_name\"\n"                      >> ./terraform.tfvars
+printf "storage_container_name                    = \"$storage_container_name\"\n"                    >> ./terraform.tfvars
+printf "subnet_adds_address_prefix                = \"$subnet_adds_address_prefix\"\n"                >> ./terraform.tfvars
+printf "subnet_AzureBastionSubnet_address_prefix  = \"$subnet_AzureBastionSubnet_address_prefix\"\n"  >> ./terraform.tfvars
+printf "subscription_id                           = \"$subscription_id\"\n"                           >> ./terraform.tfvars
+printf "tags                                      = $tags\n"                                          >> ./terraform.tfvars
+printf "vm_adds_name                              = \"$vm_adds_name\"\n"                              >> ./terraform.tfvars
+printf "vnet_address_space                        = \"$vnet_address_space\"\n"                        >> ./terraform.tfvars
+printf "vnet_name                                 = \"$vnet_name\"\n"                                 >> ./terraform.tfvars
 
 cat ./terraform.tfvars
 

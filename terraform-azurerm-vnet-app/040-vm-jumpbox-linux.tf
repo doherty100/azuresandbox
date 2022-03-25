@@ -51,5 +51,5 @@ resource "azurerm_key_vault_access_policy" "vm_jumpbox_linux_secrets_get" {
   key_vault_id       = var.key_vault_id
   tenant_id          = azurerm_linux_virtual_machine.vm_jumpbox_linux.identity[0].tenant_id
   object_id          = azurerm_linux_virtual_machine.vm_jumpbox_linux.identity[0].principal_id
-  secret_permissions = ["get"]
+  secret_permissions = ["Get"]
 }

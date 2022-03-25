@@ -1,5 +1,19 @@
-# Windows jumpbox virtual machine
+locals {
+  commandParamParts = [
+    "$params = @{",
+      "TenantId = '${var.aad_tenant_id}'; ", 
+      "SubscriptionId = '${var.subscription_id}'; ", 
+      "AppId = '${var.arm_client_id}'; ",
+      "AppSecret = '${nonsensitive(var.arm_client_secret)}'; ",
+      "ResourceGroupName = '${var.resource_group_name}'; ",
+      "StorageAccountName = '${var.storage_account_name}'; ",
+      "StorageAccountKerbKey = '${nonsensitive(data.azurerm_key_vault_secret.storage_account_kerb_key.value)}'; ",
+      "Domain = '${var.adds_domain_name}'",
+    "}"
+  ]
+}
 
+# Windows jumpbox virtual machine
 resource "azurerm_windows_virtual_machine" "vm_jumpbox_win" {
   name                     = var.vm_jumpbox_win_name
   resource_group_name      = var.resource_group_name
@@ -23,6 +37,7 @@ resource "azurerm_windows_virtual_machine" "vm_jumpbox_win" {
     version   = var.vm_jumpbox_win_image_version
   }
 
+  # Note: To view provisioner output, use the Terraform nonsensitive() function when referencing key vault secrets or variables marked 'sensitive'
   provisioner "local-exec" {
     command     = <<EOT
         $params = @{
@@ -40,30 +55,6 @@ resource "azurerm_windows_virtual_machine" "vm_jumpbox_win" {
    EOT
     interpreter = ["pwsh", "-Command"]
   }
-
-  # Note: To view provisioner output, use the Terraform nonsensitive() function when referencing key vault secrets or variables marked 'sensitive'
-  # provisioner "local-exec" {
-  #   command     = <<EOT
-  #       $params = @{
-  #       TenantId = "${var.aad_tenant_id}"
-  #       SubscriptionId = "${var.subscription_id}"
-  #       ResourceGroupName = "${var.resource_group_name}"
-  #       Location = "${var.location}"
-  #       AutomationAccountName = "${var.automation_account_name}"
-  #       VirtualMachineName = "${var.vm_jumpbox_win_name}"
-  #       AppId = "${var.arm_client_id}"
-  #       AppSecret = "${nonsensitive(var.arm_client_secret)}"
-  #       DscConfigurationName = "JumpBoxConfig"
-  #       StorageAccountName = "${var.storage_account_name}"
-  #       StorageAccountKerbKey = "${nonsensitive(data.azurerm_key_vault_secret.storage_account_kerb_key.value)}"
-  #       Domain = "${var.adds_domain_name}"
-  #       AdminUser = "${nonsensitive(data.azurerm_key_vault_secret.adminuser.value)}"
-  #       AdminUserSecret = "${nonsensitive(data.azurerm_key_vault_secret.adminpassword.value)}"
-  #       }
-  #       ${path.root}/configure-vm-jumpbox-win.ps1 @params 
-  #  EOT
-  #   interpreter = ["pwsh", "-Command"]
-  # }
 }
 
 # Nics
@@ -78,4 +69,31 @@ resource "azurerm_network_interface" "vm_jumpbox_win_nic_01" {
     subnet_id                     = azurerm_subnet.vnet_app_01_subnets["snet-app-01"].id
     private_ip_address_allocation = "Dynamic"
   }
+}
+
+# Virtual machine extensions
+resource "azurerm_virtual_machine_extension" "vm_jumpbox_win_postdeploy_script" {
+  name                       = "vmext-${azurerm_windows_virtual_machine.vm_jumpbox_win.name}-postdeploy-script"
+  virtual_machine_id         = azurerm_windows_virtual_machine.vm_jumpbox_win.id
+  publisher                  = "Microsoft.Compute"
+  type                       = "CustomScriptExtension"
+  type_handler_version       = "1.10"
+  auto_upgrade_minor_version = true
+
+  settings = <<SETTINGS
+    {
+      "fileUris": [ 
+        "${var.vm_jumpbox_win_post_deploy_script_uri}", 
+        "${var.vm_jumpbox_win_configure_storage_script_uri}" 
+      ],
+      "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -Command \"${join("", local.commandParamParts)}; .\\${var.vm_jumpbox_win_post_deploy_script} @params\""
+    }    
+  SETTINGS
+
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+      "storageAccountName": "${var.storage_account_name}",
+      "storageAccountKey": "${data.azurerm_key_vault_secret.storage_account_key.value}"
+    }
+  PROTECTED_SETTINGS
 }
