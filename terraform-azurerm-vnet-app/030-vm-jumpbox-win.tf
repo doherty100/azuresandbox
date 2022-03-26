@@ -8,9 +8,9 @@ locals {
       "ResourceGroupName = '${var.resource_group_name}'; ",
       "StorageAccountName = '${var.storage_account_name}'; ",
       "StorageAccountKerbKey = '${nonsensitive(data.azurerm_key_vault_secret.storage_account_kerb_key.value)}'; ",
-      "Domain = '${var.adds_domain_name}'",
-      "AdminUser = '${nonsensitive(data.azurerm_key_vault_secret.adminuser.value)}'",
-      "AdminUserSecret = '${nonsensitive(data.azurerm_key_vault_secret.adminpassword.value)}'",
+      "Domain = '${var.adds_domain_name}'; ",
+      "AdminUser = '${nonsensitive(data.azurerm_key_vault_secret.adminuser.value)}'; ",
+      "AdminUserSecret = '${nonsensitive(data.azurerm_key_vault_secret.adminpassword.value)}' ",
     "}"
   ]
 }
@@ -25,7 +25,7 @@ resource "azurerm_windows_virtual_machine" "vm_jumpbox_win" {
   admin_password           = data.azurerm_key_vault_secret.adminpassword.value
   network_interface_ids    = [azurerm_network_interface.vm_jumpbox_win_nic_01.id]
   patch_mode               = "AutomaticByPlatform"
-  tags                     = merge(var.tags, { keyvault = var.key_vault_name }, { adds_domain_name = var.adds_domain_name })
+  tags                     = var.tags
 
   os_disk {
     caching              = "ReadWrite"
