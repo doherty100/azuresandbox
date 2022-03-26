@@ -1,12 +1,12 @@
-# #AzureQuickStarts
+# #AzureSandbox
 
 ## Overview
 
-This repository contains a collection of inter-dependent [cloud computing](https://azure.microsoft.com/en-us/overview/what-is-cloud-computing) quick starts for implementing common [Microsoft Azure](https://azure.microsoft.com/en-us/overview/what-is-azure/) services on a single [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription). Collectively these quick starts provide a flexible and cost effective lab environment useful for experimenting with various Azure services and capabilities.
+This repository contains a collection of inter-dependent [cloud computing](https://azure.microsoft.com/en-us/overview/what-is-cloud-computing) samples for implementing common [Microsoft Azure](https://azure.microsoft.com/en-us/overview/what-is-azure/) services on a single [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription). Collectively these samples provide a flexible and cost effective sandbox environment useful for experimenting with various Azure services and capabilities.
 
-*Disclaimer:* \#AzureQuickStarts is not intended for production use. \#AzureQuickStarts is intended to accelerate cloud projects by providing a minimal, cost effective lab environment. While some best practices are used, others are intentionally not used in favor of simplicity and cost. See [Known issues](#known-issues) for more information.
+*Disclaimer:* \#AzureSandbox is not intended for production use. \#AzureSandbox is intended to accelerate cloud projects by providing a minimal, cost effective lab environment. While some best practices are used, others are intentionally not used in favor of simplicity and cost. See [Known issues](#known-issues) for more information.
 
-\#AzureQuickStarts is implemented using popular open source tools that are supported on Windows, macOS and Linux including:
+\#AzureSandbox is implemented using popular open source tools that are supported on Windows, macOS and Linux including:
 
 * [git](https://git-scm.com/) for source control.
 * [Bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)) for scripting.
@@ -20,12 +20,12 @@ This repository contains a collection of inter-dependent [cloud computing](https
 
 This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doherty-805635b/).
 
-## Quick start index
+## Sandbox index
 
-\#AzureQuickStarts features a modular design and can be deployed as a whole or incrementally depending upon your requirements.
+\#AzureSandbox features a modular design and can be deployed as a whole or incrementally depending upon your requirements.
 
 * [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) includes the following:
-  * A [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group) which contains all the quick start resources.
+  * A [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group) which contains all the sandbox resources.
   * A [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview) for managing secrets.
   * A [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/data-platform#collect-monitoring-data) for log data and metrics.
   * A [storage account](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#storage-account) for blob storage.
@@ -42,8 +42,8 @@ This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doher
   * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) SMB file share hosted in [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction) with a private endpoint implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
 * [terraform-azurerm-vwan](./terraform-azurerm-vwan/) includes the following:
   * A [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources)
-  * A [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) and [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/) which can be used to set up VPN connectivity to quick start resources.
-* Miscellaneous quick starts
+  * A [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) and [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/) which can be used to set up VPN connectivity to sandbox resources.
+* Miscellaneous samples
   * [az-graph](./az-graph/)
     * Common [Azure Resource Graph](https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview) queries used for real world cloud estate discovery projects
     * Utility script for executing resource graph queries and exporting results
@@ -51,17 +51,17 @@ This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doher
 
 ## Prerequisites
 
-The following prerequisites are required in order to get started. Note that once these prerequisite are in place, a [Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) Azure RBAC role assignment is sufficient to use the quick starts.
+The following prerequisites are required in order to get started. Note that once these prerequisite are in place, a [Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) Azure RBAC role assignment is sufficient to use the samples.
 
 * Identify the [Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-whatis) (AAD) tenant to be used for identity and access management, or create a new AAD tenant using [Quickstart: Set up a tenant](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-create-new-tenant).
 * Identify a single Azure [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription) or create a new Azure subscription. See [Azure Offer Details](https://azure.microsoft.com/en-us/support/legal/offer-details/) and [Associate or add an Azure subscription to your Azure Active Directory tenant](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory) for more information.
-* Identify the owner of the Azure subscription to be used for \#AzureQuickStarts. This user should have an [Owner](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner) Azure RBAC role assignment on the subscription. See [Steps to assign an Azure role](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps) for more information.
-* Ask the subscription owner to create a [Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) Azure RBAC role assignment for each quick start user. See [Steps to assign an Azure role](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps) for more information.
+* Identify the owner of the Azure subscription to be used for \#AzureSandbox. This user should have an [Owner](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner) Azure RBAC role assignment on the subscription. See [Steps to assign an Azure role](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps) for more information.
+* Ask the subscription owner to create a [Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) Azure RBAC role assignment for each sample user. See [Steps to assign an Azure role](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps) for more information.
 * Verify the subscription owner has privileges to create a Service principal name on the AAD tenant. See [Check Azure AD permissions](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#check-azure-ad-permissions) for more information.
-* Ask the subscription owner to [Create a service principal](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli) (SPN) for quick start users using the Azure CLI command `az ad sp create-for-rbac -n AzureQuickStartsSPN --role Contributor` using the [Quickstart for Bash in Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart). Securely share the output with quick start users, including *appId* and *password*.
+* Ask the subscription owner to [Create a service principal](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli) (SPN) for sample users using the Azure CLI command `az ad sp create-for-rbac -n AzureQuickStartsSPN --role Contributor` using the [Quickstart for Bash in Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart). Securely share the output with sample users, including *appId* and *password*.
 * Aks the subscription owner to enable automatic guest VM patching. See [Requirements for enabling automatic VM guest patching](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/automatic-vm-guest-patching) for more information.
-* Some organizations may institute [Azure policy](https://docs.microsoft.com/en-us/azure/governance/policy/overview) which may cause some quick start deployments to fail. This can be addressed by using custom settings which pass the policy checks, or by disabling the policies on the Azure subscription being used for the quick starts.
-* Some Azure subscriptions may have low quota limits for specific Azure resources which may cause quick start deployments to fail. See [Resolve errors for resource quotas](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-resource-quota) for more information. Consult the following table to determine if quota increases are required to deploy the quick starts using default settings:
+* Some organizations may institute [Azure policy](https://docs.microsoft.com/en-us/azure/governance/policy/overview) which may cause some sample deployments to fail. This can be addressed by using custom settings which pass the policy checks, or by disabling the policies on the Azure subscription being used for the samples.
+* Some Azure subscriptions may have low quota limits for specific Azure resources which may cause sample deployments to fail. See [Resolve errors for resource quotas](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-resource-quota) for more information. Consult the following table to determine if quota increases are required to deploy the samples using default settings:
 
 Resource |  Quota required per deployment | Command
 --- | :-: | ---
@@ -74,11 +74,11 @@ Static Public IP Addresses  | ~2 | *az network list-usages*
 
 ## Getting started
 
-Before you begin, familiarity with the following topics will be helpful when working with \#AzureQuickStarts:
+Before you begin, familiarity with the following topics will be helpful when working with \#AzureSandbox:
 
 * Familiarize yourself with Terraform [Input Variables](https://www.terraform.io/docs/configuration/variables.html)  
 * Familiarize yourself with Terraform [Output Values](https://www.terraform.io/docs/configuration/outputs.html) also referred to as *Output Variables*
-* See [Authenticating to Azure using a Service Principal and a Client Secret](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/service_principal_client_secret) to understand the type of authentication used by Terraform in \#AzureQuickStarts
+* See [Authenticating to Azure using a Service Principal and a Client Secret](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/service_principal_client_secret) to understand the type of authentication used by Terraform in \#AzureSandbox
 * Familiarize yourself with [Recommended naming and tagging conventions](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/naming-and-tagging)
 * Familiarize yourself with [Naming rules and restrictions for Azure resources](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules)
 
@@ -86,11 +86,11 @@ Before you begin, familiarity with the following topics will be helpful when wor
 
 ---
 
-Each quick start user must select and configure a client environment in advance. A variety of options are available and are detailed in this section.
+Each sample user must select and configure a client environment in advance. A variety of options are available and are detailed in this section.
 
 #### Cloud shell
 
-Azure [cloud shell](https://aka.ms/cloudshell) is a free pre-configured cloud hosted container with a full complement of [tools](https://docs.microsoft.com/en-us/azure/cloud-shell/features#tools) needed to use \#AzureQuickStarts. This option will be preferred for users who do not wish to install any software and don't mind a web based command line user experience. Review the following content to get started:
+Azure [cloud shell](https://aka.ms/cloudshell) is a free pre-configured cloud hosted container with a full complement of [tools](https://docs.microsoft.com/en-us/azure/cloud-shell/features#tools) needed to use \#AzureSandbox. This option will be preferred for users who do not wish to install any software and don't mind a web based command line user experience. Review the following content to get started:
 
 * [Bash in Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart)
 * [Persist files in Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/persisting-shell-storage)
@@ -120,7 +120,7 @@ Windows 10 users can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/abou
 
 #### Linux / macOS
 
-Linux and macOS users can deploy the quick starts natively by installing the following tools:
+Linux and macOS users can deploy the samples natively by installing the following tools:
 
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/what-is-azure-cli?view=azure-cli-latest)
   * Debian or Ubuntu: [Install Azure CLI with apt](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest)
@@ -142,7 +142,7 @@ Linux and macOS users can deploy the quick starts natively by installing the fol
   * After installing, add the following extensions:
     * [Terraform](https://marketplace.visualstudio.com/items?itemName=mauve.terraform)
 
-Note the Bash scripts used in the quick starts were developed and tested using *GNU bash, version 5.0.17(1)-release (x86_64-pc-linux-gnu)* and have not been tested on other popular shells like [zsh](https://www.zsh.org/).
+Note the Bash scripts used in the samples were developed and tested using *GNU bash, version 5.0.17(1)-release (x86_64-pc-linux-gnu)* and have not been tested on other popular shells like [zsh](https://www.zsh.org/).
 
 ## Next steps
 
@@ -155,7 +155,7 @@ latestTag=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout $latestTag
 ```
 
-### Perform default quick start deployment
+### Perform default sample deployment
 
 ---
 
@@ -163,12 +163,12 @@ For the first deployment, the author recommends using defaults, which is ideal f
 
 #### Default IP address ranges
 
-The quick starts use default IP address ranges for networking components. These ranges are artificially large and contiguous for simplicity, and customized IP address ranges can be much smaller. A suggested minimum is provided to assist in making the conversion. It's a good idea to start small. Additional IP address ranges can be added to the networking configuration in the future if you need them, but you can't modify an existing IP address range to make it smaller.
+The samples use default IP address ranges for networking components. These ranges are artificially large and contiguous for simplicity, and customized IP address ranges can be much smaller. A suggested minimum is provided to assist in making the conversion. It's a good idea to start small. Additional IP address ranges can be added to the networking configuration in the future if you need them, but you can't modify an existing IP address range to make it smaller.
 
 Address range | CIDR | First | Last | IP address count | Suggested minimum range
 --- |--- | --- | --- | --: | ---
 Reserved for private network | 10.0.0.0/16 | 10.0.0.0 | 10.0.255.255 | 65,536 | N/A
-Default quick start aggregate | 10.1.0.0/13 | 10.1.0.0 | 10.7.255.255 | 524,288 | /22 (1024 IP addresses)
+Default sample aggregate | 10.1.0.0/13 | 10.1.0.0 | 10.7.255.255 | 524,288 | /22 (1024 IP addresses)
 Shared services virtual network | 10.1.0.0/16 | 10.1.0.0 | 10.1.255.255 | 65,536 | /24 (256 IP addresses)
 Application virtual network | 10.2.0.0/16 | 10.2.0.0 | 10.2.255.255 | 65,536 | /24 (256 IP addresses)
 Virtual wan hub | 10.3.0.0/16 | 10.3.0.0 | 10.3.255.255 | 65,536 | /24 (256 IP addresses)
@@ -178,7 +178,7 @@ Reserved for future use | 10.6.0.0/15 | 10.6.0.0 | 10.7.255.255 | 131,072 | N/A
 
 ##### Default subnet IP address prefixes
 
-This section documents the default subnet IP address prefixes used in the quick starts. Subnets enable you to segment the virtual network into one or more sub-networks and allocate a portion of the virtual network's address space to each subnet. You can then connect network resources to a specific subnet, and control ingress and egress using [network security qroups](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
+This section documents the default subnet IP address prefixes used in the samples. Subnets enable you to segment the virtual network into one or more sub-networks and allocate a portion of the virtual network's address space to each subnet. You can then connect network resources to a specific subnet, and control ingress and egress using [network security qroups](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
 
 Virtual network | Subnet | IP address prefix | First | Last | IP address count
 --- | --- | --- | --- | --- | --:
@@ -206,17 +206,17 @@ Application | Reserved for future use | 10.2.32.0/19 | 10.2.32.0 | 10.2.63.255 |
 Application | Reserved for future use | 10.2.64.0/18 | 10.2.64.0 | 10.2.127.255 | 16,384
 Application | Reserved for future use | 10.2.128.0/17 | 10.2.128.0 | 10.2.255.255 | 32,768
 
-#### Apply quick start configurations
+#### Apply sample configurations
 
-Apply the quick starts in the following order:
+Apply the samples in the following order:
 
-1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) implements a virtual network with shared services used by all the quick starts.
+1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) implements a virtual network with shared services used by all the samples.
 1. [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/) implements an application virtual network.
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared services virtual network and the application virtual network to remote users or a private network.
 
-#### Destroy quick start configurations
+#### Destroy sample configurations
 
-While a default quick start deployment is fine for testing, it may not work with an organization's private network. The default deployment should be destroyed first before doing a custom deployment. This is accomplished by running `terraform destroy` on each quick start in the reverse order in which it was deployed:
+While a default sample deployment is fine for testing, it may not work with an organization's private network. The default deployment should be destroyed first before doing a custom deployment. This is accomplished by running `terraform destroy` on each sample in the reverse order in which it was deployed:
 
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
 1. [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/)
@@ -224,15 +224,15 @@ While a default quick start deployment is fine for testing, it may not work with
 
 Alternatively, for speed, simply run `az group delete -g rg-vdc-nonprod-01`. You can run [cleanterraformtemp.sh](./cleanterraformtemp.sh) to clean up temporary files and directories.
 
-### Perform custom quick start deployment
+### Perform custom sample deployment
 
 ---
 
-A custom deployment will likely be required to connect the quick starts to an organization's private network. This section provides guidance on how to customize the quick starts.
+A custom deployment will likely be required to connect the samples to an organization's private network. This section provides guidance on how to customize the samples.
 
 #### Document private network IP address ranges (sample)
 
-Use this section to document one or more private network IP address ranges by consulting a network professional. This is required if you want to establish a [hybrid connection](https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/hybrid-connectivity) between an organization's private network and the quick starts. The sample includes two IP address ranges used in a private network. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section.
+Use this section to document one or more private network IP address ranges by consulting a network professional. This is required if you want to establish a [hybrid connection](https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/hybrid-connectivity) between an organization's private network and the samples. The sample includes two IP address ranges used in a private network. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section.
 
 IP address range | CIDR | First | Last | IP address count
 --- | --- | --- | --- | --:
@@ -248,7 +248,7 @@ Secondary range | TBD | TBD | TBD | TBD
 
 #### Customize IP address ranges (sample)
 
-Use this section to customize the default IP address ranges used by the quick starts to support routing on an organization's private network. The aggregate range should be determined by consulting a network professional, and will likely be allocated using a range that falls within the private network IP address ranges discussed previously, and the rest of the IP address ranges must be contained within it. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section. Note this sample uses the suggested minimum address ranges from the default IP address ranges described previously.
+Use this section to customize the default IP address ranges used by the samples to support routing on an organization's private network. The aggregate range should be determined by consulting a network professional, and will likely be allocated using a range that falls within the private network IP address ranges discussed previously, and the rest of the IP address ranges must be contained within it. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section. Note this sample uses the suggested minimum address ranges from the default IP address ranges described previously.
 
 IP address range | CIDR | First | Last | IP address count
 --- | --- | --- | --- | --:
@@ -270,7 +270,7 @@ P2S client VPN connections | TBD | TBD | TBD | TBD
 
 ##### Customize subnet IP address prefixes (sample)
 
-Use this section to customize the default subnet IP address prefixes used by the quick starts to support routing on an organization's private network. Make a copy of this table and change these sample values to custom values. Each address prefix must fall within the virtual network IP address ranges discussed previously. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section.
+Use this section to customize the default subnet IP address prefixes used by the samples to support routing on an organization's private network. Make a copy of this table and change these sample values to custom values. Each address prefix must fall within the virtual network IP address ranges discussed previously. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section.
 
 Virtual network | Subnet | IP address prefix | First | Last | IP address count
 --- | --- | --- | --- | --- | --:
@@ -300,21 +300,21 @@ Application | snet-private-endpoints-01 | TBD | TBD | TBD | TBD
 
 ## Known issues<
 
-This section documents known issues with these quick starts that should be addressed prior to real world usage.
+This section documents known issues with these samples that should be addressed prior to real world usage.
 
 * Configuration management
-  * *Windows Server*: This quick start uses [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) for configuring the Windows Server virtual machines, which will be replaced by [Azure Policy guest configuration](https://azure.microsoft.com/en-in/updates/public-preview-apply-settings-inside-machines-using-azure-policys-guest-configuration/) which is currently in public preview. This quick start will be updated to the new implementation when it is generally available.
+  * *Windows Server*: This sample uses [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) for configuring the Windows Server virtual machines, which will be replaced by [Azure Policy guest configuration](https://azure.microsoft.com/en-in/updates/public-preview-apply-settings-inside-machines-using-azure-policys-guest-configuration/) which is currently in public preview. This sample will be updated to the new implementation when it is generally available.
     * *configure-automation.ps1*: The performance of this script could be improved by using multi-threading to run Azure Automation operations in parallel.
-  * *Linux*: This quick start uses [cloud-init](https://cloudinit.readthedocs.io/) for configuring [Ubuntu 20.04 LTS (Focal Fossa)](http://www.releases.ubuntu.com/20.04/) virtual machines.
+  * *Linux*: This sample uses [cloud-init](https://cloudinit.readthedocs.io/) for configuring [Ubuntu 20.04 LTS (Focal Fossa)](http://www.releases.ubuntu.com/20.04/) virtual machines.
     * *azurerm_linux_virtual_machine.vm_jumpbox_linux*: ARM tags are currently used to pass some configuration data to cloud-init. This dependency on ARM tags could make the configuration more fragile if users manually manipulate ARM tags or they are overwritten by Azure Policy.
 * Identity and Access Management
-  * *Authentication*: These quick starts use a service principal to authenticate with Azure which requires a client secret to be shared. This was due to the requirement that the quick start users be limited to a *Contributor* Azure RBAC role assignment which cannot do Azure RBAC role assignments. Real world projects should consider using [managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) instead of service principals which eliminates the need to share client secrets.
-  * *Credentials*: For simplicity, the quick starts use a single set of credentials when an administrator account is required to provision or configure resources. In real world scenarios these credentials would be different and follow the principal of least privilege for better security.
+  * *Authentication*: These samples use a service principal to authenticate with Azure which requires a client secret to be shared. This was due to the requirement that the sample users be limited to a *Contributor* Azure RBAC role assignment which cannot do Azure RBAC role assignments. Real world projects should consider using [managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) instead of service principals which eliminates the need to share client secrets.
+  * *Credentials*: For simplicity, the samples use a single set of credentials when an administrator account is required to provision or configure resources. In real world scenarios these credentials would be different and follow the principal of least privilege for better security.
   * *Active Directory Domain Services*: A pre-configured AD domain controller *azurerm_windows_virtual_machine.vm_adds* is provisioned.
     * *High availability*: The current design uses a single VM for AD DS which is counter to best practices as described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain) which recommends a pair of VMs in an Availability Set.
     * *Data integrity*: The current design hosts the AD DS domain forest data on the OS Drive which is counter to  best practices as described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain) which recommends hosting them on a separate data drive with different cache settings.
 * Storage
   * *Azure Files*: See issue [#12447](https://github.com/hashicorp/terraform-provider-azurerm/issues/12447) which can cause Terraform plan, apply and destroy operations to fail after private endpoints are used with Azure Files.
-  * *Azure Storage*: For simplicity, this quick start uses the [Authorize with Shared Key](https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key) approach for [Authorizing access to data in Azure Storage](https://docs.microsoft.com/en-us/azure/storage/common/authorize-data-access?toc=/azure/storage/blobs/toc.json). For production environments, consider using [shared access signatures](https://docs.microsoft.com/en-us/azure/storage/common/storage-sas-overview?toc=/azure/storage/blobs/toc.json) instead.
+  * *Azure Storage*: For simplicity, this sample uses the [Authorize with Shared Key](https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key) approach for [Authorizing access to data in Azure Storage](https://docs.microsoft.com/en-us/azure/storage/common/authorize-data-access?toc=/azure/storage/blobs/toc.json). For production environments, consider using [shared access signatures](https://docs.microsoft.com/en-us/azure/storage/common/storage-sas-overview?toc=/azure/storage/blobs/toc.json) instead.
 * Networking
-  * *azurerm_subnet.vnet_shared_01_subnets["snet-adds-01"]*: This subnet is protected by an NSG as per best practices described in described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain), however the network security rules permit ingress and egress from the Virtual Network on all ports to allow for flexibility in the quick starts. Production implementations of this subnet should follow the guidance in [How to configure a firewall for Active Directory domains and trusts](https://docs.microsoft.com/en-us/troubleshoot/windows-server/identity/config-firewall-for-ad-domains-and-trusts).
+  * *azurerm_subnet.vnet_shared_01_subnets["snet-adds-01"]*: This subnet is protected by an NSG as per best practices described in described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain), however the network security rules permit ingress and egress from the Virtual Network on all ports to allow for flexibility in the samples. Production implementations of this subnet should follow the guidance in [How to configure a firewall for Active Directory domains and trusts](https://docs.microsoft.com/en-us/troubleshoot/windows-server/identity/config-firewall-for-ad-domains-and-trusts).

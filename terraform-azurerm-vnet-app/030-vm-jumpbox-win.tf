@@ -9,6 +9,8 @@ locals {
       "StorageAccountName = '${var.storage_account_name}'; ",
       "StorageAccountKerbKey = '${nonsensitive(data.azurerm_key_vault_secret.storage_account_kerb_key.value)}'; ",
       "Domain = '${var.adds_domain_name}'",
+      "AdminUser = '${nonsensitive(data.azurerm_key_vault_secret.adminuser.value)}'",
+      "AdminUserSecret = '${nonsensitive(data.azurerm_key_vault_secret.adminpassword.value)}'",
     "}"
   ]
 }

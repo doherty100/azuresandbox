@@ -1,8 +1,8 @@
-# Azure quick start: az-graph  
+# Azure sample: az-graph  
 
 ## Overview
 
-This general purpose quick start implements [Azure Resource Graph](https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview) queries used in real world discovery projects for Azure cloud estates. Many of these queries are designed to be imported into data analysis and visualization tools such as Excel or Power BI. Check back from time to time to see if new queries have been added, and contact the author if you would like to contribute. Note there are no Terraform configurations in this quick start.
+This general purpose sample implements [Azure Resource Graph](https://docs.microsoft.com/en-us/azure/governance/resource-graph/overview) queries used in real world discovery projects for Azure cloud estates. Many of these queries are designed to be imported into data analysis and visualization tools such as Excel or Power BI. Check back from time to time to see if new queries have been added, and contact the author if you would like to contribute. Note there are no Terraform configurations in this sample.
 
 ## Prerequisites
 
@@ -13,7 +13,7 @@ The following prerequisites are required in order to get started.
 
 ## Getting started
 
-* Run `./run-queries.sh` to run all of the quick start queries and export results to text files.
+* Run `./run-queries.sh` to run all of the sample queries and export results to text files.
   * Note: by default the queries will run against all available subscriptions. Use the -s parameter to limit the scope to a specific subscription.
 * Identify a [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group) for provisioning shared resource graph queries, or create a new resource group using [az group create](https://docs.microsoft.com/en-us/cli/azure/group?view=azure-cli-latest#az-group-create).
 * Run `./create-shared-queries.sh -g RESOURCE_GROUP_NAME` using the resource group identified in the previous step.
@@ -36,7 +36,7 @@ The following prerequisites are required in order to get started.
 
 ## Query index
 
-This section enumerates the resource graph queries included in the quick start. Queries are grouped by usage including [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/), [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) and *General* categories. *Import optimized* indicates that the query uses naming conventions and includes keys that are useful for importing into data analysis and visualization tools. Note the IaaS queries that are import optimized can be joined using keys. For example, you can join a virtual machine with it's related nics and disks. This is very useful for configuration management projects.
+This section enumerates the resource graph queries included in the sample. Queries are grouped by usage including [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/), [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) and *General* categories. *Import optimized* indicates that the query uses naming conventions and includes keys that are useful for importing into data analysis and visualization tools. Note the IaaS queries that are import optimized can be joined using keys. For example, you can join a virtual machine with it's related nics and disks. This is very useful for configuration management projects.
 
 Name | Description | Group | Import optimized
 --- | --- | --- | ---

@@ -1,8 +1,8 @@
-# Azure quick start configuration: terraform-azurerm-vwan  
+# Azure sample configuration: terraform-azurerm-vwan  
 
 ## Overview
 
-This quick start implements a shared virtual wan to connect the shared services virtual network and the dedicated spoke virtual network to remote users and/or private networks. The following quick starts must be deployed first before starting:
+This sample implements a shared virtual wan to connect the shared services virtual network and the dedicated spoke virtual network to remote users and/or private networks. The following samples must be deployed first before starting:
 
 * [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
   * [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows)
@@ -19,7 +19,7 @@ De-provisioning | ~30 minutes
 
 ## Getting started
 
-This section describes how to provision this quick start using default settings.
+This section describes how to provision this sample using default settings.
 
 * Run `./bootstrap.sh` using the default settings or your own custom settings.
 * Run `terraform init` and note the version of the *azurerm* provider installed.
@@ -29,7 +29,7 @@ This section describes how to provision this quick start using default settings.
 
 ## Resource index
 
-This section provides an index of the 6 resources included in this quick start.
+This section provides an index of the 6 resources included in this sample.
 
 ### Virtual wan
 
@@ -97,7 +97,7 @@ This smoke test establishes a Point to Site (P2S) VPN connection to the Virtual 
       * Authentication Type: *Certificate*
       * Certificate Information: `MyP2SVPNChildCert` (Note: If you do not see this certificate you need to import the .pfx created in a previous step)
   * Click *Save*
-  * Connect and inspect routes. If you went with the default quick start configuration you should see these address ranges:
+  * Connect and inspect routes. If you went with the default sample configuration you should see these address ranges:
     * `10.1.0.0/16`: Shared services Virtual Network
     * `10.2.0.0/16`: Spoke Virtual Network
     * `10.3.0.0/16`: Virtual WAN Hub

@@ -16,7 +16,7 @@ state_file="../terraform-azurerm-vnet-shared/terraform.tfstate"
 if [ ! -f $state_file ]
 then
     printf "Unable to locate \"$state_file\"...\n"
-    printf "See README.md for quick starts that must be deployed first...\n"
+    printf "See README.md for samples that must be deployed first...\n"
     usage
 fi
 
@@ -31,7 +31,7 @@ state_file="../terraform-azurerm-vnet-spoke/terraform.tfstate"
 if [ ! -f $state_file ]
 then
     printf "Unable to locate \"$state_file\"...\n"
-    printf "See README.md for quick starts that must be deployed first...\n"
+    printf "See README.md for samples that must be deployed first...\n"
     usage
 fi
 

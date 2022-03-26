@@ -1,10 +1,10 @@
-# \#AzureQuickStarts - terraform-azurerm-vnet-app
+# \#AzureSandbox - terraform-azurerm-vnet-app
 
 ## Overview
 
 ![vnet-app-diagram](./vnet-app-diagram.drawio.svg)
 
-This quick start implements a virtual network for applications including:
+This sample implements a virtual network for applications including:
 
 * A [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting for hosting [virtual machines](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) and private endpoints implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview). [Virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) is automatically configured.
 * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
@@ -21,13 +21,13 @@ Smoke testing | ~ 30 minutes
 
 ## Before you start
 
-The following quick starts must be deployed first before starting:
+The following samples must be deployed first before starting:
 
 * [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
 
 ## Getting started
 
-This section describes how to provision this quick start using default settings.
+This section describes how to provision this sample using default settings.
 
 * Change the working directory to `~/azurequickstarts/terraform-azurerm-vnet-app`.
 * Run `./bootstrap.sh` using the default settings or your own custom settings.
@@ -175,11 +175,11 @@ This section describes how to provision this quick start using default settings.
 
 ## Documentation
 
-This section provides additional information on various aspects of this quick start.
+This section provides additional information on various aspects of this sample.
 
 ### Bootstrap script
 
-This quick start uses the script [bootstrap.sh](./bootstrap.sh) to create a *terraform.tfvars* file for generating and applying Terraform plans. For simplified deployment, several runtime defaults are initialized using output variables stored in the *terraform.tfstate* file associated with the [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared) quick start, including:
+This sample uses the script [bootstrap.sh](./bootstrap.sh) to create a *terraform.tfvars* file for generating and applying Terraform plans. For simplified deployment, several runtime defaults are initialized using output variables stored in the *terraform.tfstate* file associated with the [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared) sample, including:
 
 Output variable | Sample value
 --- | ---
@@ -197,7 +197,7 @@ resource_group_name | "rg-vdc-nonprod-01"
 storage_account_name | "stXXXXXXXXXXXXXXX"
 storage_container_name | "scripts"
 subscription_id | "00000000-0000-0000-0000-000000000000"
-tags | tomap( { "costcenter" = "10177772" "environment" = "dev" "project" = "#AzureQuickStarts" } )
+tags | tomap( { "costcenter" = "10177772" "environment" = "dev" "project" = "#AzureSandbox" } )
 vnet_shared_01_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-shared-01"
 vnet_shared_01_name | "vnet-shared-01"
 
@@ -216,14 +216,14 @@ Configuration of [Azure Automation State Configuration (DSC)](https://docs.micro
       * [NetworkingDsc](https://github.com/dsccommunity/NetworkingDsc)
       * [SqlServerDsc](https://github.com/dsccommunity/SqlServerDsc)
       * [cChoco](https://github.com/chocolatey/cChoco)
-  * Imports [DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started#create-a-dsc-configuration) used in this quick start.
+  * Imports [DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started#create-a-dsc-configuration) used in this sample.
     * [JumpBoxConfig.ps1](./JumpBoxConfig.ps1): domain joins a Windows Server virtual machine and configures it as jumpbox.
     * [MssqlVmConfig.ps1](./MssqlVmConfig.ps1): domain joins a Windows Server virtual machine creating using the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering, configures Windows Firewall rules and configures SQL Server logins.
   * [Compiles DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-compile) so they can be used later to [Register a VM to be managed by State Configuration](https://docs.microsoft.com/en-us/azure/automation/tutorial-configure-servers-desired-state#register-a-vm-to-be-managed-by-state-configuration).
 
 ### Terraform Resources
 
-This section lists the resources included in the Terraform configurations in this quick start.
+This section lists the resources included in the Terraform configurations in this sample.
 
 #### Network resources
 
@@ -268,7 +268,7 @@ This Windows Server VM is used as a jumpbox for development and remote server ad
     * [microsoftazurestorageexplorer](https://community.chocolatey.org/packages/microsoftazurestorageexplorer)
     * [azcopy10](https://community.chocolatey.org/packages/azcopy10)
 * Post-deployment configuration is then performed using a custom script extension that runs [configure&#x2011;vm&#x2011;jumpbox&#x2011;&#x2011;win.ps1](./configure-vm-jumpbox-win.ps1).
-  * [configure&#x2011;storage&#x2011;kerberos.ps1](./configure-storage-kerberos.ps1) is registered as a scheduled task then executed using domain administrator credentials. This script must be run on a domain joined Azure virtual machine, and configures the storage account for kerberos authentication with the Active Directory Domain Services domain used in the quick starts.
+  * [configure&#x2011;storage&#x2011;kerberos.ps1](./configure-storage-kerberos.ps1) is registered as a scheduled task then executed using domain administrator credentials. This script must be run on a domain joined Azure virtual machine, and configures the storage account for kerberos authentication with the Active Directory Domain Services domain used in the samples.
 
 #### Linux Jumpbox VM
 
@@ -398,8 +398,8 @@ azurerm_private_dns_a_record.storage_account_01_file | A DNS A record for resolv
 
 * Hosted by the storage account created by [terraform-azurerm-vnet-shared/bootstrap.sh](../terraform-azurerm-vnet-shared/README.md#bootstrap-script).
 * Connectivity using private endpoints is enabled. See [Use private endpoints for Azure Storage](https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints) for more information.
-* Kerberos authentication is configured with the quick start domain using a post-deployment script executed on *azurerm_windows_virtual_machine.vm_jumpbox_win*.
+* Kerberos authentication is configured with the sample domain using a post-deployment script executed on *azurerm_windows_virtual_machine.vm_jumpbox_win*.
 
 ## Next steps
 
-Move on to the next quick start [terraform-azurerm-vwan](../terraform-azurerm-vwan).
+Move on to the next sample [terraform-azurerm-vwan](../terraform-azurerm-vwan).

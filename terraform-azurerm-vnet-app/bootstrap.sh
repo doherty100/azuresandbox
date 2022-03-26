@@ -36,7 +36,7 @@ printf "Retrieving runtime defaults from state file '$state_file'...\n"
 if [ ! -f $state_file ]
 then
     printf "Unable to locate \"$state_file\"...\n"
-    printf "See README.md for quick starts that must be deployed first...\n"
+    printf "See README.md for samples that must be deployed first...\n"
     usage
 fi
 
