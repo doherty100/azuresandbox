@@ -4,7 +4,7 @@
 
 This repository contains a collection of inter-dependent [cloud computing](https://azure.microsoft.com/en-us/overview/what-is-cloud-computing) samples for implementing common [Microsoft Azure](https://azure.microsoft.com/en-us/overview/what-is-azure/) services on a single [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription). Collectively these samples provide a flexible and cost effective sandbox environment useful for experimenting with various Azure services and capabilities.
 
-*Disclaimer:* \#AzureSandbox is not intended for production use. \#AzureSandbox is intended to accelerate cloud projects by providing a minimal, cost effective lab environment. While some best practices are used, others are intentionally not used in favor of simplicity and cost. See [Known issues](#known-issues) for more information.
+*Disclaimer:* \#AzureSandbox is not intended for production use. While some best practices are used, others are intentionally not used in favor of simplicity and cost. See [Known issues](#known-issues) for more information.
 
 \#AzureSandbox is implemented using popular open source tools that are supported on Windows, macOS and Linux including:
 
