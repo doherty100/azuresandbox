@@ -15,7 +15,7 @@ This repository contains a collection of inter-dependent [cloud computing](https
   * [PowerShell Core](https://docs.microsoft.com/en-us/powershell/scripting/whats-new/what-s-new-in-powershell-71?view=powershell-7.1)
   * [PowerShell 5.1](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-5.1) for Windows Server configuration.
 * [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) v1.1.7 for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
-  * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v3.0.1
+  * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v3.0.2
   * [Random Provider](https://registry.terraform.io/providers/hashicorp/random/latest/docs) (random) v3.1.0
 
 This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doherty-805635b/).
@@ -104,7 +104,7 @@ Windows 10 users can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/abou
 * Windows 10 prerequisites
   * [Windows Subsystem for Linux Installation Guide for Windows 10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
   * [Ubuntu 20.04 LTS (Focal Fossa)](https://www.microsoft.com/store/productId/9N6SVWS3RX71)
-  * [Visual Studio Code on Windows](https://code.visualstudio.com/docs/setup/windows))
+  * [Visual Studio Code on Windows](https://code.visualstudio.com/docs/setup/windows)
   * [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)
 * WSL prerequisites
   * [Install the Azure CLI on Linux | apt (Ubuntu, Debian)](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt)
@@ -116,6 +116,7 @@ Windows 10 users can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/abou
   * VS Code extensions for WSL
     * [Remote - WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl)
     * [Terraform](https://marketplace.visualstudio.com/items?itemName=mauve.terraform)
+    * [PowerShell](https://marketplace.visualstudio.com/items?itemName=ms-vscode.PowerShell)
 
 #### Linux / macOS
 
@@ -297,7 +298,7 @@ Application | snet-db-01 | TBD | TBD | TBD | TBD
 Application | snet-app-01 | TBD | TBD | TBD | TBD
 Application | snet-private-endpoints-01 | TBD | TBD | TBD | TBD
 
-## Known issues<
+## Known issues
 
 This section documents known issues with these samples that should be addressed prior to real world usage.
 

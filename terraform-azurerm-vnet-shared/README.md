@@ -88,7 +88,8 @@ The bootstrap script [bootstrap.sh](./bootstrap.sh) is used to initialize variab
   * The permission model is set to *Vault access policy*. *Azure role-based access control* is not used to ensure that sample users only require a *Contributor* Azure RBAC role assignment in order to complete the samples.
   * Secrets are created that are used by all samples. Note these secrets are static and will need to be manually updated if the values change.
     * *Log analytics workspace primary shared key*: The name of this secret is the same as the id of the log analytics workspace, e.g. *00000000-0000-0000-0000-000000000000*, and the value is the primary shared key which can be used to connect agents to the log analytics workspace.
-    * *Storage account access key1*: The name of this secret is the same as the storage account, e.g. *stxxxxxxxxxxxxxxx*, and the value is access key1.
+    * *Storage account access key1*: The name of this secret is the same as the storage account, e.g. *stxxxxxxxxxxxxxxx*, and the value is access key 1.
+    * *Storage account kerberos key1*: The name of this secret is the same as the storage account, e.g. *stxxxxxxxxxxxxxxx-kerb1*, and the value is kerberos key 1.
     * *adminpassword*: The password used for default administrator credentials when new sample resources are provisioned.
     * *adminuser*: The user name used for default administrator credentials when new sample resources are configured. The default value is *bootstrapadmin*.
     * *bootstrapadmin-ssh-key-private*: The private SSH key used to secure SSH access to Linux VMs created in the samples. The value of the *adminpassword* secret is used as the pass phrase.
@@ -147,11 +148,11 @@ The configuration for these resources can be found in [040-network.tf](./040-net
 Resource name (ARM) | Notes
 --- | ---
 azurerm_virtual_network.vnet_shared_01 (vnet&#x2011;shared&#x2011;01) | By default this virtual network is configured with an address space of `10.1.0.0/16` and is configured with DNS server addresses of `10.1.1.4` (the private ip for *azurerm_windows_virtual_machine.vm_adds*) and [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16).
-azurerm_subnet.vnet_shared_01_subnets["AzureBastionSubnet"] | The default address prefix for this subnet is 10.1.1.0/27 which includes the private ip addresses for *azurerm_bastion_host.bastion_host_01*. A network security group is associated with this subnet and is configured according to [Working with NSG access and Azure Bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-nsg).
-azurerm_subnet.vnet_shared_01_subnets["snet-adds-01"] | The default address prefix for this subnet is 10.1.2.0/24 which includes the private ip address for *azurerm_windows_virtual_machine.vm_adds*. A network security group is associated with this subnet that permits ingress and egress from virtual networks, and egress to the Internet.
-azurerm_bastion_host.bastion_host_01 (bst&#x2011;d629fdbde51aca2a&#x2011;1) | Used for secure RDP and SSH access to VMs.
+azurerm_subnet.vnet_shared_01_subnets["AzureBastionSubnet"] | The default address prefix for this subnet is 10.1.0.0/27 which includes the private ip addresses for *azurerm_bastion_host.bastion_host_01*. A network security group is associated with this subnet and is configured according to [Working with NSG access and Azure Bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-nsg).
+azurerm_subnet.vnet_shared_01_subnets["snet-adds-01"] | The default address prefix for this subnet is 10.1.1.0/24 which includes the private ip address for *azurerm_windows_virtual_machine.vm_adds*. A network security group is associated with this subnet that permits ingress and egress from virtual networks, and egress to the Internet.
+azurerm_bastion_host.bastion_host_01 (bst&#x2011;xxxxxxxxxxxxxxxx&#x2011;1) | Used for secure RDP and SSH access to VMs.
 random_id.bastion_host_01_name | Used to generate a random name for *azurerm_bastion_host.bastion_host_01*.
-azurerm_public_ip.bastion_host_01 (pip&#x2011;fc0b6ba367b0c212&#x2011;1) | Public ip used by *azurerm_bastion_host.bastion_host_01*.
+azurerm_public_ip.bastion_host_01 (pip&#x2011;xxxxxxxxxxxxxxxx&#x2011;1) | Public ip used by *azurerm_bastion_host.bastion_host_01*.
 random_id.public_ip_bastion_host_01_name | Used to generate a random name for *azurerm_public_ip.bastion_host_01*.
 azurerm_private_dns_zone.database_windows_net | Creates a [private Azure DNS zone](https://docs.microsoft.com/en-us/azure/dns/private-dns-privatednszone) for using [Azure Private Link for Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
 azurerm_private_dns_zone.file_core_windows_net | Creates a [private Azure DNS zone](https://docs.microsoft.com/en-us/azure/dns/private-dns-privatednszone) for using [Azure Private Link for Azure Files](https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints).
@@ -173,7 +174,7 @@ This Windows Server VM is used as an [Active Directory Domain Services](https://
 * By default the [Patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByPlatform`.
 * *admin_username* and *admin_password* are configured using the key vault secrets *adminuser* and *adminpassword*.
 * This resource has a dependency on *azurerm_automation_account.automation_account_01*.
-* This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [aadsc-register-node.ps1](./aadsc-register-node.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [LabDomainConfig](./LabDomainConfig.ps1).
+* This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [aadsc-register-node.ps1](./aadsc-register-node.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [LabDomainConfig](./LabDomainConfig.ps1) which includes the following:
   * The `AD-Domain-Services` feature (which includes DNS) is installed.
   * A new *mysandbox.local* domain is configured
     * The domain admin credentials are configured using the *adminusername* and *adminpassword* key vault secrets.
