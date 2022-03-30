@@ -25,13 +25,13 @@
                     <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: unsafe flex-end; justify-content: unsafe flex-start; width: 598px; height: 1px; padding-top: 77px; margin-left: 162px;">
                         <div data-drawio-colors="color: #000000; " style="box-sizing: border-box; font-size: 0px; text-align: left;">
                             <div style="display: inline-block; font-size: 12px; font-family: Helvetica; color: rgb(0, 0, 0); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">
-                                rg-vdc-nonprod-01
+                                rg-sandbox-01
                             </div>
                         </div>
                     </div>
                 </foreignObject>
                 <text x="162" y="77" fill="#000000" font-family="Helvetica" font-size="12px">
-                    rg-vdc-nonprod-01
+                    rg-sandbox-01
                 </text>
             </switch>
         </g>

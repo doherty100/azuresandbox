@@ -221,7 +221,7 @@ While a default sample deployment is fine for testing, it may not work with an o
 1. [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/)
 1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/). Note: Resources provisioned by `bootstrap.sh` must be deleted manually.
 
-Alternatively, for speed, simply run `az group delete -g rg-vdc-nonprod-01`. You can run [cleanterraformtemp.sh](./cleanterraformtemp.sh) to clean up temporary files and directories.
+Alternatively, for speed, simply run `az group delete -g rg-sandbox-01`. You can run [cleanterraformtemp.sh](./cleanterraformtemp.sh) to clean up temporary files and directories.
 
 ### Perform custom sample deployment
 

@@ -42,7 +42,7 @@ Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-
 
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
-vwan_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualWans/vwan-e2b88962e7284da0-01
+vwan_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-sandbox-01/providers/Microsoft.Network/virtualWans/vwan-e2b88962e7284da0-01
 vwan_01_name | Output | string | Local | vwan-e2b88962e7284da0-01
 
 #### Virtual WAN Hub
@@ -52,7 +52,7 @@ Shared [virtual WAN hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virt
 Variable | In/Out | Type | Scope | Sample
 --- | --- | --- | --- | ---
 vwan_hub_address_prefix | Input | string | Local | 10.3.0.0/16
-vwan_01_hub_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualHubs/vhub-6c8fe94d3b690bf9-01
+vwan_01_hub_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-sandbox-01/providers/Microsoft.Network/virtualHubs/vhub-6c8fe94d3b690bf9-01
 vwan_01_hub_01_name | Output | string | Local | vhub-6c8fe94d3b690bf9-01
 
 ## Smoke testing

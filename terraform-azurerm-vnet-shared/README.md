@@ -80,7 +80,7 @@ The bootstrap script [bootstrap.sh](./bootstrap.sh) is used to initialize variab
 * Generates a [Mime Multi Part Archive](https://cloudinit.readthedocs.io/en/latest/topics/format.html#mime-multi-part-archive) containing the following files:
   * [configure-vm-jumpbox-linux.yaml](./configure-vm-jumpbox-linux.yaml) is [Cloud Config Data](https://cloudinit.readthedocs.io/en/latest/topics/format.html#cloud-config-data) used to configure the Linux Jumpbox VM.
   * [configure-vm-jumpbox-linux.sh](./configure-vm-jumpbox-linux.sh) is a [User-Data Script](https://cloudinit.readthedocs.io/en/latest/topics/format.html#user-data-script) used to configure the Linux Jumpbox VM.
-* Creates a new resource group with the default name *rg-vdc-nonprod-01* used by all the samples.
+* Creates a new resource group with the default name *rg-sandbox-01* used by all the samples.
 * Creates a storage account with a randomly generated 15-character name like *stxxxxxxxxxxxxx*.
   * The name is limited to 15 characters for compatibility with Active Directory Domain Services.
   * A new *scripts* container is created for samples that leverage the Custom Script Extension for [Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) or [Linux](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-linux).
@@ -199,17 +199,17 @@ admin_username_secret | "adminuser"
 arm_client_id | "00000000-0000-0000-0000-000000000000"
 automation_account_name | "auto-9a633c2bba9351cc-01"
 dns_server | "10.1.2.4"
-key_vault_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.KeyVault/vaults/kv-XXXXXXXXXXXXXXX"
+key_vault_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-sandbox-01/providers/Microsoft.KeyVault/vaults/kv-XXXXXXXXXXXXXXX"
 key_vault_name | "kv-XXXXXXXXXXXXXXX"
 location | "eastus2"
 log_analytics_workspace_01_name | "log-XXXXXXXXXXXXXXXX-01"
 log_analytics_workspace_01_workspace_id | "00000000-0000-0000-0000-000000000000"
-resource_group_name | "rg-vdc-nonprod-01"
+resource_group_name | "rg-sandbox-01"
 storage_account_name | "stXXXXXXXXXXXXXXX"
 storage_container_name | "scripts"
 subscription_id | "00000000-0000-0000-0000-000000000000"
 tags | tomap( { "costcenter" = "10177772" "environment" = "dev" "project" = "#AzureSandbox" } )
-vnet_shared_01_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-vdc-nonprod-01/providers/Microsoft.Network/virtualNetworks/vnet-shared-01""
+vnet_shared_01_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-sandbox-01/providers/Microsoft.Network/virtualNetworks/vnet-shared-01""
 vnet_shared_01_name | "vnet-shared-01"
 
 ## Next steps
