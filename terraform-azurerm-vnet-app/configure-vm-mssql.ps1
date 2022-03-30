@@ -602,6 +602,6 @@ $sqlCommand = "RECONFIGURE"
 Invoke-Sql $sqlCommand 'sa' $usernameSecretSecure
 Restart-SqlServer
 
-Write-Log "Exiting normally..."
+Write-Log "'$PSCommandPath' exiting normally..."
 Exit 0
 #endregion

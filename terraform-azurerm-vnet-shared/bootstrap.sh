@@ -25,7 +25,7 @@ arm_client_secret=''
 storage_container_name='scripts'
 
 # Initialize user defaults
-default_adds_domain_name="mytestlab.local"
+default_adds_domain_name="mysandbox.local"
 default_admin_username="bootstrapadmin"
 default_costcenter="10177772"
 default_dns_server="10.1.1.4"

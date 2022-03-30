@@ -175,14 +175,14 @@ This Windows Server VM is used as an [Active Directory Domain Services](https://
 * This resource has a dependency on *azurerm_automation_account.automation_account_01*.
 * This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [aadsc-register-node.ps1](./aadsc-register-node.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [LabDomainConfig](./LabDomainConfig.ps1).
   * The `AD-Domain-Services` feature (which includes DNS) is installed.
-  * A new *mytestlab.local* domain is configured
+  * A new *mysandbox.local* domain is configured
     * The domain admin credentials are configured using the *adminusername* and *adminpassword* key vault secrets.
     * The forest functional level is set to `WinThreshhold`
     * A DNS Server is automatically configured
       * Server configuration
         * Forwarder: [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16).
           * Note: This ensures that any DNS queries that can't be resolved by the DNS server are forwarded to the Azure recursive resolver as per [Name resolution for resources in Azure virtual networks](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-name-resolution-for-vms-and-role-instances).
-      * *mytestlab.local* DNS forward lookup zone configuration
+      * *mysandbox.local* DNS forward lookup zone configuration
         * Zone type: Primary / Active Directory-Integrated
         * Dynamic updates: Secure only
 
@@ -193,7 +193,7 @@ This section lists the output variables defined in the Terraform configurations 
 Output variable | Sample value
 --- | ---
 aad_tenant_id | "00000000-0000-0000-0000-000000000000"
-adds_domain_name | "mytestlab.local"
+adds_domain_name | "mysandbox.local"
 admin_password_secret | "adminpassword"
 admin_username_secret | "adminuser"
 arm_client_id | "00000000-0000-0000-0000-000000000000"

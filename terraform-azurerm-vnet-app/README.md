@@ -46,7 +46,7 @@ This section describes how to provision this sample using default settings.
 * Connect to the Windows Server Jumpbox VM.
   * Navigate to *portal.azure.com* > *Virtual machines* > *jumpwin1*
     * Click *Connect*, select the *Bastion* tab, then click *Use Bastion*
-    * For *username* enter the UPN of the domain admin, which by default is *bootstrapadmin@mytestlab.local*.
+    * For *username* enter the UPN of the domain admin, which by default is *bootstrapadmin@mysandbox.local*.
     * For *password* use the value of the *adminpassword* secret in key vault.
     * Click *Connect*
   * Disable Server Manager
@@ -54,18 +54,18 @@ This section describes how to provision this sample using default settings.
     * Close Server Manager
   * Configure default browser
     * Navigate to *Settings* > *Apps* > *Default Apps* and set the default browser to *Microsoft Edge*.
-  * Inspect the *mytestlab.local* Active Directory domain
+  * Inspect the *mysandbox.local* Active Directory domain
     * Navigate to *Start* > *Windows Administrative Tools* > *Active Directory Users and Computers*.
-    * Navigate to *mytestlab.local* and verify that a computer account exists in the root for the storage account, e.g. *stxxxxxxxxxxx*.
-    * Navigate to *mytestlab.local* > *Computers* and verify that *jumpwin1*, *jumplinux1* and *mssqlwin1* are listed.
-    * Navigate to *mytestlab.local* > *Domain Controllers* and verify that *adds1* is listed.
-  * Inspect the *mytestlab.local* DNS zone
+    * Navigate to *mysandbox.local* and verify that a computer account exists in the root for the storage account, e.g. *stxxxxxxxxxxx*.
+    * Navigate to *mysandbox.local* > *Computers* and verify that *jumpwin1*, *jumplinux1* and *mssqlwin1* are listed.
+    * Navigate to *mysandbox.local* > *Domain Controllers* and verify that *adds1* is listed.
+  * Inspect the *mysandbox.local* DNS zone
     * Navigate to *Start* > *Windows Administrative Tools* > *DNS*
     * Connect to the DNS Server on *adds1*.
     * Click on *adds* in the left pane, then double-click on *Forwarders* in the right pane.
       * Verify that [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16) is listed. This ensures that the DNS server will forward any DNS queries it cannot resolve to the Azure Recursive DNS resolver.
       * Click *Cancel*.
-    * Navigate to *adds1* > *Forward Lookup Zones* > *mytestlab.local* and verify that there are *Host (A)* records for *adds1*, *jumpwin1*, *jumplinux1* and *mssqlwin1*.
+    * Navigate to *adds1* > *Forward Lookup Zones* > *mysandbox.local* and verify that there are *Host (A)* records for *adds1*, *jumpwin1*, *jumplinux1* and *mssqlwin1*.
   * Configure [Visual Studio Code](https://aka.ms/vscode) to do remote development on *jumplinux1*
     * Navigate to *Start* > *Visual Studio Code* > *Visual Studio Code*.
     * Install the [Remote-SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) extension.
@@ -74,7 +74,7 @@ This section describes how to provision this sample using default settings.
       * Click *Install*
     * Configure SSH host
       * Navigate to *View* > *Command Palette...* and enter `Remote-SSH: Add New SSH Host`.
-      * When prompted for *Enter SSH Connection Command* enter `ssh bootstrapadmin@mytestlab.local@jumplinux1`.
+      * When prompted for *Enter SSH Connection Command* enter `ssh bootstrapadmin@mysandbox.local@jumplinux1`.
       * When prompted for *Select SSH configuration file to update* choose *C:\\Users\\bootstrapadmin\\.ssh\\config*.
     * Connect to SSH host
       * Navigate to *View* >  *Command Palette...* and enter `Remote-SSH: Connect to Host`.
@@ -184,7 +184,7 @@ This sample uses the script [bootstrap.sh](./bootstrap.sh) to create a *terrafor
 Output variable | Sample value
 --- | ---
 aad_tenant_id | "00000000-0000-0000-0000-000000000000"
-adds_domain_name | "mytestlab.local"
+adds_domain_name | "mysandbox.local"
 admin_password_secret | "adminpassword"
 admin_username_secret | "adminuser"
 arm_client_id | "00000000-0000-0000-0000-000000000000"
@@ -217,8 +217,8 @@ Configuration of [Azure Automation State Configuration (DSC)](https://docs.micro
       * [SqlServerDsc](https://github.com/dsccommunity/SqlServerDsc)
       * [cChoco](https://github.com/chocolatey/cChoco)
   * Imports [DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started#create-a-dsc-configuration) used in this sample.
-    * [JumpBoxConfig.ps1](./JumpBoxConfig.ps1): domain joins a Windows Server virtual machine and configures it as jumpbox.
-    * [MssqlVmConfig.ps1](./MssqlVmConfig.ps1): domain joins a Windows Server virtual machine creating using the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering, configures Windows Firewall rules and configures SQL Server logins.
+    * [JumpBoxConfig.ps1](./JumpBoxConfig.ps1): domain joins a Windows Server virtual machine and adds it to a `JumpBoxes` security group, then and configures it as jumpbox.
+    * [MssqlVmConfig.ps1](./MssqlVmConfig.ps1): domain joins a Windows Server virtual machine and adds it to a `DatabaseServers` security group, then configures it as a database server.
   * [Compiles DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-compile) so they can be used later to [Register a VM to be managed by State Configuration](https://docs.microsoft.com/en-us/azure/automation/tutorial-configure-servers-desired-state#register-a-vm-to-be-managed-by-state-configuration).
 
 ### Terraform Resources
@@ -254,7 +254,7 @@ This Windows Server VM is used as a jumpbox for development and remote server ad
 * By default the [patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByPlatform`.
 * *admin_username* and *admin_password* are configured using the key vault secrets *adminuser* and *adminpassword*.
 * This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [aadsc-register-node.ps1](./aadsc-register-node.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [JumpBoxConfig](./JumpBoxConfig.ps1).
-  * The virtual machine is domain joined.
+  * The virtual machine is domain joined  and added to `JumpBoxes` security group.
   * The following [Remote Server Administration Tools (RSAT)](https://docs.microsoft.com/en-us/windows-server/remote/remote-server-administration-tools) are installed:
     * Active Directory module for Windows PowerShell (RSAT-AD-PowerShell)
     * Active Directory Administrative Center (RSAT-AD-AdminCenter)
@@ -359,9 +359,9 @@ azurerm_virtual_machine_extension.vm_mssql_win_postdeploy_script (vmext&#x2011;m
   * The default SQL Server instance is configured to support [mixed mode authentication](https://docs.microsoft.com/en-us/sql/relational-databases/security/choose-an-authentication-mode). This is to facilitate post-installation configuration of the default instance before the virtual machine is domain joined, and can be reconfigured to Windows authentication mode if required.
     * The builtin *sa* account is enabled and the password is configured using *adminpassword* key vault secret.
     * The *LoginMode* registry key is modified to support mixed mode authentication.
-  * The virtual machine is domain joined.
+  * The virtual machine is domain joined and added to a `DatabaseServers` security group.
   * The [Windows Firewall](https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-firewall/windows-firewall-with-advanced-security#overview-of-windows-defender-firewall-with-advanced-security) is [Configured to Allow SQL Server Access](https://docs.microsoft.com/en-us/sql/sql-server/install/configure-the-windows-firewall-to-allow-sql-server-access). A new firewall rule is created that allows inbound traffic over port 1433.
-  * A SQL Server Windows login is added for the domain administrator and added to the SQL Server builtin 'sysadmin' role.
+  * A SQL Server Windows login is added for the domain administrator and added to the SQL Server builtin `sysadmin` role.
 * Post-deployment configuration is then implemented using a custom script extension that runs [configure-mssql.ps1](./configure-mssql.ps1) following guidelines established in [Checklist: Best practices for SQL Server on Azure VMs](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/performance-guidelines-best-practices-checklist).
   * Data disk metadata is retrieved dynamically using the [Azure Instance Metadata Service (Windows)](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/instance-metadata-service?tabs=windows) including:
     * Volume label and drive letter, e.g. *vol_sqldata_M*

@@ -131,6 +131,6 @@ catch {
     Exit-WithError $_
 }
 
-Write-Log "Exiting normally..."
+Write-Log "'$PSCommandPath' exiting normally..."
 Exit 0
 #endregion

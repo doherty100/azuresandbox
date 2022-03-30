@@ -32,7 +32,8 @@ param (
 
 #region constants
 $TaskName = 'configure-storage-kerberos'
-$MaxTaskAttempts = 12
+$MaxTaskAttempts = 10
+$SCHED_S_TASK_RUNNING = 0x00041301
 #endregion
 
 #region functions
@@ -55,15 +56,13 @@ Write-Log "Running '$PSCommandPath'..."
 
 # Register scheduled task to configure Azure Storage for kerberos authentication with domain
 $scriptPath = "$((Get-Item $PSCommandPath).DirectoryName)\$TaskName.ps1"
-$domainAdminUser = $Domain.Split('.')[0].ToUpper() + "\" + $AdminUser
-# $adminSecretSecure = ConvertTo-SecureString -String $AdminUserSecret -AsPlainText -Force
-# $adminSecretSecure.MakeReadOnly()
+$domainAdminUser = "$($Domain.Split('.')[0].ToUpper())\$AdminUser"
 
 if ( -not (Test-Path $scriptPath) ) {
     Exit-WithError "Unable to locate '$scriptPath'..."
 }
 
-Write-Log "Registering task '$TaskName' to run '$scriptPath' as '$domainAdminUser'..."
+Write-Log "Registering scheduled task '$TaskName' to run '$scriptPath' as '$domainAdminUser'..."
 
 $commandParamParts = @(
     '$params = @{',
@@ -97,7 +96,7 @@ catch {
     Exit-WithError $_
 }
 
-Write-Log "Starting task '$TaskName'..."
+Write-Log "Starting scheduled task '$TaskName'..."
 
 try {
     Start-ScheduledTask -TaskName $TaskName -ErrorAction Stop
@@ -106,12 +105,11 @@ catch {
     Exit-WithError $_
 }
 
-$i=0
-
+$i = 0
 do {
     $i++
 
-    Start-Sleep 10
+    Write-Log "Getting information for scheduled task '$TaskName' (attempt '$i' of '$MaxTaskAttempts')..."
 
     try {
         $taskInfo = Get-ScheduledTaskInfo -TaskName $TaskName
@@ -120,23 +118,37 @@ do {
         Exit-WithError $_
     }
 
+    # Note: LastTaskResult values are documented here: https://docs.microsoft.com/en-us/windows/win32/taskschd/task-scheduler-error-and-success-constants 
     $lastTaskResult = $taskInfo.LastTaskResult
 
-    if ($null -eq $lastTaskResult) {
-        Write-Log "Waiting for '$TaskName' to complete (attempt $i of $MaxTaskAttempts)..."
+    Write-Log "LastTaskResult for task '$TaskName' is '$lastTaskResult'..."
+
+    if ($lastTaskResult -eq 0) {
+        break
+    }
+
+    if ($lastTaskResult -eq $SCHED_S_TASK_RUNNING) {
+        Start-Sleep 10
         continue
     }
 
-    if ($lastTaskResult -eq 0 ) {
-        Write-Log "Task '$TaskName' completed with a return code of 0..."
-        break
+    if ($i -eq $MaxTaskAttempts) {
+        Exit-WithError "Task '$taskName' is taking too long to complete..."
     }
-    else {
-        Exit-WithError "Task '$TaskName' exited with non-zero return code '$lastTaskResult'..."
-    }
-} while ($i -lt $MaxTaskAttempts)
 
-Write-Log "Exiting normally..."
+    Exit-WithError "Scheduled task '$taskName' returned unexpected LastTaskResult '$lastTaskResult'..."
+} while ($true)
+
+Write-Log "Unregistering scheduled task '$TaskName'..."
+
+try {
+    Unregister-ScheduledTask -TaskName $TaskName -ErrorAction Stop
+}
+catch {
+    Exit-WithError $_
+}
+
+Write-Log "'$PSCommandPath' exiting normally..."
 Exit 0
 
 #endregion
