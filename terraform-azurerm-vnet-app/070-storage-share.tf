@@ -19,6 +19,10 @@ resource "azurerm_private_endpoint" "storage_account_01_file" {
     is_manual_connection           = false
     subresource_names              = ["file"]
   }
+
+  depends_on = [
+    azurerm_subnet_network_security_group_association.nsg_subnet_associations
+  ]
 }
 
 resource "azurerm_private_dns_a_record" "storage_account_01_file" {

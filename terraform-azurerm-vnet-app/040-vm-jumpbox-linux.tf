@@ -45,6 +45,10 @@ resource "azurerm_network_interface" "vm_jumbox_linux_nic_01" {
     subnet_id                     = azurerm_subnet.vnet_app_01_subnets["snet-app-01"].id
     private_ip_address_allocation = "Dynamic"
   }
+
+  depends_on = [
+    azurerm_subnet_network_security_group_association.nsg_subnet_associations
+  ]
 }
 
 resource "azurerm_key_vault_access_policy" "vm_jumpbox_linux_secrets_get" {

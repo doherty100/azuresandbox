@@ -36,6 +36,10 @@ resource "azurerm_private_endpoint" "mssql_server_01" {
     is_manual_connection           = false
     subresource_names              = ["sqlServer"]
   }
+
+  depends_on = [
+    azurerm_subnet_network_security_group_association.nsg_subnet_associations
+  ]
 }
 
 resource "azurerm_private_dns_a_record" "sql_server_01" {
