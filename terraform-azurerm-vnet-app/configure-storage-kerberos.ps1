@@ -131,5 +131,6 @@ catch {
     Exit-WithError $_
 }
 
-Exit
+Write-Log "Exiting normally..."
+Exit 0
 #endregion

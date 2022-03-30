@@ -603,5 +603,5 @@ Invoke-Sql $sqlCommand 'sa' $usernameSecretSecure
 Restart-SqlServer
 
 Write-Log "Exiting normally..."
-Exit
+Exit 0
 #endregion

@@ -136,6 +136,7 @@ do {
     }
 } while ($i -lt $MaxTaskAttempts)
 
-Exit
+Write-Log "Exiting normally..."
+Exit 0
 
 #endregion
