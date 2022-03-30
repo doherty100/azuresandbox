@@ -87,13 +87,14 @@ resource "azurerm_virtual_machine_extension" "vm_jumpbox_win_postdeploy_script" 
       "fileUris": [ 
         "${var.vm_jumpbox_win_post_deploy_script_uri}", 
         "${var.vm_jumpbox_win_configure_storage_script_uri}" 
-      ]
+      ],
+      "commandToExecute": 
+        "powershell.exe -ExecutionPolicy Unrestricted -Command \"${join("", local.commandParamParts)}; .\\${var.vm_jumpbox_win_post_deploy_script} @params\""
     }    
   SETTINGS
 
   protected_settings = <<PROTECTED_SETTINGS
     {
-      "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -Command \"${join("", local.commandParamParts)}; .\\${var.vm_jumpbox_win_post_deploy_script} @params\"",
       "storageAccountName": "${var.storage_account_name}",
       "storageAccountKey": "${data.azurerm_key_vault_secret.storage_account_key.value}"
     }
