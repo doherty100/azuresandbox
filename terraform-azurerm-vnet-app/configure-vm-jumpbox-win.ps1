@@ -142,7 +142,10 @@ do {
 Write-Log "Unregistering scheduled task '$TaskName'..."
 
 try {
-    Unregister-ScheduledTask -TaskName $TaskName -ErrorAction Stop
+    Unregister-ScheduledTask `
+        -TaskName $TaskName `
+        -Confirm:$false `
+        -ErrorAction Stop
 }
 catch {
     Exit-WithError $_
