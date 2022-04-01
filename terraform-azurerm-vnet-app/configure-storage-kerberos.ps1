@@ -52,6 +52,24 @@ $xDot500Path="DC=$($Domain.Split('.')[0]),DC=$($Domain.Split('.')[1])"
 $password = ConvertTo-SecureString $StorageAccountKerbKey -AsPlainText -Force
 $spnValue = "cifs/$StorageAccountName.file.core.windows.net"
 
+Write-Log "Checking for existing computer account for storage account '$StorageAccountName' in domain '$Domain'..."
+
+$computer = Get-ADComputer -Identity $StorageAccountName
+
+if ($null -eq $computer) {
+    Write-Log "Existing computer account for storage account '$StorageAccountName' in domain '$Domain' not found..."
+}
+else {
+    Write-Log "Deleting existing computer account for storage account '$StorageAccountName' in domain '$Domain'..."
+
+    try {
+        Remove-ADComputer -Identity $StorageAccountName -Confirm:$false -ErrorAction Stop
+    }
+    catch {
+        Exit-WithError $_
+    }
+}
+
 Write-Log "Adding computer account for storage account '$StorageAccountName' to domain '$Domain'..."
 
 try {
