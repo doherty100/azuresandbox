@@ -1,5 +1,7 @@
 # #AzureSandbox
 
+![diagram](./diagram.drawio.svg)
+
 ## Contents
 
 * [Overview](#overview)

@@ -11,14 +11,13 @@
 
 ## Overview
 
-This configuration implements [Azure Virtual WAN](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) a virtual wan to connect the shared services virtual network to remote users and/or private networks.
+This configuration implements [Azure Virtual WAN](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) to connect the sandbox to remote users and/or private networks.
 
 Activity | Estimated time required
 --- | ---
 Pre-configuration | ~5 minutes
-Provisioning | ~30 minutes
+Provisioning | ~20 minutes
 Smoke testing | ~45 minutes
-De-provisioning | ~30 minutes
 
 ## Before you start
 
