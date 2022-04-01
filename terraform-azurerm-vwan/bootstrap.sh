@@ -16,27 +16,29 @@ state_file="../terraform-azurerm-vnet-shared/terraform.tfstate"
 if [ ! -f $state_file ]
 then
     printf "Unable to locate \"$state_file\"...\n"
-    printf "See README.md for samples that must be deployed first...\n"
+    printf "See README.md for configurations that must be deployed first...\n"
     usage
 fi
 
-default_subscription_id=$(terraform output -state=$state_file subscription_id)
-default_resource_group_name=$(terraform output -state=$state_file resource_group_01_name)
-default_location=$(terraform output -state=$state_file resource_group_01_location)
-default_tags=$(terraform output -json -state=$state_file resource_group_01_tags)
-default_shared_virtual_network_id=$(terraform output -state=$state_file vnet_shared_01_id)
-default_shared_virtual_network_name=$(terraform output -state=$state_file vnet_shared_01_name)
+aad_tenant_id=$(terraform output -state=$state_file aad_tenant_id)
+arm_client_id=$(terraform output -state=$state_file arm_client_id)
+location=$(terraform output -state=$state_file location)
+resource_group_name=$(terraform output -state=$state_file resource_group_name)
+subscription_id=$(terraform output -state=$state_file subscription_id)
+tags=$(terraform output -json -state=$state_file tags)
+vnet_shared_01_id=$(terraform output -state=$state_file vnet_shared_01_id)
+vnet_shared_01_name=$(terraform output -state=$state_file vnet_shared_01_name)
 
-state_file="../terraform-azurerm-vnet-spoke/terraform.tfstate"
+state_file="../terraform-azurerm-vnet-app/terraform.tfstate"
 if [ ! -f $state_file ]
 then
     printf "Unable to locate \"$state_file\"...\n"
-    printf "See README.md for samples that must be deployed first...\n"
+    printf "See README.md for configurations that must be deployed first...\n"
     usage
 fi
 
-default_spoke_virtual_network_id=$(terraform output -state=$state_file vnet_spoke_01_id)
-default_spoke_virtual_network_name=$(terraform output -state=$state_file vnet_spoke_01_name)
+vnet_app_01_id=$(terraform output -state=$state_file vnet_app_01_id)
+vnet_app_01_name=$(terraform output -state=$state_file vnet_app_01_name)
 
 # User input
 read -e -i $default_vwan_hub_address_prefix -p "vwan hub address prefix -: " vwan_hub_address_prefix
@@ -44,19 +46,21 @@ read -e -i $default_vwan_hub_address_prefix -p "vwan hub address prefix -: " vwa
 vwan_hub_address_prefix=${vwan_hub_address_prefix:=$default_vwan_hub_address_prefix}
 
 # Build vnet map
-default_vnets="${default_vnets}{\n"
-default_vnets="${default_vnets}  ${default_shared_virtual_network_name:1:-1} = $default_shared_virtual_network_id,\n"
-default_vnets="${default_vnets}  ${default_spoke_virtual_network_name:1:-1}  = $default_spoke_virtual_network_id\n"
-default_vnets="${default_vnets}}"
+virtual_networks="${virtual_networks}{\n"
+virtual_networks="${virtual_networks}  ${vnet_shared_01_name:1:-1} = $vnet_shared_01_id\n"
+# virtual_networks="${virtual_networks}  ${vnet_app_01_name:1:-1}  = $vnet_app_01_id\n"
+virtual_networks="${virtual_networks}}"
 
 #Generate terraform.tfvars file
 printf "\nGenerating terraform.tfvars file...\n\n"
 
-printf "location                = $default_location\n"              > ./terraform.tfvars
-printf "virtual_network_ids     = $default_vnets\n"                 >> ./terraform.tfvars
-printf "resource_group_name     = $default_resource_group_name\n"   >> ./terraform.tfvars
-printf "subscription_id         = $default_subscription_id\n"       >> ./terraform.tfvars
-printf "tags                    = $default_tags\n"                  >> ./terraform.tfvars
+printf "aad_tenant_id           = $aad_tenant_id\n"                 > ./terraform.tfvars
+printf "arm_client_id           = $arm_client_id\n"                 >> ./terraform.tfvars
+printf "location                = $location\n"                      >> ./terraform.tfvars
+printf "resource_group_name     = $resource_group_name\n"           >> ./terraform.tfvars
+printf "subscription_id         = $subscription_id\n"               >> ./terraform.tfvars
+printf "tags                    = $tags\n"                          >> ./terraform.tfvars
+printf "virtual_networks        = $virtual_networks\n"              >> ./terraform.tfvars
 printf "vwan_hub_address_prefix = \"$vwan_hub_address_prefix\"\n"   >> ./terraform.tfvars
 
 cat ./terraform.tfvars

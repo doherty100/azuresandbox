@@ -88,6 +88,14 @@ resource "azurerm_virtual_network" "vnet_app_01" {
   tags                = var.tags
 }
 
+output "vnet_app_01_id" {
+  value = azurerm_virtual_network.vnet_app_01.id
+}
+
+output "vnet_app_01_name" {
+  value = azurerm_virtual_network.vnet_app_01.name
+}
+
 resource "azurerm_subnet" "vnet_app_01_subnets" {
   for_each = local.subnets
 

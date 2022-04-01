@@ -36,7 +36,7 @@ printf "Retrieving runtime defaults from state file '$state_file'...\n"
 if [ ! -f $state_file ]
 then
     printf "Unable to locate \"$state_file\"...\n"
-    printf "See README.md for samples that must be deployed first...\n"
+    printf "See README.md for configurations that must be deployed first...\n"
     usage
 fi
 
@@ -46,7 +46,6 @@ admin_password_secret=$(terraform output -state=$state_file admin_password_secre
 admin_username_secret=$(terraform output -state=$state_file admin_username_secret)
 arm_client_id=$(terraform output -state=$state_file arm_client_id)
 automation_account_name=$(terraform output -state=$state_file automation_account_name)
-arm_client_id=$(terraform output -state=$state_file arm_client_id)
 dns_server=$(terraform output -state=$state_file dns_server)
 key_vault_id=$(terraform output -state=$state_file key_vault_id)
 key_vault_name=$(terraform output -state=$state_file key_vault_name)

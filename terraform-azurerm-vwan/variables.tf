@@ -1,13 +1,22 @@
+variable "aad_tenant_id" {
+  type        = string
+  description = "The Azure Active Directory tenant id."
+}
+
+variable "arm_client_id" {
+  type        = string
+  description = "The AppId of the service principal used for authenticating with Azure. Must have a 'Contributor' role assignment."
+}
+
+variable "arm_client_secret" {
+  type        = string
+  description = "The password for the service principal used for authenticating with Azure. Set interactively or using an environment variable 'TF_VAR_arm_client_secret'."
+  sensitive   = true
+}
+
 variable "location" {
   type        = string
   description = "The name of the Azure Region where resources will be provisioned."
-}
-
-variable "virtual_network_ids" {
-  type        = map
-  description = "The ids of the vnets to be connected to the vwan hub."
-
-  # default = { MyHubVNetId = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MyResourceGroupName/providers/Microsoft.Network/virtualNetworks/MyHubVNetName", MySpokeVnetId = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MyResourceGroupName/providers/Microsoft.Network/virtualNetworks/MySpokeVNetName" } 
 }
 
 variable "resource_group_name" {
@@ -25,6 +34,13 @@ variable "tags" {
   description = "The tags in map format to be used when creating new resources."
 
   # default = { costcenter = "MyCostCenter", division = "MyDivision", group = "MyGroup" }
+}
+
+variable "virtual_networks" {
+  type        = map
+  description = "The virtual networks to be connected to the vwan hub."
+
+  # default = { MyHubVNetId = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MyResourceGroupName/providers/Microsoft.Network/virtualNetworks/MyHubVNetName", MySpokeVnetId = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MyResourceGroupName/providers/Microsoft.Network/virtualNetworks/MySpokeVNetName" } 
 }
 
 variable "vwan_hub_address_prefix" {

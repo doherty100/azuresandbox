@@ -1,14 +1,17 @@
-# Azure sample configuration: terraform-azurerm-vwan  
+# \#AzureSandbox - terraform-azurerm-vwan  
+
+## Contents
+
+* [Overview](#overview)
+* [Before you start](#before-you-start)
+* [Getting started](#getting-started)
+* [Smoke testing](#smoke-testing)
+* [Documentation](#documentation)
+* [Next steps](#next-steps)
 
 ## Overview
 
-This sample implements a shared virtual wan to connect the shared services virtual network and the dedicated spoke virtual network to remote users and/or private networks. The following samples must be deployed first before starting:
-
-* [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
-  * [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows)
-  * [terraform-azurerm-vm-linux](../terraform-azurerm-vm-linux)
-* [terraform-azurerm-vnet-spoke](../terraform-azurerm-vnet-spoke)
-  * [terraform-azurerm-sql](../terraform-azurerm-sql)
+This configuration implements [Azure Virtual WAN](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) a virtual wan to connect the shared services virtual network to remote users and/or private networks.
 
 Activity | Estimated time required
 --- | ---
@@ -17,43 +20,21 @@ Provisioning | ~30 minutes
 Smoke testing | ~45 minutes
 De-provisioning | ~30 minutes
 
+## Before you start
+
+The following configurations must be deployed first before starting:
+
+* [terraform-azurerm-vnet-app](../terraform-azurerm-vnet-app)
+
 ## Getting started
 
-This section describes how to provision this sample using default settings.
+This section describes how to provision this configuration using default settings.
 
 * Run `./bootstrap.sh` using the default settings or your own custom settings.
 * Run `terraform init` and note the version of the *azurerm* provider installed.
 * Run `terraform validate` to check the syntax of the configuration.
 * Run `terraform plan` and review the plan output.
 * Run `terraform apply` to apply the configuration.
-
-## Resource index
-
-This section provides an index of the 6 resources included in this sample.
-
-### Virtual wan
-
----
-
-Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) to connect the shared services and dedicated spoke virtual networks to remote users and/or private networks with an automatically generated name following the grep format "vwan-\[a-z0-9\]\{16\}-01". The following arguments are configured by default:
-
-* [disable_vpn_encryption](https://www.terraform.io/docs/providers/azurerm/r/virtual_wan.html#disable_vpn_encryption) = false
-* [allow_branch_to_branch_traffic](https://www.terraform.io/docs/providers/azurerm/r/virtual_wan.html#allow_branch_to_branch_traffic) = true
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-vwan_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-sandbox-01/providers/Microsoft.Network/virtualWans/vwan-e2b88962e7284da0-01
-vwan_01_name | Output | string | Local | vwan-e2b88962e7284da0-01
-
-#### Virtual WAN Hub
-
-Shared [virtual WAN hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) attached to the shared virtual wan with an automatically generated name following the grep format "vhub-\[a-z0-9\]\{16\}-01". Pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) are established with the shared services virtual network and the dedicated spoke virtual network.
-
-Variable | In/Out | Type | Scope | Sample
---- | --- | --- | --- | ---
-vwan_hub_address_prefix | Input | string | Local | 10.3.0.0/16
-vwan_01_hub_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-sandbox-01/providers/Microsoft.Network/virtualHubs/vhub-6c8fe94d3b690bf9-01
-vwan_01_hub_01_name | Output | string | Local | vhub-6c8fe94d3b690bf9-01
 
 ## Smoke testing
 
@@ -97,7 +78,7 @@ This smoke test establishes a Point to Site (P2S) VPN connection to the Virtual 
       * Authentication Type: *Certificate*
       * Certificate Information: `MyP2SVPNChildCert` (Note: If you do not see this certificate you need to import the .pfx created in a previous step)
   * Click *Save*
-  * Connect and inspect routes. If you went with the default sample configuration you should see these address ranges:
+  * Connect and inspect routes. If you went with the default configuration you should see these address ranges:
     * `10.1.0.0/16`: Shared services Virtual Network
     * `10.2.0.0/16`: Spoke Virtual Network
     * `10.3.0.0/16`: Virtual WAN Hub
@@ -144,6 +125,34 @@ This smoke test establishes a Point to Site (P2S) VPN connection to the Virtual 
         * Server name: The fqdn of the SQL Database used earlier, e.g. `sql-ddf012de2c97ae5b-01.database.windows.net`.
         * Login: Use the bootstrap credentials from [terraform-azurerm-sql](../terraform-azurerm-sql), e.g. `bootstrapadmin`
     * Create a test database and enter some test data.
+
+## Documentation
+
+This section provides an index of the 6 resources included in this configuration.
+
+### Virtual wan
+
+---
+
+Shared [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) to connect the shared services and dedicated spoke virtual networks to remote users and/or private networks with an automatically generated name following the grep format "vwan-\[a-z0-9\]\{16\}-01". The following arguments are configured by default:
+
+* [disable_vpn_encryption](https://www.terraform.io/docs/providers/azurerm/r/virtual_wan.html#disable_vpn_encryption) = false
+* [allow_branch_to_branch_traffic](https://www.terraform.io/docs/providers/azurerm/r/virtual_wan.html#allow_branch_to_branch_traffic) = true
+
+Variable | In/Out | Type | Scope | Sample
+--- | --- | --- | --- | ---
+vwan_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-sandbox-01/providers/Microsoft.Network/virtualWans/vwan-e2b88962e7284da0-01
+vwan_01_name | Output | string | Local | vwan-e2b88962e7284da0-01
+
+#### Virtual WAN Hub
+
+Shared [virtual WAN hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) attached to the shared virtual wan with an automatically generated name following the grep format "vhub-\[a-z0-9\]\{16\}-01". Pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) are established with the shared services virtual network and the dedicated spoke virtual network.
+
+Variable | In/Out | Type | Scope | Sample
+--- | --- | --- | --- | ---
+vwan_hub_address_prefix | Input | string | Local | 10.3.0.0/16
+vwan_01_hub_01_id | Output | string | Local | /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-sandbox-01/providers/Microsoft.Network/virtualHubs/vhub-6c8fe94d3b690bf9-01
+vwan_01_hub_01_name | Output | string | Local | vhub-6c8fe94d3b690bf9-01
 
 ## Next steps
 

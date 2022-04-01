@@ -13,9 +13,9 @@
 
 ## Overview
 
-This sample implements a virtual network with shared services used by all the samples including:
+This configuration implements a virtual network with shared services used by all the configurations including:
 
-* A [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group) which contains all the sample resources.
+* A [resource group](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#resource-group) which contains all resources.
 * A [key vault](https://docs.microsoft.com/en-us/azure/key-vault/general/overview) for managing secrets.
 * A [log analytics workspace](https://docs.microsoft.com/en-us/azure/azure-monitor/data-platform#collect-monitoring-data) for log data and metrics.
 * A [storage account](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#storage-account) for blob storage.
@@ -37,22 +37,22 @@ Before you start, make sure you have completed the following steps:
 * All [Prerequisites](../README.md#Prerequisites) must be completed.
   * The Azure subscription owner must create a service principal with a *Contributor* Azure RBAC role assignment in advance.
   * The *appId* and *password* of the service principal must be known.
-  * The sample user must also have a *Contributor* Azure RBAC role assignment on the Azure subscription.
+  * The sandbox user must also have a *Contributor* Azure RBAC role assignment on the Azure subscription.
 * Complete the steps in [Configure client environment](../README.md#configure-client-environment).
   * Verify you can start a new Bash terminal session
   * Verify the Azure CLI is installed by running `az --version`
   * Verify PowerShell Core is installed by running `pwsh --version`
-  * Verify you have cloned a copy of the GitHub repo with the latest release of the sample code.
+  * Verify you have cloned a copy of the GitHub repo with the latest release of the source code.
 
 ## Getting started
 
-This section describes how to provision this sample using default settings.
+This section describes how to provision this configuration using default settings.
 
 * Open a Bash terminal in your client environment.
 * Change the working directory to `~/azurequickstarts/terraform-azurerm-vnet-shared`.
 * Run `az logout` and `az account clear` to reset the user credentials used by Azure CLI.
-* Run `az login` and sign in using the identity you intend to use for the samples.
-* Run `az account list -o table` and copy the *Subscription Id* to be used for the samples.
+* Run `az login` and sign in using the identity you intend to use for the configurations.
+* Run `az account list -o table` and copy the *Subscription Id* to be used for the configurations.
 * Run `az account set -s 00000000-0000-0000-0000-000000000000` using the *Subscription Id* from the previous step to set the default subscription.
 * Run `./bootstrap.sh` using the default settings or your own custom settings.
   * When prompted for *arm_client_id*, use the *appId* for the service principal created by the subscription owner.
@@ -77,11 +77,11 @@ This section describes how to provision this sample using default settings.
 
 ## Documentation
 
-This section provides additional information on various aspects of this sample.
+This section provides additional information on various aspects of this configuration.
 
 ### Bootstrap script
 
-The bootstrap script [bootstrap.sh](./bootstrap.sh) is used to initialize variables and to ensure that all dependencies are in place for the Terraform configuration to be applied. In most real world projects, Terraform configurations will need to reference resources that are not being managed by Terraform because they already exist. It is also sometimes necessary to provision resources in advance to avoid circular dependencies in your Terraform configurations. For this reason, this sample provisions several resources in advance using [bootstrap.sh](./bootstrap.sh).
+The bootstrap script [bootstrap.sh](./bootstrap.sh) is used to initialize variables and to ensure that all dependencies are in place for the Terraform configuration to be applied. In most real world projects, Terraform configurations will need to reference resources that are not being managed by Terraform because they already exist. It is also sometimes necessary to provision resources in advance to avoid circular dependencies in your Terraform configurations. For this reason, this configuration provisions several resources in advance using [bootstrap.sh](./bootstrap.sh).
 
 [bootstrap.sh](./bootstrap.sh) performs the following operations:
 
@@ -89,30 +89,30 @@ The bootstrap script [bootstrap.sh](./bootstrap.sh) is used to initialize variab
 * Generates a [Mime Multi Part Archive](https://cloudinit.readthedocs.io/en/latest/topics/format.html#mime-multi-part-archive) containing the following files:
   * [configure-vm-jumpbox-linux.yaml](./configure-vm-jumpbox-linux.yaml) is [Cloud Config Data](https://cloudinit.readthedocs.io/en/latest/topics/format.html#cloud-config-data) used to configure the Linux Jumpbox VM.
   * [configure-vm-jumpbox-linux.sh](./configure-vm-jumpbox-linux.sh) is a [User-Data Script](https://cloudinit.readthedocs.io/en/latest/topics/format.html#user-data-script) used to configure the Linux Jumpbox VM.
-* Creates a new resource group with the default name *rg-sandbox-01* used by all the samples.
+* Creates a new resource group with the default name *rg-sandbox-01* used by all the configurations.
 * Creates a storage account with a randomly generated 15-character name like *stxxxxxxxxxxxxx*.
   * The name is limited to 15 characters for compatibility with Active Directory Domain Services.
-  * A new *scripts* container is created for samples that leverage the Custom Script Extension for [Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) or [Linux](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-linux).
+  * A new *scripts* container is created for configurations that leverage the Custom Script Extension for [Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) or [Linux](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-linux).
 * Creates a key vault with a randomly generated name like *kv-xxxxxxxxxxxxxxx*.
-  * The permission model is set to *Vault access policy*. *Azure role-based access control* is not used to ensure that sandbox users only require a *Contributor* Azure RBAC role assignment in order to complete the samples.
-  * Secrets are created that are used by all samples. Note these secrets are static and will need to be manually updated if the values change.
+  * The permission model is set to *Vault access policy*. *Azure role-based access control* is not used to ensure that sandbox users only require a *Contributor* Azure RBAC role assignment in order to complete the configurations.
+  * Secrets are created that are used by all configurations. Note these secrets are static and will need to be manually updated if the values change.
     * *Log analytics workspace primary shared key*: The name of this secret is the same as the id of the log analytics workspace, e.g. *00000000-0000-0000-0000-000000000000*, and the value is the primary shared key which can be used to connect agents to the log analytics workspace.
     * *Storage account access key1*: The name of this secret is the same as the storage account, e.g. *stxxxxxxxxxxxxxxx*, and the value is access key 1.
     * *Storage account kerberos key1*: The name of this secret is the same as the storage account, e.g. *stxxxxxxxxxxxxxxx-kerb1*, and the value is kerberos key 1.
-    * *adminpassword*: The password used for default administrator credentials when new sample resources are provisioned.
-    * *adminuser*: The user name used for default administrator credentials when new sample resources are configured. The default value is *bootstrapadmin*.
-    * *bootstrapadmin-ssh-key-private*: The private SSH key used to secure SSH access to Linux VMs created in the samples. The value of the *adminpassword* secret is used as the pass phrase.
-    * *bootstrapadmin-ssh-key-public*: The public SSH key used to secure SSH access to Linux VMs created in the samples.
+    * *adminpassword*: The password used for default administrator credentials when new resources are provisioned.
+    * *adminuser*: The user name used for default administrator credentials when new resources are configured. The default value is *bootstrapadmin*.
+    * *bootstrapadmin-ssh-key-private*: The private SSH key used to secure SSH access to Linux VMs created in the configurations. The value of the *adminpassword* secret is used as the pass phrase.
+    * *bootstrapadmin-ssh-key-public*: The public SSH key used to secure SSH access to Linux VMs created in the configurations.
   * Access policies are created to enable the administration and retrieval of secrets.
-    * *AzureQuickStartsSPN* is granted *Get* and *Set* secrets permissions.
-    * The sample user is granted *Get*, *List* and *Set* secrets permissions.
+    * *AzureSandboxSPN* is granted *Get* and *Set* secrets permissions.
+    * The sandbox user is granted *Get*, *List* and *Set* secrets permissions.
 * Creates a *terraform.tfvars* file for generating and applying Terraform plans.
 
 The script is idempotent and can be run multiple times even after the Terraform configuration has been applied.
 
 ### Terraform Resources
 
-This section lists the resources included in the Terraform configurations in this sample.
+This section lists the resources included in the Terraform configurations in this configuration.
 
 #### Log Analytics Workspace
 
@@ -135,7 +135,7 @@ Resource name (ARM) | Notes
 azurerm_automation_account.automation_account_01 (auto&#x2011;a9866e235174ab6a&#x2011;01) | See below.
 random_id.automation_account_01_name | Used to generate a random unique name for *azurerm_automation_account.automation_account_01*
 
-This sample makes extensive use of [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) to configure virtual machines using Terraform [Provisioners](https://www.terraform.io/docs/language/resources/provisioners/syntax.html).
+This configuration makes extensive use of [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) to configure virtual machines using Terraform [Provisioners](https://www.terraform.io/docs/language/resources/provisioners/syntax.html).
 
 * [configure-automation.ps1](./configure-automation.ps1): This script is run by a provisioner in the *azurerm_automation_account.automation_account_01* resource and does the following:
   * Configures [Azure Automation shared resources](https://docs.microsoft.com/en-us/azure/automation/automation-intro#shared-resources) including:
@@ -145,8 +145,8 @@ This sample makes extensive use of [Azure Automation State Configuration (DSC)](
         * [ActiveDirectoryDsc](https://github.com/dsccommunity/ActiveDirectoryDsc)
     * Bootstraps [Variables](https://docs.microsoft.com/en-us/azure/automation/shared-resources/variables)
     * Bootstraps [Credentials](https://docs.microsoft.com/en-us/azure/automation/shared-resources/credentials)
-  * Configures [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) which is used to configure Windows Server virtual machines used in the samples.
-    * Imports [DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started#create-a-dsc-configuration) used in this sample.
+  * Configures [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) which is used to configure Windows Server virtual machines used in the configurations.
+    * Imports [DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started#create-a-dsc-configuration) used in this configuration.
       * [LabDomainConfig.ps1](./LabDomainConfig.ps1): configure a Windows Server virtual machine as an [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) [Domain Controller](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2003/cc786438(v=ws.10)).
     * [Compiles DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-compile) so they can be used later to [Register a VM to be managed by State Configuration](https://docs.microsoft.com/en-us/azure/automation/tutorial-configure-servers-desired-state#register-a-vm-to-be-managed-by-state-configuration).
 
@@ -198,7 +198,7 @@ This Windows Server VM is used as an [Active Directory Domain Services](https://
 
 ### Terraform output variables
 
-This section lists the output variables defined in the Terraform configurations in this sample. Some of these may be used for automation in other samples.
+This section lists the output variables defined in the Terraform configurations in this sample. Some of these may be used for automation in other configurations.
 
 Output variable | Sample value
 --- | ---
@@ -224,4 +224,4 @@ vnet_shared_01_name | "vnet-shared-01"
 
 ## Next steps
 
-* Move on to the next sample [terraform-azurerm-vnet-app](../terraform-azurerm-vnet-app).
+* Move on to the next configuration [terraform-azurerm-vnet-app](../terraform-azurerm-vnet-app).

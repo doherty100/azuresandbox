@@ -11,7 +11,7 @@
 
 ## Overview
 
-This repository contains a collection of inter-dependent [cloud computing](https://azure.microsoft.com/en-us/overview/what-is-cloud-computing) samples for implementing common [Microsoft Azure](https://azure.microsoft.com/en-us/overview/what-is-azure/) services on a single [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription). Collectively these samples provide a flexible and cost effective sandbox environment useful for experimenting with various Azure services and capabilities.
+This repository contains a collection of inter-dependent [cloud computing](https://azure.microsoft.com/en-us/overview/what-is-cloud-computing) configurations for implementing common [Microsoft Azure](https://azure.microsoft.com/en-us/overview/what-is-azure/) services on a single [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription). Collectively these configurations provide a flexible and cost effective sandbox environment useful for experimenting with various Azure services and capabilities.
 
 *Disclaimer:* \#AzureSandbox is not intended for production use. While some best practices are used, others are intentionally not used in favor of simplicity and cost. See [Known issues](#known-issues) for more information.
 
@@ -60,16 +60,16 @@ This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doher
 
 ## Prerequisites
 
-The following prerequisites are required in order to get started. Note that once these prerequisite are in place, a [Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) Azure RBAC role assignment is sufficient to use the samples.
+The following prerequisites are required in order to get started. Note that once these prerequisite are in place, a [Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) Azure RBAC role assignment is sufficient to use the configurations.
 
 * Identify the [Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-whatis) (AAD) tenant to be used for identity and access management, or create a new AAD tenant using [Quickstart: Set up a tenant](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-create-new-tenant).
 * Identify a single Azure [subscription](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#subscription) or create a new Azure subscription. See [Azure Offer Details](https://azure.microsoft.com/en-us/support/legal/offer-details/) and [Associate or add an Azure subscription to your Azure Active Directory tenant](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-how-subscriptions-associated-directory) for more information.
 * Identify the owner of the Azure subscription to be used for \#AzureSandbox. This user should have an [Owner](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner) Azure RBAC role assignment on the subscription. See [Steps to assign an Azure role](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps) for more information.
-* Ask the subscription owner to create a [Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) Azure RBAC role assignment for each sample user. See [Steps to assign an Azure role](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps) for more information.
+* Ask the subscription owner to create a [Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) Azure RBAC role assignment for each sandbox user. See [Steps to assign an Azure role](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps) for more information.
 * Verify the subscription owner has privileges to create a Service principal name on the AAD tenant. See [Check Azure AD permissions](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#check-azure-ad-permissions) for more information.
-* Ask the subscription owner to [Create a service principal](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli) (SPN) for sandbox users using the Azure CLI command `az ad sp create-for-rbac -n AzureQuickStartsSPN --role Contributor` using the [Quickstart for Bash in Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart). Securely share the output with sandbox users, including *appId* and *password*.
-* Some organizations may institute [Azure policy](https://docs.microsoft.com/en-us/azure/governance/policy/overview) which may cause some sample deployments to fail. This can be addressed by using custom settings which pass the policy checks, or by disabling the policies on the Azure subscription being used for the samples.
-* Some Azure subscriptions may have low quota limits for specific Azure resources which may cause sample deployments to fail. See [Resolve errors for resource quotas](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-resource-quota) for more information. Consult the following table to determine if quota increases are required to deploy the samples using default settings:
+* Ask the subscription owner to [Create a service principal](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli) (SPN) for sandbox users using the Azure CLI command `az ad sp create-for-rbac -n AzureSandboxSPN --role Contributor` using the [Quickstart for Bash in Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart). Securely share the output with sandbox users, including *appId* and *password*.
+* Some organizations may institute [Azure policy](https://docs.microsoft.com/en-us/azure/governance/policy/overview) which may cause some sandbox deployments to fail. This can be addressed by using custom settings which pass the policy checks, or by disabling the policies on the Azure subscription being used for the configurations.
+* Some Azure subscriptions may have low quota limits for specific Azure resources which may cause sandbox deployments to fail. See [Resolve errors for resource quotas](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-resource-quota) for more information. Consult the following table to determine if quota increases are required to deploy the configurations using default settings:
 
 Resource |  Quota required per deployment | Command
 --- | :-: | ---
@@ -94,7 +94,7 @@ Before you begin, familiarity with the following topics will be helpful when wor
 
 ---
 
-Each sample user must select and configure a client environment in advance. A variety of options are available and are detailed in this section.
+Each sandbox user must select and configure a client environment in advance. A variety of options are available and are detailed in this section.
 
 #### Cloud shell
 
@@ -129,7 +129,7 @@ Windows 10 users can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/abou
 
 #### Linux / macOS
 
-Linux and macOS users can deploy the samples natively by installing the following tools:
+Linux and macOS users can deploy the configurations natively by installing the following tools:
 
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/what-is-azure-cli?view=azure-cli-latest)
   * Debian or Ubuntu: [Install Azure CLI with apt](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest)
@@ -151,7 +151,7 @@ Linux and macOS users can deploy the samples natively by installing the followin
   * After installing, add the following extensions:
     * [Terraform](https://marketplace.visualstudio.com/items?itemName=mauve.terraform)
 
-Note the Bash scripts used in the samples were developed and tested using *GNU bash, version 5.0.17(1)-release (x86_64-pc-linux-gnu)* and have not been tested on other popular shells like [zsh](https://www.zsh.org/).
+Note the Bash scripts used in the configurations were developed and tested using *GNU bash, version 5.0.17(1)-release (x86_64-pc-linux-gnu)* and have not been tested on other popular shells like [zsh](https://www.zsh.org/).
 
 ## Next steps
 
@@ -164,7 +164,7 @@ latestTag=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout $latestTag
 ```
 
-### Perform default sample deployment
+### Perform default sandbox deployment
 
 ---
 
@@ -172,12 +172,12 @@ For the first deployment, the author recommends using defaults, which is ideal f
 
 #### Default IP address ranges
 
-The samples use default IP address ranges for networking components. These ranges are artificially large and contiguous for simplicity, and customized IP address ranges can be much smaller. A suggested minimum is provided to assist in making the conversion. It's a good idea to start small. Additional IP address ranges can be added to the networking configuration in the future if you need them, but you can't modify an existing IP address range to make it smaller.
+The configurations use default IP address ranges for networking components. These ranges are artificially large and contiguous for simplicity, and customized IP address ranges can be much smaller. A suggested minimum is provided to assist in making the conversion. It's a good idea to start small. Additional IP address ranges can be added to the networking configuration in the future if you need them, but you can't modify an existing IP address range to make it smaller.
 
 Address range | CIDR | First | Last | IP address count | Suggested minimum range
 --- |--- | --- | --- | --: | ---
 Reserved for private network | 10.0.0.0/16 | 10.0.0.0 | 10.0.255.255 | 65,536 | N/A
-Default sample aggregate | 10.1.0.0/13 | 10.1.0.0 | 10.7.255.255 | 524,288 | /22 (1024 IP addresses)
+Default sandbox aggregate | 10.1.0.0/13 | 10.1.0.0 | 10.7.255.255 | 524,288 | /22 (1024 IP addresses)
 Shared services virtual network | 10.1.0.0/16 | 10.1.0.0 | 10.1.255.255 | 65,536 | /24 (256 IP addresses)
 Application virtual network | 10.2.0.0/16 | 10.2.0.0 | 10.2.255.255 | 65,536 | /24 (256 IP addresses)
 Virtual wan hub | 10.3.0.0/16 | 10.3.0.0 | 10.3.255.255 | 65,536 | /24 (256 IP addresses)
@@ -187,7 +187,7 @@ Reserved for future use | 10.6.0.0/15 | 10.6.0.0 | 10.7.255.255 | 131,072 | N/A
 
 ##### Default subnet IP address prefixes
 
-This section documents the default subnet IP address prefixes used in the samples. Subnets enable you to segment the virtual network into one or more sub-networks and allocate a portion of the virtual network's address space to each subnet. You can then connect network resources to a specific subnet, and control ingress and egress using [network security qroups](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
+This section documents the default subnet IP address prefixes used in the configurations. Subnets enable you to segment the virtual network into one or more sub-networks and allocate a portion of the virtual network's address space to each subnet. You can then connect network resources to a specific subnet, and control ingress and egress using [network security qroups](https://docs.microsoft.com/en-us/azure/virtual-network/security-overview).
 
 Virtual network | Subnet | IP address prefix | First | Last | IP address count
 --- | --- | --- | --- | --- | --:
@@ -215,17 +215,17 @@ Application | Reserved for future use | 10.2.32.0/19 | 10.2.32.0 | 10.2.63.255 |
 Application | Reserved for future use | 10.2.64.0/18 | 10.2.64.0 | 10.2.127.255 | 16,384
 Application | Reserved for future use | 10.2.128.0/17 | 10.2.128.0 | 10.2.255.255 | 32,768
 
-#### Apply sample configurations
+#### Apply sandbox configurations
 
-Apply the samples in the following order:
+Apply the configurations in the following order:
 
-1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) implements a virtual network with shared services used by all the samples.
+1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) implements a virtual network with shared services used by all the configurations.
 1. [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/) implements an application virtual network.
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared services virtual network and the application virtual network to remote users or a private network.
 
-#### Destroy sample configurations
+#### Destroy sandbox configurations
 
-While a default sample deployment is fine for testing, it may not work with an organization's private network. The default deployment should be destroyed first before doing a custom deployment. This is accomplished by running `terraform destroy` on each sample in the reverse order in which it was deployed:
+While a default sandbox deployment is fine for testing, it may not work with an organization's private network. The default deployment should be destroyed first before doing a custom deployment. This is accomplished by running `terraform destroy` on each configuration in the reverse order in which it was deployed:
 
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
 1. [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/)
@@ -233,15 +233,15 @@ While a default sample deployment is fine for testing, it may not work with an o
 
 Alternatively, for speed, simply run `az group delete -g rg-sandbox-01`. You can run [cleanterraformtemp.sh](./cleanterraformtemp.sh) to clean up temporary files and directories.
 
-### Perform custom sample deployment
+### Perform custom sandbox deployment
 
 ---
 
-A custom deployment will likely be required to connect the samples to an organization's private network. This section provides guidance on how to customize the samples.
+A custom deployment will likely be required to connect the configurations to an organization's private network. This section provides guidance on how to customize the configurations.
 
 #### Document private network IP address ranges (sample)
 
-Use this section to document one or more private network IP address ranges by consulting a network professional. This is required if you want to establish a [hybrid connection](https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/hybrid-connectivity) between an organization's private network and the samples. The sample includes two IP address ranges used in a private network. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section.
+Use this section to document one or more private network IP address ranges by consulting a network professional. This is required if you want to establish a [hybrid connection](https://docs.microsoft.com/en-us/azure/architecture/solution-ideas/articles/hybrid-connectivity) between an organization's private network and the configurations. The sandbox includes two IP address ranges used in a private network. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section.
 
 IP address range | CIDR | First | Last | IP address count
 --- | --- | --- | --- | --:
@@ -255,9 +255,9 @@ IP address range | CIDR | First | Last | IP address count
 Primary range | TBD | TBD | TBD | TBD
 Secondary range | TBD | TBD | TBD | TBD
 
-#### Customize IP address ranges (sample)
+#### Customize IP address ranges (sandbox)
 
-Use this section to customize the default IP address ranges used by the samples to support routing on an organization's private network. The aggregate range should be determined by consulting a network professional, and will likely be allocated using a range that falls within the private network IP address ranges discussed previously, and the rest of the IP address ranges must be contained within it. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section. Note this sample uses the suggested minimum address ranges from the default IP address ranges described previously.
+Use this section to customize the default IP address ranges used by the configurations to support routing on an organization's private network. The aggregate range should be determined by consulting a network professional, and will likely be allocated using a range that falls within the private network IP address ranges discussed previously, and the rest of the IP address ranges must be contained within it. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section. Note this sandbox uses the suggested minimum address ranges from the default IP address ranges described previously.
 
 IP address range | CIDR | First | Last | IP address count
 --- | --- | --- | --- | --:
@@ -277,9 +277,9 @@ Application virtual network | TBD | TBD | TBD | TBD
 Virtual wan hub | TBD | TBD | TBD | TBD
 P2S client VPN connections | TBD | TBD | TBD | TBD
 
-##### Customize subnet IP address prefixes (sample)
+##### Customize subnet IP address prefixes (sandbox)
 
-Use this section to customize the default subnet IP address prefixes used by the samples to support routing on an organization's private network. Make a copy of this table and change these sample values to custom values. Each address prefix must fall within the virtual network IP address ranges discussed previously. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section.
+Use this section to customize the default subnet IP address prefixes used by the configurations to support routing on an organization's private network. Make a copy of this table and change these sandbox values to custom values. Each address prefix must fall within the virtual network IP address ranges discussed previously. The [CIDR to IPv4 Conversion](https://ipaddressguide.com/cidr) tool may be useful for completing this section.
 
 Virtual network | Subnet | IP address prefix | First | Last | IP address count
 --- | --- | --- | --- | --- | --:
@@ -309,20 +309,20 @@ Application | snet-private-endpoints-01 | TBD | TBD | TBD | TBD
 
 ## Known issues
 
-This section documents known issues with these samples that should be addressed prior to real world usage.
+This section documents known issues with these configurations that should be addressed prior to real world usage.
 
 * Configuration management
-  * *Windows Server*: This sample uses [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) for configuring the Windows Server virtual machines, which will be replaced by [Azure Policy guest configuration](https://azure.microsoft.com/en-in/updates/public-preview-apply-settings-inside-machines-using-azure-policys-guest-configuration/) which is currently in public preview. This sample will be updated to the new implementation when it is generally available.
+  * *Windows Server*: This configuration uses [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) for configuring the Windows Server virtual machines, which will be replaced by [Azure Policy guest configuration](https://azure.microsoft.com/en-in/updates/public-preview-apply-settings-inside-machines-using-azure-policys-guest-configuration/) which is currently in public preview. This configuration will be updated to the new implementation when it is generally available.
     * *configure-automation.ps1*: The performance of this script could be improved by using multi-threading to run Azure Automation operations in parallel.
-  * *Linux*: This sample uses [cloud-init](https://cloudinit.readthedocs.io/) for configuring [Ubuntu 20.04 LTS (Focal Fossa)](http://www.releases.ubuntu.com/20.04/) virtual machines.
+  * *Linux*: This configuration uses [cloud-init](https://cloudinit.readthedocs.io/) for configuring [Ubuntu 20.04 LTS (Focal Fossa)](http://www.releases.ubuntu.com/20.04/) virtual machines.
     * *azurerm_linux_virtual_machine.vm_jumpbox_linux*: ARM tags are currently used to pass some configuration data to cloud-init. This dependency on ARM tags could make the configuration more fragile if users manually manipulate ARM tags or they are overwritten by Azure Policy.
 * Identity and Access Management
-  * *Authentication*: These samples use a service principal to authenticate with Azure which requires a client secret to be shared. This is due to the requirement that sandbox users be limited to a *Contributor* Azure RBAC role assignment which is not authorized to do Azure RBAC role assignments. Production environments should consider using [managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) instead of service principals which eliminates the need to share secrets.
-  * *Credentials*: For simplicity, the samples use a single set of credentials when an administrator account is required to provision or configure resources. In production environments these credentials would be different and follow the principal of least privilege for better security.
+  * *Authentication*: These configurations use a service principal to authenticate with Azure which requires a client secret to be shared. This is due to the requirement that sandbox users be limited to a *Contributor* Azure RBAC role assignment which is not authorized to do Azure RBAC role assignments. Production environments should consider using [managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) instead of service principals which eliminates the need to share secrets.
+  * *Credentials*: For simplicity, the configurations use a single set of credentials when an administrator account is required to provision or configure resources. In production environments these credentials would be different and follow the principal of least privilege for better security.
   * *Active Directory Domain Services*: A pre-configured AD domain controller *azurerm_windows_virtual_machine.vm_adds* is provisioned.
     * *High availability*: The current design uses a single VM for AD DS which is counter to best practices as described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain) which recommends a pair of VMs in an Availability Set.
     * *Data integrity*: The current design hosts the AD DS domain forest data on the OS Drive which is counter to  best practices as described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain) which recommends hosting them on a separate data drive with different cache settings.
 * Storage
-  * *Azure Storage*: For simplicity, this sample uses the [Authorize with Shared Key](https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key) approach for [Authorizing access to data in Azure Storage](https://docs.microsoft.com/en-us/azure/storage/common/authorize-data-access?toc=/azure/storage/blobs/toc.json). For production environments, consider using [shared access signatures](https://docs.microsoft.com/en-us/azure/storage/common/storage-sas-overview?toc=/azure/storage/blobs/toc.json) instead.
+  * *Azure Storage*: For simplicity, this configuration uses the [Authorize with Shared Key](https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key) approach for [Authorizing access to data in Azure Storage](https://docs.microsoft.com/en-us/azure/storage/common/authorize-data-access?toc=/azure/storage/blobs/toc.json). For production environments, consider using [shared access signatures](https://docs.microsoft.com/en-us/azure/storage/common/storage-sas-overview?toc=/azure/storage/blobs/toc.json) instead.
 * Networking
-  * *azurerm_subnet.vnet_shared_01_subnets["snet-adds-01"]*: This subnet is protected by an NSG as per best practices described in described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain), however the network security rules permit ingress and egress from the Virtual Network on all ports to allow for flexibility in the samples. Production implementations of this subnet should follow the guidance in [How to configure a firewall for Active Directory domains and trusts](https://docs.microsoft.com/en-us/troubleshoot/windows-server/identity/config-firewall-for-ad-domains-and-trusts).
+  * *azurerm_subnet.vnet_shared_01_subnets["snet-adds-01"]*: This subnet is protected by an NSG as per best practices described in described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain), however the network security rules permit ingress and egress from the Virtual Network on all ports to allow for flexibility in the configurations. Production implementations of this subnet should follow the guidance in [How to configure a firewall for Active Directory domains and trusts](https://docs.microsoft.com/en-us/troubleshoot/windows-server/identity/config-firewall-for-ad-domains-and-trusts).

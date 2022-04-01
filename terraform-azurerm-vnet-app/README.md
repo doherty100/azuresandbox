@@ -13,7 +13,7 @@
 
 ## Overview
 
-This sample implements a virtual network for applications including:
+This configuration implements a virtual network for applications including:
 
 * A [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting for hosting [virtual machines](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) and private endpoints implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview). [Virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) is automatically configured.
 * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
@@ -30,13 +30,13 @@ Smoke testing | ~ 30 minutes
 
 ## Before you start
 
-The following samples must be deployed first before starting:
+The following configurations must be deployed first before starting:
 
 * [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
 
 ## Getting started
 
-This section describes how to provision this sample using default settings.
+This section describes how to provision this configuration using default settings.
 
 * Change the working directory to `~/azurequickstarts/terraform-azurerm-vnet-app`.
 * Run `./bootstrap.sh` using the default settings or your own custom settings.
@@ -184,11 +184,11 @@ This section describes how to provision this sample using default settings.
 
 ## Documentation
 
-This section provides additional information on various aspects of this sample.
+This section provides additional information on various aspects of this configuration.
 
 ### Bootstrap script
 
-This sample uses the script [bootstrap.sh](./bootstrap.sh) to create a *terraform.tfvars* file for generating and applying Terraform plans. For simplified deployment, several runtime defaults are initialized using output variables stored in the *terraform.tfstate* file associated with the [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared) sample, including:
+This configuration uses the script [bootstrap.sh](./bootstrap.sh) to create a *terraform.tfvars* file for generating and applying Terraform plans. For simplified deployment, several runtime defaults are initialized using output variables stored in the *terraform.tfstate* file associated with the [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared) configuration, including:
 
 Output variable | Sample value
 --- | ---
@@ -225,14 +225,14 @@ Configuration of [Azure Automation State Configuration (DSC)](https://docs.micro
       * [NetworkingDsc](https://github.com/dsccommunity/NetworkingDsc)
       * [SqlServerDsc](https://github.com/dsccommunity/SqlServerDsc)
       * [cChoco](https://github.com/chocolatey/cChoco)
-  * Imports [DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started#create-a-dsc-configuration) used in this sample.
+  * Imports [DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-getting-started#create-a-dsc-configuration) used in this configuration.
     * [JumpBoxConfig.ps1](./JumpBoxConfig.ps1): domain joins a Windows Server virtual machine and adds it to a `JumpBoxes` security group, then and configures it as jumpbox.
     * [MssqlVmConfig.ps1](./MssqlVmConfig.ps1): domain joins a Windows Server virtual machine and adds it to a `DatabaseServers` security group, then configures it as a database server.
   * [Compiles DSC Configurations](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-compile) so they can be used later to [Register a VM to be managed by State Configuration](https://docs.microsoft.com/en-us/azure/automation/tutorial-configure-servers-desired-state#register-a-vm-to-be-managed-by-state-configuration).
 
 ### Terraform Resources
 
-This section lists the resources included in the Terraform configurations in this sample.
+This section lists the resources included in this configuration.
 
 #### Network resources
 
@@ -277,7 +277,7 @@ This Windows Server VM is used as a jumpbox for development and remote server ad
     * [microsoftazurestorageexplorer](https://community.chocolatey.org/packages/microsoftazurestorageexplorer)
     * [azcopy10](https://community.chocolatey.org/packages/azcopy10)
 * Post-deployment configuration is then performed using a custom script extension that runs [configure&#x2011;vm&#x2011;jumpbox&#x2011;&#x2011;win.ps1](./configure-vm-jumpbox-win.ps1).
-  * [configure&#x2011;storage&#x2011;kerberos.ps1](./configure-storage-kerberos.ps1) is registered as a scheduled task then executed using domain administrator credentials. This script must be run on a domain joined Azure virtual machine, and configures the storage account for kerberos authentication with the Active Directory Domain Services domain used in the samples.
+  * [configure&#x2011;storage&#x2011;kerberos.ps1](./configure-storage-kerberos.ps1) is registered as a scheduled task then executed using domain administrator credentials. This script must be run on a domain joined Azure virtual machine, and configures the storage account for kerberos authentication with the Active Directory Domain Services domain used in the configurations.
 
 #### Linux Jumpbox VM
 
@@ -407,8 +407,17 @@ azurerm_private_dns_a_record.storage_account_01_file | A DNS A record for resolv
 
 * Hosted by the storage account created by [terraform-azurerm-vnet-shared/bootstrap.sh](../terraform-azurerm-vnet-shared/README.md#bootstrap-script).
 * Connectivity using private endpoints is enabled. See [Use private endpoints for Azure Storage](https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints) for more information.
-* Kerberos authentication is configured with the sample domain using a post-deployment script executed on *azurerm_windows_virtual_machine.vm_jumpbox_win*.
+* Kerberos authentication is configured with the sandbox domain using a post-deployment script executed on *azurerm_windows_virtual_machine.vm_jumpbox_win*.
+
+### Terraform output variables
+
+This section lists the output variables defined in the Terraform configurations in this configuration. Some of these may be used for automation in other configurations.
+
+Output variable | Sample value
+--- | ---
+vnet_app_01_id | "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-sandbox-01/providers/Microsoft.Network/virtualNetworks/vnet-app-01"
+vnet_app_01_name | "vnet-app-01"
 
 ## Next steps
 
-Move on to the next sample [terraform-azurerm-vwan](../terraform-azurerm-vwan).
+Move on to the next configuration [terraform-azurerm-vwan](../terraform-azurerm-vwan).
