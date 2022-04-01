@@ -1,8 +1,17 @@
 # \#AzureSandbox - terraform-azurerm-vnet-app
 
-## Overview
-
 ![vnet-app-diagram](./vnet-app-diagram.drawio.svg)
+
+## Contents
+
+* [Overview](#overview)
+* [Before you start](#before-you-start)
+* [Getting started](#getting-started)
+* [Smoke testing](#smoke-testing)
+* [Documentation](#documentation)
+* [Next steps](#next-steps)
+
+## Overview
 
 This sample implements a virtual network for applications including:
 

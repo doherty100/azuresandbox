@@ -1,8 +1,17 @@
 # #AzureSandbox - terraform-azurerm-vnet-shared  
 
-## Overview
-
 ![vnet-shared-diagram](./vnet-shared-diagram.drawio.svg)
+
+## Contents
+
+* [Overview](#overview)
+* [Before you start](#before-you-start)
+* [Getting started](#getting-started)
+* [Smoke testing](#smoke-testing)
+* [Documentation](#documentation)
+* [Next steps](#next-steps)
+
+## Overview
 
 This sample implements a virtual network with shared services used by all the samples including:
 
@@ -47,7 +56,7 @@ This section describes how to provision this sample using default settings.
 * Run `az account set -s 00000000-0000-0000-0000-000000000000` using the *Subscription Id* from the previous step to set the default subscription.
 * Run `./bootstrap.sh` using the default settings or your own custom settings.
   * When prompted for *arm_client_id*, use the *appId* for the service principal created by the subscription owner.
-  * When prompted for *resource_group_name* use a custom value if there are other sample users using the same subscription.
+  * When prompted for *resource_group_name* use a custom value if there are other sandbox users using the same subscription.
   * When prompted for *adminuser*, the default is *bootstrapadmin*.
     * If you use a custom value, avoid using [restricted usernames](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm-).
   * When prompted for *adminpassword*, generate a strong password but be sure to escape any [linux special characters](https://tldp.org/LDP/abs/html/special-chars.html).
@@ -85,7 +94,7 @@ The bootstrap script [bootstrap.sh](./bootstrap.sh) is used to initialize variab
   * The name is limited to 15 characters for compatibility with Active Directory Domain Services.
   * A new *scripts* container is created for samples that leverage the Custom Script Extension for [Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows) or [Linux](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-linux).
 * Creates a key vault with a randomly generated name like *kv-xxxxxxxxxxxxxxx*.
-  * The permission model is set to *Vault access policy*. *Azure role-based access control* is not used to ensure that sample users only require a *Contributor* Azure RBAC role assignment in order to complete the samples.
+  * The permission model is set to *Vault access policy*. *Azure role-based access control* is not used to ensure that sandbox users only require a *Contributor* Azure RBAC role assignment in order to complete the samples.
   * Secrets are created that are used by all samples. Note these secrets are static and will need to be manually updated if the values change.
     * *Log analytics workspace primary shared key*: The name of this secret is the same as the id of the log analytics workspace, e.g. *00000000-0000-0000-0000-000000000000*, and the value is the primary shared key which can be used to connect agents to the log analytics workspace.
     * *Storage account access key1*: The name of this secret is the same as the storage account, e.g. *stxxxxxxxxxxxxxxx*, and the value is access key 1.
