@@ -48,7 +48,7 @@ vwan_hub_address_prefix=${vwan_hub_address_prefix:=$default_vwan_hub_address_pre
 # Build vnet map
 virtual_networks="${virtual_networks}{\n"
 virtual_networks="${virtual_networks}  ${vnet_shared_01_name:1:-1} = $vnet_shared_01_id\n"
-# virtual_networks="${virtual_networks}  ${vnet_app_01_name:1:-1}  = $vnet_app_01_id\n"
+virtual_networks="${virtual_networks}  ${vnet_app_01_name:1:-1} = $vnet_app_01_id\n"
 virtual_networks="${virtual_networks}}"
 
 #Generate terraform.tfvars file

@@ -81,7 +81,7 @@ This section describes how to provision this configuration using default setting
       * Navigate to *View* > *Extensions*
       * Search for *Remote-SSH*
       * Click *Install*
-    * Configure SSH host
+    * Configure SSH ss
       * Navigate to *View* > *Command Palette...* and enter `Remote-SSH: Add New SSH Host`.
       * When prompted for *Enter SSH Connection Command* enter `ssh bootstrapadmin@mysandbox.local@jumplinux1`.
       * When prompted for *Select SSH configuration file to update* choose *C:\\Users\\bootstrapadmin\\.ssh\\config*.

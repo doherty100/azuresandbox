@@ -57,12 +57,14 @@ This smoke test establishes a Point to Site (P2S) VPN connection to the Virtual 
   * Authentication method: `Azure certificate`
   * ROOT CERTIFICATE NAME: `MyP2SVPNRootCert` (default)
   * PUBLIC CERTIFICATE DATA: Paste in the content of `MyP2SVPNRootCert_Base64_Encoded.cer`, not including the begin / end certificate lines.
-* Create User (P2S) VPN Gateway. This can take rougly 15 minutes.
-  * In the Azure Portal, navigate to *Home > Virtual WANs > vwan-XXXX-01 > Hubs > vhub-XXXX-01 > User VPN (Point to site)*
-  * Gateway scale units: `1 scale unit - 1 Gbps`
+* Create User (P2S) VPN Gateway. This can take up to 15 minutes.
+  * In the Azure Portal, navigate to *Home > Virtual WANs > vwan-XXXX-01 > Hubs > vhub-XXXX-01 > User VPN (Point to site) > Create User VPN Gateway*
+  * Gateway scale units: `1 scale unit`
   * Point to site configuration: `UserVPNConfig1`
+  * Routing preference: `Microsoft network`
+  * Use Remote/On-premises RADIUS server: `Disabled`
   * Client address pool: `10.4.0.0/16`
-  * Custom DNS servers: `168.63.129.16` (See [What is IP address 168.63.129.16?](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16) for more info)
+  * Custom DNS servers: `10.1.1.4` and `168.63.129.16` (See [What is IP address 168.63.129.16?](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16) for more info)
 * Download Virtual Hub User VPN Profile
   * In the Azure Portal, navigate to *Home > Virtual WANs > vwan-XXXX-01 > Hubs > vhub-XXXX-01 > User VPN (Point to site)*
   * Click *Download virtual Hub User VPN profile*
@@ -72,7 +74,7 @@ This smoke test establishes a Point to Site (P2S) VPN connection to the Virtual 
 * Install and configure VPN Client
   * Install the [Azure VPN Client](https://www.microsoft.com/store/productId/9NP355QT2SQB).
   * Launch the Azure VPN Client
-  * Click *+ + Add or import a new VPN connection* in the lower left corner of the window
+  * Navigate to *+ Add or Import a new VPN connection*
   * Click *Import*
   * Navigate to the `AzureVPN` folder from the previous step, and open `azurevpnconfig.xml`.
     * Client authentication
@@ -80,19 +82,20 @@ This smoke test establishes a Point to Site (P2S) VPN connection to the Virtual 
       * Certificate Information: `MyP2SVPNChildCert` (Note: If you do not see this certificate you need to import the .pfx created in a previous step)
   * Click *Save*
   * Connect and inspect routes. If you went with the default configuration you should see these address ranges:
-    * `10.1.0.0/16`: Shared services Virtual Network
-    * `10.2.0.0/16`: Spoke Virtual Network
+    * `10.1.0.0/16`: Shared services virtual network
+    * `10.2.0.0/16`: Application virtual network
     * `10.3.0.0/16`: Virtual WAN Hub
     * `10.4.0.0/17`: P2S client VPN connections
     * `10.4.128.0/17`: P2S client VPN connections
     * `10.4.0.2`: VPN IP Address (this client)
   * Test RDP (port 3389) connectivity using private IP address (not bastion)
-    * Find the private IP address for the *Windows jump box virtual machine* in [terraform-azurerm-vm-windows](../terraform-azurerm-vm-windows).
-    * Launch *Remote Desktop Connection* (`mstsc.exe`) and verify you can connect using the private IP address and bootstrap credentials.
+    * From a PowerShell Command prompt, enter `Resolve-DnsName jumpwin1.mysandbox.local`.Ver
+    * Verify the IP address returned is in the *azurerm_subnet.vnet_app_01_subnets["snet-app-01"]* subnet.
+    * Launch *Remote Desktop Connection* (`mstsc.exe`) and connect to `jumpwin1.mysandbox.local` using the credentials `bootstrapadmin@mysandbox.local`.
   * Test SSH (port 22) connectivity using private IP address (not bastion)
-    * Install [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/)
-    * Find the private IP address for the *Linux jump box virtual machine* in [terraform-azurerm-vm-linux](../terraform-azurerm-vm-linux).
-    * Launch *PuTTY* (`mstsc.exe`) and verify you can connect using the private IP address and bootstrap credentials.
+    * From a PowerShell Command prompt, enter `ResolveDnsName jumplinux1.mysandbox.local`.
+    * Verify the IP address returned is in the *azurerm_subnet.vnet_app_01_subnets["snet-app-01"]* subnet.
+    * Use the *Remote-SSH* extension in Visual Studio code to 
   * Test SMB (port 445) connectivity to private IP address
     * Manually configure DNS name resolution for File Share that was provisioned in [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
       * Run `terraform output` in `terraform-azurerm-vnet-shared` and make a note of the the following values:
