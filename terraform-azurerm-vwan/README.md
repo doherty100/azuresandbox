@@ -1,5 +1,7 @@
 # \#AzureSandbox - terraform-azurerm-vwan  
 
+![vnet-shared-diagram](./vwan-diagram.drawio.svg)
+
 ## Contents
 
 * [Overview](#overview)
