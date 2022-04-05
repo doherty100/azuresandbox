@@ -161,7 +161,7 @@ Note the Bash scripts used in the configurations were developed and tested using
 Now that the client environment has been configured, here's how to clone a copy of this repo and start working with the latest release of code.
 
 ```lang-bash
-git clone https://github.com/doherty100/azurequickstarts
+git clone https://github.com/doherty100/azuresandbox
 cd azurequickstarts
 latestTag=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout $latestTag
