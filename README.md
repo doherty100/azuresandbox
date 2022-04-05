@@ -162,7 +162,7 @@ Now that the client environment has been configured, here's how to clone a copy 
 
 ```lang-bash
 git clone https://github.com/doherty100/azuresandbox
-cd azurequickstarts
+cd azuresandbox
 latestTag=$(git describe --tags $(git rev-list --tags --max-count=1))
 git checkout $latestTag
 ```
