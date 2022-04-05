@@ -71,7 +71,7 @@ This section describes how to provision this configuration using default setting
   * Inspect the *mysandbox.local* DNS zone
     * Navigate to *Start* > *Windows Administrative Tools* > *DNS*
     * Connect to the DNS Server on *adds1*.
-    * Click on *adds* in the left pane, then double-click on *Forwarders* in the right pane.
+    * Click on *adds1* in the left pane, then double-click on *Forwarders* in the right pane.
       * Verify that [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16) is listed. This ensures that the DNS server will forward any DNS queries it cannot resolve to the Azure Recursive DNS resolver.
       * Click *Cancel*.
     * Navigate to *adds1* > *Forward Lookup Zones* > *mysandbox.local* and verify that there are *Host (A)* records for *adds1*, *jumpwin1*, *jumplinux1* and *mssqlwin1*.
@@ -110,12 +110,13 @@ This section describes how to provision this configuration using default setting
   * Test DNS queries for Azure Files private endpoint (PaaS)
     * Navigate to *portal.azure.com* > *Storage accounts* > *stxxxxxxxxxxx* > *File shares* > *myfileshare* > *Settings* > *Properties* and copy the the FQDN portion of the URL, e.g. *stxxxxxxxxxxx.file.core.windows.net*.
     * Using PowerShell, run the command `Resolve-DnsName stxxxxxxxxxxx.file.core.windows.net`.
-    * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"]*, e.g. `10.2.2.4`.
-      * Note: This DNS query is resolved using *azurerm_private_dns_zone_virtual_network_link.file_core_windows_net_to_vnet_shared_01*.
-  * Test SMB connectivity with Windows Authentication to Azure Files private endpoint (PaaS)
+    * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"]*, e.g. `10.2.2.*`.
+      * Note: This DNS query is resolved using *azurerm_private_dns_zone_virtual_network_link.file_core_windows_net_to_vnet_shared_01* and *azurerm_private_dns_a_record.storage_account_01_file*.
+  * Test SMB connectivity with integrated Windows Authentication to Azure Files private endpoint (PaaS)
     * Open a Windows command prompt and enter the following command: `net use z: \\stxxxxxxxxxxx.file.core.windows.net\myfileshare`
     * Create some test files and folders on the newly mapped Z: drive
       * Note: SMB connectivity with storage key authentication to Azure Files via the Internet will not be tested because most ISP's block port 445.
+      * Note: Integrated Windows Authentication was configured using [configure-storage-kerberos.ps1](./configure-storage-kerberos.ps1) which was run by *azurerm_virtual_machine_extension.vm_jumpbox_win_postdeploy_script*.
   * Test DNS queries for SQL Server (IaaS)
     * Using PowerShell, run the command `Resolve-DnsName mssqlwin1`.
     * Verify the IPAddress returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-db-01"]*, e.g. *10.2.1.4*.
@@ -123,14 +124,13 @@ This section describes how to provision this configuration using default setting
   * Test DNS queries for Azure SQL database private endpoint (PaaS)
     * Navigate to *portal.azure.com* > *SQL Servers* > *mssql-xxxxxxxxxxxxxxxx* > *Properties* > *Server name* and and copy the the FQDN, e.g. *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*.
     * Using PowerShell, run the command `Resolve-DnsName mssql-xxxxxxxxxxxxxxxx.database.windows.net`.
-    * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"]*, e.g. `10.2.2.5`.
-      * Note: This DNS query is resolved using *azurerm_private_dns_zone_virtual_network_link.database_windows_net_to_vnet_shared_01*.
+    * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"]*, e.g. `10.2.2.*`.
+      * Note: This DNS query is resolved using *azurerm_private_dns_zone_virtual_network_link.database_windows_net_to_vnet_shared_01* and *azurerm_private_dns_a_record.sql_server_01*.
   * Test SQL Server Connectivity with SQL Server Management Studio (SSMS)
-    * Perform these steps on *jumpwin1*.
     * Navigate to *Start* > *Microsoft SQL Server Tools 18* > *Microsoft SQL Server Management Studio 18*
     * Connect to the default instance of SQL Server installed on the database server virtual machine using the following default values:
       * Server name: *mssqlwin1*
-      * Authentication: *Windows Authentication* (this will default to *MYTESTLAB\bootstrapadmin*)
+      * Authentication: *Windows Authentication* (this will default to *MYSANDBOX\bootstrapadmin*)
       * Create a new database named *testdb*.
         * Verify the data files were stored on the *M:* drive
         * Verify the log file were stored on the *L:* drive
@@ -157,7 +157,8 @@ This section describes how to provision this configuration using default setting
       * From the Azure portal, navigate to *Home* > *SQL Servers* > *mssql&#x2011;xxxxxxxxxxxxxxxx* > *Security* > *Firewalls and virtual networks*
       * Confirm *Deny public network access* is disabled.
       * Click *+ Add client IP*.
-      * Verify a firewall rule was added to match your client IP address
+      * Verify a firewall rule was added to match your client IP address.
+        * Note: Only IPv4 addresses will work, so replace any IPv6 addresses with IPv4 addresses. Use [whatismyhipaddress.com](https://whatismyipaddress.com) to determine your IPv4 address.
       * Click *Save*
     * Test Internet connectivity to Azure SQL Database
       * Launch *Microsoft SQL Server Management Studio* (SSMS)
@@ -169,7 +170,7 @@ This section describes how to provision this configuration using default setting
       * Expand the *Databases* tab and verify you can see *testdb*
       * Disconnect from Azure SQL Database
     * Deny public network access
-      * In Visual Studio code, navigate to line 14 of [040-mssql.tf](./040-mssql.tf)
+      * In Visual Studio code, navigate to line 14 of [060-mssql.tf](./060-mssql.tf)
       * Change `public_network_access_enabled` from `true` to `false` and save the changes.
       * In the bash terminal, run `terraform plan` and verify a single change will be made to the *public_network_access_enabled* property of the *azurerm_mssql_server.mssql_server_01* resource.
       * Run `terraform apply` to apply the change.

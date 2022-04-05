@@ -79,6 +79,3 @@ override.tf.json
 # Ignore ssh key temp files
 sshkeytemp
 sshkeytemp.pub
-
-# Ignore .mim files
-*.mim

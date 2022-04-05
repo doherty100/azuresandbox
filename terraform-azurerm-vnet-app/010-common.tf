@@ -9,6 +9,11 @@ terraform {
       source  = "hashicorp/random"
       version = "=3.1.0"
     }
+
+    cloudinit = {
+      source = "hashicorp/cloudinit"
+      version = "=2.2.0"
+    }
   }
 }
 
@@ -22,6 +27,8 @@ provider "azurerm" {
 }
 
 provider "random" {}
+
+provider "cloudinit" {}
 
 # Secrets
 data "azurerm_key_vault_secret" "adminpassword" {

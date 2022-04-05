@@ -95,23 +95,16 @@ This smoke test establishes a Point to Site (P2S) VPN connection to the Virtual 
   * Test SSH (port 22) connectivity using private IP address (not bastion)
     * From a PowerShell Command prompt, enter `ResolveDnsName jumplinux1.mysandbox.local`.
     * Verify the IP address returned is in the *azurerm_subnet.vnet_app_01_subnets["snet-app-01"]* subnet.
-    * Use the *Remote-SSH* extension in Visual Studio code to 
+    * From a PowerShell command prompt (or Visual Studio Code using *Remote-SSH* extension), establish an SSH connection to `bootstrapadmin@mysandbox.local@jumplinux1`
   * Test SMB (port 445) connectivity to private IP address
-    * Manually configure DNS name resolution for File Share that was provisioned in [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared)
-      * Run `terraform output` in `terraform-azurerm-vnet-shared` and make a note of the the following values:
-        * `storage_account_01_private_endpoint_file_prvip`, e.g. `10.1.2.4`
-        * `storage_share_01_url`, e.g. `https://st2fb53ab20772e9a501.file.core.windows.net/fs-95d43e7000c51409-01`. Make a note of the fqdn, e.g. `st2fb53ab20772e9a501.file.core.windows.net`
-      * Update the local `hosts` file for your Windows 10 client
-        * Run notepad as Administrator and open `C:\Windows\System32\drivers\etc\hosts`
-        * Add a line to the end which resolves the fqdn for the File Share to the private ip, e.g. `10.1.2.4 st2fb53ab20772e9a501.file.core.windows.net`
-        * Save the updated `hosts` file
-      * Test that name resolution to the private ip is working using Powershell, e.g. `Resolve-DnsName st2fb53ab20772e9a501.file.core.windows.net`.
-    * Map a drive using the File Share private endpoint
-      * In the Azure Portal, navigate to the storage account provisioned in [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared), e.g. `st2fb53ab20772e9a501`
-      * Navigate to *File Shares* and click on the File Share provisioned in [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared), e.g. `fs-95d43e7000c51409-01`
-      * Click *Connect* and copy the PowerShell script displayed in the text box.
-      * Paste the script into a new script window in PowerShell ISE and save it, then execute the script.
-    * Copy some files to the newly mapped drive.
+    * Test DNS queries for Azure Files private endpoint (PaaS)
+      * Navigate to *portal.azure.com* > *Storage accounts* > *stxxxxxxxxxxx* > *File shares* > *myfileshare* > *Settings* > *Properties* and copy the the FQDN portion of the URL, e.g. *stxxxxxxxxxxx.file.core.windows.net*.
+      * Using PowerShell, run the command `Resolve-DnsName stxxxxxxxxxxx.file.core.windows.net`.
+      * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"]*, e.g. `10.2.2.4`.
+        * Note: This DNS query is resolved using *azurerm_private_dns_zone_virtual_network_link.file_core_windows_net_to_vnet_shared_01*.
+    * Test SMB connectivity with Windows Authentication to Azure Files private endpoint (PaaS)
+      * Open a Windows command prompt and enter the following command: `net use z: \\stxxxxxxxxxxx.file.core.windows.net\myfileshare /USER:bootstrapadmin@mysandbox.local`. Enter the correct password when prompted.
+      * Create some test files and folders on the newly mapped Z: drive
   * Test SQL Server / TDS (port 1433) connectivity to private IP address
     * Install [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)
     * Manually configure DNS name resolution for SQL Database that was provisioned in [terraform-azurerm-sql](../terraform-azurerm-sql)

@@ -152,10 +152,6 @@ az keyvault secret set \
     --value "$ssh_private_key_secret_value" \
     --output none
 
-# Generate cloud-init User-Data for Linux jumpbox virtual machine
-printf "Generating cloud-init User-Data file '$vm_jumpbox_linux_userdata_file'...\n"
-cloud-init devel make-mime -a configure-vm-jumpbox-linux.yaml:cloud-config -a configure-vm-jumpbox-linux.sh:x-shellscript > $vm_jumpbox_linux_userdata_file
-
 # Upload post-deployment scripts
 vm_jumpbox_win_post_deploy_script_uri="https://${storage_account_name:1:-1}.blob.core.windows.net/${storage_container_name:1:-1}/$vm_jumpbox_win_post_deploy_script"
 vm_jumpbox_win_configure_storage_script_uri="https://${storage_account_name:1:-1}.blob.core.windows.net/${storage_container_name:1:-1}/$vm_jumpbox_win_configure_storage_script"
