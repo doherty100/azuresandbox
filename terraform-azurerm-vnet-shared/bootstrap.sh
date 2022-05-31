@@ -13,7 +13,7 @@ printf "Retrieving runtime defaults ...\n"
 
 upn=$(az ad signed-in-user show --query userPrincipalName --output tsv)
 default_aad_tenant_id=$(az account list --query "[? isDefault]|[0].tenantId" --only-show-errors --output tsv)
-default_owner_object_id=$(az ad user show --id $upn --query objectId --output tsv)
+default_owner_object_id=$(az ad user show --id $upn --query id --output tsv)
 default_subscription_id=$(az account list --query "[? isDefault]|[0].id" --only-show-errors --output tsv)
 
 # Initialize constants
