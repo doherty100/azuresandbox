@@ -28,7 +28,7 @@ param(
 
 #region constants
 $defaultPermission = "StorageFileDataSmbShareContributor"
-$logpath = $PSCommandPath + '.log'
+$logpath = 'C:\Users\Public\Documents\kerberos.log'
 #endregion 
 
 #region functions
