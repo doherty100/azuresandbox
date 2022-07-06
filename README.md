@@ -70,7 +70,23 @@ The following prerequisites are required in order to get started. Note that once
 * Identify the owner of the Azure subscription to be used for \#AzureSandbox. This user should have an [Owner](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner) Azure RBAC role assignment on the subscription. See [Steps to assign an Azure role](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps) for more information.
 * Ask the subscription owner to create a [Contributor](https://docs.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#contributor) Azure RBAC role assignment for each sandbox user. See [Steps to assign an Azure role](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-steps) for more information.
 * Verify the subscription owner has privileges to create a Service principal name on the AAD tenant. See [Check Azure AD permissions](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#check-azure-ad-permissions) for more information.
-* Ask the subscription owner to [Create a service principal](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli) (SPN) for sandbox users using the Azure CLI command `az ad sp create-for-rbac -n AzureSandboxSPN --role Contributor` using the [Quickstart for Bash in Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart). Securely share the output with sandbox users, including *appId* and *password*.
+* Ask the subscription owner to [Create a service principal](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli) (SPN) for sandbox users by running the following Azure CLI command in [Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart).
+
+  ```lang-bash
+  az ad sp create-for-rbac -n AzureSandboxSPN --role Contributor --scopes /subscriptions/00000000-0000-0000-0000-000000000000
+  ```
+
+  Securely share the output with sandbox users, including *appId* and *password*:
+
+  ```json
+  {
+    "appId": "00000000-0000-0000-0000-000000000000",
+    "displayName": "AzureSandboxSPN",
+    "password": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "tenant": "00000000-0000-0000-0000-000000000000"
+  }
+  ```
+
 * Some organizations may institute [Azure policy](https://docs.microsoft.com/en-us/azure/governance/policy/overview) which may cause some sandbox deployments to fail. This can be addressed by using custom settings which pass the policy checks, or by disabling the policies on the Azure subscription being used for the configurations.
 * Some Azure subscriptions may have low quota limits for specific Azure resources which may cause sandbox deployments to fail. See [Resolve errors for resource quotas](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/error-resource-quota) for more information. Consult the following table to determine if quota increases are required to deploy the configurations using default settings:
 
