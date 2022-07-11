@@ -54,13 +54,13 @@ This section describes how to provision this configuration using default setting
 * Run `az login` and sign in using the identity you intend to use for the configurations.
 * Run `az account list -o table` and copy the *Subscription Id* to be used for the configurations.
 * Run `az account set -s 00000000-0000-0000-0000-000000000000` using the *Subscription Id* from the previous step to set the default subscription.
+* Run `export TF_VAR_arm_client_secret=YourServicePrincipalSecret` replacing *YourServicePrincipalSecret* using the *password* for the service principal created by the subscription owner.
 * Run `./bootstrap.sh` using the default settings or your own custom settings.
   * When prompted for *arm_client_id*, use the *appId* for the service principal created by the subscription owner.
   * When prompted for *resource_group_name* use a custom value if there are other sandbox users using the same subscription.
   * When prompted for *adminuser*, the default is *bootstrapadmin*.
     * If you use a custom value, avoid using [restricted usernames](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm-).
   * When prompted for *adminpassword*, generate a strong password but be sure to escape any [linux special characters](https://tldp.org/LDP/abs/html/special-chars.html).
-* Run `export TF_VAR_arm_client_secret=YourServicePrincipalSecret` replacing *YourServicePrincipalSecret* using the *password* for the service principal created by the subscription owner.
 * Run `terraform init` and note the version of the *azurerm* provider installed.
 * Run `terraform validate` to check the syntax of the configuration.
 * Run `terraform plan` and review the plan output.
