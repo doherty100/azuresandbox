@@ -140,7 +140,20 @@ Windows 10 users can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/abou
     * Refer to the *Linux* tab then choose the *Ubuntu/Debian* tab.
     * Note: Skip the [Quick start tutorial](https://learn.hashicorp.com/tutorials/terraform/install-cli#quick-start-tutorial).
   * [Installing PowerShell on Linux | Ubuntu 20.04](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-7.1#ubuntu-2004)
-    * After installing, run [configure-powershell.ps1](./configure-powershell.ps1)
+    * After installation, run [configure-powershell.ps1](./configure-powershell.ps1) to install [Azure PowerShell](https://docs.microsoft.com/en-us/powershell/azure/what-is-azure-powershell):
+
+      From bash:
+
+      ```bash
+      sudo pwsh
+      ```
+
+      From PowerShell:
+
+      ```powershell
+      ./configure-powershell.ps1
+      ```
+
   * VS Code extensions for WSL
     * [Remote - WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl)
     * [Terraform](https://marketplace.visualstudio.com/items?itemName=mauve.terraform)
