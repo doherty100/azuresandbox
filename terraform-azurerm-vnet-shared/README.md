@@ -49,7 +49,7 @@ Before you start, make sure you have completed the following steps:
 This section describes how to provision this configuration using default settings.
 
 * Open a Bash terminal in your client environment.
-* Change the working directory to `~/azurequickstarts/terraform-azurerm-vnet-shared`.
+* Change the working directory to `~/azuresandbox/terraform-azurerm-vnet-shared`.
 * Run `az logout` and `az account clear` to reset the user credentials used by Azure CLI.
 * Run `az login` and sign in using the identity you intend to use for the configurations.
 * Run `az account list -o table` and copy the *Subscription Id* to be used for the configurations.

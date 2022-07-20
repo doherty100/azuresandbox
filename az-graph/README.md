@@ -8,7 +8,7 @@ This general purpose sample implements [Azure Resource Graph](https://docs.micro
 
 The following prerequisites are required in order to get started.
 
-* [Configure client environment](https://github.com/doherty100/azurequickstarts#configure-client-environment)
+* [Configure client environment](https://github.com/doherty100/azuresandbox#configure-client-environment)
 * Install the Azure CLI [resource-graph](https://docs.microsoft.com/en-us/azure/governance/resource-graph/first-query-azurecli#add-the-resource-graph-extension) extension (preview)
 
 ## Getting started
