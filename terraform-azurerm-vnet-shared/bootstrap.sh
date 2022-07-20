@@ -271,7 +271,6 @@ printf "aad_tenant_id                             = \"$aad_tenant_id\"\n"       
 printf "adds_domain_name                          = \"$adds_domain_name\"\n"                          >> ./terraform.tfvars
 printf "arm_client_id                             = \"$arm_client_id\"\n"                             >> ./terraform.tfvars
 printf "dns_server                                = \"$dns_server\"\n"                                >> ./terraform.tfvars
-printf "jumpbox_security_group_name               = \"$jumpbox_security_group_name\"\n"               >> ./terraform.tfvars
 printf "key_vault_id                              = \"$key_vault_id\"\n"                              >> ./terraform.tfvars
 printf "key_vault_name                            = \"$key_vault_name\"\n"                            >> ./terraform.tfvars
 printf "location                                  = \"$location\"\n"                                  >> ./terraform.tfvars

@@ -36,11 +36,6 @@ variable "dns_server" {
   description = "The IP address of the DNS server. This should be the first non-reserved IP address in the subnet where the AD DS domain controller is hosted."
 }
 
-variable "jumpbox_security_group_name" {
-  type = string
-  description = "The name of the adds security group used for jump box servers."
-}
-
 variable "key_vault_id" {
   type        = string
   description = "The existing key vault where secrets are stored"
