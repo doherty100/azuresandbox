@@ -48,26 +48,71 @@ Before you start, make sure you have completed the following steps:
 
 This section describes how to provision this configuration using default settings.
 
-* Open a Bash terminal in your client environment.
-* Change the working directory to `~/azuresandbox/terraform-azurerm-vnet-shared`.
-* Run `az logout` and `az account clear` to reset the user credentials used by Azure CLI.
-* Run `az login` and sign in using the identity you intend to use for the configurations.
-* Run `az account list -o table` and copy the *Subscription Id* to be used for the configurations.
-* Run `az account set -s 00000000-0000-0000-0000-000000000000` using the *Subscription Id* from the previous step to set the default subscription.
-* Run `export TF_VAR_arm_client_secret=YourServicePrincipalSecret` replacing *YourServicePrincipalSecret* using the *password* for the service principal created by the subscription owner.
-* Run `./bootstrap.sh` using the default settings or your own custom settings.
+* Open a Bash terminal in your client environment and execute the following commands.
+
+  ```bash
+  # Change current directory
+  cd ~/azuresandbox/terraform-azurerm-vnet-shared
+
+  # Log out of Azure and clear cached credentials
+  az logout
+  az account clear
+
+  # Log into Azure
+  az login
+  ```
+
+* Find and copy the *Subscription Id* to be used for the configurations.
+
+  ```bash
+  az account list -o table
+  ```
+
+* Set the default Azure subscription using the *Subscription Id* from the previous step.
+
+  ```bash
+  az account set -s 00000000-0000-0000-0000-000000000000
+  ```
+
+* Add an environment variable containing the password for your service principal.
+
+  ```bash
+  export TF_VAR_arm_client_secret=YourServicePrincipalSecret
+  ```
+
+* Run [bootstrap.sh](./bootstrap.sh) using the default settings or your own custom settings.
+
+  ```bash
+  ./bootstrap.sh
+  ```
+
   * When prompted for *arm_client_id*, use the *appId* for the service principal created by the subscription owner.
   * When prompted for *resource_group_name* use a custom value if there are other sandbox users using the same subscription.
   * When prompted for *adminuser*, the default is *bootstrapadmin*.
     * *Important*: If you use a custom value, avoid using [restricted usernames](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm-).
   * When prompted for *adminpassword*, enter a strong password.
     * *Important*: Avoid using symbols in your password, especially [linux special characters](https://tldp.org/LDP/abs/html/special-chars.html). Use at least 12 characters, and stick to upper case and lower case letters and digits. You can use a password generator like [Strong Passwords Generator](https://strongpasswordsgenerator.net/), just disable the *Include Symbols* option.
-* Run `terraform init` and note the version of the *azurerm* provider installed.
-* Run `terraform validate` to check the syntax of the configuration.
-* Run `terraform plan` and review the plan output.
-* Run `terraform apply` to apply the plan. Monitor the output until you see the message *Apply complete!*.
-* Run `terraform state list` to list the resources managed in the configuration.
-* Run `terraform output` to view the output variables from the *terraform.tfstate* file.
+* Apply the terraform configuration.
+
+  ```bash
+  # Initialize providers
+  terraform init
+  
+  # Check configuration for syntax errors
+  terraform validate
+
+  # Review plan output
+  terraform validate
+
+  # Apply plan
+  terraform apply
+
+  # Review provisioned resources
+  terraform state list
+
+  # Review output variables
+  terraform output
+  ```
 
 ## Smoke testing
 
