@@ -102,7 +102,7 @@ This section describes how to provision this configuration using default setting
   terraform validate
 
   # Review plan output
-  terraform validate
+  terraform plan
 
   # Apply plan
   terraform apply
