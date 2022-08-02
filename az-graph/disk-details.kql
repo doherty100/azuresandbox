@@ -1,77 +1,79 @@
-// List disks with details
-// rdoherty@microsoft.com
-// Updated: 2020-04-14
+// List disks with details
+// rdoherty@microsoft.com
+// Updated: 2020-04-14
 resources
-| where type == "microsoft.compute/disks"
-| where properties.provisioningState == "Succeeded"
-| project
-    diskId = trim(" ",tolower(tostring(id))),
-    resourceGroup = tostring(resourceGroup),
-    location = tostring(location),
-    diskName = tostring(name),
-    diskSkuName = tostring(sku.name),
-    diskSkuTier = tostring(sku.tier),
-    diskSizeGB = toint(properties.diskSizeGB),
-    diskIOPSReadWrite = toint(properties.diskIOPSReadWrite),
-    diskMBpsReadWrite = toint(properties.diskMBpsReadWrite),
-    diskEncryptionType = tostring(properties.encryption.type),
-    zone = iif(isempty(zones[0]), "N/A", zones[0]),
-    subId = tostring(subscriptionId)
-| join kind=leftouter
-    (
-        resourcecontainers
-        | where type == "microsoft.resources/subscriptions"
-        | project
-            subId = tostring(subscriptionId),
-            subName = tostring(name)
-    ) on subId
-| project-away subId, subId1
-| join kind=leftouter
-    (
-        resources
-        | where type == "microsoft.compute/virtualmachines"
-        | where properties.provisioningState=="Succeeded"
-        | project 
-            vmId = trim(" ",tolower(tostring(id))),
-            diskType = "osDisk",
-            caching = tostring(properties.storageProfile.osDisk.caching),
-            diskId = trim(" ",tolower(tostring(properties.storageProfile.osDisk.managedDisk.id)))
-        | union 
-            (
-                resources
-                | where type == "microsoft.compute/virtualmachines"
-                | where properties.provisioningState == "Succeeded"
-                | mv-expand datadisk = properties.storageProfile.dataDisks
-                | project
-                    vmId = trim(" ",tolower(tostring(id))),
-                    diskType = "dataDisk",
-                    caching = tostring(datadisk.caching),
-                    lun = tostring(datadisk.lun),
-                    writeAcceleratorEnabled = tobool(datadisk.writeAcceleratorEnabled),
-                    diskId = trim(" ",tolower(tostring(datadisk.managedDisk.id)))
-            )
-    ) on diskId
-| project-away diskId1
-| project
-    dsk000_subName = subName,
-    dsk010_resourceGroup = resourceGroup,
-    dsk020_location = location,
-    dsk030_diskName = diskName,
-    dsk040_diskSkuName = diskSkuName,
-    dsk050_diskSkuTier = diskSkuTier,
-    dsk060_diskSizeGB = diskSizeGB,
-    dsk070_diskIOPSReadWrite = diskIOPSReadWrite,
-    dsk080_diskMBpsReadWrite = diskMBpsReadWrite,
-    dsk090_diskEncryptionType = diskEncryptionType,
-    dsk100_zone = zone,
-    dsk110_diskType = iif(isempty(diskType), "N/A", diskType),
-    dsk120_caching = iif(isempty(caching), "N/A", caching),
-    dsk130_lun = iif(isempty(lun), "N/A", lun),
-    dsk140_writeAcceleratorEnabled = iif(isnull(writeAcceleratorEnabled), false, writeAcceleratorEnabled),
-    dsk900_vmId = iif(isempty(vmId), "N/A", vmId),
-    dsk999_diskId = diskId
-| order by
-    dsk000_subName asc,
-    dsk010_resourceGroup asc,
-    dsk020_location asc,
-    dsk030_diskName asc
+| where type == "microsoft.compute/disks"
+| where properties.provisioningState == "Succeeded"
+| project
+    diskId = trim(" ",tolower(tostring(id))),
+    resourceGroup = tostring(resourceGroup),
+    location = tostring(location),
+    diskName = tostring(name),
+    diskSkuName = tostring(sku.name),
+    diskSkuTier = tostring(sku.tier),
+    diskSizeGB = toint(properties.diskSizeGB),
+    diskIOPSReadWrite = toint(properties.diskIOPSReadWrite),
+    diskMBpsReadWrite = toint(properties.diskMBpsReadWrite),
+    diskEncryptionType = tostring(properties.encryption.type),
+    zone = iif(isempty(zones[0]), "N/A", zones[0]),
+    imageId = iif(isempty(properties.creationData.imageReference.id), "N/A", trim(" ",tolower(tostring(properties.creationData.imageReference.id)))),
+    subId = tostring(subscriptionId)
+| join kind=leftouter
+    (
+        resourcecontainers
+        | where type == "microsoft.resources/subscriptions"
+        | project
+            subId = tostring(subscriptionId),
+            subName = tostring(name)
+    ) on subId
+| project-away subId, subId1
+| join kind=leftouter
+    (
+        resources
+        | where type == "microsoft.compute/virtualmachines"
+        | where properties.provisioningState=="Succeeded"
+        | project 
+            vmId = trim(" ",tolower(tostring(id))),
+            diskType = "osDisk",
+            caching = tostring(properties.storageProfile.osDisk.caching),
+            diskId = trim(" ",tolower(tostring(properties.storageProfile.osDisk.managedDisk.id)))
+        | union 
+            (
+                resources
+                | where type == "microsoft.compute/virtualmachines"
+                | where properties.provisioningState == "Succeeded"
+                | mv-expand datadisk = properties.storageProfile.dataDisks
+                | project
+                    vmId = trim(" ",tolower(tostring(id))),
+                    diskType = "dataDisk",
+                    caching = tostring(datadisk.caching),
+                    lun = tostring(datadisk.lun),
+                    writeAcceleratorEnabled = tobool(datadisk.writeAcceleratorEnabled),
+                    diskId = trim(" ",tolower(tostring(datadisk.managedDisk.id)))
+            )
+    ) on diskId
+| project-away diskId1
+| project
+    dsk000_subName = subName,
+    dsk010_resourceGroup = resourceGroup,
+    dsk020_location = location,
+    dsk030_diskName = diskName,
+    dsk040_diskSkuName = diskSkuName,
+    dsk050_diskSkuTier = diskSkuTier,
+    dsk060_diskSizeGB = diskSizeGB,
+    dsk070_diskIOPSReadWrite = diskIOPSReadWrite,
+    dsk080_diskMBpsReadWrite = diskMBpsReadWrite,
+    dsk090_diskEncryptionType = diskEncryptionType,
+    dsk100_zone = zone,
+    dsk110_diskType = iif(isempty(diskType), "N/A", diskType),
+    dsk120_caching = iif(isempty(caching), "N/A", caching),
+    dsk130_lun = iif(isempty(lun), "N/A", lun),
+    dsk140_writeAcceleratorEnabled = iif(isnull(writeAcceleratorEnabled), false, writeAcceleratorEnabled),
+    dsk900_vmId = iif(isempty(vmId), "N/A", vmId),
+    dsk910_imageId = imageId,
+    dsk999_diskId = diskId
+| order by
+    dsk000_subName asc,
+    dsk010_resourceGroup asc,
+    dsk020_location asc,
+    dsk030_diskName asc
