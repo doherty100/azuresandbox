@@ -1,8 +1,8 @@
 locals {
   subnets = {
     AzureBastionSubnet = {
-      address_prefix                                 = var.subnet_AzureBastionSubnet_address_prefix
-      enforce_private_link_endpoint_network_policies = false
+      address_prefix                            = var.subnet_AzureBastionSubnet_address_prefix
+      private_endpoint_network_policies_enabled = false
       nsgrules = [
         "AllowHttpsInbound",
         "AllowGatewayManagerInbound",
@@ -15,8 +15,8 @@ locals {
       ]
     }
     snet-adds-01 = {
-      address_prefix                                 = var.subnet_adds_address_prefix
-      enforce_private_link_endpoint_network_policies = false
+      address_prefix                            = var.subnet_adds_address_prefix
+      private_endpoint_network_policies_enabled = false
       nsgrules = [
         "AllowVirtualNetworkInbound",
         "AllowVirtualNetworkOutbound",
@@ -174,13 +174,12 @@ output "vnet_shared_01_name" {
 }
 
 resource "azurerm_subnet" "vnet_shared_01_subnets" {
-  for_each = local.subnets
-
-  name                                           = each.key
-  resource_group_name                            = var.resource_group_name
-  virtual_network_name                           = azurerm_virtual_network.vnet_shared_01.name
-  address_prefixes                               = [each.value.address_prefix]
-  enforce_private_link_endpoint_network_policies = each.value.enforce_private_link_endpoint_network_policies
+  for_each                                  = local.subnets
+  name                                      = each.key
+  resource_group_name                       = var.resource_group_name
+  virtual_network_name                      = azurerm_virtual_network.vnet_shared_01.name
+  address_prefixes                          = [each.value.address_prefix]
+  private_endpoint_network_policies_enabled = each.value.private_endpoint_network_policies_enabled
 }
 
 resource "azurerm_network_security_group" "network_security_groups" {
@@ -195,7 +194,7 @@ resource "azurerm_network_security_group" "network_security_groups" {
 resource "azurerm_subnet_network_security_group_association" "nsg_subnet_associations" {
   for_each = azurerm_subnet.vnet_shared_01_subnets
 
-  subnet_id = azurerm_subnet.vnet_shared_01_subnets[each.key].id
+  subnet_id                 = azurerm_subnet.vnet_shared_01_subnets[each.key].id
   network_security_group_id = azurerm_network_security_group.network_security_groups[each.key].id
 
   # Note: This depedency is a workaround for an issue that arises when existing NSG rules do not exactly match what Azure Bastion wants, even if the rules are correct.
@@ -213,7 +212,7 @@ resource "azurerm_network_security_rule" "network_security_rules" {
 
   access                      = each.value.access
   destination_address_prefix  = each.value.destination_address_prefix
-  destination_port_range      = length(each.value.destination_port_ranges) == 1 ? each.value.destination_port_ranges[0] : null 
+  destination_port_range      = length(each.value.destination_port_ranges) == 1 ? each.value.destination_port_ranges[0] : null
   destination_port_ranges     = length(each.value.destination_port_ranges) > 1 ? each.value.destination_port_ranges : null
   direction                   = each.value.direction
   name                        = each.value.nsgrule_name
@@ -222,7 +221,7 @@ resource "azurerm_network_security_rule" "network_security_rules" {
   protocol                    = each.value.protocol
   resource_group_name         = var.resource_group_name
   source_address_prefix       = each.value.source_address_prefix
-  source_port_range           = length(each.value.source_port_ranges) == 1 ? each.value.source_port_ranges[0] : null 
+  source_port_range           = length(each.value.source_port_ranges) == 1 ? each.value.source_port_ranges[0] : null
   source_port_ranges          = length(each.value.source_port_ranges) > 1 ? each.value.source_port_ranges : null
 
   depends_on = [
@@ -260,35 +259,4 @@ resource "azurerm_public_ip" "bastion_host_01" {
   allocation_method   = "Static"
   sku                 = "Standard"
   tags                = var.tags
-}
-
-# Private DNS zones
-resource "azurerm_private_dns_zone" "database_windows_net" {
-  name                = "privatelink.database.windows.net"
-  resource_group_name = var.resource_group_name
-  tags                = var.tags
-}
-
-resource "azurerm_private_dns_zone_virtual_network_link" "database_windows_net_to_vnet_shared_01" {
-  name                  = "pdnslnk-mssql-to-${azurerm_virtual_network.vnet_shared_01.name}"
-  resource_group_name   = var.resource_group_name
-  private_dns_zone_name = azurerm_private_dns_zone.database_windows_net.name
-  virtual_network_id    = azurerm_virtual_network.vnet_shared_01.id
-  registration_enabled  = false
-  tags                  = var.tags
-}
-
-resource "azurerm_private_dns_zone" "file_core_windows_net" {
-  name                = "privatelink.file.core.windows.net"
-  resource_group_name = var.resource_group_name
-  tags                = var.tags
-}
-
-resource "azurerm_private_dns_zone_virtual_network_link" "file_core_windows_net_to_vnet_shared_01" {
-  name                  = "pdnslnk-afs-to-${azurerm_virtual_network.vnet_shared_01.name}"
-  resource_group_name   = var.resource_group_name
-  private_dns_zone_name = azurerm_private_dns_zone.file_core_windows_net.name
-  virtual_network_id    = azurerm_virtual_network.vnet_shared_01.id
-  registration_enabled  = false
-  tags                  = var.tags
 }

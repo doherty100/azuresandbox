@@ -17,9 +17,10 @@ resource "azurerm_mssql_server" "mssql_server_01" {
 
 # Azure SQL Database test database
 resource "azurerm_mssql_database" "mssql_database_01" {
-  name                = var.mssql_database_name
-  server_id           = azurerm_mssql_server.mssql_server_01.id
-  tags                = var.tags
+  name         = var.mssql_database_name
+  server_id    = azurerm_mssql_server.mssql_server_01.id
+  license_type = "LicenseIncluded"
+  tags         = var.tags
 }
 
 # Private endpoint for Azure SQL Database logical server

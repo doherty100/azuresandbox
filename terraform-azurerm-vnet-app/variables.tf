@@ -59,6 +59,11 @@ variable "mssql_database_name" {
   description = "The name of the Azure SQL Database to be provisioned"
 }
 
+variable "mysql_database_name" {
+  type        = string
+  description = "The name of the Azure MySQL Database to be provisioned"
+}
+
 variable "remote_virtual_network_id" {
   type        = string
   description = "The id of the existing shared services virtual network that the new spoke virtual network will be peered with."
@@ -96,17 +101,22 @@ variable "storage_share_quota_gb" {
 }
 
 variable "subnet_application_address_prefix" {
- type = string
- description = "The address prefix for the application subnet." 
+  type        = string
+  description = "The address prefix for the application subnet."
 }
 
 variable "subnet_database_address_prefix" {
-  type = string
+  type        = string
   description = "The address prefix for the database subnet."
 }
 
+variable "subnet_mysql_address_prefix" {
+  type        = string
+  description = "The address prefix for the MySQL subnet."
+}
+
 variable "subnet_privatelink_address_prefix" {
-  type = string
+  type        = string
   description = "The address prefix for the PrivateLink subnet."
 }
 

@@ -86,5 +86,17 @@ configuration JumpBoxConfig {
             DependsOn = '[cChocoInstaller]Chocolatey'
             AutoUpgrade = $true
         }
+
+        cChocoPackageInstaller 'AzureDataStudio' {
+            Name = 'azure-data-studio'
+            DependsOn = '[cChocoInstaller]Chocolatey'
+            AutoUpgrade = $true
+        }
+
+        cChocoPackageInstaller 'MySQLWorkbench' {
+            Name = 'mysql.workbench'
+            DependsOn = '[cChocoInstaller]Chocolatey'
+            AutoUpgrade = $true
+        }
     }
 }

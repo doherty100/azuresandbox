@@ -25,8 +25,8 @@ This repository contains a collection of inter-dependent [cloud computing](https
 * [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.1)
   * [PowerShell Core](https://docs.microsoft.com/en-us/powershell/scripting/whats-new/what-s-new-in-powershell-71?view=powershell-7.1)
   * [PowerShell 5.1](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-5.1) for Windows Server configuration.
-* [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) v1.2.5 for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
-  * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v3.15.1
+* [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) v1.2.7 for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
+  * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v3.18.0
   * [cloud-init Provider](https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs) (cloudinit) v2.2.0
   * [Random Provider](https://registry.terraform.io/providers/hashicorp/random/latest/docs) (random) v3.3.2
 
@@ -51,6 +51,7 @@ This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doher
   * A Linux [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
   * An [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering.
   * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database hosted in [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview) with a private endpoint implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
+  * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database hosted in [Azure Database for MySQL - Flexible Server](https://docs.microsoft.com/en-us/azure/mysql/flexible-server/overview) with a private endpoint implemented using [subnet delegation](https://docs.microsoft.com/en-us/azure/virtual-network/subnet-delegation-overview).
   * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) SMB file share hosted in [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction) with a private endpoint implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints).
 * [terraform-azurerm-vwan](./terraform-azurerm-vwan/) includes the following:
   * A [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources)
@@ -239,7 +240,7 @@ Shared services | Reserved for future use | 10.1.128.0/17 | 10.1.128.0 | 10.1.25
 Application | snet-app-01 | 10.2.0.0/24 | 10.2.0.0 | 10.2.0.255 | 256
 Application | snet-db-01 | 10.2.1.0/24 | 10.2.1.0 | 10.2.1.255 | 256
 Application | snet-privatelink-01 | 10.2.2.0/24 | 10.2.2.0 | 10.2.2.255 | 256
-Application | Reserved for future use | 10.2.3.0/24 | 10.2.3.0 | 10.2.3.255 | 256
+Application | snet-mysql-01 | 10.2.3.0/24 | 10.2.3.0 | 10.2.3.255 | 256
 Application | Reserved for future use | 10.2.4.0/22 | 10.2.4.0 | 10.2.7.255 | 1,024
 Application | Reserved for future use | 10.2.8.0/21 | 10.2.8.0 | 10.2.15.255 | 2,048
 Application | Reserved for future use | 10.2.16.0/20 | 10.2.16.0 | 10.2.31.255 | 4,096
@@ -322,7 +323,7 @@ Shared services | Reserved for future use | 10.73.8.128/25 | 10.73.8.128 | 10.73
 Application | snet-app-01 | 10.73.9.0/27 | 10.73.9.0 | 10.73.9.31 | 32
 Application | snet-db-01 | 10.73.9.32/27 | 10.73.9.32 | 10.73.9.63 | 32
 Application | snet-privatelink-01 | 10.73.9.64/27 | 10.73.9.64 | 10.73.9.95 | 32
-Application | Reserved for future use | 10.73.9.96/27 | 10.73.9.96 | 10.73.9.127 | 32
+Application | snet-mysql-01 | 10.73.9.96/27 | 10.73.9.96 | 10.73.9.127 | 32
 Application | Reserved for future use | 10.73.9.128/25 | 10.73.9.128 | 10.73.9.255 | 128
 
 It is recommended to reserve space for future subnets. A blank table is provided here for convenience. Make a copy of this table and change the *TBD* values to your custom values.

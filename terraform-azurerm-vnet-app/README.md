@@ -20,6 +20,7 @@ This configuration implements a virtual network for applications including:
 * A Linux [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
 * An [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering.
 * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database hosted in [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview) with a private endpoint implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
+* A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database hosted in [Azure Database for MySQL - Flexible Server](https://docs.microsoft.com/en-us/azure/mysql/flexible-server/overview) with a private endpoint implemented using [subnet delegation](https://docs.microsoft.com/en-us/azure/virtual-network/subnet-delegation-overview).
 * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) SMB file share hosted in [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction) with a private endpoint implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
 
 Activity | Estimated time required
@@ -38,150 +39,197 @@ The following configurations must be deployed first before starting:
 
 This section describes how to provision this configuration using default settings.
 
-* Change the working directory to `~/azurequickstarts/terraform-azurerm-vnet-app`.
-* Run `./bootstrap.sh` using the default settings or your own custom settings.
-* Run `terraform init` and note the version of the *azurerm* provider installed.
-* Run `terraform validate` to check the syntax of the configuration.
-* Run `terraform plan` and review the plan output.
-* Run `terraform apply` to apply the configuration. Monitor the output until you see the message *Apply complete!*.
-* Run `terraform state list` to list the resources managed in the configuration.
+* Change the working directory.
+
+  ```bash
+  cd ~/azuresandox/terraform-azurerm-vnet-app
+  ```
+
+* Add an environment variable containing the password for your service principal.
+
+  ```bash
+  export TF_VAR_arm_client_secret=YourServicePrincipalSecret
+  ```
+
+* Run [bootstrap.sh](./bootstrap.sh) using the default settings or your own custom settings.
+
+  ```bash
+  ./bootstrap.sh
+  ```
+
+* Apply terraform configuration.
+
+  ```bash
+  # Initialize terraform providers
+  terraform init
+
+  # Validate configuration files
+  terraform validate
+
+  # Review plan output
+  terraform plan
+
+  # Apply configuration
+  terraform apply
+
+  # List resources managed by terraform
+  terraform state list 
+  ```
 
 ## Smoke testing
 
-* Explore your newly provisioned resources in the Azure portal.
-  * Navigate to *portal.azure.com* > *Automation Accounts* > [My Automation Account] > *Configuration Management* > *State configuration (DSC)*.
-    * Refresh the data on the *Nodes* tab and verify that all nodes are compliant.
-    * Review the data in the *Configurations* and *Compiled configurations* tabs as well.
-* Connect to the Windows Server Jumpbox VM.
-  * Navigate to *portal.azure.com* > *Virtual machines* > *jumpwin1*
-    * Click *Connect*, select the *Bastion* tab, then click *Use Bastion*
-    * For *username* enter the UPN of the domain admin, which by default is *bootstrapadmin@mysandbox.local*.
-    * For *password* use the value of the *adminpassword* secret in key vault.
-    * Click *Connect*
-  * Disable Server Manager
-    * Navigate to *Server Manager* > *Manage* > *Server Manager Properties* and enable *Do not start Server Manager automatically at logon*
-    * Close Server Manager
-  * Configure default browser
-    * Navigate to *Settings* > *Apps* > *Default Apps* and set the default browser to *Microsoft Edge*.
-  * Inspect the *mysandbox.local* Active Directory domain
-    * Navigate to *Start* > *Windows Administrative Tools* > *Active Directory Users and Computers*.
-    * Navigate to *mysandbox.local* and verify that a computer account exists in the root for the storage account, e.g. *stxxxxxxxxxxx*.
-    * Navigate to *mysandbox.local* > *Computers* and verify that *jumpwin1*, *jumplinux1* and *mssqlwin1* are listed.
-    * Navigate to *mysandbox.local* > *Domain Controllers* and verify that *adds1* is listed.
-  * Inspect the *mysandbox.local* DNS zone
-    * Navigate to *Start* > *Windows Administrative Tools* > *DNS*
-    * Connect to the DNS Server on *adds1*.
-    * Click on *adds1* in the left pane, then double-click on *Forwarders* in the right pane.
-      * Verify that [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16) is listed. This ensures that the DNS server will forward any DNS queries it cannot resolve to the Azure Recursive DNS resolver.
-      * Click *Cancel*.
-    * Navigate to *adds1* > *Forward Lookup Zones* > *mysandbox.local* and verify that there are *Host (A)* records for *adds1*, *jumpwin1*, *jumplinux1* and *mssqlwin1*.
-  * Configure [Visual Studio Code](https://aka.ms/vscode) to do remote development on *jumplinux1*
-    * Navigate to *Start* > *Visual Studio Code* > *Visual Studio Code*.
-    * Install the [Remote-SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) extension.
-      * Navigate to *View* > *Extensions*
-      * Search for *Remote-SSH*
-      * Click *Install*
-    * Configure SSH ss
-      * Navigate to *View* > *Command Palette...* and enter `Remote-SSH: Add New SSH Host`.
-      * When prompted for *Enter SSH Connection Command* enter `ssh bootstrapadmin@mysandbox.local@jumplinux1`.
-      * When prompted for *Select SSH configuration file to update* choose *C:\\Users\\bootstrapadmin\\.ssh\\config*.
-    * Connect to SSH host
-      * Navigate to *View* >  *Command Palette...* and enter `Remote-SSH: Connect to Host`.
-      * Select *jumplinux1*
-        * A second Visual Studio Code window will open.
-      * When prompted for *Select the platform of the remote host "jumplinux1"* select *Linux*.
-      * When prompted for *"jumplinux1" has fingerprint...* select *Continue*.
+The following sections provide guided smoke testing of each resource provisioned in this configuration, and should be completed in the order indicated.
+
+* [Windows Server jumpbox VM smoke testing](#windows-server-jumpbox-vm-smoke-testing)
+* [Azure Files smoke testing](#azure-files-smoke-testing)
+* [SQL Server VM and Azure SQL Database smoke testing](#sql-server-vm-and-azure-sql-database-smoke-testing)
+* [Azure Database for MySQL smoke testing](#azure-database-for-mysql-smoke-testing)
+
+### Windows Server jumpbox VM smoke testing
+
+* Navigate to *portal.azure.com* > *Virtual machines* > *jumpwin1*
+  * Click *Connect*, select the *Bastion* tab, then click *Use Bastion*
+  * For *username* enter the UPN of the domain admin, which by default is *bootstrapadmin@mysandbox.local*.
+  * For *password* use the value of the *adminpassword* secret in key vault.
+  * Click *Connect*
+* Disable Server Manager
+  * Navigate to *Server Manager* > *Manage* > *Server Manager Properties* and enable *Do not start Server Manager automatically at logon*
+  * Close Server Manager
+* Configure default browser
+  * Navigate to *Settings* > *Apps* > *Default Apps* and set the default browser to *Microsoft Edge*.
+* Inspect the *mysandbox.local* Active Directory domain
+  * Navigate to *Start* > *Windows Administrative Tools* > *Active Directory Users and Computers*.
+  * Navigate to *mysandbox.local* and verify that a computer account exists in the root for the storage account, e.g. *stxxxxxxxxxxx*.
+  * Navigate to *mysandbox.local* > *Computers* and verify that *jumpwin1*, *jumplinux1* and *mssqlwin1* are listed.
+  * Navigate to *mysandbox.local* > *Domain Controllers* and verify that *adds1* is listed.
+* Inspect the *mysandbox.local* DNS zone
+  * Navigate to *Start* > *Windows Administrative Tools* > *DNS*
+  * Connect to the DNS Server on *adds1*.
+  * Click on *adds1* in the left pane, then double-click on *Forwarders* in the right pane.
+    * Verify that [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16) is listed. This ensures that the DNS server will forward any DNS queries it cannot resolve to the Azure Recursive DNS resolver.
+    * Click *Cancel*.
+  * Navigate to *adds1* > *Forward Lookup Zones* > *mysandbox.local* and verify that there are *Host (A)* records for *adds1*, *jumpwin1*, *jumplinux1* and *mssqlwin1*.
+* Configure [Visual Studio Code](https://aka.ms/vscode) to do remote development on *jumplinux1*
+  * Navigate to *Start* > *Visual Studio Code* > *Visual Studio Code*.
+  * Install the [Remote-SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) extension.
+    * Navigate to *View* > *Extensions*
+    * Search for *Remote-SSH*
+    * Click *Install*
+  * Configure SSH
+    * Navigate to *View* > *Command Palette...* and enter `Remote-SSH: Add New SSH Host`.
+    * When prompted for *Enter SSH Connection Command* enter `ssh bootstrapadmin@mysandbox.local@jumplinux1`.
+    * When prompted for *Select SSH configuration file to update* choose *C:\\Users\\bootstrapadmin\\.ssh\\config*.
+  * Connect to SSH host
+    * Navigate to *View* >  *Command Palette...* and enter `Remote-SSH: Connect to Host`.
+    * Select *jumplinux1*
+      * A second Visual Studio Code window will open.
+    * When prompted for *Select the platform of the remote host "jumplinux1"* select *Linux*.
+    * When prompted for *"jumplinux1" has fingerprint...* select *Continue*.
+    * When prompted for *Enter password* use the value of the *adminpassword* secret in key vault.
+      * This will install Visual Studio code remote development binaries on *jumplinux1*.
+    * Verify that *SSH:jumplinux1* is displayed in the green status section in the lower left hand corner.
+    * Connect to remote file system
+      * Navigate to *View* > *Explorer*
+      * Click *Open Folder*
+      * Accept the default folder (home directory) and click *OK*.
       * When prompted for *Enter password* use the value of the *adminpassword* secret in key vault.
-        * This will install Visual Studio code remote development binaries on *jumplinux1*.
-      * Verify that *SSH:jumplinux1* is displayed in the green status section in the lower left hand corner.
-      * Connect to remote file system
-        * Navigate to *View* > *Explorer*
-        * Click *Open Folder*
-        * Accept the default folder (home directory) and click *OK*.
-        * When prompted for *Enter password* use the value of the *adminpassword* secret in key vault.
-        * When prompted with *Do you trust the authors of the files in this folder?* click *Yes, I trust the authors*.
-        * Review the home directory structure displayed in Explorer.
-      * Open a bash terminal
-        * Navigate to *View* > *Terminal*. This will open up a new bash shell.
-        * Verify the Linux distribution and version by running the command `cat /etc/*-release`.
-        * Verify the Azure CLI version by running the command `az --version`.
-        * Verify the PowerShell version by running the command `pwsh --version`.
-        * Verify the Terraform version by running the command `terraform --version`.
-  * Test DNS queries for Azure Files private endpoint (PaaS)
-    * Navigate to *portal.azure.com* > *Storage accounts* > *stxxxxxxxxxxx* > *File shares* > *myfileshare* > *Settings* > *Properties* and copy the the FQDN portion of the URL, e.g. *stxxxxxxxxxxx.file.core.windows.net*.
-    * Using PowerShell, run the command `Resolve-DnsName stxxxxxxxxxxx.file.core.windows.net`.
-    * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"]*, e.g. `10.2.2.*`.
-      * Note: This DNS query is resolved using *azurerm_private_dns_zone_virtual_network_link.file_core_windows_net_to_vnet_shared_01* and *azurerm_private_dns_a_record.storage_account_01_file*.
-  * Test SMB connectivity with integrated Windows Authentication to Azure Files private endpoint (PaaS)
-    * Open a Windows command prompt and enter the following command: `net use z: \\stxxxxxxxxxxx.file.core.windows.net\myfileshare`
-    * Create some test files and folders on the newly mapped Z: drive
-      * Note: SMB connectivity with storage key authentication to Azure Files via the Internet will not be tested because most ISP's block port 445.
-      * Note: Integrated Windows Authentication was configured using [configure-storage-kerberos.ps1](./configure-storage-kerberos.ps1) which was run by *azurerm_virtual_machine_extension.vm_jumpbox_win_postdeploy_script*.
-  * Test DNS queries for SQL Server (IaaS)
-    * Using PowerShell, run the command `Resolve-DnsName mssqlwin1`.
-    * Verify the IPAddress returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-db-01"]*, e.g. *10.2.1.4*.
-      * Note: This DNS query is resolved by the DNS Server running on *azurerm_windows_virtual_machine.vm_adds*.
-  * Test DNS queries for Azure SQL database private endpoint (PaaS)
-    * Navigate to *portal.azure.com* > *SQL Servers* > *mssql-xxxxxxxxxxxxxxxx* > *Properties* > *Server name* and and copy the the FQDN, e.g. *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*.
-    * Using PowerShell, run the command `Resolve-DnsName mssql-xxxxxxxxxxxxxxxx.database.windows.net`.
-    * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"]*, e.g. `10.2.2.*`.
-      * Note: This DNS query is resolved using *azurerm_private_dns_zone_virtual_network_link.database_windows_net_to_vnet_shared_01* and *azurerm_private_dns_a_record.sql_server_01*.
-  * Test SQL Server Connectivity with SQL Server Management Studio (SSMS)
-    * Navigate to *Start* > *Microsoft SQL Server Tools 18* > *Microsoft SQL Server Management Studio 18*
-    * Connect to the default instance of SQL Server installed on the database server virtual machine using the following default values:
-      * Server name: *mssqlwin1*
-      * Authentication: *Windows Authentication* (this will default to *MYSANDBOX\bootstrapadmin*)
-      * Create a new database named *testdb*.
-        * Verify the data files were stored on the *M:* drive
-        * Verify the log file were stored on the *L:* drive
-    * Connect to the Azure SQL Database server using PrivateLink
+      * When prompted with *Do you trust the authors of the files in this folder?* click *Yes, I trust the authors*.
+      * Review the home directory structure displayed in Explorer.
+    * Open a bash terminal
+      * Navigate to *View* > *Terminal*. This will open up a new bash shell.
+      * Verify the Linux distribution and version by running the command `cat /etc/*-release`.
+      * Verify the Azure CLI version by running the command `az --version`.
+      * Verify the PowerShell version by running the command `pwsh --version`.
+      * Verify the Terraform version by running the command `terraform --version`.
+
+### Azure Files smoke testing
+
+* Test DNS queries for Azure Files private endpoint
+  * Navigate to *portal.azure.com* > *Storage accounts* > *stxxxxxxxxxxx* > *File shares* > *myfileshare* > *Settings* > *Properties* and copy the the FQDN portion of the URL, e.g. *stxxxxxxxxxxx.file.core.windows.net*.
+  * Using PowerShell, run the command `Resolve-DnsName stxxxxxxxxxxx.file.core.windows.net`.
+  * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"]*, e.g. `10.2.2.*`.
+    * Note: This DNS query is resolved using *azurerm_private_dns_zone_virtual_network_link.file_core_windows_net_to_vnet_shared_01* and *azurerm_private_dns_a_record.storage_account_01_file*.
+* Test SMB connectivity with integrated Windows Authentication to Azure Files private endpoint (PaaS)
+  * Open a Windows command prompt and enter the following command: `net use z: \\stxxxxxxxxxxx.file.core.windows.net\myfileshare`
+  * Create some test files and folders on the newly mapped Z: drive
+    * Note: SMB connectivity with storage key authentication to Azure Files via the Internet will not be tested because most ISP's block port 445.
+    * Note: Integrated Windows Authentication was configured using [configure-storage-kerberos.ps1](./configure-storage-kerberos.ps1) which was run by *azurerm_virtual_machine_extension.vm_jumpbox_win_postdeploy_script*.
+
+### SQL Server VM and Azure SQL Database smoke testing
+
+* Test DNS queries for SQL Server (IaaS)
+  * Using PowerShell, run the command `Resolve-DnsName mssqlwin1`.
+  * Verify the IPAddress returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-db-01"]*, e.g. *10.2.1.4*.
+    * Note: This DNS query is resolved by the DNS Server running on *azurerm_windows_virtual_machine.vm_adds*.
+* Test DNS queries for Azure SQL database private endpoint (PaaS)
+  * Navigate to *portal.azure.com* > *SQL Servers* > *mssql-xxxxxxxxxxxxxxxx* > *Properties* > *Server name* and and copy the the FQDN, e.g. *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*.
+  * Using PowerShell, run the command `Resolve-DnsName mssql-xxxxxxxxxxxxxxxx.database.windows.net`.
+  * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"]*, e.g. `10.2.2.*`.
+    * Note: This DNS query is resolved using *azurerm_private_dns_zone_virtual_network_link.private_dns_zone_virtual_network_links_vnet_app_01["privatelink.database.windows.net"]* and *azurerm_private_dns_a_record.sql_server_01*.
+* Test SQL Server Connectivity with SQL Server Management Studio (SSMS)
+  * Navigate to *Start* > *Microsoft SQL Server Tools 18* > *Microsoft SQL Server Management Studio 18*
+  * Connect to the default instance of SQL Server installed on the database server virtual machine using the following default values:
+    * Server name: *mssqlwin1*
+    * Authentication: *Windows Authentication* (this will default to *MYSANDBOX\bootstrapadmin*)
+    * Create a new database named *testdb*.
+      * Verify the data files were stored on the *M:* drive
+      * Verify the log file were stored on the *L:* drive
+  * Connect to the Azure SQL Database server using PrivateLink
+    * Server name: *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*
+    * Authentication: *SQL Server Authentication*
+    * Login: *bootstrapadmin*
+    * Password: Use the value stored in the *adminpassword* key vault secret
+  * Expand the *Databases* tab and verify you can see *testdb*
+* Optional: Deny internet access to Azure SQL Database
+  * Perform these steps in your client environment (not on an Azure VM).
+  * Test DNS configuration
+    * Verify that PrivateLink is not already configured on your internal network
+      * Open a command prompt
+      * Run `ipconfig /all`
+      * Scan the results for *privatelink.database.windows.net* in *Connection-specific DNS Suffix Search List*.
+        * If found, PrivateLink is already configured on your private network.
+          * If you are directly connected to your private network, skip this portion of the smoke testing.
+          * If you are connected to your private network using a VPN, disconnect from it and try again.
+            * If the *privatelink.database.windows.net* DNS Suffix is no longer listed, you can continue.
+    * Using PowerShell, run the command `Resolve-DnsName mssql-xxxxxxxxxxxxxxxx.database.windows.net` and make a note of the *IP4Address* returned.
+    * Navigate to [lookip.net](https://www.lookip.net/ip) and lookup the *IP4Address* from the previous step. Examine the *Technical details* and verify that the ISP for the IP Address is *Microsoft Corporation* and the Company is *Microsoft Azure*.
+  * Add Azure SQL Database firewall rule for client IP
+    * From the Azure portal, navigate to *Home* > *SQL Servers* > *mssql&#x2011;xxxxxxxxxxxxxxxx* > *Security* > *Firewalls and virtual networks*
+    * Confirm *Deny public network access* is disabled.
+    * Click *+ Add client IP*.
+    * Verify a firewall rule was added to match your client IP address.
+      * Note: Only IPv4 addresses will work, so replace any IPv6 addresses with IPv4 addresses. Use [whatismyhipaddress.com](https://whatismyipaddress.com) to determine your IPv4 address.
+    * Click *Save*
+  * Test Internet connectivity to Azure SQL Database
+    * Launch *Microsoft SQL Server Management Studio* (SSMS)
+    * Connect to the Azure SQL Database server using public endpoint
       * Server name: *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*
       * Authentication: *SQL Server Authentication*
       * Login: *bootstrapadmin*
       * Password: Use the value stored in the *adminpassword* key vault secret
     * Expand the *Databases* tab and verify you can see *testdb*
-  * Optional: Deny internet access to Azure SQL Database
-    * Perform these steps in your client environment (not on an Azure VM).
-    * Test DNS configuration
-      * Verify that PrivateLink is not already configured on your internal network
-        * Open a command prompt
-        * Run `ipconfig /all`
-        * Scan the results for *privatelink.database.windows.net* in *Connection-specific DNS Suffix Search List*.
-          * If found, PrivateLink is already configured on your private network.
-            * If you are directly connected to your private network, skip this portion of the smoke testing.
-            * If you are connected to your private network using a VPN, disconnect from it and try again.
-              * If the *privatelink.database.windows.net* DNS Suffix is no longer listed, you can continue.
-      * Using PowerShell, run the command `Resolve-DnsName mssql-xxxxxxxxxxxxxxxx.database.windows.net` and make a note of the *IP4Address* returned.
-      * Navigate to [lookip.net](https://www.lookip.net/ip) and lookup the *IP4Address* from the previous step. Examine the *Technical details* and verify that the ISP for the IP Address is *Microsoft Corporation* and the Company is *Microsoft Azure*.
-    * Add Azure SQL Database firewall rule for client IP
-      * From the Azure portal, navigate to *Home* > *SQL Servers* > *mssql&#x2011;xxxxxxxxxxxxxxxx* > *Security* > *Firewalls and virtual networks*
-      * Confirm *Deny public network access* is disabled.
-      * Click *+ Add client IP*.
-      * Verify a firewall rule was added to match your client IP address.
-        * Note: Only IPv4 addresses will work, so replace any IPv6 addresses with IPv4 addresses. Use [whatismyhipaddress.com](https://whatismyipaddress.com) to determine your IPv4 address.
-      * Click *Save*
-    * Test Internet connectivity to Azure SQL Database
-      * Launch *Microsoft SQL Server Management Studio* (SSMS)
-      * Connect to the Azure SQL Database server using public endpoint
-        * Server name: *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*
-        * Authentication: *SQL Server Authentication*
-        * Login: *bootstrapadmin*
-        * Password: Use the value stored in the *adminpassword* key vault secret
-      * Expand the *Databases* tab and verify you can see *testdb*
-      * Disconnect from Azure SQL Database
-    * Deny public network access
-      * In Visual Studio code, navigate to line 14 of [060-mssql.tf](./060-mssql.tf)
-      * Change `public_network_access_enabled` from `true` to `false` and save the changes.
-      * In the bash terminal, run `terraform plan` and verify a single change will be made to the *public_network_access_enabled* property of the *azurerm_mssql_server.mssql_server_01* resource.
-      * Run `terraform apply` to apply the change.
-    * Test Internet connectivity to Azure SQL Database
-      * Launch *Microsoft SQL Server Management Studio* (SSMS)
-      * Connect to the Azure SQL Database server using public endpoint
-        * Server name: *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*
-        * Authentication: *SQL Server Authentication*
-        * Login: *bootstrapadmin*
-        * Password: Use the value stored in the *adminpassword* key vault secret
-      * Verify the connection was denied and examine the error message
+    * Disconnect from Azure SQL Database
+  * Deny public network access
+    * In Visual Studio code, navigate to line 14 of [060-mssql.tf](./060-mssql.tf)
+    * Change `public_network_access_enabled` from `true` to `false` and save the changes.
+    * In the bash terminal, run `terraform plan` and verify a single change will be made to the *public_network_access_enabled* property of the *azurerm_mssql_server.mssql_server_01* resource.
+    * Run `terraform apply` to apply the change.
+  * Test Internet connectivity to Azure SQL Database
+    * Launch *Microsoft SQL Server Management Studio* (SSMS)
+    * Connect to the Azure SQL Database server using public endpoint
+      * Server name: *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*
+      * Authentication: *SQL Server Authentication*
+      * Login: *bootstrapadmin*
+      * Password: Use the value stored in the *adminpassword* key vault secret
+    * Verify the connection was denied and examine the error message
+
+### Azure Database for MySQL smoke testing
+
+* Test DNS queries for Azure Database for MySQL private endpoint (PaaS)
+  * Navigate to *portal.azure.com* > *Azure Database for MySQL flexible servers* > *mysql-xxxxxxxxxxxxxxxx* > *Properties* > *Server name* and and copy the the FQDN, e.g. *mysql&#x2011;xxxxxxxxxxxxxxxx.mysql.database.azure.com*.
+  * Using PowerShell, run the command `Resolve-DnsName mssql-xxxxxxxxxxxxxxxx.mysql.database.azure.com`.
+  * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-mysql-01"]*, e.g. `10.2.3.*`.
+    * Note: This DNS query is resolved using *azurerm_private_dns_zone_virtual_network_link.private_dns_zone_virtual_network_links_vnet_app_01["private.mysql.database.azure.com"]*. An A record is added for the server automatically by the provisioning process.
 
 ## Documentation
 
@@ -242,11 +290,17 @@ The configuration for these resources can be found in [020-network.tf](./020-net
 Resource name (ARM) | Notes
 --- | ---
 azurerm_virtual_network.vnet_app_01 (vnet&#x2011;app&#x2011;01) | By default this virtual network is configured with an address space of `10.2.0.0/16` and is configured with DNS server addresses of 10.1.2.4 (the private ip for *azurerm_windows_virtual_machine.vm_adds*) and [168.63.129.16](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16).
-azurerm_subnet.vnet_app_01_subnets["application"] | The default address prefix for this subnet is `10.2.0.0/24` and is reserved for web and application servers. The default address prefix for this subnet is 10.1.0.0/24, and is reserved for future use. A network security group is associated with this subnet that permits ingress and egress from virtual networks, and egress to the Internet.
-azurerm_subnet.vnet_app_01_subnets["database"] | The default address prefix for this subnet is `10.2.1.0/24` which includes the private ip address for *azurerm_windows_virtual_machine.vm_mssql_win*. The default address prefix for this subnet is 10.1.0.0/24, and is reserved for future use. A network security group is associated with this subnet that permits ingress and egress from virtual networks, and egress to the Internet.
-azurerm_subnet.vnet_app_01_subnets["PrivateLink"] | The default address prefix for this subnet is `10.2.2.0/24`. *enforce_private_link_endpoint_network_policies* is enabled by default for use with [PrivateLink](https://docs.microsoft.com/en-us/azure/private-link/private-link-overview). The default address prefix for this subnet is 10.1.0.0/24, and is reserved for future use. A network security group is associated with this subnet that permits ingress and egress from virtual networks.
+azurerm_subnet.vnet_app_01_subnets["snet-app-01"] | The default address prefix for this subnet is `10.2.0.0/24` and is reserved for web and application servers. The default address prefix for this subnet is 10.1.0.0/24. A network security group is associated with this subnet that permits ingress and egress from virtual networks, and egress to the Internet.
+azurerm_subnet.vnet_app_01_subnets["snet-db-01"] | The default address prefix for this subnet is `10.2.1.0/24` which includes the private ip address for *azurerm_windows_virtual_machine.vm_mssql_win*. The default address prefix for this subnet is 10.1.0.0/24. A network security group is associated with this subnet that permits ingress and egress from virtual networks, and egress to the Internet.
+azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"] | The default address prefix for this subnet is `10.2.2.0/24`. *private_endpoint_network_policies_enabled* is enabled by default for use with [PrivateLink](https://docs.microsoft.com/en-us/azure/private-link/private-link-overview). A network security group is associated with this subnet that permits ingress and egress from virtual networks.
+azurerm_subnet.vnet_app_01_subnets["snet-mysql-01"] | The default address prefix for this subnet is `10.2.3.0/24`. *service_delegation_name* is set to `Microsoft.DBforMySQL/flexibleServers` for use with [subnet delegation](https://docs.microsoft.com/en-us/azure/virtual-network/subnet-delegation-overview). A network security group is associated with this subnet that permits ingress and egress from virtual networks.
 azurerm_virtual_network_peering.vnet_shared_01_to_vnet_app_01_peering | Establishes the [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) relationship from *azurerm_virtual_network.vnet_shared_01* to *azurerm_virtual_network.vnet_app_01*.
 azurerm_virtual_network_peering.vnet_app_01_to_vnet_shared_01_peering | Establishes the [virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) relationship from *azurerm_virtual_network.vnet_app_01* to *azurerm_virtual_network.vnet_shared_01*.
+azurerm_private_dns_zone.private_dns_zones["private.mysql.database.azure.com"] | Creates a [private Azure DNS zone](https://docs.microsoft.com/en-us/azure/dns/private-dns-privatednszone) for using [Private Network Access for Azure Database for MySQL - Flexible Server](https://docs.microsoft.com/en-us/azure/mysql/flexible-server/concepts-networking-vnet).
+azurerm_private_dns_zone.private_dns_zones["privatelink.database.windows.net"] | Creates a [private Azure DNS zone](https://docs.microsoft.com/en-us/azure/dns/private-dns-privatednszone) for using [Azure Private Link for Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
+azurerm_private_dns_zone.private_dns_zones["privatelink.file.core.windows.net"] | Creates a [private Azure DNS zone](https://docs.microsoft.com/en-us/azure/dns/private-dns-privatednszone) for using [Azure Private Link for Azure Files](https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints).
+azurerm_private_dns_zone_virtual_network_link.private_dns_zone_virtual_network_links_vnet_app_01[*] | Links each of the private DNS zones with azurerm_virtual_network.vnet_app_01
+azurerm_private_dns_zone_virtual_network_link.private_dns_zone_virtual_network_links_vnet_shared_01[*] | Links each of the private DNS zones with *var.remote_virtual_network_id*, which is the shared services virtual network.
 
 #### Windows Server Jumpbox VM
 
@@ -277,6 +331,8 @@ This Windows Server VM is used as a jumpbox for development and remote server ad
     * [sql-server-management-studio](https://community.chocolatey.org/packages/sql-server-management-studio)
     * [microsoftazurestorageexplorer](https://community.chocolatey.org/packages/microsoftazurestorageexplorer)
     * [azcopy10](https://community.chocolatey.org/packages/azcopy10)
+    * [azure-data-studio](https://community.chocolatey.org/packages/azure-data-studio)
+    * [mysql.workbench](https://community.chocolatey.org/packages/mysql.workbench)
 * Post-deployment configuration is then performed using a custom script extension that runs [configure&#x2011;vm&#x2011;jumpbox&#x2011;&#x2011;win.ps1](./configure-vm-jumpbox-win.ps1).
   * [configure&#x2011;storage&#x2011;kerberos.ps1](./configure-storage-kerberos.ps1) is registered as a scheduled task then executed using domain administrator credentials. This script must be run on a domain joined Azure virtual machine, and configures the storage account for kerberos authentication with the Active Directory Domain Services domain used in the configurations.
 
@@ -395,6 +451,15 @@ azurerm_mssql_server.mssql_server_01 (mssql-xxxxxxxxxxxxxxxx) | An [Azure SQL Da
 azurerm_mssql_database.mssql_database_01 | A [single database](https://docs.microsoft.com/en-us/azure/azure-sql/database/single-database-overview) named *testdb* for testing connectivity.
 azurerm_private_endpoint.mssql_server_01 | A private endpoint for connecting to [Azure SQL Database using PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview)
 azurerm_private_dns_a_record.sql_server_01 | A DNS A record for resolving DNS queries to *azurerm_mssql_server.mssql_server_01* using PrivateLink. This resource has a dependency on the *azurerm_private_dns_zone.database_windows_net* resource.
+
+#### Azure Database for MySQL Flexible Server
+
+The configuration for these resources can be found in [080-mysql.tf](./080-mysql.tf).
+
+Resource name (ARM) | Notes
+--- | ---
+azurerm_mysql_flexible_server.mysql_server_01 (mysql-xxxxxxxxxxxxxxxx) | An [Azure Database for MySQL - Flexible Server](https://docs.microsoft.com/en-us/azure/mysql/flexible-server/overview) for hosting databases. Note that a private endpoint is automatically created during provisioning and a corresponding DNS A record is automatically added to the corresponding private DNS zone.
+azurerm_mysql_database.mysql_database_01 | A MySQL Database named *testdb* for testing connectivity.
 
 #### Storage resources
 

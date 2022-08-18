@@ -92,7 +92,7 @@ This section describes how to provision this configuration using default setting
     * *Important*: If you use a custom value, avoid using [restricted usernames](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm-).
   * When prompted for *adminpassword*, enter a strong password.
     * *Important*: Avoid using symbols in your password, especially [linux special characters](https://tldp.org/LDP/abs/html/special-chars.html). Use at least 12 characters, and stick to upper case and lower case letters and digits. You can use a password generator like [Strong Passwords Generator](https://strongpasswordsgenerator.net/), just disable the *Include Symbols* option.
-* Apply the terraform configuration.
+* Apply the Terraform configuration.
 
   ```bash
   # Initialize providers
@@ -209,10 +209,6 @@ azurerm_bastion_host.bastion_host_01 (bst&#x2011;xxxxxxxxxxxxxxxx&#x2011;1) | Us
 random_id.bastion_host_01_name | Used to generate a random name for *azurerm_bastion_host.bastion_host_01*.
 azurerm_public_ip.bastion_host_01 (pip&#x2011;xxxxxxxxxxxxxxxx&#x2011;1) | Public ip used by *azurerm_bastion_host.bastion_host_01*.
 random_id.public_ip_bastion_host_01_name | Used to generate a random name for *azurerm_public_ip.bastion_host_01*.
-azurerm_private_dns_zone.database_windows_net | Creates a [private Azure DNS zone](https://docs.microsoft.com/en-us/azure/dns/private-dns-privatednszone) for using [Azure Private Link for Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
-azurerm_private_dns_zone.file_core_windows_net | Creates a [private Azure DNS zone](https://docs.microsoft.com/en-us/azure/dns/private-dns-privatednszone) for using [Azure Private Link for Azure Files](https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints).
-azurerm_private_dns_zone_virtual_network_link.database_windows_net_to_vnet_shared_01 | Links *azurerm_private_dns_zone.database_windows_net* to *azurerm_virtual_network.vnet_shared_01*
-azurerm_private_dns_zone_virtual_network_link.file_core_windows_net_to_vnet_shared_01 | Links *azurerm_private_dns_zone.file_core_windows_net* to *azurerm_virtual_network.vnet_shared_01*
 
 #### AD DS Domain Controller VM
 

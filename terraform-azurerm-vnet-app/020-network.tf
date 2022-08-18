@@ -1,30 +1,45 @@
 locals {
   subnets = {
     snet-app-01 = {
-      address_prefix                                 = var.subnet_application_address_prefix
-      enforce_private_link_endpoint_network_policies = false
+      address_prefix                            = var.subnet_application_address_prefix
+      private_endpoint_network_policies_enabled = false
       nsgrules = [
         "AllowVirtualNetworkInbound",
         "AllowVirtualNetworkOutbound",
         "AllowInternetOutbound"
       ]
+      service_delegation_name = null
     }
+
     snet-db-01 = {
-      address_prefix                                 = var.subnet_database_address_prefix
-      enforce_private_link_endpoint_network_policies = false
+      address_prefix                            = var.subnet_database_address_prefix
+      private_endpoint_network_policies_enabled = false
       nsgrules = [
         "AllowVirtualNetworkInbound",
         "AllowVirtualNetworkOutbound",
         "AllowInternetOutbound"
       ]
+      service_delegation_name = null
     }
-    snet-privatelink-01 = {
-      address_prefix                                 = var.subnet_privatelink_address_prefix
-      enforce_private_link_endpoint_network_policies = true
+
+    snet-mysql-01 = {
+      address_prefix                            = var.subnet_mysql_address_prefix
+      private_endpoint_network_policies_enabled = false
       nsgrules = [
         "AllowVirtualNetworkInbound",
         "AllowVirtualNetworkOutbound"
       ]
+      service_delegation_name = "Microsoft.DBforMySQL/flexibleServers"
+    }
+
+    snet-privatelink-01 = {
+      address_prefix                            = var.subnet_privatelink_address_prefix
+      private_endpoint_network_policies_enabled = true
+      nsgrules = [
+        "AllowVirtualNetworkInbound",
+        "AllowVirtualNetworkOutbound"
+      ]
+      service_delegation_name = null
     }
   }
 
@@ -76,6 +91,12 @@ locals {
       }
     ]
   ])
+
+  private_dns_zones = [
+    "privatelink.database.windows.net",
+    "privatelink.file.core.windows.net",
+    "private.mysql.database.azure.com"
+  ]
 }
 
 # Application virtual network, subnets and network security groups
@@ -97,13 +118,28 @@ output "vnet_app_01_name" {
 }
 
 resource "azurerm_subnet" "vnet_app_01_subnets" {
-  for_each = local.subnets
+  for_each                                  = local.subnets
+  name                                      = each.key
+  resource_group_name                       = var.resource_group_name
+  virtual_network_name                      = azurerm_virtual_network.vnet_app_01.name
+  address_prefixes                          = [each.value.address_prefix]
+  private_endpoint_network_policies_enabled = each.value.private_endpoint_network_policies_enabled
 
-  name                                           = each.key
-  resource_group_name                            = var.resource_group_name
-  virtual_network_name                           = azurerm_virtual_network.vnet_app_01.name
-  address_prefixes                               = [each.value.address_prefix]
-  enforce_private_link_endpoint_network_policies = each.value.enforce_private_link_endpoint_network_policies
+  dynamic "delegation" {
+    for_each = each.value.service_delegation_name == null ? [] : [1]
+
+    content {
+      name = "delegation"
+
+      service_delegation {
+        name = each.value.service_delegation_name
+        actions = [
+          "Microsoft.Network/virtualNetworks/subnets/join/action",
+          "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action"
+        ]
+      }
+    }
+  }
 }
 
 resource "azurerm_network_security_group" "network_security_groups" {
@@ -118,7 +154,7 @@ resource "azurerm_network_security_group" "network_security_groups" {
 resource "azurerm_subnet_network_security_group_association" "nsg_subnet_associations" {
   for_each = azurerm_subnet.vnet_app_01_subnets
 
-  subnet_id = azurerm_subnet.vnet_app_01_subnets[each.key].id
+  subnet_id                 = azurerm_subnet.vnet_app_01_subnets[each.key].id
   network_security_group_id = azurerm_network_security_group.network_security_groups[each.key].id
 }
 
@@ -129,7 +165,7 @@ resource "azurerm_network_security_rule" "network_security_rules" {
 
   access                      = each.value.access
   destination_address_prefix  = each.value.destination_address_prefix
-  destination_port_range      = length(each.value.destination_port_ranges) == 1 ? each.value.destination_port_ranges[0] : null 
+  destination_port_range      = length(each.value.destination_port_ranges) == 1 ? each.value.destination_port_ranges[0] : null
   destination_port_ranges     = length(each.value.destination_port_ranges) > 1 ? each.value.destination_port_ranges : null
   direction                   = each.value.direction
   name                        = each.value.nsgrule_name
@@ -138,7 +174,7 @@ resource "azurerm_network_security_rule" "network_security_rules" {
   protocol                    = each.value.protocol
   resource_group_name         = var.resource_group_name
   source_address_prefix       = each.value.source_address_prefix
-  source_port_range           = length(each.value.source_port_ranges) == 1 ? each.value.source_port_ranges[0] : null 
+  source_port_range           = length(each.value.source_port_ranges) == 1 ? each.value.source_port_ranges[0] : null
   source_port_ranges          = length(each.value.source_port_ranges) > 1 ? each.value.source_port_ranges : null
 
   depends_on = [
@@ -165,4 +201,30 @@ resource "azurerm_virtual_network_peering" "vnet_app_01_to_vnet_shared_01_peerin
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
   allow_gateway_transit        = true
+}
+
+# Private DNS zones
+resource "azurerm_private_dns_zone" "private_dns_zones" {
+  for_each            = toset(local.private_dns_zones)
+  name                = each.value
+  resource_group_name = var.resource_group_name
+  tags                = var.tags
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_virtual_network_links_vnet_app_01" {
+  for_each              = azurerm_private_dns_zone.private_dns_zones
+  name                  = "pdnslnk-${each.value.name}-${azurerm_virtual_network.vnet_app_01.name}"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = each.value.name
+  virtual_network_id    = azurerm_virtual_network.vnet_app_01.id
+  tags                  = var.tags
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_virtual_network_links_vnet_shared_01" {
+  for_each              = azurerm_private_dns_zone.private_dns_zones
+  name                  = "pdnslnk-${each.value.name}-${var.remote_virtual_network_name}"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = each.value.name
+  virtual_network_id    = var.remote_virtual_network_id
+  tags                  = var.tags
 }
