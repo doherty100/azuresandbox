@@ -7,6 +7,7 @@ resource "azurerm_mysql_flexible_server" "mysql_server_01" {
   name                   = "mysql-${random_id.random_id_mysql_server_01_name.hex}"
   resource_group_name    = var.resource_group_name
   location               = var.location
+  zone                   = var.mysql_flexible_server_zone
   administrator_login    = data.azurerm_key_vault_secret.adminuser.value
   administrator_password = data.azurerm_key_vault_secret.adminpassword.value
   delegated_subnet_id    = azurerm_subnet.vnet_app_01_subnets["snet-mysql-01"].id
@@ -19,7 +20,7 @@ resource "azurerm_mysql_flexible_server" "mysql_server_01" {
 }
 
 #Azure Database for MySQL test database
-resource "azurerm_mysql_database" "mysql_database_01" {
+resource "azurerm_mysql_flexible_database" "mysql_database_01" {
   name                = var.mysql_database_name
   resource_group_name = var.resource_group_name
   server_name         = azurerm_mysql_flexible_server.mysql_server_01.name

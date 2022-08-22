@@ -64,6 +64,12 @@ variable "mysql_database_name" {
   description = "The name of the Azure MySQL Database to be provisioned"
 }
 
+variable "mysql_flexible_server_zone" {
+  type        = string
+  description = "The availability zone used to deploy the Azure Database for MySQL - Flexible Server."
+  default     = "1"
+}
+
 variable "remote_virtual_network_id" {
   type        = string
   description = "The id of the existing shared services virtual network that the new spoke virtual network will be peered with."

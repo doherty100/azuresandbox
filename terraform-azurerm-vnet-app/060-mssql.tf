@@ -11,7 +11,7 @@ resource "azurerm_mssql_server" "mssql_server_01" {
   administrator_login           = data.azurerm_key_vault_secret.adminuser.value
   administrator_login_password  = data.azurerm_key_vault_secret.adminpassword.value
   minimum_tls_version           = "1.2"
-  public_network_access_enabled = true
+  public_network_access_enabled = false
   tags                          = var.tags
 }
 

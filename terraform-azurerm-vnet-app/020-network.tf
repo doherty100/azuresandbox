@@ -134,8 +134,7 @@ resource "azurerm_subnet" "vnet_app_01_subnets" {
       service_delegation {
         name = each.value.service_delegation_name
         actions = [
-          "Microsoft.Network/virtualNetworks/subnets/join/action",
-          "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action"
+          "Microsoft.Network/virtualNetworks/subnets/join/action"
         ]
       }
     }
