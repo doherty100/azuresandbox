@@ -326,12 +326,13 @@ The following sections provide guided smoke testing of each resource provisioned
   * Navigate to *Start* > *MySQL Workbench*
   * Navigate to *Databawse* > *Connect to Database* and connect using the following values:
     * Connection method: Standard (TCP/IP)
-    * Hostname: mssql-xxxxxxxxxxxxxxxx.mysql.database.azure.com
+    * Hostname: mysql-xxxxxxxxxxxxxxxx.mysql.database.azure.com
     * Port: 3306
     * Uwername: bootstrapadmin
     * Schema: testdb
     * Click *OK* and when prompted for *password* use the value of the *adminpassword* secret in key vault.
     * Create a table, insert some data and run some sample queries to verify functionality.
+    * Note: Internet connectivity will not be tested because Azure Database for MySQL can only be configured for access via private endpoints or public endpoints, but not both simultaneously.
 
 ## Documentation
 

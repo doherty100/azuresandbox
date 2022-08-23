@@ -31,15 +31,49 @@ The following configurations must be deployed first before starting:
 
 This section describes how to provision this configuration using default settings.
 
-* Run `./bootstrap.sh` using the default settings or your own custom settings.
-* Run `terraform init` and note the version of the *azurerm* provider installed.
-* Run `terraform validate` to check the syntax of the configuration.
-* Run `terraform plan` and review the plan output.
-* Run `terraform apply` to apply the configuration.
+* Change the working directory.
+
+  ```bash
+  cd ~/azuresandbox/terraform-azurerm-vwan
+  ```
+
+* Add an environment variable containing the password for the service principal.
+
+  ```bash
+  export TF_VAR_arm_client_secret=YourServicePrincipalSecret
+  ```
+
+* Run [bootstrap.sh](./bootstrap.sh) using the default settings or custom settings.
+
+  ```bash
+  ./bootstrap.sh
+  ```
+
+* Apply the Terraform configuration.
+
+  ```bash
+  # Initialize terraform providers
+  terraform init
+
+  # Validate configuration files
+  terraform validate
+
+  # Review plan output
+  terraform plan
+
+  # Apply configuration
+  terraform apply
+  ```
+
+* Inspect `terraform.tfstate`.
+
+  ```bash
+  terraform state list 
+  ```
 
 ## Smoke testing
 
-These smoke tests are designed to be performed from a Windows client over a P2S VPN connection to the Azure Virtual WAN Hub. Upon completion you will have tested connectivity using a variety of ports and protocols to Azure resources using private IP addresses.
+This smoke testing is designed to be performed from a [Windows 10 with WSL](../README.md#windows-10-with-wsl) client environment over a P2S VPN connection to the Azure Virtual WAN Hub. Upon completion you will have tested connectivity using a variety of ports and protocols to Azure resources using private IP addresses.
 
 ### Test Point to Site (P2S) VPN Connectivity
 
