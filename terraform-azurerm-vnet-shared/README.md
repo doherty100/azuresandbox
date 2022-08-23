@@ -59,7 +59,7 @@ This section describes how to provision this configuration using default setting
   az login
 
   # Change current directory
-  cd terraform-azurerm-vnet-shared
+  cd azuresandbox/terraform-azurerm-vnet-shared
 
   ```
 
@@ -113,7 +113,7 @@ This section describes how to provision this configuration using default setting
 
   # Review output variables
   terraform output
-  
+
   ```
 
 ## Smoke testing
