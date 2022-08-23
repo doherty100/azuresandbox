@@ -135,6 +135,8 @@ Windows 10 users can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/abou
   * [Ubuntu 20.04 LTS (Focal Fossa)](https://www.microsoft.com/store/productId/9N6SVWS3RX71)
   * [Visual Studio Code on Windows](https://code.visualstudio.com/docs/setup/windows)
   * [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)
+  * [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio?view=sql-server-ver16)
+  * [MySQL Workbench](https://www.mysql.com/products/workbench/)
 * WSL prerequisites
   * [Install the Azure CLI on Linux | apt (Ubuntu, Debian)](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt)
   * [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli#install-terraform)
@@ -345,6 +347,7 @@ Application | snet-mysql-01 | TBD | TBD | TBD | TBD
 This section documents known issues with these configurations that should be addressed prior to real world usage.
 
 * Configuration management
+  * *Terraform*: For simplicity, these configurations store [State](https://www.terraform.io/language/state) in a local file named `terraform.tfstate`. For production use, state should be managed in a secure, encrypted [Backend](https://www.terraform.io/language/state/backends) such as [azurerm](https://www.terraform.io/language/settings/backends/azurerm).
   * *Windows Server*: This configuration uses [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) for configuring the Windows Server virtual machines, which will be replaced by [Azure Policy guest configuration](https://azure.microsoft.com/en-in/updates/public-preview-apply-settings-inside-machines-using-azure-policys-guest-configuration/) which is currently in public preview. This configuration will be updated to the new implementation when it is generally available.
     * *configure-automation.ps1*: The performance of this script could be improved by using multi-threading to run Azure Automation operations in parallel.
   * *Linux*: This configuration uses [cloud-init](https://cloudinit.readthedocs.io/) for configuring [Ubuntu 20.04 LTS (Focal Fossa)](http://www.releases.ubuntu.com/20.04/) virtual machines.

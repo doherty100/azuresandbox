@@ -324,7 +324,7 @@ The following sections provide guided smoke testing of each resource provisioned
 
 * From *jumpwin1*, test private MySQL connectivity using MySQL Workbench.
   * Navigate to *Start* > *MySQL Workbench*
-  * Navigate to *Databawse* > *Connect to Database* and connect using the following values:
+  * Navigate to *Database* > *Connect to Database* and connect using the following values:
     * Connection method: Standard (TCP/IP)
     * Hostname: mysql-xxxxxxxxxxxxxxxx.mysql.database.azure.com
     * Port: 3306

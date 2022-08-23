@@ -80,7 +80,7 @@ This smoke testing is designed to be performed from a [Windows 10 with WSL](../R
 This test establishes a Point to Site (P2S) VPN connection to the Virtual Wan Hub using the [Azure VPN Client](https://www.microsoft.com/store/productId/9NP355QT2SQB) as described in [Tutorial: Create a User VPN connection using Azure Virtual WAN](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-point-to-site-portal), then tests connectivity to various Azure resources using private endpoints.
 
 * Generate self-signed certificates to use for P2S VPN certificate authentication.
-  * Using the Windows client you intend to test connectivity with, generate the certificates required for setting up a P2S VPN using [genp2svpncerts.ps1](./genp2svpncerts.ps1). This script creates a root certificate in the registry, then uses that root certificate to create a self-signed client certificate in the registry. Both certificates are then exported to files:
+  * From the client environment, generate the certificates required for setting up a P2S VPN using [genp2svpncerts.ps1](./genp2svpncerts.ps1). This script creates a root certificate in the registry, then uses that root certificate to create a self-signed client certificate in the registry. Both certificates are then exported to files:
     * `MyP2SVPNRootCert_DER_Encoded.cer`: This is a temporary file used to create a Base64 encoded version of the root certificate.
     * `MyP2SVPNRootCert_Base64_Encoded.cer`: This is the root certificate used to create a User VPN Configuration in Virtual WAN.
     * `MyP2SVPNChildCert.pfx`: This is an export of the client certificate protected with a password. You only need this if you want to configure the Azure VPN client on a different computer than the one used to generate the certificates.
@@ -100,6 +100,7 @@ This test establishes a Point to Site (P2S) VPN connection to the Virtual Wan Hu
   * Use Remote/On-premises RADIUS server: `Disabled`
   * Client address pool: `10.4.0.0/16`
   * Custom DNS servers: `10.1.1.4` and `168.63.129.16` (See [What is IP address 168.63.129.16?](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16) for more info)
+  * Propagate Default Route: `Enabled`
 * Download Virtual Hub User VPN Profile
   * In the Azure Portal, navigate to *Home > Virtual WANs > vwan-XXXX-01 > Hubs > vhub-XXXX-01 > User VPN (Point to site)*
   * Click *Download virtual Hub User VPN profile*
@@ -169,6 +170,19 @@ This test establishes a Point to Site (P2S) VPN connection to the Virtual Wan Hu
       * Login: *bootstrapadmin*
       * Password: Use the value stored in the *adminpassword* key vault secret
     * Expand the *Databases* tab and verify you can see *testdb*
+  * Test DNS queries for Azure Database for MySQL private endpoint (PaaS)
+    * Navigate to *portal.azure.com* > *Azure Database for MySQL flexible servers* > *mysql-xxxxxxxxxxxxxxxx* > *Overview* > *Server name* and and copy the the FQDN, e.g. *mysql&#x2011;xxxxxxxxxxxxxxxx.mysql.database.azure.com*.
+    * Using PowerShell, run the command `Resolve-DnsName mysql-xxxxxxxxxxxxxxxx.mysql.database.azure.com`.
+    * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-mysql-01"]*, e.g. `10.2.3.*`.
+  * Test connectivity to Azure Database for MySQL using delegated subnet (port 3306)
+    * Navigate to *Start* > *MySQL Workbench*
+    * Navigate to *Database* > *Connect to Database* and connect using the following values:
+      * Connection method: `Standard (TCP/IP)`
+      * Hostname: `mysql-xxxxxxxxxxxxxxxx.mysql.database.azure.com`
+      * Port: `3306`
+      * Uwername: `bootstrapadmin`
+      * Schema: `testdb`
+      * Click *OK* and when prompted for *password* use the value of the *adminpassword* secret in key vault.
 
 ## Documentation
 
