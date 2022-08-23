@@ -53,14 +53,18 @@ This section describes how to provision this configuration using default setting
   ```bash
   # Log out of Azure and clear cached credentials
   az logout
+
+  # Clear cached credentials
   az account clear
 
   # Log into Azure
   az login
+  ```
 
-  # Change current directory
+* Change the current directory to the correct configuration
+
+  ```bash
   cd azuresandbox/terraform-azurerm-vnet-shared
-
   ```
 
 * Find and copy the *Subscription Id* to be used for the configurations.
