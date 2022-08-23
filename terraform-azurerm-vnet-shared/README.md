@@ -126,9 +126,13 @@ This section describes how to provision this configuration using default setting
 ## Smoke testing
 
 * Explore your newly provisioned resources in the Azure portal.
-  * Navigate to *portal.azure.com* > *Automation Accounts* > [My Automation Account] > *Configuration Management* > *State configuration (DSC)*.
+  * AD DS Domain Controller VM (adds1)
+    * Navigate to *portal.azure.com* > *Automation Accounts* > *auto-xxxxxxxxxxxxxxxx-01* > *Configuration Management* > *State configuration (DSC)*.
     * Refresh the data on the *Nodes* tab and verify that all nodes are compliant.
     * Review the data in the *Configurations* and *Compiled configurations* tabs as well.
+  * Bastion host
+    * Navigate to *portal.azure.com* > *Bastions* > *bst-xxxxxxxxxxxxxxxx-1*.
+    * Review the information in the *Overview* section.
 
 ## Documentation
 
@@ -226,7 +230,7 @@ The configuration for these resources can be found in [050-vm-adds.tf](./050-vm-
 Resource name (ARM) | Notes
 --- | ---
 azurerm_windows_virtual_machine.vm_adds (adds1) | By default, provisions a [Standard_B2s](https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-b-series-burstable) virtual machine for use as a domain controller and dns server. See below for more information.
-azurerm_network_interface.vm_adds_nic_01 (nic&#x2011;adds1&#x2011;1) | The configured subnet is *azurerm_subnet.vnet_shared_01_subnets["adds"]*.
+azurerm_network_interface.vm_adds_nic_01 (nic&#x2011;adds1&#x2011;1) | The configured subnet is *azurerm_subnet.vnet_shared_01_subnets["snet-adds-01"]*.
 
 This Windows Server VM is used as an [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) [Domain Controller](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2003/cc786438(v=ws.10)) and a DNS Server running in Active Directory-integrated mode.
 
