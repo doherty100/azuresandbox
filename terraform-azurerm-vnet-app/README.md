@@ -42,7 +42,7 @@ This section describes how to provision this configuration using default setting
 * Change the working directory.
 
   ```bash
-  cd ~/azuresandox/terraform-azurerm-vnet-app
+  cd ~/azuresandbox/terraform-azurerm-vnet-app
   ```
 
 * Add an environment variable containing the password for the service principal.
