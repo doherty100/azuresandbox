@@ -110,8 +110,12 @@ This section describes how to provision this configuration using default setting
   terraform plan
 
   # Apply plan
-  terraform apply --auto-approve
+  terraform apply
+  ```
 
+* Inspect `terraform.tfstate`.
+
+  ```bash
   # Review provisioned resources
   terraform state list
 
