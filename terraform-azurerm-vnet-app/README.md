@@ -71,9 +71,16 @@ This section describes how to provision this configuration using default setting
 
   # Apply configuration
   terraform apply
+  ```
 
+* Inspect `terraform.tfstate`.
+
+  ```bash
   # List resources managed by terraform
   terraform state list 
+
+  # Review output variables
+  terraform output
   ```
 
 ## Smoke testing
