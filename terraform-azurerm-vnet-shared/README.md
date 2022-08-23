@@ -60,6 +60,7 @@ This section describes how to provision this configuration using default setting
 
   # Change current directory
   cd terraform-azurerm-vnet-shared
+
   ```
 
 * Find and copy the *Subscription Id* to be used for the configurations.
@@ -112,6 +113,7 @@ This section describes how to provision this configuration using default setting
 
   # Review output variables
   terraform output
+  
   ```
 
 ## Smoke testing
