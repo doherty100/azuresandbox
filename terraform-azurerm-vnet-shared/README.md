@@ -51,15 +51,15 @@ This section describes how to provision this configuration using default setting
 * Open a Bash terminal in your client environment and execute the following commands.
 
   ```bash
-  # Change current directory
-  cd ~/azuresandbox/terraform-azurerm-vnet-shared
-
   # Log out of Azure and clear cached credentials
   az logout
   az account clear
 
   # Log into Azure
   az login
+
+  # Change current directory
+  cd terraform-azurerm-vnet-shared
   ```
 
 * Find and copy the *Subscription Id* to be used for the configurations.
@@ -105,7 +105,7 @@ This section describes how to provision this configuration using default setting
   terraform plan
 
   # Apply plan
-  terraform apply
+  terraform apply --auto-approve
 
   # Review provisioned resources
   terraform state list
