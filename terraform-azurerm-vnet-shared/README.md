@@ -117,7 +117,6 @@ This section describes how to provision this configuration using default setting
 
   # Review output variables
   terraform output
-
   ```
 
 ## Smoke testing
