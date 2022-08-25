@@ -79,3 +79,6 @@ override.tf.json
 # Ignore ssh key temp files
 sshkeytemp
 sshkeytemp.pub
+
+# Ignore certificate files
+*.cer
