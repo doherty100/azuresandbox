@@ -30,4 +30,9 @@ printf "Removing all files matching '*.mim'...\n"
 find . -type f -name '*.mim' 
 find . -type f -name '*.mim' | xargs -r rm
 
+printf "Removing all files matching '*.cer'...\n"
+
+find . -type f -name '*.cer' 
+find . -type f -name '*.cer' | xargs -r rm
+
 exit 0
