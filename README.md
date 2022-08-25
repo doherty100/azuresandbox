@@ -137,6 +137,7 @@ Windows 10 users can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/abou
   * [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)
   * [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio?view=sql-server-ver16)
   * [MySQL Workbench](https://www.mysql.com/products/workbench/)
+  * [Azure VPN Client](https://www.microsoft.com/store/productId/9NP355QT2SQB)
 * WSL prerequisites
   * [Install the Azure CLI on Linux | apt (Ubuntu, Debian)](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux?pivots=apt)
   * [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli#install-terraform)
@@ -151,7 +152,7 @@ Windows 10 users can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/abou
       sudo pwsh
       ```
 
-      From PowerShell:
+      From PowerShell Core:
 
       ```powershell
       ./configure-powershell.ps1
@@ -352,13 +353,14 @@ This section documents known issues with these configurations that should be add
     * *configure-automation.ps1*: The performance of this script could be improved by using multi-threading to run Azure Automation operations in parallel.
   * *Linux*: This configuration uses [cloud-init](https://cloudinit.readthedocs.io/) for configuring [Ubuntu 20.04 LTS (Focal Fossa)](http://www.releases.ubuntu.com/20.04/) virtual machines.
     * *azurerm_linux_virtual_machine.vm_jumpbox_linux*: ARM tags are currently used to pass some configuration data to cloud-init. This dependency on ARM tags could make the configuration more fragile if users manually manipulate ARM tags or they are overwritten by Azure Policy.
-* Identity and Access Management
+* Identity, Access Management and Authentication.
   * *Authentication*: These configurations use a service principal to authenticate with Azure which requires a client secret to be shared. This is due to the requirement that sandbox users be limited to a *Contributor* Azure RBAC role assignment which is not authorized to do Azure RBAC role assignments. Production environments should consider using [managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) instead of service principals which eliminates the need to share secrets.
+    * *SQL Server Authentication*: By default this configuration uses mixed mode authentication. Production deployments should use Windows integrated authentication as per best practices.
+    * *Point-to-site VPN gateway authentication*: This configuration uses self-signed certificates for simplicity. Production environments should use certificates generated from a root certificate authority.
   * *Credentials*: For simplicity, these configurations use a single set of user defined credentials when an administrator account is required to provision or configure resources. In production environments these credentials would be different and follow the principal of least privilege for better security. Some user defined credentials may cause failures due to differences in how various resources implement restricted administrator user names and password complexity requirements.
   * *Active Directory Domain Services*: A pre-configured AD domain controller *azurerm_windows_virtual_machine.vm_adds* is provisioned.
     * *High availability*: The current design uses a single VM for AD DS which is counter to best practices as described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain) which recommends a pair of VMs in an Availability Set.
     * *Data integrity*: The current design hosts the AD DS domain forest data on the OS Drive which is counter to  best practices as described in [Deploy AD DS in an Azure virtual network](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/identity/adds-extend-domain) which recommends hosting them on a separate data dr*ive with different cache settings.
-  * *SQL Server Authentication*: By default this configuration uses mixed mode authentication. Production deployments should use Windows integrated authentication as per best practices.
 * Storage
   * *Azure Storage*: For simplicity, this configuration uses the [Authorize with Shared Key](https://docs.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key) approach for [Authorizing access to data in Azure Storage](https://docs.microsoft.com/en-us/azure/storage/common/authorize-data-access?toc=/azure/storage/blobs/toc.json). For production environments, consider using [shared access signatures](https://docs.microsoft.com/en-us/azure/storage/common/storage-sas-overview?toc=/azure/storage/blobs/toc.json) instead.
   * *Standard SSD vs. Premium SSD*: By default, this configuration uses Standard SSD for SQL Server data and log disks instead of Premium SSD for reduced cost. Production deployments should use Premium SSD as per best practices.

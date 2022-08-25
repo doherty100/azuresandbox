@@ -13,7 +13,7 @@
 
 ## Overview
 
-This configuration implements [Azure Virtual WAN](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) to connect the sandbox to remote users and/or private networks.
+This configuration implements [Azure Virtual WAN](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) to connect /#AzureSandbox to remote users using [User VPN (point-to-site) connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#uservpn).
 
 Activity | Estimated time required
 --- | ---
@@ -31,7 +31,21 @@ The following configurations must be deployed first before starting:
 
 This section describes how to provision this configuration using default settings.
 
-* Change the working directory.
+* From the client environment, generate self-signed certificates to use for P2S VPN certificate authentication.
+  * Run [genp2svpncerts.ps1](./genp2svpncerts.ps1) from Windows Powershell (not from WSL / PowerShell core) to generate the certificates required for setting up a P2S VPN:
+  
+    ```powershell
+    .\genp2svpncerts.ps1
+    ```
+  
+    * Note: This script creates a root certificate in the registry, then uses that root certificate to create a self-signed client certificate in the registry. Both certificates are then exported to files, including:
+      * `MyP2SVPNRootCert_DER_Encoded.cer`: This is a temporary file used to create a Base64 encoded version of the root certificate.
+      * `MyP2SVPNRootCert_Base64_Encoded.cer`: This is the root certificate used to create a User VPN Configuration in Virtual WAN.
+      * `MyP2SVPNChildCert.pfx`: This is an export of the client certificate protected with a password. You only need this if you want to configure the Azure VPN client on a different computer than the one used to generate the certificates.
+  * Copy `MyP2SVPNRootCert_Base64_Encoded.cer` from Windows to WSL in the directory `~/azuresandbox/terraform-azurerm-vwan`.
+  * Make a note of the CN for the root certificate, the default is `MyP2SVPNRootCert`.
+
+* From a Bash terminal, change the working directory.
 
   ```bash
   cd ~/azuresandbox/terraform-azurerm-vwan
@@ -73,116 +87,181 @@ This section describes how to provision this configuration using default setting
 
 ## Smoke testing
 
-This smoke testing is designed to be performed from a [Windows 10 with WSL](../README.md#windows-10-with-wsl) client environment over a P2S VPN connection to the Azure Virtual WAN Hub. Upon completion you will have tested connectivity using a variety of ports and protocols to Azure resources using private IP addresses.
+This smoke testing is designed to be performed from a [Windows 10 with WSL](../README.md#windows-10-with-wsl) client environment using a user (point-to-site) VPN connection to the Azure Virtual WAN Hub. Upon completion you will have tested connectivity using a variety of ports and protocols to Azure resources using private endpoints.
 
-### Test Point to Site (P2S) VPN Connectivity
+* [Install and configure VPN client](#install-and-configure-vpn-client)
+* [Test user (point-to-site) VPN connectivity](#test-user-point-to-site-vpn-connectivity)
 
-This test establishes a Point to Site (P2S) VPN connection to the Virtual Wan Hub using the [Azure VPN Client](https://www.microsoft.com/store/productId/9NP355QT2SQB) as described in [Tutorial: Create a User VPN connection using Azure Virtual WAN](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-point-to-site-portal), then tests connectivity to various Azure resources using private endpoints.
+### Install and configure VPN client
 
-* Generate self-signed certificates to use for P2S VPN certificate authentication.
-  * From the client environment, generate the certificates required for setting up a P2S VPN using [genp2svpncerts.ps1](./genp2svpncerts.ps1). This script creates a root certificate in the registry, then uses that root certificate to create a self-signed client certificate in the registry. Both certificates are then exported to files:
-    * `MyP2SVPNRootCert_DER_Encoded.cer`: This is a temporary file used to create a Base64 encoded version of the root certificate.
-    * `MyP2SVPNRootCert_Base64_Encoded.cer`: This is the root certificate used to create a User VPN Configuration in Virtual WAN.
-    * `MyP2SVPNChildCert.pfx`: This is an export of the client certificate protected with a password. You only need this if you want to configure the Azure VPN client on a different computer than the one used to generate the certificates.
-  * Make a note of the CN for the root certificate, the default is `MyP2SVPNRootCert`.
-* Create a User VPN Configuration as described in [Create a P2S configuration](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-point-to-site-portal#p2sconfig).
-  * Configuration name: `UserVPNConfig1`
-  * Tunnel type: `OpenVPN`
-  * Authentication method: `Azure certificate`
-  * ROOT CERTIFICATE NAME: `MyP2SVPNRootCert` (default)
-  * PUBLIC CERTIFICATE DATA: Paste in the content of `MyP2SVPNRootCert_Base64_Encoded.cer`.
-    * Note: **Do not include** the begin / end certificate lines.
-* Create User (P2S) VPN Gateway. This can take up to 15 minutes.
-  * In the Azure Portal, navigate to *Home > Virtual WANs > vwan-XXXX-01 > Hubs > vhub-XXXX-01 > User VPN (Point to site) > Create User VPN Gateway*
-  * Gateway scale units: `1 scale unit`
-  * Point to site configuration: `UserVPNConfig1`
-  * Routing preference: `Microsoft network`
-  * Use Remote/On-premises RADIUS server: `Disabled`
-  * Client address pool: `10.4.0.0/16`
-  * Custom DNS servers: `10.1.1.4` and `168.63.129.16` (See [What is IP address 168.63.129.16?](https://docs.microsoft.com/en-us/azure/virtual-network/what-is-ip-address-168-63-129-16) for more info)
-  * Propagate Default Route: `Enabled`
 * Download Virtual Hub User VPN Profile
-  * In the Azure Portal, navigate to *Home > Virtual WANs > vwan-XXXX-01 > Hubs > vhub-XXXX-01 > User VPN (Point to site)*
+  * Navigate to *portal.azure.com* > *Virtual WANs* > *vwan-XXXX-01* > *Hubs* > *vhub-XXXX-01* > *User VPN (Point to site)*
   * Click *Download virtual Hub User VPN profile*
     * Authentication type: *EAPTLS*
     * Click *Generate and download profile*
     * Extract the files from the archive and examine `AzureVPN\azurevpnconfig.xml`.
-* Install and configure VPN Client
-  * Install the [Azure VPN Client](https://www.microsoft.com/store/productId/9NP355QT2SQB).
-  * Launch the Azure VPN Client
+* Configure Azure VPN Client
+  * Navigate t0 *Start* > *Azure VPN Client*
   * Navigate to *+ Add or Import a new VPN connection*
   * Click *Import*
   * Navigate to the `AzureVPN` folder from the previous step, and open `azurevpnconfig.xml`.
     * Client authentication
       * Authentication Type: *Certificate*
-      * Certificate Information: `MyP2SVPNChildCert` (Note: If you do not see this certificate you need to import the .pfx created in a previous step)
-  * Click *Save*
-  * Connect and inspect routes. If you went with the default configuration you should see these address ranges:
+      * Certificate Information: `MyP2SVPNChildCert`
+        * Note: If you do not see this certificate you need to import the .pfx created in [Getting started](#getting-started).
+  * Click *Save*, then click *Connect*.
+  * Inspect *Connection Properties* > *VPN routes* which should show the following routes:
     * `10.1.0.0/16`: Shared services virtual network
     * `10.2.0.0/16`: Application virtual network
-  * Test RDP (port 3389) connectivity using private IP address (not bastion)
-    * From a PowerShell Command prompt, enter `Resolve-DnsName jumpwin1.mysandbox.local`.
-    * Verify the IP address returned is in the *azurerm_subnet.vnet_app_01_subnets["snet-app-01"]* subnet.
-      * Note: This DNS query was resolved by the DNS server running on *azurerm_windows_virtual_machine.vm_adds*.
-    * Launch *Remote Desktop Connection* (`mstsc.exe`) and connect to `jumpwin1.mysandbox.local` using the credentials `bootstrapadmin@mysandbox.local`.
-  * Test SSH (port 22) connectivity using private IP address (not bastion)
-    * From a PowerShell Command prompt, enter `Resolve-DnsName jumplinux1.mysandbox.local`.
-    * Verify the IP address returned is in the *azurerm_subnet.vnet_app_01_subnets["snet-app-01"]* subnet.
-      * Note: This DNS query was resolved by the DNS server running on *azurerm_windows_virtual_machine.vm_adds*.
-    * From a PowerShell command prompt, establish an SSH connection to *jumplinux1.mysandbox.local* using the command `ssh bootstrapadmin@mysandbox.local@jumplinux1`
-  * Test SMB (port 445) connectivity to private IP address
-    * Test DNS queries for Azure Files private endpoint (PaaS)
-      * Navigate to *portal.azure.com* > *Storage accounts* > *stxxxxxxxxxxx* > *File shares* > *myfileshare* > *Settings* > *Properties* and copy the the FQDN portion of the URL, e.g. *stxxxxxxxxxxx.file.core.windows.net*.
-      * Using PowerShell, run the command `Resolve-DnsName stxxxxxxxxxxx.file.core.windows.net`.
-      * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"]*, e.g. `10.2.2.*`.
-        * Note: This DNS query is resolved using *azurerm_private_dns_zone_virtual_network_link.file_core_windows_net_to_vnet_shared_01* and *azurerm_private_dns_a_record.storage_account_01_file*.
-    * Test SMB connectivity with Windows Authentication to Azure Files private endpoint (PaaS)
-      * Open a Windows command prompt and enter the following command: `net use z: \\stxxxxxxxxxxx.file.core.windows.net\myfileshare /USER:bootstrapadmin@mysandbox.local`. Enter the correct password when prompted.
-      * Create some test files and folders on the newly mapped Z: drive.
-      * Unmap the z: drive using the command `net use z: /d`.
-  * Test DNS queries for SQL Server (IaaS)
-    * Using PowerShell, run the command `Resolve-DnsName mssqlwin1.mysandbox.local`.
-    * Verify the IPAddress returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-db-01"]*, e.g. `10.2.1.*`.
-      * Note: This DNS query is resolved by the DNS Server running on *azurerm_windows_virtual_machine.vm_adds*.
-  * Test TDS (port 1433) connectivity to Database server virtual machine
-    * Install [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms) if needed.
-    * Navigate to *Start* > *Microsoft SQL Server Tools 18* > *Microsoft SQL Server Management Studio 18*
-    * Connect to the default instance of SQL Server installed on the database server virtual machine using the following values:
-      * Server name: *mssqlwin1.mysandbox.local*
-      * Authentication: *SQL Server Authentication*
-        * Login: `sa`
-        * Password: Use the value of the `adminpassword` secret in key vault.
-        * Options:
-          * Encrypt connection: disabled
-      * Note: **Windows Authentication cannot be used** because your client machine is not domain joined to the `mysandbox.local` domain.
-      * Note: **Encryption must be disabled** because your client machine does not trust the `mysandbox.local` domain. See [SSL Security Error with Data Source](https://powerbi.microsoft.com/en-us/blog/ssl-security-error-with-data-source) for more details.
-    * Expand the *Databases* tab and verify you can see *testdb*
-  * Test DNS queries for Azure SQL database private endpoint (PaaS)
-    * Navigate to *portal.azure.com* > *SQL Servers* > *mssql-xxxxxxxxxxxxxxxx* > *Properties* > *Server name* and and copy the the FQDN, e.g. *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*.
-    * Using PowerShell, run the command `Resolve-DnsName mssql-xxxxxxxxxxxxxxxx.database.windows.net`.
-    * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"]*, e.g. `10.2.2.*`.
-      * Note: This DNS query is resolved using *azurerm_private_dns_zone_virtual_network_link.database_windows_net_to_vnet_shared_01* and *azurerm_private_dns_a_record.sql_server_01*.
-  * Test TDS (port 1433) connectivity to Azure SQL Database using PrivateLink
-    * Navigate to *Start* > *Microsoft SQL Server Tools 18* > *Microsoft SQL Server Management Studio 18*
-    * Connect to the Azure SQL Database server using PrivateLink
-      * Server name: *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*
-      * Authentication: *SQL Server Authentication*
-      * Login: *bootstrapadmin*
-      * Password: Use the value stored in the *adminpassword* key vault secret
-    * Expand the *Databases* tab and verify you can see *testdb*
-  * Test DNS queries for Azure Database for MySQL private endpoint (PaaS)
-    * Navigate to *portal.azure.com* > *Azure Database for MySQL flexible servers* > *mysql-xxxxxxxxxxxxxxxx* > *Overview* > *Server name* and and copy the the FQDN, e.g. *mysql&#x2011;xxxxxxxxxxxxxxxx.mysql.database.azure.com*.
-    * Using PowerShell, run the command `Resolve-DnsName mysql-xxxxxxxxxxxxxxxx.mysql.database.azure.com`.
-    * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-mysql-01"]*, e.g. `10.2.3.*`.
-  * Test connectivity to Azure Database for MySQL using delegated subnet (port 3306)
-    * Navigate to *Start* > *MySQL Workbench*
-    * Navigate to *Database* > *Connect to Database* and connect using the following values:
-      * Connection method: `Standard (TCP/IP)`
-      * Hostname: `mysql-xxxxxxxxxxxxxxxx.mysql.database.azure.com`
-      * Port: `3306`
-      * Uwername: `bootstrapadmin`
-      * Schema: `testdb`
-      * Click *OK* and when prompted for *password* use the value of the *adminpassword* secret in key vault.
+
+### Test user (point-to-site) VPN connectivity
+
+Use the following sections to test user VPN (point-to-site) connectivity to private endpoints for both IaaS and PaaS services. When smoke testing is completed, don't forget to disconnect the user (point-to-site) VPN connection in the *Azure VPN Client*.
+
+* [Test RDP (port 3389) connectivity to *jumpwin1* private endpoint (IaaS)](#test-rdp-port-3389-connectivity-to-jumpwin1-private-endpoint-iaas)
+* [Test SSH (port 22) connectivity to *jumplinux1* private endpoint (IaaS)](#test-ssh-port-22-connectivity-to-jumplinux1-private-endpoint-iaas)
+* [Test SMB (port 445) connectivity to Azure Files private endpoint (PaaS)](#test-smb-port-445-connectivity-to-azure-files-private-endpoint-paas)
+* [Test TDS (port 1433) connectivity to *mssqlwin1* private endpoint (IaaS)](#test-tds-port-1433-connectivity-to-mssqlwin1-private-endpoint-iaas)
+* [Test TDS (port 1433) connectivity to Azure SQL Database private endpoint (PaaS)](#test-tds-port-1433-connectivity-to-azure-sql-database-private-endpoint-paas)
+* [Test port 3306 connectivity to Azure Database for MySQL using private endpoint (PaaS)](#test-port-3306-connectivity-to-azure-database-for-mysql-using-private-endpoint-paas)
+
+#### Test RDP (port 3389) connectivity to *jumpwin1* private endpoint (IaaS)
+
+* From a Windows PowerShell Command prompt, run the following command:
+
+  ```powershell
+  Resolve-DnsName jumpwin1.mysandbox.local
+  ```
+
+* Verify the IP address returned is in the *azurerm_subnet.vnet_app_01_subnets["snet-app-01"]* subnet.
+  * Note: This DNS query was resolved by the DNS server running on *azurerm_windows_virtual_machine.vm_adds*.
+* Navigate to *Start* > *Remote Desktop Connection* and connect to `jumpwin1.mysandbox.local` using the credentials `bootstrapadmin@mysandbox.local`. Use the password associated with the *adminpassword* secret in key vault.
+* End the RDP session by navigating to *Start* > *bootstrapadmin* > *Sign out*.
+
+#### Test SSH (port 22) connectivity to *jumplinux1* private endpoint (IaaS)
+
+* From a Windows PowerShell Command prompt, run the following command:
+
+  ```powershell
+  Resolve-DnsName jumplinux1.mysandbox.local
+  ```
+
+* Verify the IP address returned is in the *azurerm_subnet.vnet_app_01_subnets["snet-app-01"]* subnet.
+* Run the following command from a Windows PowerShell command prompt to establish an SSH connection to *jumplinux1*:
+
+  ```powershell
+  ssh bootstrapadmin@mysandbox.local@jumplinux1
+  ```
+
+  * When prompted for a password, use the value of the *adminpassword* secret in key vault.
+  * When prompted `Are you sure you want to continue connecting (yes/no/[fingerprint])?` enter `yes`.
+* Inspect the configuration of *jumplinux1* by executing the following commands from the bash command prompt:
+
+  ```bash
+  # Verify Linux distribution
+  cat /etc/*-release
+
+  # Verify Azure CLI version
+  az --version
+
+  # Verify PowerShell version
+  pwsh --version
+
+  # Verify Terraform version
+  terraform --version
+  ```
+
+* End the SSH session by entering the following command:
+
+  ```bash
+  exit
+  ```
+
+#### Test SMB (port 445) connectivity to Azure Files private endpoint (PaaS)
+
+* Navigate to *portal.azure.com* > *Storage accounts* > *stxxxxxxxxxxx* > *File shares* > *myfileshare* > *Settings* > *Properties* and copy the the FQDN portion of the URL, e.g. *stxxxxxxxxxxx.file.core.windows.net*.
+* Using Windows PowerShell, run the following command:
+
+  ```powershell
+  Resolve-DnsName stxxxxxxxxxxx.file.core.windows.net
+  ```
+
+* Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"]*, e.g. `10.2.2.*`.
+* Open a Windows command prompt and enter the following command:
+
+  ```text
+  net use z: \\stxxxxxxxxxxx.file.core.windows.net\myfileshare /USER:bootstrapadmin@mysandbox.local
+  ```
+
+  * When prompted for a password, use the value of the *adminpassword* secret in key vault.
+* Create some test files and folders on the newly mapped Z: drive.
+* Unmap the z: drive using the following command:
+
+  ```text
+  net use z: /d
+  ```
+  
+#### Test TDS (port 1433) connectivity to *mssqlwin1* private endpoint (IaaS)
+
+* Using Windows PowerShell, run the following command:
+
+  ```powershell
+  Resolve-DnsName mssqlwin1.mysandbox.local
+  ```
+
+* Verify the IPAddress returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-db-01"]*, e.g. `10.2.1.*`.
+* Navigate to *Start* > *Microsoft SQL Server Tools 18* > *Microsoft SQL Server Management Studio 18*
+* Connect to the default instance of SQL Server installed on *mssqlwin1* using the following values:
+  * Server name: *mssqlwin1.mysandbox.local*
+  * Authentication: *SQL Server Authentication*
+    * Login: `sa`
+    * Password: Use the value of the `adminpassword` secret in key vault.
+    * Options:
+      * Encrypt connection: disabled
+  * Note: **Windows Authentication cannot be used** because your client machine is not domain joined to the `mysandbox.local` domain.
+  * Note: **Encryption must be disabled** because your client machine does not trust the `mysandbox.local` domain. See [SSL Security Error with Data Source](https://powerbi.microsoft.com/en-us/blog/ssl-security-error-with-data-source) for more details.
+* Expand the *Databases* tab and verify you can see *testdb*.
+* Navigate to *File* > *Exit*.
+
+#### Test TDS (port 1433) connectivity to Azure SQL Database private endpoint (PaaS)
+
+* Navigate to *portal.azure.com* > *SQL Servers* > *mssql-xxxxxxxxxxxxxxxx* > *Properties* > *Server name* and and copy the the FQDN, e.g. *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*.
+* Using Windows PowerShell, run the following command:
+
+  ```powershell
+  Resolve-DnsName mssql-xxxxxxxxxxxxxxxx.database.windows.net
+  ```
+
+* Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"]*, e.g. `10.2.2.*`.
+* Navigate to *Start* > *Microsoft SQL Server Tools 18* > *Microsoft SQL Server Management Studio 18*
+* Connect to the Azure SQL Database server using PrivateLink
+  * Server name: `mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net`
+  * Authentication: `SQL Server Authentication`
+  * Login: `bootstrapadmin`
+  * Password: Use the value stored in the *adminpassword* key vault secret
+* Expand the *Databases* tab and verify you can see *testdb*.
+* Navigate to *File* > *Exit*
+
+#### Test port 3306 connectivity to Azure Database for MySQL using private endpoint (PaaS)
+
+* Navigate to *portal.azure.com* > *Azure Database for MySQL flexible servers* > *mysql-xxxxxxxxxxxxxxxx* > *Overview* > *Server name* and and copy the the FQDN, e.g. *mysql&#x2011;xxxxxxxxxxxxxxxx.mysql.database.azure.com*.
+* Using Windows PowerShell, run the following command:
+
+  ```powershell
+  Resolve-DnsName mysql-xxxxxxxxxxxxxxxx.mysql.database.azure.com
+  ```
+
+* Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-mysql-01"]*, e.g. `10.2.3.*`.
+* Navigate to *Start* > *MySQL Workbench*
+* Navigate to *Database* > *Connect to Database* and connect using the following values:
+  * Connection method: `Standard (TCP/IP)`
+  * Hostname: `mysql-xxxxxxxxxxxxxxxx.mysql.database.azure.com`
+  * Port: `3306`
+  * Uwername: `bootstrapadmin`
+  * Schema: `testdb`
+  * Click *OK* and when prompted for *password* use the value of the *adminpassword* secret in key vault.
+* Navigate to *File* > *Exit*.
+* Navigate to *Start* > *Azure VPN Client* and click *Disconnect*.
 
 ## Documentation
 
@@ -219,6 +298,10 @@ azurerm_virtual_wan.vwan_01 (vwan-xxxxxxxxxxxxxxxx-01)| [Virtual wan](https://do
 azurerm_virtual_hub.vwan_01_hub_01 (vhub-xxxxxxxxxxxxxxxx-01) | [Virtual WAN hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) associated with the virtual wan.
 azurerm_virtual_hub_connection.vwan_01_hub_01_connections["vnet-shared-01"] | [Hub virtual network connection](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) to *azurerm_virtual_network.vnet_shared_01*.
 azurerm_virtual_hub_connection.vwan_01_hub_01_connections["vnet-app-01"] | [Hub virtual network connection](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) to *azurerm_virtual_network.vnet_app_01*.
+azurerm_point_to_site_vpn_gateway.point_to_site_vpn_gateway_01 | Enables [User VPN (point-to-site) connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#uservpn). See below for more details.
+azurerm_vpn_server_configuration.vpn_server_configuration_01 | Defines the parameters for remote clients to connect to *azurerm_point_to_site_vpn_gateway.point_to_site_vpn_gateway_01*. See below for more details.
+
+[User VPN (point-to-site) connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#uservpn) are enabled by generating a self-signed certificate in the client environment and using it to authenticate with a point-to-site VPN gateway provisioned in a [Virtual WAN hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) that is connected to both the shared services and application virtual networks used in \#AzureSandbox.
 
 ## Next steps
 

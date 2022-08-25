@@ -14,6 +14,16 @@ variable "arm_client_secret" {
   sensitive   = true
 }
 
+variable "client_address_pool" {
+  type        = string
+  description = "The client address pool for the point to site VPN gateway."
+}
+
+variable "dns_server" {
+  type        = string
+  description = "The IP address for the DNS server."
+}
+
 variable "location" {
   type        = string
   description = "The name of the Azure Region where resources will be provisioned."
@@ -30,14 +40,14 @@ variable "subscription_id" {
 }
 
 variable "tags" {
-  type        = map
+  type        = map(any)
   description = "The tags in map format to be used when creating new resources."
 
   # default = { costcenter = "MyCostCenter", division = "MyDivision", group = "MyGroup" }
 }
 
 variable "virtual_networks" {
-  type        = map
+  type        = map(any)
   description = "The virtual networks to be connected to the vwan hub."
 
   # default = { MyHubVNetId = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MyResourceGroupName/providers/Microsoft.Network/virtualNetworks/MyHubVNetName", MySpokeVnetId = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MyResourceGroupName/providers/Microsoft.Network/virtualNetworks/MySpokeVNetName" } 
