@@ -133,6 +133,7 @@ Windows 10 users can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/abou
 * Windows 10 prerequisites
   * [Windows Subsystem for Linux Installation Guide for Windows 10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
   * [Ubuntu 20.04 LTS (Focal Fossa)](https://www.microsoft.com/store/productId/9N6SVWS3RX71)
+  * [Debian 11](https://www.microsoft.com/store/productId/9MSVKQC78PK6). *This distribution is a fallback in case Windows Store distribution of Ubuntu provides JWT errors.*
   * [Visual Studio Code on Windows](https://code.visualstudio.com/docs/setup/windows)
   * [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)
   * [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio?view=sql-server-ver16)
