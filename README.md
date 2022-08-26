@@ -115,7 +115,7 @@ Before you begin, familiarity with the following topics will be helpful when wor
 ---
 
 Each sandbox user must select and configure a client environment in advance. A variety of options are available and are detailed in this section.
-https://www.microsoft.com/store/productId/9MSVKQC78PK6
+
 #### Cloud shell
 
 Azure [cloud shell](https://aka.ms/cloudshell) is a free pre-configured cloud hosted container with a full complement of [tools](https://docs.microsoft.com/en-us/azure/cloud-shell/features#tools) needed to use \#AzureSandbox. This option will be preferred for users who do not wish to install any software and don't mind a web based command line user experience. Review the following content to get started:
