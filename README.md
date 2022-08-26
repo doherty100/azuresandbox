@@ -157,6 +157,18 @@ Windows 10 users can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/abou
       ```powershell
       ./configure-powershell.ps1
       ```
+  
+  * Install [pip3](https://pip.pypa.io/en/stable/) Python library package manager on Ubuntu 20.04 LTS (Focal Fossa)
+  
+    ```bash
+    sudo apt install python3-pip
+    ```
+  
+  * Install [PyJWT](https://pyjwt.readthedocs.io/en/latest/) Python library
+
+    ```bash
+    pip3 install --upgrade pyjwt
+    ```
 
   * VS Code extensions for WSL
     * [Remote - WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl)

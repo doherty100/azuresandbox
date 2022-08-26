@@ -11,10 +11,16 @@ usage() {
 # Get runtime defaults
 printf "Retrieving runtime defaults ...\n"
 
-upn=$(az ad signed-in-user show --query userPrincipalName --output tsv)
-default_aad_tenant_id=$(az account list --query "[? isDefault]|[0].tenantId" --only-show-errors --output tsv)
-default_owner_object_id=$(az ad user show --id $upn --query id --output tsv)
-default_subscription_id=$(az account list --query "[? isDefault]|[0].id" --only-show-errors --output tsv)
+default_subscription_id=$(az account list --only-show-errors --query "[? isDefault]|[0].id" --output tsv)
+
+if [ -z $default_subscription_id ]
+then
+  printf "Unable to retrieve Azure subscription details. Please run 'az login' first.\n"
+  usage
+fi
+
+default_owner_object_id=$(az account get-access-token --query accessToken --output tsv | tr -d '\n' | python3 -c "import jwt, sys; print(jwt.decode(sys.stdin.read(), algorithms=['RS256'], options={'verify_signature': False})['oid'])")
+default_aad_tenant_id=$(az account show --query tenantId --output tsv)
 
 # Initialize constants
 admin_certificate_name='admincert'
@@ -118,7 +124,14 @@ if [ -n "$subscription_name" ]
 then 
   printf "Found subscription '$subscription_name'...\n"
 else
-  printf "Invalid subscription id '$subscription_id'...\n"
+  printf "Invalid subscription id '$subscription_id'.\n"
+  usage
+fi
+
+# Validate object id of Azure CLI signed in user
+if [ -z "$owner_object_id" ]
+then
+  printf "Object id for Azure CLI signed in user (owner_object_id) not provided.\n"
   usage
 fi
 
