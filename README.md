@@ -115,7 +115,7 @@ Before you begin, familiarity with the following topics will be helpful when wor
 ---
 
 Each sandbox user must select and configure a client environment in advance. A variety of options are available and are detailed in this section.
-
+https://www.microsoft.com/store/productId/9MSVKQC78PK6
 #### Cloud shell
 
 Azure [cloud shell](https://aka.ms/cloudshell) is a free pre-configured cloud hosted container with a full complement of [tools](https://docs.microsoft.com/en-us/azure/cloud-shell/features#tools) needed to use \#AzureSandbox. This option will be preferred for users who do not wish to install any software and don't mind a web based command line user experience. Review the following content to get started:
@@ -133,6 +133,7 @@ Windows 10 users can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/abou
 * Windows 10 prerequisites
   * [Windows Subsystem for Linux Installation Guide for Windows 10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
   * [Ubuntu 20.04 LTS (Focal Fossa)](https://www.microsoft.com/store/productId/9N6SVWS3RX71)
+  * [Debian 11](https://www.microsoft.com/store/productId/9MSVKQC78PK6). *This distribution is a fallback in case Windows Store distribution of Ubuntu provides JWT errors.*
   * [Visual Studio Code on Windows](https://code.visualstudio.com/docs/setup/windows)
   * [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)
   * [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio?view=sql-server-ver16)
