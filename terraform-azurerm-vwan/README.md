@@ -13,7 +13,10 @@
 
 ## Overview
 
-This configuration implements [Azure Virtual WAN](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) to connect /#AzureSandbox to remote users using [User VPN (point-to-site) connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#uservpn).
+This configuration implements an [Azure Virtual WAN](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about) to connect /#AzureSandbox to remote users using [User VPN (point-to-site) connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#uservpn), including:
+
+* A [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources).
+* A [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) and [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/). The hub is also pre-configured for [User VPN (point-to-site) connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#uservpn).
 
 Activity | Estimated time required
 --- | ---
@@ -23,7 +26,7 @@ Smoke testing | ~45 minutes
 
 ## Before you start
 
-The following configurations must be deployed first before starting:
+This configuration only supports the [Windows 10 with WSL](../README.md#windows-10-with-wsl) client environment. [Cloud shell](../README.md#cloud-shell) and [Linux / macOS](../README.md#linux--macos) client environments are not supported. The following configurations must be deployed first before starting:
 
 * [terraform-azurerm-vnet-app](../terraform-azurerm-vnet-app)
 
@@ -122,7 +125,7 @@ Use the following sections to test user VPN (point-to-site) connectivity to priv
 * [Test SMB (port 445) connectivity to Azure Files private endpoint (PaaS)](#test-smb-port-445-connectivity-to-azure-files-private-endpoint-paas)
 * [Test TDS (port 1433) connectivity to *mssqlwin1* private endpoint (IaaS)](#test-tds-port-1433-connectivity-to-mssqlwin1-private-endpoint-iaas)
 * [Test TDS (port 1433) connectivity to Azure SQL Database private endpoint (PaaS)](#test-tds-port-1433-connectivity-to-azure-sql-database-private-endpoint-paas)
-* [Test port 3306 connectivity to Azure Database for MySQL using private endpoint (PaaS)](#test-port-3306-connectivity-to-azure-database-for-mysql-using-private-endpoint-paas)
+* [Test port 3306 connectivity to Azure Database for MySQL private endpoint (PaaS)](#test-port-3306-connectivity-to-azure-database-for-mysql-private-endpoint-paas)
 
 #### Test RDP (port 3389) connectivity to *jumpwin1* private endpoint (IaaS)
 
@@ -240,7 +243,7 @@ Use the following sections to test user VPN (point-to-site) connectivity to priv
 * Expand the *Databases* tab and verify you can see *testdb*.
 * Navigate to *File* > *Exit*
 
-#### Test port 3306 connectivity to Azure Database for MySQL using private endpoint (PaaS)
+#### Test port 3306 connectivity to Azure Database for MySQL private endpoint (PaaS)
 
 * Navigate to *portal.azure.com* > *Azure Database for MySQL flexible servers* > *mysql-xxxxxxxxxxxxxxxx* > *Overview* > *Server name* and and copy the the FQDN, e.g. *mysql&#x2011;xxxxxxxxxxxxxxxx.mysql.database.azure.com*.
 * Using Windows PowerShell, run the following command:
