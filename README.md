@@ -158,13 +158,13 @@ Windows 10 users can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/abou
       ./configure-powershell.ps1
       ```
   
-  * Install [pip3](https://pip.pypa.io/en/stable/) Python library package manager on Ubuntu 20.04 LTS (Focal Fossa)
+  * Install [pip3](https://pip.pypa.io/en/stable/) Python library package manager.
   
     ```bash
     sudo apt install python3-pip
     ```
   
-  * Install [PyJWT](https://pyjwt.readthedocs.io/en/latest/) Python library
+  * Install [PyJWT](https://pyjwt.readthedocs.io/en/latest/) Python library. This is used to determine the id of the security principal for the currently signed in Azure CLI user.
 
     ```bash
     pip3 install --upgrade pyjwt
@@ -198,6 +198,9 @@ Linux and macOS users can deploy the configurations natively by installing the f
   * [macOS](https://code.visualstudio.com/docs/setup/mac)
   * After installing, add the following extensions:
     * [Terraform](https://marketplace.visualstudio.com/items?itemName=mauve.terraform)
+* Miscellaneous packages
+  * [pip3](https://pip.pypa.io/en/stable/) Python library package manager.
+  * [PyJWT](https://pyjwt.readthedocs.io/en/latest/) Python library. This is used to determine the id of the security principal for the currently signed in Azure CLI user.
 
 Note the Bash scripts used in the configurations were developed and tested using *GNU bash, version 5.0.17(1)-release (x86_64-pc-linux-gnu)* and have not been tested on other popular shells like [zsh](https://www.zsh.org/).
 

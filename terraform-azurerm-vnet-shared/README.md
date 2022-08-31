@@ -95,8 +95,8 @@ This section describes how to provision this configuration using default setting
   * When prompted for *resource_group_name* use a custom value if there are other sandbox users using the same subscription.
   * When prompted for *adminuser*, the default is *bootstrapadmin*.
     * *Important*: If you use a custom value, avoid using [restricted usernames](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/faq#what-are-the-username-requirements-when-creating-a-vm-).
-  * When prompted for *adminpassword*, enter a strong password.
-    * *Important*: Avoid using symbols in your password, especially [linux special characters](https://tldp.org/LDP/abs/html/special-chars.html). Use at least 12 characters, and stick to upper case and lower case letters and digits. You can use a password generator like [Strong Passwords Generator](https://strongpasswordsgenerator.net/), just disable the *Include Symbols* option.
+  * When prompted for *skip_admin_password_gen*, accept the default which is `no`.
+    * *Important*: A strong password will be generated for you and stored in the *adminpassword* key vault secret.
 * Apply the Terraform configuration.
 
   ```bash
@@ -126,6 +126,9 @@ This section describes how to provision this configuration using default setting
 ## Smoke testing
 
 * Explore your newly provisioned resources in the Azure portal.
+  * Key vault
+    * Navigate to *portal.azure.com* > *Key vaults* > *kv-xxxxxxxxxxxxxxx* > *Objects* > *Secrets* > *adminpassword* > *CURRENT VERSION* > *00000000-0000-0000-0000-000000000000* > *Show Secret Value*
+    * Make a note of the *Secret value*. This is a strong password associated with the *adminuser* key vault secret. Together these credentials are used to set up initial administrative access to resources in \#AzureSandbox.
   * AD DS Domain Controller VM (adds1)
     * Navigate to *portal.azure.com* > *Automation Accounts* > *auto-xxxxxxxxxxxxxxxx-01* > *Configuration Management* > *State configuration (DSC)*.
     * Refresh the data on the *Nodes* tab and verify that all nodes are compliant.
