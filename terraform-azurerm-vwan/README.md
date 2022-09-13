@@ -21,7 +21,7 @@ This configuration implements an [Azure Virtual WAN](https://docs.microsoft.com/
 Activity | Estimated time required
 --- | ---
 Pre-configuration | ~5 minutes
-Provisioning | ~20 minutes
+Provisioning | ~60 minutes
 Smoke testing | ~45 minutes
 
 ## Before you start
