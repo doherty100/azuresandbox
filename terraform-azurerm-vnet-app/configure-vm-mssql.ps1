@@ -211,7 +211,7 @@ function Move-SqlDatabase {
 
     Write-Log "Move-SqlDatabase: Moving '$Name' database data file from '$currentDataFilePath' to '$newDataFilePath'..."
     try {
-        Move-Item -Path $currentDataFilePath -Destination $newDataFilePath
+        Move-Item -Path $currentDataFilePath -Destination $newDataFilePath -Force -ErrorAction Stop
     }
     catch {
         Exit-WithError $_
@@ -219,7 +219,7 @@ function Move-SqlDatabase {
 
     Write-Log "Move-SqlDatabase: Moving '$Name' database log file from '$currentLogFilePath' to '$newLogFilePath'..."
     try {
-        Move-Item -Path $currentLogFilePath -Destination $newLogFilePath
+        Move-Item -Path $currentLogFilePath -Destination $newLogFilePath -Force -ErrorAction Stop
     }
     catch {
         Exit-WithError $_
@@ -403,7 +403,7 @@ foreach ( $volume in $volumes) {
     }
 
     if ( $volume.FileSystemLabel -eq "Temporary Storage" ) {
-        Write-Log "Located local temporary disk at $path..."
+        Write-Log "Located local temporary disk at '$($volume.DriveLetter)'..."
         $path = "$($volume.DriveLetter):\SQLTEMP"
 
         if ( -not ( Test-Path $path ) ) {
