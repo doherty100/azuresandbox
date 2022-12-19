@@ -423,7 +423,7 @@ azurerm_virtual_machine_extension.vm_jumpbox_win_postdeploy_script | Downloads [
 
 This Windows Server VM is used as a jumpbox for development and remote server administration.
 
-* Guest OS: Windows Server 2019 Datacenter.
+* Guest OS: Windows Server 2022 Datacenter.
 * By default the [patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByPlatform`.
 * *admin_username* and *admin_password* are configured using the key vault secrets *adminuser* and *adminpassword*.
 * This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [aadsc-register-node.ps1](./aadsc-register-node.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [JumpBoxConfig](./JumpBoxConfig.ps1).
@@ -434,7 +434,6 @@ This Windows Server VM is used as a jumpbox for development and remote server ad
     * AD DS Snap-Ins and Command-Line Tools (RSAT-ADDS-Tools)
     * DNS Server Tools (RSAT-DNS-Server)
   * The following software packages are pre-installed using [Chocolatey](https://chocolatey.org/why-chocolatey):
-    * [microsoft-edge](https://community.chocolatey.org/packages/microsoft-edge)
     * [az.powershell](https://community.chocolatey.org/packages/az.powershell)
     * [vscode](https://community.chocolatey.org/packages/vscode)
     * [sql-server-management-studio](https://community.chocolatey.org/packages/sql-server-management-studio)
@@ -527,7 +526,8 @@ azurerm_virtual_machine_data_disk_attachment . vm_mssql_win_data_disk_attachment
 azurerm_virtual_machine_data_disk_attachment . vm_mssql_win_data_disk_attachments ["sqllog"] | Attaches *azurerm_managed_disk.vm_mssql_win_data_disks["sqllog"]* to *azurerm_windows_virtual_machine.vm_mssql_win*
 azurerm_virtual_machine_extension . vm_mssql_win_postdeploy_script (vmext&#x2011;mssqlwin1&#x2011;postdeploy&#x2011;script) | Downloads [configure&#x2011;vm&#x2011;mssql.ps1](./configure-mssql.ps1) and [sql&#x2011;startup.ps1](./sql-startup.ps1) to *azurerm_windows_virtual_machine.vm_mssql_win* and executes [configure&#x2011;vm&#x2011;mssql.ps1](./configure-mssql.ps1) using the [Custom Script Extension for Windows](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows).
 
-* Guest OS: Windows Server 2019 Datacenter.
+* Guest OS: Windows Server 2022 Datacenter.
+* Database: Microsoft SQL Server 2022 Developer Edition
 * By default the [patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByOS` rather than `AutomaticByPlatform`. This is intentional in case the user wishes to use the [SQL Server IaaS Agent extension](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-iaas-agent-extension-automate-management?tabs=azure-powershell) for patching both Windows Server and SQL Server.
 * *admin_username* and *admin_password* are configured using key vault secrets *adminuser* and *adminpassword*.
 * This resource is configured using a [provisioner](https://www.terraform.io/docs/language/resources/provisioners/syntax.html) that runs [aadsc-register-node.ps1](./aadsc-register-node.ps1) which registers the node with *azurerm_automation_account.automation_account_01* and applies the configuration [MssqlVmConfig.ps1](../terraform-azurerm-vnet-shared/MssqlVmConfig.ps1).

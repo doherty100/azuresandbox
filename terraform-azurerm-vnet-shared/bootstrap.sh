@@ -327,7 +327,7 @@ az keyvault secret set \
 
 # Create Kerberos key
 printf "Creating kerberos key for storage account '$storage_account_name'...\n"
-storage_account_key_kerb1=$(az storage account keys renew --subscription $subscription_id --resource-group $resource_group_name --account-name $storage_account_name --key primary --key-type kerb --query "[?keyName == 'kerb1'].value" --output tsv)
+storage_account_key_kerb1=$(az storage account keys renew --subscription $subscription_id --resource-group $resource_group_name --account-name $storage_account_name --key key1 --key-type kerb --query "[?keyName == 'kerb1'].value" --output tsv)
 
 printf "Setting storage account secret '$storage_account_name-kerb1' with value length '${#storage_account_key_kerb1}' to keyvault '$key_vault_name'...\n"
 az keyvault secret set \

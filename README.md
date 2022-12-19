@@ -25,8 +25,8 @@ This repository contains a collection of inter-dependent [cloud computing](https
 * [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.1)
   * [PowerShell Core](https://docs.microsoft.com/en-us/powershell/scripting/whats-new/what-s-new-in-powershell-71?view=powershell-7.1)
   * [PowerShell 5.1](https://docs.microsoft.com/en-us/powershell/scripting/overview?view=powershell-5.1) for Windows Server configuration.
-* [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) v1.3.5 for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
-  * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v3.33.0
+* [Terraform](https://www.terraform.io/intro/index.html#what-is-terraform-) v1.3.6 for [Infrastructure as Code](https://en.wikipedia.org/wiki/Infrastructure_as_code) (IaC).
+  * [Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) (azuerrm) v3.36.0
   * [cloud-init Provider](https://registry.terraform.io/providers/hashicorp/cloudinit/latest/docs) (cloudinit) v2.2.0
   * [Random Provider](https://registry.terraform.io/providers/hashicorp/random/latest/docs) (random) v3.4.3
 
@@ -126,12 +126,12 @@ Azure [cloud shell](https://aka.ms/cloudshell) is a free pre-configured cloud ho
 
 *Warning:* Cloud shell containers are ephemeral. Anything not saved in `~/clouddrive` will not be retained when your cloud shell session ends. Also, cloud shell sessions expire. This can interrupt a long running process.
 
-#### Windows 10 with WSL
+#### Windows 11 with WSL
 
-Windows 10 users can use [WSL](https://docs.microsoft.com/en-us/windows/wsl/about) which supports a [variety of Linux distributions](https://docs.microsoft.com/en-us/windows/wsl/install-win10#install-your-linux-distribution-of-choice). Here is a sample configuration preferred by the author:
+Windows 11 users can use [WSL](https://learn.microsoft.com/en-us/windows/wsl/about) which supports a [variety of Linux distributions](https://docs.microsoft.com/en-us/windows/wsl/install-win10#install-your-linux-distribution-of-choice). Here is a sample configuration preferred by the author:
 
-* Windows 10 prerequisites
-  * [Windows Subsystem for Linux Installation Guide for Windows 10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+* Windows 11 prerequisites
+  * [Install Linux on Windows with WSL](https://learn.microsoft.com/en-us/windows/wsl/install)
   * [Ubuntu 20.04 LTS (Focal Fossa)](https://www.microsoft.com/store/productId/9N6SVWS3RX71)
   * [Visual Studio Code on Windows](https://code.visualstudio.com/docs/setup/windows)
   * [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)
@@ -364,8 +364,9 @@ This section documents known issues with these configurations that should be add
 
 * Configuration management
   * *Terraform*: For simplicity, these configurations store [State](https://www.terraform.io/language/state) in a local file named `terraform.tfstate`. For production use, state should be managed in a secure, encrypted [Backend](https://www.terraform.io/language/state/backends) such as [azurerm](https://www.terraform.io/language/settings/backends/azurerm).
-  * *Windows Server*: This configuration uses [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) for configuring the Windows Server virtual machines, which will be replaced by [Azure Policy guest configuration](https://azure.microsoft.com/en-in/updates/public-preview-apply-settings-inside-machines-using-azure-policys-guest-configuration/) which is currently in public preview. This configuration will be updated to the new implementation when it is generally available.
+  * *Windows Server*: This configuration uses [Azure Automation State Configuration (DSC)](https://docs.microsoft.com/en-us/azure/automation/automation-dsc-overview) for configuring the Windows Server virtual machines, which will be replaced by [Azure Automanage Machine Configuration](https://learn.microsoft.com/en-us/azure/governance/machine-configuration/overview). This configuration will be updated to the new implementation in a future releawe.
     * *configure-automation.ps1*: The performance of this script could be improved by using multi-threading to run Azure Automation operations in parallel.
+    * There is a [known issue](https://github.com/dsccommunity/SqlServerDsc/issues/1816) with SQL Server 2022 on Windows Server 2022 which increases deployment time due to initial failures applying configurations.
   * *Linux*: This configuration uses [cloud-init](https://cloudinit.readthedocs.io/) for configuring [Ubuntu 20.04 LTS (Focal Fossa)](http://www.releases.ubuntu.com/20.04/) virtual machines.
     * *azurerm_linux_virtual_machine.vm_jumpbox_linux*: ARM tags are currently used to pass some configuration data to cloud-init. This dependency on ARM tags could make the configuration more fragile if users manually manipulate ARM tags or they are overwritten by Azure Policy.
 * Identity, Access Management and Authentication.

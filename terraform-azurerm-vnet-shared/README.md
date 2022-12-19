@@ -243,7 +243,7 @@ azurerm_network_interface.vm_adds_nic_01 (nic&#x2011;adds1&#x2011;1) | The confi
 
 This Windows Server VM is used as an [Active Directory Domain Services](https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) [Domain Controller](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2003/cc786438(v=ws.10)) and a DNS Server running in Active Directory-integrated mode.
 
-* Guest OS: Windows Server 2019 Datacenter Core
+* Guest OS: Windows Server 2022 Datacenter Core
 * By default the [Patch orchestration mode](https://docs.microsoft.com/en-us/azure/virtual-machines/automatic-vm-guest-patching#patch-orchestration-modes) is set to `AutomaticByPlatform`.
 * *admin_username* and *admin_password* are configured using the key vault secrets *adminuser* and *adminpassword*.
 * This resource has a dependency on *azurerm_automation_account.automation_account_01*.

@@ -152,7 +152,7 @@ variable "vm_jumpbox_linux_image_publisher" {
 variable "vm_jumpbox_linux_image_sku" {
   type        = string
   description = "The sku of the virtual machine image used to create the VM"
-  default     = "20_04-lts"
+  default     = "20_04-lts-gen2"
 }
 
 variable "vm_jumpbox_linux_image_version" {
@@ -209,7 +209,7 @@ variable "vm_jumpbox_win_image_publisher" {
 variable "vm_jumpbox_win_image_sku" {
   type        = string
   description = "The sku of the virtual machine image used to create the VM"
-  default     = "2019-Datacenter"
+  default     = "2022-datacenter-g2"
 }
 
 variable "vm_jumpbox_win_image_version" {
@@ -268,7 +268,7 @@ variable "vm_mssql_win_data_disk_config" {
 variable "vm_mssql_win_image_offer" {
   type        = string
   description = "The offer type of the virtual machine image used to create the database server VM"
-  default     = "sql2019-ws2019"
+  default     = "sql2022-ws2022"
 }
 
 variable "vm_mssql_win_image_publisher" {
@@ -280,7 +280,7 @@ variable "vm_mssql_win_image_publisher" {
 variable "vm_mssql_win_image_sku" {
   type        = string
   description = "The sku of the virtual machine image used to create the database server VM"
-  default     = "sqldev"
+  default     = "sqldev-gen2"
 }
 
 variable "vm_mssql_win_image_version" {
