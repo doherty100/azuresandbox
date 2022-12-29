@@ -14,8 +14,6 @@ vm_jumpbox_linux_userdata_file='vm-jumpbox-linux-userdata.mim'
 # Set these defaults prior to running the script.
 default_vnet_name="vnet-app-01"
 default_vnet_address_space="10.2.0.0/16"
-default_mssql_database_name="testdb"
-default_mysql_database_name="testdb"
 default_skip_ssh_key_gen="no"
 default_storage_share_name="myfileshare"
 default_subnet_application_address_prefix="10.2.0.0/24"
@@ -24,11 +22,8 @@ default_subnet_privatelink_address_prefix="10.2.2.0/24"
 default_subnet_mysql_address_prefix="10.2.3.0/24"
 default_vm_jumpbox_linux_name="jumplinux1"
 default_vm_jumpbox_win_name="jumpwin1"
-default_vm_mssql_win_name="mssqlwin1"
 vm_jumpbox_win_post_deploy_script="configure-vm-jumpbox-win.ps1"
 vm_jumpbox_win_configure_storage_script="configure-storage-kerberos.ps1"
-vm_mssql_win_post_deploy_script="configure-vm-mssql.ps1"
-vm_mssql_win_sql_startup_script="sql-startup.ps1"
 
 # Intialize runtime defaults
 state_file="../terraform-azurerm-vnet-shared/terraform.tfstate"
@@ -70,15 +65,10 @@ read -e -i $default_subnet_mysql_address_prefix         -p "MySQL subnet address
 read -e -i $default_vm_jumpbox_linux_name               -p "Linux jumpbox virtual machine name (vm_jumpbox_linux_name) ------------: " vm_jumpbox_linux_name
 read -e -i $default_skip_ssh_key_gen                    -p "Skip SSH key generation (skip_ssh_key_gen) yes/no ? -------------------: " skip_ssh_key_gen
 read -e -i $default_vm_jumpbox_win_name                 -p "Windows jumpbox virtual machine name (vm_jumpbox_win_name) ------------: " vm_jumpbox_win_name
-read -e -i $default_vm_mssql_win_name                   -p "SQL Server virtual machine name (vm_mssql_win_name) -------------------: " vm_mssql_win_name
-read -e -i $default_mssql_database_name                 -p "Azure SQL Database name (mssql_database_name) -------------------------: " mssql_database_name
-read -e -i $default_mysql_database_name                 -p "Azure MySql Database name (mysql_database_name) -----------------------: " mysql_database_name
 read -e -i $default_storage_share_name                  -p "Azure Files share name (storage_share_name) ---------------------------: " storage_share_name
 
 application_subnet_name=${application_subnet_name:-default_application_subnet_name}
 database_subnet_name=${database_subnet_name:-default_database_subnet_name}
-mssql_database_name=${mssql_database_name:-default_mssql_database_name}
-mysql_database_name=${mysql_database_name:-default_mysql_database_name}
 privatelink_subnet_name=${privatelink_subnet_name:-default_privatelink_subnet_name}
 skip_ssh_key_gen=${skip_ssh_key_gen:-$default_skip_ssh_key_gen}
 storage_share_name=${storage_share_name:-default_storage_share_name}
@@ -88,7 +78,6 @@ subnet_privatelink_address_prefix=${subnet_privatelink_address_prefix:-default_s
 subnet_mysql_address_prefix=${subnet_mysql_address_prefix:-default_subnet_mysql_address_prefix}
 vm_jumpbox_linux_name=${vm_jumpbox_linux_name:-default_vm_jumpbox_linux_name}
 vm_jumpbox_win_name=${vm_jumpbox_win_name:-default_vm_jumpbox_win_name}
-vm_mssql_win_name=${vm_mssql_win_name:-default_vm_mssql_win_name}
 vnet_name=${vnet_name:=$default_vnet_name}
 vnet_address_space=${vnet_address_space:-default_vnet_address_space}
 
@@ -161,8 +150,6 @@ az keyvault secret set \
 # Upload post-deployment scripts
 vm_jumpbox_win_post_deploy_script_uri="https://${storage_account_name:1:-1}.blob.core.windows.net/${storage_container_name:1:-1}/$vm_jumpbox_win_post_deploy_script"
 vm_jumpbox_win_configure_storage_script_uri="https://${storage_account_name:1:-1}.blob.core.windows.net/${storage_container_name:1:-1}/$vm_jumpbox_win_configure_storage_script"
-vm_mssql_win_post_deploy_script_uri="https://${storage_account_name:1:-1}.blob.core.windows.net/${storage_container_name:1:-1}/$vm_mssql_win_post_deploy_script"
-vm_mssql_win_sql_startup_script_uri="https://${storage_account_name:1:-1}.blob.core.windows.net/${storage_container_name:1:-1}/$vm_mssql_win_sql_startup_script"
 
 printf "Getting storage account key for storage account '${storage_account_name:1:-1}' from key vault '${key_vault_name:1:-1}'...\n"
 storage_account_key=$(az keyvault secret show --name ${storage_account_name:1:-1} --vault-name ${key_vault_name:1:-1} --query value --output tsv)
@@ -185,7 +172,6 @@ printf "Configuring automation account '${automation_account_name:1:-1}'...\n"
   -ResourceGroupName ${resource_group_name:1:-1} \
   -AutomationAccountName ${automation_account_name:1:-1} \
   -VmJumpboxWinName $vm_jumpbox_win_name \
-  -VmMssqlWinName $vm_mssql_win_name \
   -AppId ${arm_client_id:1:-1} \
   -AppSecret "$TF_VAR_arm_client_secret" 
 
@@ -202,8 +188,6 @@ printf "dns_server                                  = $dns_server\n"            
 printf "key_vault_id                                = $key_vault_id\n"                                    >> ./terraform.tfvars
 printf "key_vault_name                              = $key_vault_name\n"                                  >> ./terraform.tfvars
 printf "location                                    = $location\n"                                        >> ./terraform.tfvars
-printf "mssql_database_name                         = \"$mssql_database_name\"\n"                         >> ./terraform.tfvars
-printf "mysql_database_name                         = \"$mysql_database_name\"\n"                         >> ./terraform.tfvars
 printf "remote_virtual_network_id                   = $remote_virtual_network_id\n"                       >> ./terraform.tfvars
 printf "remote_virtual_network_name                 = $remote_virtual_network_name\n"                     >> ./terraform.tfvars
 printf "resource_group_name                         = $resource_group_name\n"                             >> ./terraform.tfvars
@@ -219,15 +203,10 @@ printf "tags                                        = $tags\n"                  
 printf "vm_jumpbox_linux_name                       = \"$vm_jumpbox_linux_name\"\n"                       >> ./terraform.tfvars
 printf "vm_jumpbox_linux_userdata_file              = \"$vm_jumpbox_linux_userdata_file\"\n"              >> ./terraform.tfvars
 printf "vm_jumpbox_win_name                         = \"$vm_jumpbox_win_name\"\n"                         >> ./terraform.tfvars
-printf "vm_mssql_win_name                           = \"$vm_mssql_win_name\"\n"                           >> ./terraform.tfvars
 printf "vm_jumpbox_win_post_deploy_script           = \"$vm_jumpbox_win_post_deploy_script\"\n"           >> ./terraform.tfvars
 printf "vm_jumpbox_win_post_deploy_script_uri       = \"$vm_jumpbox_win_post_deploy_script_uri\"\n"       >> ./terraform.tfvars
 printf "vm_jumpbox_win_configure_storage_script     = \"$vm_jumpbox_win_configure_storage_script\"\n"     >> ./terraform.tfvars
 printf "vm_jumpbox_win_configure_storage_script_uri = \"$vm_jumpbox_win_configure_storage_script_uri\"\n" >> ./terraform.tfvars
-printf "vm_mssql_win_post_deploy_script             = \"$vm_mssql_win_post_deploy_script\"\n"             >> ./terraform.tfvars
-printf "vm_mssql_win_post_deploy_script_uri         = \"$vm_mssql_win_post_deploy_script_uri\"\n"         >> ./terraform.tfvars
-printf "vm_mssql_win_sql_startup_script             = \"$vm_mssql_win_sql_startup_script\"\n"             >> ./terraform.tfvars
-printf "vm_mssql_win_sql_startup_script_uri         = \"$vm_mssql_win_sql_startup_script_uri\"\n"         >> ./terraform.tfvars
 printf "vnet_address_space                          = \"$vnet_address_space\"\n"                          >> ./terraform.tfvars
 printf "vnet_name                                   = \"$vnet_name\"\n"                                   >> ./terraform.tfvars
 

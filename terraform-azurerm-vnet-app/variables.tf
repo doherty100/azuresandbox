@@ -54,22 +54,6 @@ variable "location" {
   description = "The name of the Azure Region where resources will be provisioned."
 }
 
-variable "mssql_database_name" {
-  type        = string
-  description = "The name of the Azure SQL Database to be provisioned"
-}
-
-variable "mysql_database_name" {
-  type        = string
-  description = "The name of the Azure MySQL Database to be provisioned"
-}
-
-variable "mysql_flexible_server_zone" {
-  type        = string
-  description = "The availability zone used to deploy the Azure Database for MySQL - Flexible Server."
-  default     = "1"
-}
-
 variable "remote_virtual_network_id" {
   type        = string
   description = "The id of the existing shared services virtual network that the new spoke virtual network will be peered with."
@@ -136,7 +120,6 @@ variable "tags" {
   description = "The tags in map format to be used when creating new resources."
 }
 
-# Linux Jumpbox VM variables
 variable "vm_jumpbox_linux_image_offer" {
   type        = string
   description = "The offer type of the virtual machine image used to create the VM"
@@ -183,7 +166,6 @@ variable "vm_jumpbox_linux_userdata_file" {
   description = "The name of the cloud-init User-Data file for the virtual machine."
 }
 
-# Windows jumpbox VM variables
 variable "vm_jumpbox_win_configure_storage_script" {
   type        = string
   description = "The name of the PowerShell script used to configure Azure Storage for kerberos authentication."
@@ -243,87 +225,6 @@ variable "vm_jumpbox_win_storage_account_type" {
   type        = string
   description = "The storage replication type to be used for the VMs OS and data disks."
   default     = "Standard_LRS"
-}
-
-# Database VM variables
-variable "vm_mssql_win_data_disk_config" {
-  type        = map(any)
-  description = "Data disk configuration for SQL Server virtual machine."
-  default = {
-    sqldata = {
-      name         = "vol_sqldata_M",
-      disk_size_gb = "128",
-      lun          = "0",
-      caching      = "ReadOnly"
-    },
-    sqllog = {
-      name         = "vol_sqllog_L",
-      disk_size_gb = "32",
-      lun          = "1",
-      caching      = "None"
-    }
-  }
-}
-
-variable "vm_mssql_win_image_offer" {
-  type        = string
-  description = "The offer type of the virtual machine image used to create the database server VM"
-  default     = "sql2022-ws2022"
-}
-
-variable "vm_mssql_win_image_publisher" {
-  type        = string
-  description = "The publisher for the virtual machine image used to create the database server VM"
-  default     = "MicrosoftSQLServer"
-}
-
-variable "vm_mssql_win_image_sku" {
-  type        = string
-  description = "The sku of the virtual machine image used to create the database server VM"
-  default     = "sqldev-gen2"
-}
-
-variable "vm_mssql_win_image_version" {
-  type        = string
-  description = "The version of the virtual machine image used to create the database server VM"
-  default     = "Latest"
-}
-
-variable "vm_mssql_win_name" {
-  type        = string
-  description = "The name of the database server VM"
-}
-
-variable "vm_mssql_win_post_deploy_script" {
-  type        = string
-  description = "The name of the PowerShell script to be run post-deployment."
-}
-
-variable "vm_mssql_win_post_deploy_script_uri" {
-  type        = string
-  description = "The uri of the PowerShell script to be run post-deployment."
-}
-
-variable "vm_mssql_win_size" {
-  type        = string
-  description = "The size of the virtual machine"
-  default     = "Standard_B4ms"
-}
-
-variable "vm_mssql_win_storage_account_type" {
-  type        = string
-  description = "The storage replication type to be used for the VMs OS disk"
-  default     = "StandardSSD_LRS"
-}
-
-variable "vm_mssql_win_sql_startup_script" {
-  type        = string
-  description = "The name of the SQL Startup Powershell script."
-}
-
-variable "vm_mssql_win_sql_startup_script_uri" {
-  type        = string
-  description = "The URI for the SQL Startup Powershell script."
 }
 
 variable "vnet_address_space" {

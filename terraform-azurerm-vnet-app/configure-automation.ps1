@@ -16,9 +16,6 @@ param (
     [String]$VmJumpboxWinName,
 
     [Parameter(Mandatory = $true)]
-    [String]$VmMssqlWinName,
-    
-    [Parameter(Mandatory = $true)]
     [String]$AppId,
 
     [Parameter(Mandatory = $true)]
@@ -208,18 +205,6 @@ Write-Log "Located automation account '$AutomationAccountName' in resource group
 Import-Module-Custom `
     -ResourceGroupName $ResourceGroupName `
     -AutomationAccountName $automationAccount.AutomationAccountName `
-    -ModuleName 'NetworkingDsc' `
-    -ModuleUri 'https://www.powershellgallery.com/api/v2/package/NetworkingDsc'
-
-Import-Module-Custom `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -ModuleName 'SqlServerDsc' `
-    -ModuleUri 'https://www.powershellgallery.com/api/v2/package/SqlServerDsc'
-
-Import-Module-Custom `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
     -ModuleName 'cChoco' `
     -ModuleUri 'https://www.powershellgallery.com/api/v2/package/cChoco'
 
@@ -230,24 +215,12 @@ Import-DscConfiguration `
     -DscConfigurationName 'JumpBoxConfig' `
     -DscConfigurationScript 'JumpBoxConfig.ps1'
 
-Import-DscConfiguration `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -DscConfigurationName 'MssqlVmConfig' `
-    -DscConfigurationScript 'MssqlVmConfig.ps1'
-
 # Compile DSC Configurations
 Start-DscCompliationJob `
     -ResourceGroupName $ResourceGroupName `
     -AutomationAccountName $automationAccount.AutomationAccountName `
     -DscConfigurationName 'JumpBoxConfig' `
     -VirtualMachineName $VmJumpboxWinName
-
-Start-DscCompliationJob `
-    -ResourceGroupName $ResourceGroupName `
-    -AutomationAccountName $automationAccount.AutomationAccountName `
-    -DscConfigurationName 'MssqlVmConfig' `
-    -VirtualMachineName $VmMssqlWinName
 
 Exit 0
 #endregion
