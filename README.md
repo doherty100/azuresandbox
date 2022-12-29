@@ -49,10 +49,13 @@ This repo was created by [Roger Doherty](https://www.linkedin.com/in/roger-doher
   * A [virtual network](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vnet) for hosting [virtual machines](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) and private endpoints implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/private-link/private-link-overview) and [subnet delegation](https://docs.microsoft.com/en-us/azure/virtual-network/subnet-delegation-overview). [Virtual network peering](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) is automatically configured.
   * A Windows Server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
   * A Linux [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) for use as a jumpbox.
-  * An [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering.
-  * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database hosted in [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview) with a private endpoint implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
-  * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database hosted in [Azure Database for MySQL - Flexible Server](https://docs.microsoft.com/en-us/azure/mysql/flexible-server/overview) with a private endpoint implemented using [subnet delegation](https://docs.microsoft.com/en-us/azure/virtual-network/subnet-delegation-overview).
   * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) SMB file share hosted in [Azure Files](https://docs.microsoft.com/en-us/azure/storage/files/storage-files-introduction) with a private endpoint implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/storage/common/storage-private-endpoints).
+* [terraform-azurerm-vm-mssql](./terraform-azurerm-vm-mssql/) includes the following:
+  * An [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering.
+* [terraform-azurerm-msssql](./terraform-azurerm-mssql/) includes the following:
+  * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database hosted in [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview) with a private endpoint implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
+* [terraform-azurerm-mysql](./terraform-azurerm-mysql/) includes the following:
+  * A [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database hosted in [Azure Database for MySQL - Flexible Server](https://docs.microsoft.com/en-us/azure/mysql/flexible-server/overview) with a private endpoint implemented using [subnet delegation](https://docs.microsoft.com/en-us/azure/virtual-network/subnet-delegation-overview).
 * [terraform-azurerm-vwan](./terraform-azurerm-vwan/) includes the following:
   * A [virtual wan](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources).
   * A [virtual wan hub](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with pre-configured [hub virtual network connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#resources) with [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) and [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/). The hub is also pre-configured for [User VPN (point-to-site) connections](https://docs.microsoft.com/en-us/azure/virtual-wan/virtual-wan-about#uservpn).
@@ -271,14 +274,20 @@ Application | Reserved for future use | 10.2.128.0/17 | 10.2.128.0 | 10.2.255.25
 Apply the configurations in the following order:
 
 1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/) implements a virtual network with shared services used by all the configurations.
-1. [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/) implements an application virtual network.
-1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) connects the shared services virtual network and the application virtual network to remote users or a private network.
+1. [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/) implements an application virtual network with pre-configured Windows Server and Linux jumpboxes.
+1. [terraform-azurerm-vm-mssql](./terraform-azurerm-vm-mssql/) (optional) implements an [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering.
+1. [terraform-azurerm-mssql](./terraform-azurerm-mssql/) (optional) implements a [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database hosted in [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview) with a private endpoint implemented using [PrivateLink](https://docs.microsoft.com/en-us/azure/azure-sql/database/private-endpoint-overview).
+1. [terraform-azurerm-mysql](./terraform-azurerm-mysql/) (optional) implements a [PaaS](https://azure.microsoft.com/en-us/overview/what-is-paas/) database hosted in [Azure Database for MySQL - Flexible Server](https://docs.microsoft.com/en-us/azure/mysql/flexible-server/overview) with a private endpoint implemented using [subnet delegation](https://docs.microsoft.com/en-us/azure/virtual-network/subnet-delegation-overview).
+1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/) (optional) connects the shared services virtual network and the application virtual network to remote users or a private network.
 
 #### Destroy sandbox configurations
 
 While a default sandbox deployment is fine for testing, it may not work with an organization's private network. The default deployment should be destroyed first before doing a custom deployment. This is accomplished by running `terraform destroy` on each configuration in the reverse order in which it was deployed:
 
 1. [terraform-azurerm-vwan](./terraform-azurerm-vwan/)
+1. [terraform-azurerm-mysql](./terraform-azurerm-mysql/)
+1. [terraform-azurerm-mssql](./terraform-azurerm-mssql/)
+1. [terraform-azurerm-vm-mssql](./terraform-azurerm-vm-mssql/)
 1. [terraform-azurerm-vnet-app](./terraform-azurerm-vnet-app/)
 1. [terraform-azurerm-vnet-shared](./terraform-azurerm-vnet-shared/). Note: Resources provisioned by `bootstrap.sh` must be deleted manually.
 
