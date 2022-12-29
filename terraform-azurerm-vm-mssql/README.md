@@ -13,21 +13,17 @@
 
 ## Overview
 
-This configuration implements a virtual network for applications including:
-
-* An [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering.
+This configuration implements an [IaaS](https://azure.microsoft.com/en-us/overview/what-is-iaas/) database server [virtual machine](https://docs.microsoft.com/en-us/azure/azure-glossary-cloud-terminology#vm) based on the [SQL Server virtual machines in Azure](https://docs.microsoft.com/en-us/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview#payasyougo) offering.
 
 Activity | Estimated time required
 --- | ---
 Pre-configuration | ~10 minutes
 Provisioning | ~30 minutes
-Smoke testing | ~ 10 minutes
+Smoke testing | ~10 minutes
 
 ## Before you start
 
-This configuration is optional and can be skipped to reduce costs. Proceed with [terraform-azurerm-mssql](../terraform-azurerm-mssql) if you wish to skip it. The following configurations must be deployed first before starting:
-
-* [terraform-azurerm-vnet-app](../terraform-azurerm-vnet-app)
+[terraform-azurerm-vnet-app](../terraform-azurerm-vnet-app) must be provisioned first before starting. This configuration is optional and can be skipped to reduce costs. Proceed with [terraform-azurerm-mssql](../terraform-azurerm-mssql) if you wish to skip it.
 
 ## Getting started
 
@@ -148,7 +144,7 @@ This section lists the resources included in this configuration.
 
 #### Database server virtual machine
 
-The configuration for these resources can be found in [050-vm-mssql-win.tf](./050-vm-mssql-win.tf).
+The configuration for these resources can be found in [020-vm-mssql-win.tf](./020-vm-mssql-win.tf).
 
 Resource name (ARM) | Notes
 --- | ---
