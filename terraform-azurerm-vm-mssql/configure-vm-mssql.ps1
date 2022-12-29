@@ -392,13 +392,18 @@ foreach ( $volume in $volumes) {
     Write-Log "Volume FileSystemType ----: $($volume.FileSystemType)"
     Write-Log "Volume DriveType ---------: $($volume.DriveType)"
     
-    if ( $volume.FileSystemLabel -in @( 'System Reserved', 'Windows' ) ) {
+    if ( $volume.FileSystemLabel -in @( 'System Reserved', 'Windows', 'Recovery' ) ) {
         Write-Log "Skipping FileSystemLabel '$($volume.FileSystemLabel)'..."
         continue 
     }
 
     if ( $volume.DriveType -in @( 'CD-ROM', 'Removable' ) ) {
         Write-Log "Skipping DriveType '$($volume.DriveType)'..."
+        continue 
+    }
+
+    if ( $volume.FileSystemType -in @( 'FAT32' ) ) {
+        Write-Log "Skipping FileSystemType '$($volume.FileSystemType)'..."
         continue 
     }
 
@@ -586,21 +591,6 @@ try {
 catch {
     Exit-WithError $_
 }
-
-# Set SQL Server max memory
-$totalMemoryMb = (Get-CimInstance Win32_PhysicalMemory | Measure-Object -Property capacity -Sum).sum /1mb
-Write-Log "$totalMemoryMb MB of physical memory detected..."
-$sqlMaxMemory = [int]($totalMemoryMb * 0.9)
-Write-Log "Setting SQL Server max server memory to $sqlMaxMemory MB..."
-$sqlCommand = "sp_configure N'show advanced options', 1"
-Invoke-Sql $sqlCommand 'sa' $usernameSecretSecure
-$sqlCommand = "RECONFIGURE"
-Invoke-Sql $sqlCommand 'sa' $usernameSecretSecure
-$sqlCommand = "sp_configure N'max server memory', $sqlMaxMemory"
-Invoke-Sql $sqlCommand 'sa' $usernameSecretSecure
-$sqlCommand = "RECONFIGURE"
-Invoke-Sql $sqlCommand 'sa' $usernameSecretSecure
-Restart-SqlServer
 
 Write-Log "'$PSCommandPath' exiting normally..."
 Exit 0

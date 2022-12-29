@@ -20,7 +20,7 @@ This configuration implements a virtual network for applications including:
 Activity | Estimated time required
 --- | ---
 Pre-configuration | ~10 minutes
-Provisioning | ~XX minutes
+Provisioning | ~30 minutes
 Smoke testing | ~ 10 minutes
 
 ## Before you start
@@ -91,19 +91,6 @@ This section describes how to provision this configuration using default setting
 
   * Verify the IPAddress returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-db-01"]*, e.g. `10.2.1.*`.
   * Note: This DNS query is resolved by the DNS Server running on *azurerm_windows_virtual_machine.vm_adds*.
-* Test DNS queries for Azure SQL database private endpoint (PaaS)
-  * From the client environment, navigate to *portal.azure.com* > *SQL Servers* > *mssql-xxxxxxxxxxxxxxxx* > *Overview* > *Server name* and and copy the the FQDN, e.g. *mssql&#x2011;xxxxxxxxxxxxxxxx.database.windows.net*.
-  * From *jumpwin1*, run the Windows PowerShell command:
-  
-    ```powershell
-    Resolve-DnsName mssql-xxxxxxxxxxxxxxxx.database.windows.net
-    ```
-
-  * Verify the *IP4Address* returned is within the subnet IP address prefix for *azurerm_subnet.vnet_app_01_subnets["snet-privatelink-01"]*, e.g. `10.2.2.*`.
-  * Note: This DNS query is resolved using the following resources:
-    * *azurerm_private_dns_a_record.sql_server_01*
-    * *azurerm_private_dns_zone.private_dns_zones["privatelink.database.windows.net"]*
-    * *azurerm_private_dns_zone_virtual_network_link.private_dns_zone_virtual_network_links_vnet_app_01["privatelink.database.windows.net"]*
 * From *jumpwin1*, test SQL Server Connectivity with SQL Server Management Studio (SSMS)
   * Navigate to *Start* > *Microsoft SQL Server Tools 18* > *Microsoft SQL Server Management Studio 18*
   * Connect to the default instance of SQL Server installed on the database server virtual machine using the following default values:
@@ -119,7 +106,7 @@ This section provides additional information on various aspects of this configur
 
 ### Bootstrap script
 
-This configuration uses the script [bootstrap.sh](./bootstrap.sh) to create a *terraform.tfvars* file for generating and applying Terraform plans. For simplified deployment, several runtime defaults are initialized using output variables stored in the *terraform.tfstate* file associated with the [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared) configuration, including:
+This configuration uses the script [bootstrap.sh](./bootstrap.sh) to create a *terraform.tfvars* file for generating and applying Terraform plans. For simplified deployment, several runtime defaults are initialized using output variables stored in the *terraform.tfstate* file associated with the [terraform-azurerm-vnet-shared](../terraform-azurerm-vnet-shared;) and [terraform-azurerm-vnet-app](../terraform-azurerm-vnet-app/) configurations, including:
 
 Output variable | Sample value
 --- | ---
@@ -137,6 +124,7 @@ storage_account_name | "stXXXXXXXXXXXXXXX"
 storage_container_name | "scripts"
 subscription_id | "00000000-0000-0000-0000-000000000000"
 tags | tomap( { "costcenter" = "10177772" "environment" = "dev" "project" = "#AzureSandbox" } )
+vnet_app_01_subnets | Contains all the subnet definitions including *snet-app-01*, *snet-db-01*, *snet-mysql-01* and *snet-privatelink-01*.
 
 The following PowerShell scripts are uploaded to the *scripts* container in the storage account using the access key stored in the key vault secret *storage_account_key* so they can be referenced by virtual machine extensions:
 
@@ -194,8 +182,7 @@ azurerm_virtual_machine_extension . vm_mssql_win_postdeploy_script (vmext&#x2011
     * The scheduled task [sql-startup.ps1](./sql-startup.ps1) is created to recreate the `D:\SQLTEMP` folder then start SQL Server. The scheduled task is set to run automatically at startup using domain administrator credentials.
   * The data and log files for the *master*, *model* and *msdb* system databases are moved to the data and log disks respectively.
   * The SQL Server errorlog is moved to the data disk.
-  * SQL Server `max server memory` is reconfigured to use 90% of available memory.
-  
+
 ## Next steps
 
 Move on to the next configuration [terraform-azurerm-mssql](../terraform-azurerm-mssql).
