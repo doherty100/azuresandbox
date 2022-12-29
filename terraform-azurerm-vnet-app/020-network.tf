@@ -141,6 +141,10 @@ resource "azurerm_subnet" "vnet_app_01_subnets" {
   }
 }
 
+output "vnet_app_01_subnets" {
+  value = azurerm_subnet.vnet_app_01_subnets
+}
+
 resource "azurerm_network_security_group" "network_security_groups" {
   for_each = azurerm_subnet.vnet_app_01_subnets
 
