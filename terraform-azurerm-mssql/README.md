@@ -1,6 +1,6 @@
 # \#AzureSandbox - terraform-azurerm-mssql
 
-![vnet-app-diagram](./mssql-diagram.drawio.svg)
+![mssql-diagram](./mssql-diagram.drawio.svg)
 
 ## Contents
 
