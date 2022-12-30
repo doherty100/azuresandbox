@@ -1,4 +1,4 @@
-# \#AzureSandbox - terraform-azurerm-vnet-app
+# \#AzureSandbox - terraform-azurerm-mssql
 
 ![vnet-app-diagram](./mssql-diagram.drawio.svg)
 
