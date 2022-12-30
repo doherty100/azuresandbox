@@ -214,6 +214,10 @@ resource "azurerm_private_dns_zone" "private_dns_zones" {
   tags                = var.tags
 }
 
+output "private_dns_zones" {
+  value = azurerm_private_dns_zone.private_dns_zones
+}
+
 resource "azurerm_private_dns_zone_virtual_network_link" "private_dns_zone_virtual_network_links_vnet_app_01" {
   for_each              = azurerm_private_dns_zone.private_dns_zones
   name                  = "pdnslnk-${each.value.name}-${azurerm_virtual_network.vnet_app_01.name}"
